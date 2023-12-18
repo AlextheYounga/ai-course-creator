@@ -13,14 +13,16 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 initial_prompt = open("src/data/prompts/start.md", "r").read()
 system_context = open("src/data/prompts/system.md", "r").read()
+
 messages = [
     {"role": "system", "content": system_context},
     {"role": "user", "content": initial_prompt}
 ]
 
-for i in range(10):
+for i in range(15):
     payload_file = f"src/data/chat/payloads/{save_file_name}-{i}.json"
     reply_file = f"src/data/chat/replies/{save_file_name}-{i}.md"
+    context_file = f"src/data/chat/context/{save_file_name}.json"
 
     if (i > 0):
         continue_prompt = open("src/data/prompts/continue.md", "r").read()
@@ -34,6 +36,10 @@ for i in range(10):
         )
 
         messages.append(completion.choices[0].message)
+
+        with open(context_file, 'w') as f:
+            f.write(json.dumps(messages))
+            f.close()
 
         with open(payload_file, 'w') as f:
             f.write(completion.model_dump_json())
