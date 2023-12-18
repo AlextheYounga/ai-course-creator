@@ -1,7 +1,6 @@
 # My stuff
-src/data/prompts/payloads/**/*.json
-src/data/prompts/replies/**/*.txt
-src/data/prompts/*.json
+.DS_Store
+*.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
