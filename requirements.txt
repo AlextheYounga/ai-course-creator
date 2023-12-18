@@ -1,0 +1,8 @@
+openai
+python-dotenv
+python-environ
+inquirer
+gpt4all
+SQLAlchemy
+bs4
+markdown
