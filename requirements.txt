@@ -6,3 +6,4 @@ gpt4all
 SQLAlchemy
 bs4
 markdown
+autopep8
