@@ -34,8 +34,8 @@ def main():
             {"role": "user", "content": INITIAL_PROMPT}
         ]
 
-        for iteration in range(1):
-            if (iteration > 0):
+        for i in range(1):
+            if (i > 0):
                 continue_prompt = open(
                     "src/data/prompts/continue.md", "r").read()
                 messages.append({"role": "user", "content": continue_prompt})
@@ -50,13 +50,7 @@ def main():
                 latest_message = json.loads(completion.choices[0].message.model_dump_json())
                 messages.append(latest_message)
 
-                _write_output_files(
-                    completion,
-                    messages,
-                    folder_name,
-                    save_file_name,
-                    iteration
-                )
+                _write_output_files(completion, messages, folder_name, save_file_name, i)
 
                 print(
                     colored(f"Success: {save_file_name} reply received.", "green"))
