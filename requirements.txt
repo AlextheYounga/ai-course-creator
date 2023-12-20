@@ -7,3 +7,4 @@ SQLAlchemy
 bs4
 markdown
 autopep8
+termcolor
