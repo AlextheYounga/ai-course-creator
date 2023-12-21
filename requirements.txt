@@ -4,7 +4,7 @@ python-environ
 inquirer
 gpt4all
 SQLAlchemy
-bs4
+beautifulsoup4
 markdown
 autopep8
 termcolor

@@ -1,5 +1,6 @@
 import os
 import json
+import zipfile
 
 def read_txt_file(filepath):
     if os.path.exists(filepath):
@@ -36,4 +37,12 @@ def write_json_file(path, data):
 def read_json_file(path):
     txtfile = open(path, "r")
     return json.loads(txtfile.read())
+
+def zip_folder(folder_path, output_file):
+    with zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        len_dir_path = len(folder_path)
+        for root, _, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                zipf.write(file_path, file_path[len_dir_path:])
 
