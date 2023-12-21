@@ -1,1 +1,0 @@
-Please create the next page of content based on your initial course outline. 

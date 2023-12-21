@@ -1,1 +1,0 @@
-Please generate a course outline for Ruby on Rails. Create a list of the topics you are going to cover for this course.
