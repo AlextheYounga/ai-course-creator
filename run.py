@@ -4,11 +4,9 @@ import inquirer
 def main():
     choices = [
         inquirer.List('subroutine',
-                      message="Select subroutine",
+                      message="Select subroutine.",
                       choices=[
                           'Generate Courses',
-                          'Generate Outline',
-                          'Generate Titles'
                       ]),
     ]
 
@@ -16,12 +14,8 @@ def main():
     answer = choice['subroutine']
 
     if answer == 'Generate Courses':
-        from src.openai.generate_courses import main
-        main()
-    # elif answer == 'Generate Outline':
-    #     import src.openai.generate_outlines
-    # elif answer == 'Generate Titles':
-    #     import src.openai.generate_titles
+        from src.openai.generate_courses import create_courses
+        create_courses()
     else:
         "You did not select a subroutine. Exiting..."
 
