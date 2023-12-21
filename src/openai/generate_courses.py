@@ -10,7 +10,7 @@ from time import sleep
 
 load_dotenv()
 
-MODEL = "gpt-3.5-turbo-1106"
+MODEL = os.environ.get("MODEL") or 'gpt-3.5-turbo-1106'
 PAYLOAD_PATH = f"src/data/chat/payloads"
 REPLY_PATH = f"src/data/chat/replies"
 COURSES_PATH = "src/data/courses.json"
