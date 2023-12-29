@@ -4,16 +4,16 @@ from datetime import datetime
 import shutil
 from src.utils.files import zip_folder
 
-def init():
-    payload_path = 'src/data/chat/payloads'
-    replies_path = 'src/data/chat/replies'
+PAYLOAD_PATH = 'src/data/chat/payloads'
+CREATOR_PATH = 'src/data/chat/creator'
 
-    if not os.path.exists(payload_path):
+def init():
+    if not os.path.exists(PAYLOAD_PATH):
         print('Creating data/chat/payloads directory...')
-        os.mkdir(payload_path)
-    if not os.path.exists(replies_path):
-        print('Creating data/chat/replies directory...')
-        os.mkdir(replies_path)
+        os.mkdir(PAYLOAD_PATH)
+    if not os.path.exists(CREATOR_PATH):
+        print('Creating data/chat/creator directory...')
+        os.mkdir(CREATOR_PATH)
 
     print("Project initialized.")
 
@@ -25,10 +25,8 @@ def save_chat():
 
 def reset_chat():
     print('Nuking chat...')
-    payload_path = 'src/data/chat/payloads'
-    replies_path = 'src/data/chat/replies'
-    shutil.rmtree(payload_path)
-    shutil.rmtree(replies_path)
+    shutil.rmtree(PAYLOAD_PATH)
+    shutil.rmtree(CREATOR_PATH)
     init()
     
 def main():
