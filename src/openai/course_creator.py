@@ -44,7 +44,7 @@ class CourseCreator:
         # Save responses
         formatted_name = topic.lower().replace(" ", "-")
         save_file_name = "series-" + formatted_name
-        self.creator_path = f"{self.creator_path}/{formatted_name}"
+        self.creator_path = f"{self.creator_path}/{formatted_name}" if retry == 0 else self.creator_path
         self.save_responses(completion, self.creator_path, save_file_name)
 
         # Parse outline
