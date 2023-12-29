@@ -145,7 +145,7 @@ class CourseCreator:
             f.close()
 
 
-if __name__ == "__main__":
+def run():
     topics = read_json_file("src/data/topics.json")
 
     for topic in topics:
@@ -158,3 +158,7 @@ if __name__ == "__main__":
             break
 
             # creator.generate_chapter_material(course, outline)
+
+
+if __name__ == "__main__":
+    run()
