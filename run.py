@@ -14,7 +14,7 @@ def main():
     answer = choice['subroutine']
 
     if answer == 'Generate Courses':
-        from src.openai.generate_courses import create_courses
+        from src.openai.course_creator import create_courses
         create_courses()
     else:
         "You did not select a subroutine. Exiting..."

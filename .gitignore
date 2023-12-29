@@ -1,6 +1,8 @@
 # My stuff
 .DS_Store
 *.DS_Store
+__deprecated__
+notes
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
