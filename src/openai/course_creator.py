@@ -53,10 +53,11 @@ class CourseCreator:
     def generate_topic_skills(self):
         # Build message payload
         system_prompt = self.get_prompt('system/general', [("{topic}", self.topic)])
-        outline_prompt = self.get_prompt('user/topic-skills', [("{topic}", self.topic)])
+        user_prompt = self.get_prompt('user/topic-skills', [("{topic}", self.topic)])
+
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": outline_prompt}
+            {"role": "user", "content": user_prompt}
         ]
 
         # Send to ChatGPT and parse JSON
@@ -72,11 +73,11 @@ class CourseCreator:
     def generate_series_outline(self, skills: list[dict]):
         # Build message payload
         system_prompt = self.get_prompt('system/skills-prep', [("{topic}", self.topic), ("{skills}", json.dumps(skills))])
-        outline_prompt = self.get_prompt('user/series-outline', [("{topic}", self.topic)])
+        user_prompt = self.get_prompt('user/series-outline', [("{topic}", self.topic)])
 
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": outline_prompt}
+            {"role": "user", "content": user_prompt}
         ]
 
         # Send to ChatGPT and parse JSON
@@ -88,6 +89,39 @@ class CourseCreator:
         self._save_responses(completion, self.creator_path, save_file_name)
 
         return outline
+    
+    def generate_course_chapters(self, course: dict, series: list[dict]):
+        course_name = course['courseName']
+        modules = course['modules']
+
+        # Build message payload
+        system_prompt = self.get_prompt('system/chapters-prep', [("{topic}", self.topic), ("{series}", json.dumps(series))])
+        user_prompt = self.get_prompt('user/chapters-outline', [("{course_name}", course_name), ("{modules}", json.dumps(modules))])
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+
+        # Send to ChatGPT and parse JSON
+        print(colored(f"Generating {course_name} series chapters...", "yellow"))
+        completion, chapters = self.handle_json_prompt(messages)
+
+        # Save responses
+        course_name_formatted = course_name.lower().replace(" ", "-")
+        save_file_name = f"chapters-{course_name_formatted}"
+        save_path = f"{self.creator_path}/chapters"
+        self._save_responses(completion, save_path, save_file_name)
+
+        return chapters
+
+
+    def save_to_creator_path(self, save_file_name: str, data):
+        print(colored(f"Saving data to creator path...", "yellow"))
+        save_file = f"{self.creator_path}/{save_file_name}.json"
+        with open(save_file, 'w') as f:
+            f.write(json.dumps(data))
+            f.close()
 
 
     def _save_responses(self, completion: OpenAI, save_path: str, save_file_name: str) -> None:
@@ -126,11 +160,20 @@ def run():
         for topic in topics:
             creator = CourseCreator(topic)
             skills = creator.generate_topic_skills()
-            outline = creator.generate_series_outline(skills)
+            series = creator.generate_series_outline(skills)
 
-        #     # Generate course outline
-        #     for course in series:
-        #         outline = creator.generate_outline(topic, course)
+            final_course_outline = []
+            print(series)
+            for course in series:
+                chapters = creator.generate_course_chapters(course, series)
+                course_object = {
+                    "courseName": course['courseName'],
+                    "modules": course['modules'],
+                    "chapters": chapters
+                }
+                final_course_outline.append(course_object)
+            
+            creator.save_to_creator_path("course-outline-final", final_course_outline)
 
         #         # Generate page material
         #         for item in outline:
