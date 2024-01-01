@@ -5,6 +5,7 @@ from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
 from src.utils.parse import parse_markdown
+from datetime import datetime
 from time import sleep
 
 load_dotenv()
@@ -14,8 +15,7 @@ class OpenAiHandler:
         # Initialize OpenAI
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         self.model = os.environ.get("MODEL") or 'gpt-3.5-turbo-1106'
-        self.payload_path = f"src/data/chat/payloads"
-        self.reply_path = f"src/data/chat/replies"
+        self.prompt_payload_path = f"src/data/chat/payloads"
 
     def parse_markdown_json(self, content: str) -> dict | list | None:
         try:
@@ -30,10 +30,15 @@ class OpenAiHandler:
             return None
 
 
-    def send_prompt(self, messages) -> OpenAI:
+    def send_prompt(self, messages: list[dict]) -> OpenAI:
         for message in messages:
             if message['role'] == 'user':
-                print(colored(f"Sending prompt: {message['content']}", "cyan"))
+                prompt = message['content']
+                print(colored(f"Sending prompt: {prompt[:100]}...", "cyan"))
+                break
+        
+        # Save prompt payload
+        self.save_prompt_payload(messages)
 
         completion = None
         try:
@@ -49,3 +54,18 @@ class OpenAiHandler:
 
         sleep(1)  # Give OpenAI a break
         return completion
+    
+    def save_prompt_payload(self, messages) -> None:
+        # Check paths
+        self.check_save_paths(self.prompt_payload_path)
+
+        # Save prompt payload log
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        payload_file = f"{self.prompt_payload_path}/prompt-{timestamp}.json"
+        with open(payload_file, 'w') as f:
+            f.write(json.dumps(messages))
+            f.close()
+
+    def check_save_paths(self, path):
+        if not (os.path.exists(path)):
+            os.mkdir(path)

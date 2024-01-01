@@ -4,16 +4,19 @@ from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file
 from datetime import datetime
-
+import json
 
 
 class CourseCreator:
-    def __init__(self):
+    def __init__(self, topic: str):
         # Initialize OpenAI
+        topic_formatted = topic.lower().replace(" ", "-")
         self.ai_handler = OpenAiHandler()
-        self.prompt_path = f"src/data/prompts"
-        self.payload_path = f"src/data/chat/payloads"
-        self.creator_path = f"src/data/chat/creator"
+        self.topic = topic
+        self.topic_formatted = topic_formatted
+        self.prompt_path = "src/data/prompts"
+        self.payload_path = "src/data/chat/payloads"
+        self.creator_path = f"src/data/chat/creator/{topic_formatted}"
 
 
     def get_prompt(self, filename, replace: list[tuple]) -> str:
@@ -26,116 +29,77 @@ class CourseCreator:
         return prompt
 
 
-    def generate_series(self, topic, retry=0):
-        # Build message payload
-        system_prompt = self.get_prompt('system', [("{course_name}", topic)])
-        series_prompt = self.get_prompt('series', [("{course_name}", topic)])
-
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": series_prompt}
-        ]
-
-        # Send to ChatGPT
-        print(colored(f"Generating {topic} series...", "yellow"))
+    def handle_json_prompt(self, messages: list[dict], retry=0):
         completion = self.ai_handler.send_prompt(messages)
         print(colored("Done.", "green"))
 
-        # Save responses
-        formatted_name = topic.lower().replace(" ", "-")
-        save_file_name = "series-" + formatted_name
-        self.creator_path = f"{self.creator_path}/{formatted_name}" if retry == 0 else self.creator_path
-        self.save_responses(completion, self.creator_path, save_file_name)
-
         # Parse outline
         response_content = completion.choices[0].message.content
-        series_json = self.ai_handler.parse_markdown_json(response_content)
+        json_content = self.ai_handler.parse_markdown_json(response_content)
 
         # If JSON fails to parse, retry
-        if (series_json == None):
+        if (json_content == None):
             if (retry < 3):
                 print(colored("Retrying...", "yellow"))
                 retry += 1
-                self.generate_series(topic, retry)
+                self.handle_json_prompt(messages, retry)
             else:
-                print(colored("Failed to generate series.", "red"))
+                print(colored("Failed to parse JSON.", "red"))
                 return []
 
-        return series_json
+        return completion, json_content
 
 
-    def generate_outline(self, topic, course_name, retry=0):
+    def generate_topic_skills(self):
         # Build message payload
-        system_prompt = self.get_prompt('system', [("{course_name}", topic)])
-        outline_prompt = self.get_prompt('outline', [("{course_name}", course_name)])
+        system_prompt = self.get_prompt('system/general', [("{topic}", self.topic)])
+        outline_prompt = self.get_prompt('user/topic-skills', [("{topic}", self.topic)])
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": outline_prompt}
         ]
 
-        # Send to ChatGPT
-        print(colored(f"Generating {course_name} outline...", "yellow"))
-        completion = self.ai_handler.send_prompt(messages)
-        print(colored("Done.", "green"))
+        # Send to ChatGPT and parse JSON
+        print(colored(f"Generating {self.topic} skills...", "yellow"))
+        completion, skills = self.handle_json_prompt(messages)
 
         # Save responses
-        formatted_course_name = course_name.lower().replace(" ", "-")
-        save_file_name = "outline-" + formatted_course_name
-        response_path = f"{self.creator_path}/{formatted_course_name}"
-        self.save_responses(completion, response_path, save_file_name)
+        save_file_name = f"skills-{self.topic_formatted}"
+        self._save_responses(completion, self.creator_path, save_file_name)
 
-        # Parse outline
-        response_content = completion.choices[0].message.content
-        outline_json = self.ai_handler.parse_markdown_json(response_content)
+        return skills
 
-        # If JSON fails to parse, retry
-        if (outline_json == None):
-            if (retry < 3):
-                print(colored("Retrying...", "yellow"))
-                retry += 1
-                self.generate_outline(topic, course_name, retry)
-            else:
-                print(colored("Failed to generate outline.", "red"))
-                return []
-
-        return outline_json
-
-
-    def generate_page_material(self, topic, course_name, page):
+    def generate_series_outline(self, skills: list[dict]):
         # Build message payload
-        system_prompt = self.get_prompt('system', [("{course_name}", topic)])
-        page_material_prompt = self.get_prompt('page_material', [("{page_name}", page)])
+        system_prompt = self.get_prompt('system/skills-prep', [("{topic}", self.topic), ("{skills}", json.dumps(skills))])
+        outline_prompt = self.get_prompt('user/series-outline', [("{topic}", self.topic)])
+
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": page_material_prompt}
+            {"role": "user", "content": outline_prompt}
         ]
 
-        # Send to ChatGPT
-        print(colored(f"Generating {page} material...", "yellow"))
-        completion = self.ai_handler.send_prompt(messages)
-        print(colored("Done.", "green"))
+        # Send to ChatGPT and parse JSON
+        print(colored(f"Generating {self.topic} series outline...", "yellow"))
+        completion, outline = self.handle_json_prompt(messages)
 
-        formatted_course_name = course_name.lower().replace(" ", "-")
-        formatted_page_name = page.lower().replace(" ", "-")
-        save_file_name = "page-" + formatted_page_name
-        response_path = f"{self.creator_path}/{formatted_course_name}"
-        self.save_responses(completion, response_path, save_file_name)
+        # Save responses
+        save_file_name = f"series-{self.topic_formatted}"
+        self._save_responses(completion, self.creator_path, save_file_name)
 
-        response_content = completion.choices[0].message.content
-
-        return response_content
+        return outline
 
 
-    def save_responses(self, completion: OpenAI, save_path: str, save_file_name: str) -> None:
+    def _save_responses(self, completion: OpenAI, save_path: str, save_file_name: str) -> None:
         # Check paths
         storage_file = f"{save_path}/{save_file_name}.md"
 
-        self.check_save_paths(self.payload_path)
-        self.check_save_paths(save_path)
+        self._check_save_paths(self.payload_path)
+        self._check_save_paths(save_path)
 
         # Save payload log
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        payload_file = f"{self.payload_path}/{save_file_name}-{timestamp}.json"
+        payload_file = f"{self.payload_path}/response-{save_file_name}-{timestamp}.json"
         with open(payload_file, 'w') as f:
             f.write(completion.model_dump_json())
             f.close()
@@ -147,7 +111,7 @@ class CourseCreator:
             f.close()
 
 
-    def check_save_paths(self, path):
+    def _check_save_paths(self, path):
         if not (os.path.exists(path)):
             os.mkdir(path)
 
@@ -160,22 +124,23 @@ def run():
 
         # Generate series list of courses
         for topic in topics:
-            creator = CourseCreator()
-            series = creator.generate_series(topic)
+            creator = CourseCreator(topic)
+            skills = creator.generate_topic_skills()
+            outline = creator.generate_series_outline(skills)
 
-            # Generate course outline
-            for course in series:
-                outline = creator.generate_outline(topic, course)
+        #     # Generate course outline
+        #     for course in series:
+        #         outline = creator.generate_outline(topic, course)
 
-                # Generate page material
-                for item in outline:
-                    # TODO: Add a chapter introduction page
-                    chapter = item['chapterName']
-                    pages = item['pages']
+        #         # Generate page material
+        #         for item in outline:
+        #             # TODO: Add a chapter introduction page
+        #             chapter = item['chapterName']
+        #             pages = item['pages']
 
-                    for page in pages:
-                        creator.generate_page_material(topic, course, page)
-        print(colored("Done.", "green"))
+        #             for page in pages:
+        #                 creator.generate_page_material(topic, course, page)
+        print(colored("Complete.", "green"))
 
     except KeyboardInterrupt:
         print(colored("Exiting...", "red"))
