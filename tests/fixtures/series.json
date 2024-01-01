@@ -1,0 +1,93 @@
+[
+    {
+        "courseName": "Introduction to Ruby on Rails",
+        "modules": [
+            {
+                "name": "Ruby Language Fundamentals",
+                "skills": [
+                    "Proficiency in writing and understanding Ruby code",
+                    "Understanding of Ruby data types, operators, and control structures",
+                    "Knowledge of Ruby gems and modules"
+                ]
+            },
+            {
+                "name": "Web Development Basics",
+                "skills": [
+                    "Understanding of HTML and CSS",
+                    "Ability to manipulate and interact with the DOM using JavaScript",
+                    "Knowledge of client-server architecture and HTTP protocol"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Building Web Applications with Rails",
+        "modules": [
+            {
+                "name": "Rails Framework Essentials",
+                "skills": [
+                    "Understanding of MVC (Model-View-Controller) architecture",
+                    "Ability to create models, views, and controllers in Rails",
+                    "Knowledge of Rails routing and RESTful design principles"
+                ]
+            },
+            {
+                "name": "Database Management in Rails",
+                "skills": [
+                    "Proficiency in using ActiveRecord for database interactions",
+                    "Understanding of database migrations and associations in Rails",
+                    "Ability to optimize database queries and use indexing"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Testing and Debugging in Ruby on Rails",
+        "modules": [
+            {
+                "name": "Writing Tests and Test-Driven Development (TDD)",
+                "skills": [
+                    "Familiarity with writing unit tests and using testing frameworks (e.g., RSpec, MiniTest)",
+                    "Ability to debug and troubleshoot Ruby on Rails applications",
+                    "Understanding of test-driven development (TDD) practices"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Security and Performance in Rails Applications",
+        "modules": [
+            {
+                "name": "Web Security Best Practices",
+                "skills": [
+                    "Knowledge of common web security threats and best practices for securing Rails applications",
+                    "Understanding of authentication and authorization mechanisms in Rails"
+                ]
+            },
+            {
+                "name": "Optimizing Performance and Scalability",
+                "skills": [
+                    "Ability to optimize application performance and handle scalability issues"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Version Control and Deployment for Rails",
+        "modules": [
+            {
+                "name": "Version Control with Git",
+                "skills": [
+                    "Proficiency in using Git for version control"
+                ]
+            },
+            {
+                "name": "Deploying Rails Applications",
+                "skills": [
+                    "Familiarity with deploying Rails applications to web servers (e.g., Heroku, AWS)",
+                    "Understanding of continuous integration and deployment tools (e.g., Jenkins, Travis CI)"
+                ]
+            }
+        ]
+    }
+]
