@@ -31,12 +31,23 @@ class OpenAiHandler:
             try:
                 print(colored(f"JSON parsing failed, trying with yaml parser...", "yellow"))
                 # Trying with yaml parser if json parser fails
-                json_content = yaml.loads(code)
+                json_content = yaml.load(code)
 
                 return json_content
             except Exception as e:
                 print(colored(f"Error parsing markdown JSON: {e}", "yellow"))
                 return None
+            
+
+    def save_response_markdown(self, completion: OpenAI, save_path: str, save_file_name: str) -> None:
+        # Check paths
+        self._check_save_paths(save_path)
+
+        # Save reply
+        response_content = completion.choices[0].message.content
+        with open(f"{save_path}/{save_file_name}.md", 'w') as f:
+            f.write(response_content)
+            f.close()
         
 
     def send_prompt(self, messages: list[dict]) -> OpenAI:
@@ -68,9 +79,31 @@ class OpenAiHandler:
         
         return completion
     
+
+    def handle_send_json_prompt(self, messages: list[dict], retry=0):
+        completion = self.send_prompt(messages)
+        print(colored("Done.", "green"))
+
+        # Parse outline
+        response_content = completion.choices[0].message.content
+        json_content = self.parse_markdown_json_list(response_content)
+
+        # If JSON fails to parse, retry
+        if (json_content == None):
+            if (retry < 3):
+                print(colored("Retrying...", "yellow"))
+                retry += 1
+                self.handle_send_json_prompt(messages, retry)
+            else:
+                print(colored("Failed to parse JSON.", "red"))
+                return []
+
+        return completion, json_content
+    
+    
     def _save_prompt_payload(self, timestamp: str, messages: list[dict]) -> None:
         # Check paths
-        self.check_save_paths(self.payload_path)
+        self._check_save_paths(self.payload_path)
 
         # Save prompt payload log
         payload_file = f"{self.payload_path}/prompt-{timestamp}.json"
@@ -80,7 +113,7 @@ class OpenAiHandler:
 
     def _save_response_payload(self, timestamp: str, completion: OpenAI) -> None:
         # Check paths
-        self.check_save_paths(self.payload_path)
+        self._check_save_paths(self.payload_path)
 
         # Save payload log
         payload_file = f"{self.payload_path}/response-{timestamp}.json"
@@ -88,6 +121,6 @@ class OpenAiHandler:
             f.write(completion.model_dump_json())
             f.close()
 
-    def check_save_paths(self, path):
+    def _check_save_paths(self, path):
         if not (os.path.exists(path)):
             os.makedirs(path, exist_ok=True)

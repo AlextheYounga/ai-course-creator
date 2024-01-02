@@ -4,7 +4,7 @@ Please return your results in the following JSON format:
 ```json
 [
     {
-        "chapterName:": "An Interesting Chapter Name",
+        "chapterName": "An Interesting Chapter Name",
         "pages": [
             "Chapter Introduction Page",
             "First Page of Chapter",

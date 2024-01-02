@@ -14,3 +14,13 @@ def slugify(text: str):
     url_safe = re.sub(r"[^a-z0-9\s-]", "", slugified)
     
     return url_safe
+
+
+def get_prompt(filename, replace: list[tuple]) -> str:
+    prompt = open(f"src/data/prompts/{filename}.md", "r").read()
+
+    if (replace != None):
+        for item in replace:
+            prompt = prompt.replace(item[0], item[1])
+
+    return prompt
