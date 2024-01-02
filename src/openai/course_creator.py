@@ -4,7 +4,7 @@ from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file
 from utils import reset_chat
-from utils.chat_helpers import slugify
+from src.utils.chat_helpers import slugify
 import json
 
 class CourseCreator:
@@ -143,7 +143,7 @@ class CourseCreator:
         page_name_formatted = slugify(page)
 
         # Send to ChatGPT
-        print(colored(f"Generating {page_name_formatted} page material...", "yellow"))
+        print(colored(f"Generating '{page}' page material...", "yellow"))
         completion = self.ai_handler.send_prompt(messages)
         material = completion.choices[0].message.content
         print(colored("Done.", "green"))
@@ -157,7 +157,6 @@ class CourseCreator:
 
 
     def save_to_course_creator_path(self, save_file_name: str, data):
-        print(colored(f"Saving data to creator path...", "yellow"))
         save_file = f"{self.creator_path}/{save_file_name}.json"
         with open(save_file, 'w') as f:
             f.write(json.dumps(data))
@@ -196,6 +195,7 @@ def run():
             series = creator.generate_series_outline(skills)
 
             final_course_outline = []
+            print(colored(f"Begin optimizing course outline...", "yellow"))
             for course in series:
                 chapters = creator.generate_course_chapters(course, series)
                 course_object = {
@@ -205,6 +205,7 @@ def run():
                 final_course_outline.append(course_object)
 
             creator.save_to_course_creator_path("course-outline-final", final_course_outline)
+            print(colored(f"Course outline finalized.", "green"))
 
             for course in final_course_outline:
                 course_name = course['courseName']

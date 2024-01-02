@@ -5,7 +5,7 @@ import re
 from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
-from utils.chat_helpers import parse_markdown
+from src.utils.chat_helpers import parse_markdown
 from datetime import datetime
 from time import sleep
 

@@ -10,5 +10,7 @@ def parse_markdown(content: str) -> BeautifulSoup:
 
 
 def slugify(text: str):
-    url_safe = re.sub(r"[^a-z0-9\s-]", "", text)
-    return url_safe.lower().replace(" ", "-")
+    slugified = text.lower().replace(" ", "-")
+    url_safe = re.sub(r"[^a-z0-9\s-]", "", slugified)
+    
+    return url_safe
