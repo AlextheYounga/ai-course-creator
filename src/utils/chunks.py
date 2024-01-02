@@ -1,6 +1,6 @@
 import os
 import json
-from shared.tools.files import write_json_file
+from .files import write_json_file
 from collections import OrderedDict
 from itertools import islice
 
