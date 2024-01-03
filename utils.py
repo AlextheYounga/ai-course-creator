@@ -10,6 +10,9 @@ COURSE_MATERIAL_PATH = 'src/data/chat/course_material'
 
 
 def init():
+    if not os.path.exists('./.env'):
+       shutil.copy('.env.example', '.env')
+
     if not os.path.exists(LOG_PATH):
         print('Creating data/chat/payloads directory...')
         os.makedirs(LOG_PATH, exist_ok=True)
