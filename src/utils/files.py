@@ -1,6 +1,7 @@
 import os
 import json
 import zipfile
+from pathlib import Path
 
 def read_txt_file(filepath):
     if os.path.exists(filepath):
@@ -46,3 +47,10 @@ def zip_folder(folder_path, output_file):
                 file_path = os.path.join(root, file)
                 zipf.write(file_path, file_path[len_dir_path:])
 
+
+def scan_directory(directory):
+    all_files = []
+    pathlist = Path(directory).rglob('*')  # This will recursively go through all files and folders
+    for path in pathlist:
+         all_files.append(str(path))
+    return all_files
