@@ -3,7 +3,6 @@ from termcolor import colored
 from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file
-from utils import reset_chat
 from src.utils.chat_helpers import slugify, get_prompt
 import json
 
@@ -13,7 +12,8 @@ class OutlineCreator:
     def __init__(self, topic: str):
         # Initialize OpenAI
         topic_formatted = slugify(topic)
-        self.ai_handler = OpenAiHandler()
+        session_name = f"{topic} Outlines"
+        self.ai_handler = OpenAiHandler(session_name)
         self.topic = topic
         self.topic_formatted = topic_formatted
         self.course_material_path = f"src/data/chat/course_material/{topic_formatted}"
@@ -21,7 +21,8 @@ class OutlineCreator:
 
     def check_for_existing_outline(self):
         return os.path.exists(f"{self.course_material_path}/master-outline.json")
-    
+
+
     def generate_topic_skills(self):
         # Build message payload
         system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
@@ -34,11 +35,12 @@ class OutlineCreator:
 
         # Send to ChatGPT and parse JSON
         print(colored(f"Generating {self.topic} skills...", "yellow"))
-        completion, skills = self.ai_handler.handle_send_json_prompt(messages)
+        response = self.ai_handler.handle_send_json_prompt(messages)
+        skills = response['json']
 
         # Save responses
         save_file_name = f"skills-{self.topic_formatted}"
-        self.ai_handler.save_response_markdown(completion, self.course_material_path, save_file_name)
+        self.ai_handler.save_response_json(skills, self.course_material_path, save_file_name)
 
         return skills
 
@@ -58,11 +60,12 @@ class OutlineCreator:
 
         # Send to ChatGPT and parse JSON
         print(colored(f"Generating {self.topic} series outline...", "yellow"))
-        completion, outline = self.ai_handler.handle_send_json_prompt(messages)
+        response = self.ai_handler.handle_send_json_prompt(messages)
+        outline = response['json']
 
         # Save responses
         save_file_name = f"series-{self.topic_formatted}"
-        self.ai_handler.save_response_markdown(completion, self.course_material_path, save_file_name)
+        self.ai_handler.save_response_json(outline, self.course_material_path, save_file_name)
 
         return outline
 
@@ -88,13 +91,14 @@ class OutlineCreator:
 
         # Send to ChatGPT and parse JSON
         print(colored(f"Generating {course_name} series chapters...", "yellow"))
-        completion, chapters = self.ai_handler.handle_send_json_prompt(messages)
+        response = self.ai_handler.handle_send_json_prompt(messages)
+        chapters = response['json']
 
         # Save responses
         course_name_formatted = slugify(course_name)
         save_file_name = f"outline-{course_name_formatted}.md"
         save_path = f"{self.course_material_path}/course-outlines"
-        self.ai_handler.save_response_markdown(completion, save_path, save_file_name)
+        self.ai_handler.save_response_json(chapters, save_path, save_file_name)
 
         return chapters
 
@@ -115,7 +119,7 @@ def run():
         # Generate series list of courses
         for topic in topics:
             creator = OutlineCreator(topic)
-            
+
             existing = creator.check_for_existing_outline()
             if (existing):
                 print(colored(f"Course outline for {topic} already exists.", "yellow"))

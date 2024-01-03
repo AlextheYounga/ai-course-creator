@@ -1,0 +1,5 @@
+chat/course_material/**/*
+!chat/course_material
+*.log
+logs/*.json
+!chat/.gitkeep

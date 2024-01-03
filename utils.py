@@ -1,19 +1,22 @@
 import inquirer
 import os
-from datetime import datetime
 import shutil
+from datetime import datetime
 from src.utils.files import zip_folder
 
-PAYLOAD_PATH = 'src/data/chat/payloads'
-CREATOR_PATH = 'src/data/chat/course_material'
+LOG_PATH = 'src/data/chat/logs'
+COURSE_MATERIAL_PATH = 'src/data/chat/course_material'
+
 
 def init():
-    if not os.path.exists(PAYLOAD_PATH):
+    if not os.path.exists(LOG_PATH):
         print('Creating data/chat/payloads directory...')
-        os.mkdir(PAYLOAD_PATH)
-    if not os.path.exists(CREATOR_PATH):
+        os.makedirs(LOG_PATH, exist_ok=True)
+        open(f"{LOG_PATH}/chat.log", 'a').close()
+
+    if not os.path.exists(COURSE_MATERIAL_PATH):
         print('Creating data/chat/course_material directory...')
-        os.mkdir(CREATOR_PATH)
+        os.makedirs(COURSE_MATERIAL_PATH, exist_ok=True)
 
     print("Project initialized.")
 
@@ -27,10 +30,13 @@ def save_chat():
 
 def reset_chat():
     print('Nuking chat...')
-    shutil.rmtree(PAYLOAD_PATH)
-    shutil.rmtree(CREATOR_PATH)
+    shutil.rmtree(COURSE_MATERIAL_PATH)
     init()
-    
+
+
+def clear_logs():
+    open(f"{LOG_PATH}/chat.log", 'w').close()
+
 
 def main():
     choices = [
@@ -38,8 +44,9 @@ def main():
                       message="Select utility command.",
                       choices=[
                           'Initialize Project',
+                          'Save Chat',
                           'Reset Chat',
-                          'Save Chat'
+                          'Clear Logs'
                       ]),
     ]
 
@@ -49,6 +56,8 @@ def main():
         init()
     elif answer == 'Reset Chat':
         reset_chat()
+    elif answer == 'Clear Logs':
+        clear_logs()
     elif answer == 'Save Chat':
         save_chat()
     else:

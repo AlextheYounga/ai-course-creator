@@ -7,11 +7,13 @@ from utils import reset_chat
 from src.utils.chat_helpers import slugify, get_prompt
 import json
 
+
 class PageMaterialCreator:
     def __init__(self, topic: str):
         # Initialize OpenAI
         topic_formatted = slugify(topic)
-        self.ai_handler = OpenAiHandler()
+        session_name = f"{topic} Page Material"
+        self.ai_handler = OpenAiHandler(session_name)
         self.topic = topic
         self.topic_formatted = topic_formatted
         self.course_material_path = f"src/data/chat/course_material/{topic_formatted}"
@@ -21,7 +23,7 @@ class PageMaterialCreator:
     def read_course_outline(self):
         if not os.path.exists(self.outline_path):
             raise Exception("Course outline not found.")
-        
+
         try:
             return read_json_file(self.outline_path)
         except Exception as e:
@@ -36,6 +38,7 @@ class PageMaterialCreator:
 
         saved_material_file = f"{self.course_material_path}/content/{course_name_formatted}/{chapter_name_formatted}/page-{page_name_formatted}.md"
         return os.path.exists(saved_material_file)
+
 
     def generate_page_material(self, course_name, chapter: dict, page: str):
         # Build message payload
@@ -74,7 +77,7 @@ class PageMaterialCreator:
 def run():
     try:
         topics = read_json_file("src/data/topics.json")
-        
+
         # Generate series list of courses
         for topic in topics:
             print(colored(f"Begin generating {topic} page material...", "yellow"))
