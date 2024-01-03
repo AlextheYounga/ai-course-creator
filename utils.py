@@ -2,6 +2,7 @@ import inquirer
 import os
 import shutil
 from datetime import datetime
+from src.utils.chat_helpers import slugify
 from src.utils.files import zip_folder
 
 LOG_PATH = 'src/data/chat/logs'
@@ -24,8 +25,20 @@ def init():
 def save_chat():
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     filename = f"chat-{timestamp}.zip"
+    chat_name = None
+
+    try:
+        chat_name = inquirer.text(message="Enter chat name")
+    except:
+        print(f"No chat name provided. Using default {filename}")
+
+    if chat_name:
+        filename = f"chat-{slugify(chat_name)}.zip"
+
     zip_folder("src/data/chat/", f"{filename}")
     os.rename(filename, f"storage/{filename}")
+    
+    print(f"Chat saved to {filename}")  
 
 
 def reset_chat():
