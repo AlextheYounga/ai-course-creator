@@ -74,7 +74,7 @@ class PageMaterialCreator:
 
 
 
-def run():
+def run_page_creator():
     try:
         topics = read_json_file("src/data/topics.json")
 
@@ -107,4 +107,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    run_page_creator()

@@ -112,7 +112,7 @@ class OutlineCreator:
 
 
 
-def run():
+def run_outline_creator():
     try:
         topics = read_json_file("src/data/topics.json")
 
@@ -148,4 +148,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    run_outline_creator()

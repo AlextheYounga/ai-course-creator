@@ -1,0 +1,50 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple AJAX with Flask</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <h1>Simple AJAX Request with Flask</h1>
+
+    <button id="ajaxButton">Send AJAX Request</button>
+
+    <script>
+        function pingServer() {
+            try {
+                $.ajax({
+                    url: '/ajax_request',  // the endpoint on your Flask app
+                    type: 'POST',  // http method
+                    contentType: 'application/json',  // type of data being sent
+                    data: JSON.stringify({ key: 'value' }),  // the data to send, change 'key' and 'value' to what you need
+                    success: function (response) {  // A function to be called if the request succeeds
+                        console.log(response);
+                        alert('Server responded with: ' + response.response);
+                    },
+                    error: function (xhr) {
+                        // Handle error
+                        console.error("Error occurred: ", xhr);
+                    }
+                });
+            } catch (error) {
+                console.error("Error occurred: ", xhr);
+            }
+        }
+
+        $(document).ready(function () {
+            window.setTimeout(pingServer, 5000);
+            // $('#ajaxButton').click(function(){
+            //     });
+        });
+    </script>
+
+</body>
+
+</html>
