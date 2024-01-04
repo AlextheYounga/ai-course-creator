@@ -1,11 +1,10 @@
 import os
 from termcolor import colored
-from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file
-from utils import reset_chat
 from src.utils.chat_helpers import slugify, get_prompt
 import json
+import shutil
 
 
 class PageMaterialCreator:
@@ -19,6 +18,10 @@ class PageMaterialCreator:
         self.course_material_path = f"src/data/chat/course_material/{topic_formatted}"
         self.outline_path = f"{self.course_material_path}/master-outline.json"
 
+    def setup(self):
+        # Nuke content if it exists
+        if os.path.exists(f"{self.course_material_path}/content"):
+            shutil.rmtree(f"{self.course_material_path}/content")
 
     def read_course_outline(self):
         if not os.path.exists(self.outline_path):
@@ -29,6 +32,7 @@ class PageMaterialCreator:
         except Exception as e:
             print(colored(f"Error reading course outline: {e}", "red"))
             return None
+
 
 
     def check_for_existing_material(self, course_name, chapter: dict, page: str):
@@ -42,15 +46,24 @@ class PageMaterialCreator:
 
     def generate_page_material(self, course_name, chapter: dict, page: str):
         # Build message payload
-        system_prompt = get_prompt('system/page-material-prep', [
+        general_system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
+        interactives_system_prompt = get_prompt('system/interactives-prep', None)
+        material_system_prompt = get_prompt('system/page-material-prep', [
             ("{topic}", self.topic),
             ("{course_name}", course_name),
             ("{chapter}", json.dumps(chapter))
         ])
+
+        combined_system_prompt = "\n".join([
+            general_system_prompt,
+            interactives_system_prompt,
+            material_system_prompt
+        ])
+
         user_prompt = get_prompt('user/page-material', [("{page_name}", page)])
 
         messages = [
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": combined_system_prompt},
             {"role": "user", "content": user_prompt}
         ]
 
@@ -83,6 +96,7 @@ def run_page_creator():
             print(colored(f"Begin generating {topic} page material...", "yellow"))
 
             creator = PageMaterialCreator(topic)
+            creator.setup()
             outline = creator.read_course_outline()
 
             for course in outline:

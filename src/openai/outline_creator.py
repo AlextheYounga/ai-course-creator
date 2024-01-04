@@ -47,14 +47,21 @@ class OutlineCreator:
 
     def generate_series_outline(self, skills: list[dict]):
         # Build message payload
-        system_prompt = get_prompt('system/skills-prep', [
+        general_system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
+        skills_system_prompt = get_prompt('system/skills-prep', [
             ("{topic}", self.topic),
             ("{skills}", json.dumps(skills))
         ])
+
         user_prompt = get_prompt('user/series-outline', [("{topic}", self.topic)])
 
+        combined_system_prompt = "\n".join([
+            general_system_prompt,
+            skills_system_prompt,
+        ])
+
         messages = [
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": combined_system_prompt},
             {"role": "user", "content": user_prompt}
         ]
 
@@ -75,17 +82,24 @@ class OutlineCreator:
         modules = course['modules']
 
         # Build message payload
-        system_prompt = get_prompt('system/chapters-prep', [
+        general_system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
+        chapters_system_prompt = get_prompt('system/chapters-prep', [
             ("{topic}", self.topic),
             ("{series}", json.dumps(series))
         ])
+
+        combined_system_prompt = "\n".join([
+            general_system_prompt,
+            chapters_system_prompt,
+        ])
+
         user_prompt = get_prompt('user/chapters-outline', [
             ("{course_name}", course_name),
             ("{modules}", json.dumps(modules))
         ])
 
         messages = [
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": combined_system_prompt},
             {"role": "user", "content": user_prompt}
         ]
 
