@@ -1,4 +1,4 @@
 import json
-from src.utils.compile_output import compile_output
+from src.utils.compile_course_material import compile_course_material
 
-print(json.dumps(compile_output(), indent=1))
+print(json.dumps(compile_course_material(), indent=1))

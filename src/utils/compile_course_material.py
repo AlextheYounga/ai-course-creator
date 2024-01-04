@@ -3,7 +3,7 @@ from src.utils.chat_helpers import slugify
 from src.utils.files import read_json_file, write_json_file, scan_directory
 
 
-def compile_output():
+def compile_course_material():
     compiled_output = []
     output_folder = "src/data/chat/course_material"
     topics_json = read_json_file('src/data/topics.json')
@@ -108,5 +108,5 @@ def compile_output():
             topic_object['courses'].append(course_object)
         compiled_output.append(topic_object)
 
-    write_json_file(f"{output_folder}/compiled-output.json", topic_object)
+    write_json_file(f"{output_folder}/compiled-output.json", compiled_output)
     return compiled_output
