@@ -1,4 +1,4 @@
 import json
-from app.controllers.output_controller import output_controller
+from src.utils.compile_output import compile_output
 
-print(json.dumps(output_controller(), indent=1))
+print(json.dumps(compile_output(), indent=1))

@@ -1,18 +1,16 @@
 # flask --app app.app run
-from flask import Flask
-from app.middleware import index_page
+from flask import Flask, jsonify
+from app.middleware import index_page, ajax_fetch_output
 
 app = Flask(__name__)
-
 
 @app.route("/")
 def home():
     return index_page()
 
-# @app.post("/generate-outlines")
-# def generate_outlines():
-#     return "<p>Hello, World!</p>"
+@app.route('/ajax-fetch-output', methods=['POST'])
+def fetch_output():
+    data = ajax_fetch_output()
 
-# @app.route("/")
-# def home():
-#     return index_page()
+    # Returning a response back to the AJAX call
+    return jsonify(data)

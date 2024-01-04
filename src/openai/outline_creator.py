@@ -96,7 +96,7 @@ class OutlineCreator:
 
         # Save responses
         course_name_formatted = slugify(course_name)
-        save_file_name = f"outline-{course_name_formatted}.md"
+        save_file_name = f"outline-{course_name_formatted}"
         save_path = f"{self.course_material_path}/course-outlines"
         self.ai_handler.save_response_json(chapters, save_path, save_file_name)
 
