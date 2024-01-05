@@ -31,6 +31,9 @@ def write_txt_file(filepath, lst, overwrite=False):
 
 
 def write_json_file(path, data):
+    if not (os.path.exists(path)):
+        os.makedirs(path, exist_ok=True)
+
     with open(path, 'w') as json_file:
         json.dump(data, json_file)
 
@@ -38,6 +41,16 @@ def write_json_file(path, data):
 def read_json_file(path):
     txtfile = open(path, "r")
     return json.loads(txtfile.read())
+
+
+def write_markdown_file(path, content):
+    if not (os.path.exists(path)):
+        os.makedirs(path, exist_ok=True)
+
+    with open(f"{path}.md", 'w') as f:
+        f.write(content)
+        f.close()
+
 
 def zip_folder(folder_path, output_file):
     with zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED) as zipf:

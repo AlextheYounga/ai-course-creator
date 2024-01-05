@@ -2,7 +2,7 @@ import os
 from termcolor import colored
 from openai import OpenAI
 from .openai_handler import OpenAiHandler
-from src.utils.files import read_json_file
+from src.utils.files import read_json_file, write_json_file
 from src.utils.chat_helpers import slugify, get_prompt
 import inquirer
 import json
@@ -20,36 +20,29 @@ class OutlineCreator:
         self.course_material_path = f"src/data/chat/course_material/{topic_formatted}"
 
 
-    def check_for_existing_outline(self):
-        return os.path.exists(f"{self.course_material_path}/master-outline.json")
+    def check_for_existing_outlines(self):
+        existing = os.path.exists(f"{self.course_material_path}/master-outline.json")
+        if (existing):
+            print(colored(f"Course outline for {self.topic} already exists.", "yellow"))
+            return False
+        return True
 
 
-    def generate_topic_skills(self):
+    def build_skills_prompt(self):
         # Build message payload
         system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
         user_prompt = get_prompt('user/topic-skills', [("{topic}", self.topic)])
 
-        messages = [
+        return [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
         ]
 
-        # Send to ChatGPT and parse JSON
-        print(colored(f"Generating {self.topic} skills...", "yellow"))
-        response = self.ai_handler.handle_send_json_prompt(messages)
-        skills = response['json']
 
-        # Save responses
-        save_file_name = f"skills-{self.topic_formatted}"
-        self.ai_handler.save_response_json(skills, self.course_material_path, save_file_name)
-
-        return skills
-
-
-    def generate_series_outline(self, skills: list[dict]):
+    def build_series_prompt(self, skills: list[dict]):
         # Build message payload
         general_system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
-        skills_system_prompt = get_prompt('system/skills-prep', [
+        skills_system_prompt = get_prompt('system/tune-skills', [
             ("{topic}", self.topic),
             ("{skills}", json.dumps(skills))
         ])
@@ -61,30 +54,16 @@ class OutlineCreator:
             skills_system_prompt,
         ])
 
-        messages = [
+        return [
             {"role": "system", "content": combined_system_prompt},
             {"role": "user", "content": user_prompt}
         ]
 
-        # Send to ChatGPT and parse JSON
-        print(colored(f"Generating {self.topic} series outline...", "yellow"))
-        response = self.ai_handler.handle_send_json_prompt(messages)
-        outline = response['json']
 
-        # Save responses
-        save_file_name = f"series-{self.topic_formatted}"
-        self.ai_handler.save_response_json(outline, self.course_material_path, save_file_name)
-
-        return outline
-
-
-    def generate_chapter_outlines(self, course: dict, series: list[dict]):
-        course_name = course['courseName']
-        modules = course['modules']
-
+    def build_chapter_outlines_prompt(self, course_name: str, series: list[dict], modules: list[dict]):
         # Build message payload
         general_system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
-        chapters_system_prompt = get_prompt('system/chapters-prep', [
+        chapters_system_prompt = get_prompt('system/tune-chapters', [
             ("{topic}", self.topic),
             ("{series}", json.dumps(series))
         ])
@@ -99,65 +78,96 @@ class OutlineCreator:
             ("{modules}", json.dumps(modules))
         ])
 
-        messages = [
+        return [
             {"role": "system", "content": combined_system_prompt},
             {"role": "user", "content": user_prompt}
         ]
 
-        # Send to ChatGPT and parse JSON
-        print(colored(f"Generating {course_name} series chapters...", "yellow"))
-        response = self.ai_handler.handle_send_json_prompt(messages)
-        chapters = response['json']
 
-        # Save responses
+    def handle_topics_response(self):
+        pass
+
+
+    def handle_series_response(self):
+        pass
+
+
+    def handle_chapters_response(self):
+        pass
+
+
+    def generate_topic_skills(self):
+        print(colored(f"Generating {self.topic} skills...", "yellow"))
+        save_file_name = f"{self.course_material_path}/skills-{self.topic_formatted}"
+        messages = self.build_skills_prompt()
+        completion = self.ai_handler.send_prompt(messages)
+        json_content = self.handle_topics_response(completion)
+        write_json_file(save_file_name, json_content)
+        return json_content
+
+
+    def generate_series_outline(self):
+        print(colored(f"Generating {self.topic} series outline...", "yellow"))
+        save_file_name = f"{self.course_material_path}/series-{self.topic_formatted}"
+        messages = self.build_series_prompt()
+        completion = self.ai_handler.send_prompt(messages)
+        json_content = self.handle_series_response(completion)
+        write_json_file(save_file_name, json_content)
+        return json_content
+
+
+    def generate_chapter_outlines(self, course: dict, series: list[dict]):
+        print(colored(f"Generating {course_name} series chapters...", "yellow"))
+        course_name = course['courseName']
+        modules = course['modules']
+
         course_name_formatted = slugify(course_name)
         save_file_name = f"outline-{course_name_formatted}"
         save_path = f"{self.course_material_path}/course-outlines"
-        self.ai_handler.save_response_json(chapters, save_path, save_file_name)
+        save_file_path = f"{save_path}/{save_file_name}.json"
 
-        return chapters
+        messages = self.build_chapter_outlines_prompt(course_name, series, modules)
+        completion = self.ai_handler.send_prompt(messages)
+        json_content = self.handle_chapters_response(completion)
 
-
-    def save_master_outline(self, data):
-        save_file = f"{self.course_material_path}/master-outline.json"
-        with open(save_file, 'w') as f:
-            f.write(json.dumps(data))
-            f.close()
+        write_json_file(save_file_path, json_content)
+        return json_content
 
 
-
+    def generate_master_outline(self, series: list[dict]):
+        print(colored("\nBegin building master course outline...", "yellow"))
+        master_outline = []
+        for course in series:
+            chapters = self.generate_chapter_outlines(course, series)
+            course_object = {
+                "courseName": course['courseName'],
+                "chapters": chapters
+            }
+            master_outline.append(course_object)
+        write_json_file(f"{self.course_material_path}/master-outline.json", master_outline)
+        print(colored(f"Course outline finalized.", "green"))
+        return master_outline
 
 
 def _process_topics(topics: list[str]):
     # Generate series list of courses
     for topic in topics:
         creator = OutlineCreator(topic)
+        existing = creator.check_for_existing_outlines()
 
-        existing = creator.check_for_existing_outline()
-        if (existing):
-            print(colored(f"Course outline for {topic} already exists.", "yellow"))
-            continue
+        if not existing:
+            skills = creator.generate_topic_skills()
+            series = creator.generate_series_outline(skills)
+            master_outline = creator.generate_master_outline(series)
 
-        skills = creator.generate_topic_skills()
-        series = creator.generate_series_outline(skills)
+            course_list = [c['courseName'] for c in master_outline]
+            print(colored("Course list: ", "green"))
+            print(colored("\n".join(course_list), "green"))
 
-        master_outline = []
-        print(colored("\nBegin optimizing course outline...", "yellow"))
-        for course in series:
-            chapters = creator.generate_chapter_outlines(course, series)
-            course_object = {
-                "courseName": course['courseName'],
-                "chapters": chapters
-            }
-            master_outline.append(course_object)
-
-        creator.save_master_outline(master_outline)
-        print(colored(f"Course outline finalized.", "green"))
-
-    print(colored("All outlines complete.", "green"))
+    print(colored("\nAll outlines complete.", "green"))
 
 
-def run_outline_creator():
+def create_outlines():
     try:
         topics = read_json_file("src/data/topics.json")
         topic_choices = ['All'] + topics
@@ -182,4 +192,4 @@ def run_outline_creator():
 
 
 if __name__ == "__main__":
-    run_outline_creator()
+    create_outlines()

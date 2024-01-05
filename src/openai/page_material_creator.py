@@ -1,7 +1,7 @@
 import os
 from termcolor import colored
 from .openai_handler import OpenAiHandler
-from src.utils.files import read_json_file
+from src.utils.files import read_json_file, write_markdown_file
 from src.utils.chat_helpers import slugify, get_prompt
 import inquirer
 import json
@@ -24,7 +24,8 @@ class PageMaterialCreator:
         if os.path.exists(f"{self.course_material_path}/content"):
             shutil.rmtree(f"{self.course_material_path}/content")
 
-    def read_course_outline(self):
+
+    def get_course_outline(self):
         if not os.path.exists(self.outline_path):
             raise Exception("Course outline not found.")
 
@@ -44,11 +45,11 @@ class PageMaterialCreator:
         return os.path.exists(saved_material_file)
 
 
-    def compile_page_material_prompts(self, course_name, chapter: dict, page: str):
+    def build_page_material_prompt(self, course_name, chapter: dict, page: str):
         # Combine multiple system prompts into one
         general_system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
-        interactives_system_prompt = get_prompt('system/interactives-prep', None)
-        material_system_prompt = get_prompt('system/page-material-prep', [
+        interactives_system_prompt = get_prompt('system/tune-interactives', None)
+        material_system_prompt = get_prompt('system/tune-page-material', [
             ("{topic}", self.topic),
             ("{course_name}", course_name),
             ("{chapter}", json.dumps(chapter))
@@ -62,21 +63,36 @@ class PageMaterialCreator:
 
         user_prompt = get_prompt('user/page-material', [("{page_name}", page)])
 
-        return user_prompt, combined_system_prompt
-
-
-    def generate_page_material(self, course_name, chapter: dict, page: str):
         # Build message payload
-        user_prompt, system_prompt = self.compile_page_material_prompts(course_name, chapter, page)
-
-        messages = [
-            {"role": "system", "content": system_prompt},
+        return [
+            {"role": "system", "content": combined_system_prompt},
             {"role": "user", "content": user_prompt}
         ]
 
+
+    def create_pages_from_outline(self, outline):
+        for course in outline:
+            course_name = course['courseName']
+            chapters = course['chapters']
+
+            for chapter in chapters:
+                pages = chapter['pages']
+
+                for page in pages:
+                    existing = self.check_for_existing_material(course_name, chapter, page)
+                    if (existing):
+                        print(colored(f"Skipping existing '{page}' page material...", "yellow"))
+                        continue
+
+                    self.generate_page_material(course_name, chapter, page)
+
+
+    def generate_page_material(self, course_name, chapter: dict, page: str):
         course_name_formatted = slugify(course_name)
         chapter_name_formatted = slugify(chapter['chapterName'])
         page_name_formatted = slugify(page)
+
+        messages = self.build_page_material_prompt(course_name, chapter, page)
 
         # Send to ChatGPT
         print(colored(f"Generating '{page}' page material...", "yellow"))
@@ -86,12 +102,10 @@ class PageMaterialCreator:
 
         # Save responses
         save_file_name = f"page-{page_name_formatted}"
-        save_path = f"{self.course_material_path}/content/{course_name_formatted}/{chapter_name_formatted}"
-        self.ai_handler.save_response_markdown(completion, save_path, save_file_name)
+        save_path = f"{self.course_material_path}/content/{course_name_formatted}/{chapter_name_formatted}/{save_file_name}"
+        write_markdown_file(save_path, material)
 
         return material
-
-
 
 
 
@@ -104,22 +118,9 @@ def _process_topics(topics: list[str]):
 
         creator = PageMaterialCreator(topic)
         creator.setup()
-        outline = creator.read_course_outline()
+        outline = creator.get_course_outline()
+        creator.create_pages_from_outline(outline)
 
-        for course in outline:
-            course_name = course['courseName']
-            chapters = course['chapters']
-
-            for chapter in chapters:
-                pages = chapter['pages']
-
-                for page in pages:
-                    existing = creator.check_for_existing_material(course_name, chapter, page)
-                    if (existing):
-                        print(colored(f"Skipping existing '{page}' page material...", "yellow"))
-                        continue
-
-                    creator.generate_page_material(course_name, chapter, page)
 
     print(colored("Complete.", "green"))
 
