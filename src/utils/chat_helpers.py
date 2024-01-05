@@ -1,6 +1,7 @@
 import markdown
 import re
 from bs4 import BeautifulSoup
+from typing import Optional
 
 def parse_markdown(content: str) -> BeautifulSoup:
     html = markdown.markdown(content)
@@ -16,7 +17,7 @@ def slugify(text: str):
     return url_safe
 
 
-def get_prompt(filename, replace: list[tuple] | None) -> str:
+def get_prompt(filename, replace: Optional(list[tuple])) -> str:
     prompt = open(f"src/data/prompts/{filename}.md", "r").read()
 
     if (replace != None):
