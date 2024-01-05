@@ -3,6 +3,7 @@ from termcolor import colored
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file
 from src.utils.chat_helpers import slugify, get_prompt
+import inquirer
 import json
 import shutil
 
@@ -87,34 +88,55 @@ class PageMaterialCreator:
 
 
 
+
+def _process_topics(topics: list[str]):
+    topics = read_json_file("src/data/topics.json")
+
+    # Generate series list of courses
+    for topic in topics:
+        print(colored(f"Begin generating {topic} page material...", "yellow"))
+
+        creator = PageMaterialCreator(topic)
+        creator.setup()
+        outline = creator.read_course_outline()
+
+        for course in outline:
+            course_name = course['courseName']
+            chapters = course['chapters']
+
+            for chapter in chapters:
+                pages = chapter['pages']
+
+                for page in pages:
+                    existing = creator.check_for_existing_material(course_name, chapter, page)
+                    if (existing):
+                        print(colored(f"Skipping existing '{page}' page material...", "yellow"))
+                        continue
+
+                    creator.generate_page_material(course_name, chapter, page)
+
+    print(colored("Complete.", "green"))
+
+
 def run_page_creator():
     try:
         topics = read_json_file("src/data/topics.json")
+        topic_choices = ['All'] + topics
 
-        # Generate series list of courses
-        for topic in topics:
-            print(colored(f"Begin generating {topic} page material...", "yellow"))
+        choices = [
+            inquirer.List('topic',
+                          message="Which topic would you like to generate pages for?",
+                          choices=topic_choices),
+        ]
 
-            creator = PageMaterialCreator(topic)
-            creator.setup()
-            outline = creator.read_course_outline()
+        choice = inquirer.prompt(choices)
+        if choice != None:
+            answer = choice['topic']
 
-            for course in outline:
-                course_name = course['courseName']
-                chapters = course['chapters']
-
-                for chapter in chapters:
-                    pages = chapter['pages']
-
-                    for page in pages:
-                        existing = creator.check_for_existing_material(course_name, chapter, page)
-                        if (existing):
-                            print(colored(f"Skipping existing '{page}' page material...", "yellow"))
-                            continue
-
-                        creator.generate_page_material(course_name, chapter, page)
-
-        print(colored("Complete.", "green"))
+            if answer == 'All':
+                _process_topics(topics)
+            else:
+                _process_topics([answer])
 
     except KeyboardInterrupt:
         print(colored("Exiting...", "red"))

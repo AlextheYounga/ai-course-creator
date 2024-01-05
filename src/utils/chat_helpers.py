@@ -17,7 +17,7 @@ def slugify(text: str):
     return url_safe
 
 
-def get_prompt(filename, replace: Optional(list[tuple])) -> str:
+def get_prompt(filename, replace: Optional[list[tuple]]) -> str:
     prompt = open(f"src/data/prompts/{filename}.md", "r").read()
 
     if (replace != None):

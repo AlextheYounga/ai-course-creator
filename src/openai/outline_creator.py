@@ -4,6 +4,7 @@ from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file
 from src.utils.chat_helpers import slugify, get_prompt
+import inquirer
 import json
 
 
@@ -126,36 +127,55 @@ class OutlineCreator:
 
 
 
+
+def _process_topics(topics: list[str]):
+    # Generate series list of courses
+    for topic in topics:
+        creator = OutlineCreator(topic)
+
+        existing = creator.check_for_existing_outline()
+        if (existing):
+            print(colored(f"Course outline for {topic} already exists.", "yellow"))
+            continue
+
+        skills = creator.generate_topic_skills()
+        series = creator.generate_series_outline(skills)
+
+        master_outline = []
+        print(colored("\nBegin optimizing course outline...", "yellow"))
+        for course in series:
+            chapters = creator.generate_chapter_outlines(course, series)
+            course_object = {
+                "courseName": course['courseName'],
+                "chapters": chapters
+            }
+            master_outline.append(course_object)
+
+        creator.save_master_outline(master_outline)
+        print(colored(f"Course outline finalized.", "green"))
+
+    print(colored("All outlines complete.", "green"))
+
+
 def run_outline_creator():
     try:
         topics = read_json_file("src/data/topics.json")
+        topic_choices = ['All'] + topics
 
-        # Generate series list of courses
-        for topic in topics:
-            creator = OutlineCreator(topic)
+        choices = [
+            inquirer.List('topic',
+                          message="Which topic would you like to generate outlines for?",
+                          choices=topic_choices),
+        ]
 
-            existing = creator.check_for_existing_outline()
-            if (existing):
-                print(colored(f"Course outline for {topic} already exists.", "yellow"))
-                continue
+        choice = inquirer.prompt(choices)
+        if choice != None:
+            answer = choice['topic']
 
-            skills = creator.generate_topic_skills()
-            series = creator.generate_series_outline(skills)
-
-            master_outline = []
-            print(colored("\nBegin optimizing course outline...", "yellow"))
-            for course in series:
-                chapters = creator.generate_chapter_outlines(course, series)
-                course_object = {
-                    "courseName": course['courseName'],
-                    "chapters": chapters
-                }
-                master_outline.append(course_object)
-
-            creator.save_master_outline(master_outline)
-            print(colored(f"Course outline finalized.", "green"))
-
-        print(colored("All outlines complete.", "green"))
+            if answer == 'All':
+                _process_topics(topics)
+            else:
+                _process_topics([answer])
 
     except KeyboardInterrupt:
         print(colored("Exiting...", "red"))
