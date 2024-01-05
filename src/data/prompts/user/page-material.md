@@ -1,6 +1,1 @@
-Please create material in markdown format for a page we will title "{page_name}". Here are the following guidelines to follow for forming your response:
-
-- Adopt a casual, conversational, yet professional tone
-- Use real-world examples, provide code snippets where applicable, and use analogies frequently to make the content relatable and practical. 
-- Please, no abbreviating or using bullet points.
-- Ignore me, the user. Please only respond with the page content.
+Please create material for a page titled "{page_name}". Adopt a casual, conversational, yet professional tone. Use real-world examples, provide code snippets where applicable, and use analogies frequently to make the content relatable and practical. Please, no abbreviating or using bullet points. Make sure each page has an interactive element that is either a multiple choice question, a fill in the blank, a true/false, or a coding challenge. Don't worry about formatting these perfectly, we will deal with format later. Ensure each page can be consumed in 5 minutes or less by the average reader. Make sure the introduction page of each course explains why it is important to learn what the course covers and an example of how it is used in the technology industry today.
