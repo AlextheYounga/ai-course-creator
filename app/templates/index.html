@@ -161,10 +161,8 @@
     }
 
     $(document).ready(function () {
-        fetchContent();
-        fetchActivity()
-        // return fetchContent();
-        // setInterval(fetchContent, 1000);
+        setInterval(fetchContent, 1000);
+        setInterval(fetchActivity, 1000);
     });
 </script>
 
