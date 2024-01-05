@@ -63,7 +63,6 @@
                         </div>
                     </div>
                 </div>
-
             </main>
 
             {% include 'partials/feed.html' %}
@@ -73,9 +72,13 @@
 </body>
 
 <script>
+    // jQuery, what a blast from the past...
+    const rowIds = []
+    const logIds = []
 
     function displayTableData(data) {
         const rows = translateToTableRows(data)
+
 
         const tableBody = $('#table-body')
         const tableGroup = $('#initial-table-group')
@@ -83,6 +86,8 @@
 
         let currentGroup = null
         for (const row of rows) {
+            if (rowIds.includes(row.id)) continue
+
             if (row.group !== currentGroup) {
                 const newGroup = tableGroup.clone()
                 newGroup.removeClass('hidden')
@@ -100,6 +105,8 @@
             newRow.find('td').eq(3).text(row.page)
             newRow.find('td').eq(4).find('a').attr('href', row.link)
             tableBody.append(newRow)
+
+            rowIds.push(row.id)
         }
     }
 
@@ -108,6 +115,9 @@
         const logLine = $('#initial-log-line')
 
         for (line of data) {
+            const logId = line.substring(0, 23) // date timestamp
+            if (logIds.includes(logId)) continue
+
             const lineColor = logColor(line)
             const displayText = displayLogText(line)
             const newLine = logLine.clone()
@@ -115,8 +125,9 @@
             newLine.removeClass('hidden')
             newLine.addClass(lineColor)
             newLine.text(displayText)
-
             logList.append(newLine)
+
+            logIds.push(logId)
         }
     }
 

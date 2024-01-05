@@ -11,6 +11,7 @@ function translateToTableRows(data) {
 
                 for (page of chapter.pages) {
                     rows.push({
+                        id:`${course.slug}-${chapter.slug}-${page.slug}`,
                         group: `Course: ${course.courseName}`,
                         topic: topic.topic,
                         course: course.courseName,
