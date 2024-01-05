@@ -1,4 +1,4 @@
 import json
-from src.utils.compile_course_material import compile_course_material
+from src.mapping.map_course_material_to_server_payload import *
 
-print(json.dumps(compile_course_material(), indent=1))
+print(json.dumps(map_course_material_to_server_payload(), indent=1))

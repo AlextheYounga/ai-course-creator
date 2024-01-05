@@ -35,7 +35,6 @@ class PageMaterialCreator:
             return None
 
 
-
     def check_for_existing_material(self, course_name, chapter: dict, page: str):
         course_name_formatted = slugify(course_name)
         chapter_name_formatted = slugify(chapter['chapterName'])
@@ -45,8 +44,8 @@ class PageMaterialCreator:
         return os.path.exists(saved_material_file)
 
 
-    def generate_page_material(self, course_name, chapter: dict, page: str):
-        # Build message payload
+    def compile_page_material_prompts(self, course_name, chapter: dict, page: str):
+        # Combine multiple system prompts into one
         general_system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
         interactives_system_prompt = get_prompt('system/interactives-prep', None)
         material_system_prompt = get_prompt('system/page-material-prep', [
@@ -63,8 +62,15 @@ class PageMaterialCreator:
 
         user_prompt = get_prompt('user/page-material', [("{page_name}", page)])
 
+        return user_prompt, combined_system_prompt
+
+
+    def generate_page_material(self, course_name, chapter: dict, page: str):
+        # Build message payload
+        user_prompt, system_prompt = self.compile_page_material_prompts(course_name, chapter, page)
+
         messages = [
-            {"role": "system", "content": combined_system_prompt},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
         ]
 
