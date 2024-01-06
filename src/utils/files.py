@@ -51,7 +51,6 @@ def write_markdown_file(path, content):
         f.write(content)
         f.close()
 
-
 def zip_folder(folder_path, output_file):
     with zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
         len_dir_path = len(folder_path)

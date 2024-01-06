@@ -4,6 +4,8 @@ from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file, write_json_file
 from src.utils.chat_helpers import slugify, get_prompt
+from bs4 import BeautifulSoup
+import markdown
 import inquirer
 import json
 
@@ -84,12 +86,55 @@ class OutlineCreator:
         ]
 
 
-    def handle_topics_response(self):
-        pass
+    def handle_topics_response(self, content: str):
+        soup = BeautifulSoup(content, 'html.parser')
+        data_block = soup.find("div", {'id': "data"})
+        html_string = markdown.markdown(data_block.get_text())
+        data_soup = BeautifulSoup(html_string, 'html.parser')
+
+        json_list = []
+        ol = data_soup.find("ol")
+        for item in ol.find_all("li"):
+            if item.findChildren("li") == []: continue
+
+            header = item.find("p") or item.find("strong")
+            children_ul = item.find("ul")
+            children = [li.get_text() for li in children_ul.find_all("li")]
+            outline_item = {"header": header.get_text(), "children": children}
+            json_list.append(outline_item)
+
+        return {
+            'json': json_list,
+            'plain': data_block.get_text()
+        }
 
 
-    def handle_series_response(self):
-        pass
+    def handle_series_response(self, content: str):
+        soup = BeautifulSoup(content, 'html.parser')
+        data_block = soup.find("div", {'id': "data"})
+
+        with open("test/fixtures/soups/series.html", "w") as file:
+            file.write(str(data_block))
+
+        json_list = []
+        courses = data_block.find_all("div", {"class": "course"})
+        for course in courses:
+            course_name = course.find("h3").get_text()
+            modules = course.find_all("section", {"class": "module"})
+            course_object = {"courseName": course_name, "modules": []}
+
+            for module in modules:
+                module_name = module.find("strong").get_text()
+                children = [li.get_text() for li in module.find_all("li")]
+                module_object = {"name": module_name, "skills": children}
+                course_object["modules"].append(module_object)
+
+            json_list.append(course_object)
+
+        return {
+            'json': json_list,
+            'plain': data_block.get_text()
+        }
 
 
     def handle_chapters_response(self):
@@ -193,3 +238,7 @@ def create_outlines():
 
 if __name__ == "__main__":
     create_outlines()
+
+
+# with open("test/fixtures/soups/series.html", "w") as file:
+    #     file.write(str(data_block))

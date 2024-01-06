@@ -19,6 +19,7 @@ class PageMaterialCreator:
         self.course_material_path = f"src/data/chat/course_material/{topic_formatted}"
         self.outline_path = f"{self.course_material_path}/master-outline.json"
 
+
     def setup(self):
         # Nuke content if it exists
         if os.path.exists(f"{self.course_material_path}/content"):
@@ -106,6 +107,7 @@ class PageMaterialCreator:
         write_markdown_file(save_path, material)
 
         return material
+
 
 
 
