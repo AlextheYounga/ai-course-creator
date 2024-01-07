@@ -3,7 +3,7 @@ from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 from src.openai.openai_handler import OpenAiHandler
 
 OUTPUT_PATH = "test/out"
-REPLACE_KEYS = ["{topic}", "{draft_outline}"]
+REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
 EXPECTED_COURSE_OUTLINE_RESPONSE = open('test/fixtures/responses/course-outline.md').read()
 PARSED_DRAFT_OUTLINE = read_yaml_file('test/fixtures/data/draft-outline.yaml')
 PARSED_SKILLS = read_yaml_file('test/fixtures/data/skills.yaml')

@@ -16,9 +16,8 @@ load_dotenv()
 class OpenAiHandler:
     def __init__(self, session_name: str):
         # Initialize logger
-        self.log_path = "src/data/chat/logs"
         logging.basicConfig(
-            filename=f"{self.log_path}/chat.log",
+            filename="data/logs/chat.log",
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             level=logging.INFO
         )
@@ -27,7 +26,7 @@ class OpenAiHandler:
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         self.model = os.environ.get("MODEL") or 'gpt-3.5-turbo-1106'
         self.logger = logging.getLogger(f"{self.model} {session_name}")
-    
+
 
     def send_prompt(self, name: str, messages: list[dict]) -> OpenAI:
         for message in messages:

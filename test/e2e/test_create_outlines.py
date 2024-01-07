@@ -8,14 +8,13 @@ from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 
 OUTPUT_PATH = "test/out"
 
+# Reset output directory
+slug = 'ruby-on-rails'
+if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):
+    shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
 
 # Semi decent happy path test
 def test_create_outlines():
-    # Reset output directory
-    slug = 'ruby-on-rails'
-    shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
-    os.mkdir(f"{OUTPUT_PATH}/{slug}")
-
     topics = ['Ruby on Rails']
     for topic in topics:
         session_name = f"{topic} Outlines"

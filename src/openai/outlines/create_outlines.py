@@ -9,12 +9,12 @@ from src.utils.chat_helpers import slugify
 import inquirer
 
 
-COURSE_MATERIAL_PATH = f"src/data/chat/course_material"
+COURSE_MATERIAL_PATH = f"out/course_material"
 
 
 def check_for_existing_outlines(topic):
     topic_formatted = slugify(topic)
-    course_material_path = f"src/data/chat/course_material/{topic_formatted}"
+    course_material_path = f"out/course_material/{topic_formatted}"
     existing = os.path.exists(f"{course_material_path}/master-outline.json")
 
     if (existing):
@@ -44,7 +44,8 @@ def process_topics(topics: list[str]):
             master_outline = builder.generate(draft_outline)
 
             course_list = [c['courseName'] for c in master_outline]
-            print(colored("Course list: ", "green"))
+
+            print(colored("\nCourse list: ", "green"))
             print(colored("\n".join(course_list), "green"))
 
     print(colored("\nAll outlines complete.", "green"))
@@ -52,7 +53,7 @@ def process_topics(topics: list[str]):
 
 def create_outlines():
     try:
-        topics = read_json_file("src/data/topics.json")
+        topics = read_json_file("data/topics.json")
         topic_choices = ['All'] + topics
 
         choices = [

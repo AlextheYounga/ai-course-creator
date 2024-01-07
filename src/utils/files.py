@@ -73,8 +73,9 @@ def write_yaml_file(path, data):
     with open(path, 'w') as file:
         if isinstance(data, dict):
             yaml.dump(data, file)
-        else: 
+        else:
             file.write(data)
+
 
 def zip_folder(folder_path, output_file):
     with zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED) as zipf:

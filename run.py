@@ -1,4 +1,5 @@
 import inquirer
+from src.utils.files import read_json_file
 
 
 def main():
@@ -7,7 +8,8 @@ def main():
                       message="Select subroutine.",
                       choices=[
                           'Generate Course Outlines',
-                          'Generate Course Pages'
+                          'Generate Course Pages',
+                          'Run All',
                       ]),
     ]
 
@@ -20,6 +22,13 @@ def main():
     elif answer == 'Generate Course Pages':
         from src.openai.page_material_creator import run_page_creator
         run_page_creator()
+    elif answer == 'Run All':
+        topics = read_json_file("data/topics.json")
+        from src.openai.outlines.create_outlines import process_topics
+        from src.openai.page_material_creator import process_pages
+
+        process_topics(topics)
+        process_pages(topics)
     else:
         "You did not select a subroutine. Exiting..."
 

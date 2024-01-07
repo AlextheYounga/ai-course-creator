@@ -4,12 +4,13 @@ from .files import write_json_file
 from collections import OrderedDict
 from itertools import islice
 
+
 def object_sorted_chunks(data, chunk_size):
     # Ensure the dictionary is sorted
     sorted_data = OrderedDict(sorted(data.items()))
-    
+
     it = iter(sorted_data.items())  # .items() returns tuples of (key, value)
-    
+
     # 'islice' used in a loop like this will maintain its position in the iterator
     # across different iterations of the loop, effectively chunking the dict
     for _ in range(0, len(sorted_data), chunk_size):

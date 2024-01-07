@@ -13,7 +13,7 @@ class OutlineDraft:
         self.topic = topic
         self.topic_slug = topic_slug
         self.output_path = f"{output_path}/{topic_slug}"
-    
+
 
     def build_draft_prompt(self, skills: yaml) -> list[dict]:
         # Build message payload
@@ -59,10 +59,6 @@ class OutlineDraft:
 
         # Parse response
         parsed_response = self.handle_outline_draft_response(response_content)
-        
+
         write_yaml_file(save_file_name, parsed_response['yaml'])
         return parsed_response
-
-
-
-  

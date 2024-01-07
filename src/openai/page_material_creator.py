@@ -107,9 +107,9 @@ class PageMaterialCreator:
 
 
 
-def process_topics(topics: list[str]):
+def process_pages(topics: list[str]):
     # Generate series list of courses
-    course_material_path = f"src/data/chat/course_material"
+    course_material_path = f"out/course_material"
 
     for topic in topics:
         print(colored(f"Begin generating {topic} page material...", "yellow"))
@@ -129,7 +129,7 @@ def process_topics(topics: list[str]):
 
 def run_page_creator():
     try:
-        topics = read_json_file("src/data/topics.json")
+        topics = read_json_file("data/topics.json")
         topic_choices = ['All'] + topics
 
         choices = [
@@ -143,9 +143,9 @@ def run_page_creator():
             answer = choice['topic']
 
             if answer == 'All':
-                process_topics(topics)
+                process_pages(topics)
             else:
-                process_topics([answer])
+                process_pages([answer])
 
     except KeyboardInterrupt:
         print(colored("Exiting...", "red"))

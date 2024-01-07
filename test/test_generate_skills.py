@@ -2,6 +2,7 @@ from src.openai.outlines.generate_skills import SkillGenerator
 from src.openai.openai_handler import OpenAiHandler
 
 OUTPUT_PATH = "test/out"
+REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
 EXPECTED_SKILLS_RESPONSE = open('test/fixtures/responses/skills.md').read()
 
 client = OpenAiHandler("Test")
@@ -12,6 +13,13 @@ def test_build_skills_prompt():
     prompt = generator.build_skills_prompt()
 
     assert len(prompt) == 2
+
+    system_prompt = prompt[0]['content']
+    user_prompt = prompt[1]['content']
+
+    for key in REPLACE_KEYS:
+        assert key not in user_prompt
+        assert key not in system_prompt
 
 
 def test_parse_skills_response():

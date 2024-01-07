@@ -1,28 +1,25 @@
 import inquirer
+from termcolor import colored
 import os
 import shutil
 from datetime import datetime
 from src.utils.chat_helpers import slugify
 from src.utils.files import zip_folder
 
-LOG_PATH = 'src/data/chat/logs'
-COURSE_MATERIAL_PATH = 'src/data/chat/course_material'
+OUTPUT_PATH = 'out/course_material'
+LOGS_PATH = 'data/logs'
 
 
 def init():
     if not os.path.exists('./.env'):
-       shutil.copy('.env.example', '.env')
+        print(colored("Creating .env file...", "yellow"))
+        shutil.copy('.env.example', '.env')
 
-    if not os.path.exists(LOG_PATH):
-        print('Creating data/chat/payloads directory...')
-        os.makedirs(LOG_PATH, exist_ok=True)
-        open(f"{LOG_PATH}/chat.log", 'a').close()
+        print(colored("Project initialized.", "green"))
+        print("Please add any sensitive information to the .env file.")
+        return
 
-    if not os.path.exists(COURSE_MATERIAL_PATH):
-        print('Creating data/chat/course_material directory...')
-        os.makedirs(COURSE_MATERIAL_PATH, exist_ok=True)
-
-    print("Project initialized.")
+    print(colored("Project already initialized.", "yellow"))
 
 
 def save_chat():
@@ -38,20 +35,18 @@ def save_chat():
     if chat_name:
         filename = f"chat-{slugify(chat_name)}.zip"
 
-    zip_folder("src/data/chat/", f"{filename}")
+    zip_folder("out", f"{filename}")
     os.rename(filename, f"storage/{filename}")
-    
-    print(f"Chat saved to {filename}")  
+    print(colored(f"Chat saved to {filename}", "green"))
 
 
 def reset_chat():
-    print('Nuking chat...')
-    shutil.rmtree(COURSE_MATERIAL_PATH)
-    init()
+    print(colored("Nuking chat...", "yellow"))
+    shutil.rmtree(OUTPUT_PATH)
 
 
 def clear_logs():
-    open(f"{LOG_PATH}/chat.log", 'w').close()
+    open(f"{LOGS_PATH}/chat.log", 'w').close()
 
 
 def main():

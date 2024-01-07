@@ -23,7 +23,7 @@ def fetch_course_material():
 @app.route('/ajax-fetch-activity', methods=['POST'])
 def fetch_activity():
     # Reading log file
-    data = open('src/data/chat/logs/chat.log').read().splitlines()
+    data = open('data/logs/chat.log').read().splitlines()
     data.reverse()
 
     # Returning a response back to the AJAX call

@@ -3,6 +3,7 @@ from src.openai.outlines.draft_course_outline import OutlineDraft
 from src.openai.openai_handler import OpenAiHandler
 
 OUTPUT_PATH = "test/out"
+REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
 EXPECTED_DRAFT_OUTLINE_RESPONSE = open('test/fixtures/responses/draft-outline.md').read()
 PARSED_SKILLS = read_yaml_file('test/fixtures/data/skills.yaml')
 
@@ -14,6 +15,13 @@ def test_build_draft_prompt():
     prompt = draft.build_draft_prompt(PARSED_SKILLS)
 
     assert len(prompt) == 2
+
+    system_prompt = prompt[0]['content']
+    user_prompt = prompt[1]['content']
+
+    for key in REPLACE_KEYS:
+        assert key not in user_prompt
+        assert key not in system_prompt
 
 
 def test_parse_draft_response():

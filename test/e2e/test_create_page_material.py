@@ -8,7 +8,9 @@ OUTPUT_PATH = "test/out"
 
 # Setup paths
 slug = 'ruby-on-rails'
-shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
+if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):
+    shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
+
 os.makedirs(f"{OUTPUT_PATH}/{slug}", exist_ok=True)
 shutil.copy('test/fixtures/data/master-outline.json', f"{OUTPUT_PATH}/{slug}/master-outline.json")
 
@@ -31,7 +33,7 @@ def test_create_page_material():
         for course in outline:
             course_slug = slugify(course['courseName'])
             assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course_slug}")
-            
+
             for chapter in course['chapters']:
                 chapter_slug = slugify(chapter['chapter'])
                 assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course_slug}/{chapter_slug}")
