@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 EXPECTED_COURSE_OUTLINE_RESPONSE = open('test/fixtures/responses/course-outline.md').read()
 EXPECTED_DRAFT_OUTLINE_RESPONSE = open('test/fixtures/responses/draft-outline.md').read()
 EXPECTED_SKILLS_RESPONSE = open('test/fixtures/responses/skills.md').read()
+EXPECTED_PAGE_RESPONSE = open('test/fixtures/responses/page.md').read()
 
 
 class OpenAIMockService:
@@ -24,6 +25,6 @@ class OpenAIMockService:
         elif name == 'optimize-outline':
             return self.build_mock_response(EXPECTED_COURSE_OUTLINE_RESPONSE)
         elif name == 'page-material':
-            return None
+            return self.build_mock_response(EXPECTED_PAGE_RESPONSE)
         else:
             return None

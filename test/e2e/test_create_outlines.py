@@ -7,15 +7,14 @@ from src.openai.outlines.draft_course_outline import OutlineDraft
 from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 
 OUTPUT_PATH = "test/out"
-REPLACE_KEYS = ["{topic}", "{draft_outline}"]
-
 
 
 # Semi decent happy path test
 def test_create_outlines():
     # Reset output directory
-    shutil.rmtree(OUTPUT_PATH)
-    os.mkdir(OUTPUT_PATH)
+    slug = 'ruby-on-rails'
+    shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
+    os.mkdir(f"{OUTPUT_PATH}/{slug}")
 
     topics = ['Ruby on Rails']
     for topic in topics:

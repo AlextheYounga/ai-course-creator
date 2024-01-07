@@ -3,6 +3,7 @@ from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 from src.openai.openai_handler import OpenAiHandler
 
 OUTPUT_PATH = "test/out"
+REPLACE_KEYS = ["{topic}", "{draft_outline}"]
 EXPECTED_COURSE_OUTLINE_RESPONSE = open('test/fixtures/responses/course-outline.md').read()
 PARSED_DRAFT_OUTLINE = read_yaml_file('test/fixtures/data/draft-outline.yaml')
 PARSED_SKILLS = read_yaml_file('test/fixtures/data/skills.yaml')
@@ -10,9 +11,7 @@ PARSED_SKILLS = read_yaml_file('test/fixtures/data/skills.yaml')
 client = OpenAiHandler("Test")
 builder = MasterOutlineBuilder("Ruby on Rails", client, OUTPUT_PATH)
 
-
 def test_build_draft_prompt():
-    replace_keys = ["{topic}", "{draft_outline}"]
     course_name = PARSED_DRAFT_OUTLINE[0]['courseName']
     modules = PARSED_DRAFT_OUTLINE[0]['modules']
     prompt = builder.build_optimize_outline_prompt(course_name, PARSED_DRAFT_OUTLINE, modules)
@@ -22,7 +21,7 @@ def test_build_draft_prompt():
 
     assert len(prompt) == 2
 
-    for key in replace_keys:
+    for key in REPLACE_KEYS:
         assert key not in user_prompt
         assert key not in system_prompt
 

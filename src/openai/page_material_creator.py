@@ -1,5 +1,6 @@
 import os
 from termcolor import colored
+from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file, write_markdown_file
 from src.utils.chat_helpers import slugify, get_prompt
@@ -9,21 +10,16 @@ import shutil
 
 
 class PageMaterialCreator:
-    def __init__(self, topic: str):
-        # Initialize OpenAI
+    def __init__(self, topic: str, client: OpenAI, output_path: str):
         topic_formatted = slugify(topic)
-        session_name = f"{topic} Page Material"
-        self.ai_client = OpenAiHandler(session_name)
+        self.ai_client = client
         self.topic = topic
         self.topic_formatted = topic_formatted
-        self.course_material_path = f"src/data/chat/course_material/{topic_formatted}"
-        self.outline_path = f"{self.course_material_path}/master-outline.json"
+        self.output_path = f"{output_path}/{topic_formatted}"
+        self.outline_path = f"{self.output_path}/master-outline.json"
 
-
-    def setup(self):
-        # Nuke content if it exists
-        if os.path.exists(f"{self.course_material_path}/content"):
-            shutil.rmtree(f"{self.course_material_path}/content")
+        if os.path.exists(f"{self.output_path}/content"):
+            shutil.rmtree(f"{self.output_path}/content")
 
 
     def get_course_outline(self):
@@ -42,7 +38,7 @@ class PageMaterialCreator:
         chapter_name_formatted = slugify(chapter['chapter'])
         page_name_formatted = slugify(page)
 
-        saved_material_file = f"{self.course_material_path}/content/{course_name_formatted}/{chapter_name_formatted}/page-{page_name_formatted}.md"
+        saved_material_file = f"{self.output_path}/content/{course_name_formatted}/{chapter_name_formatted}/page-{page_name_formatted}.md"
         return os.path.exists(saved_material_file)
 
 
@@ -103,7 +99,7 @@ class PageMaterialCreator:
 
         # Save responses
         save_file_name = f"page-{page_name_formatted}"
-        save_path = f"{self.course_material_path}/content/{course_name_formatted}/{chapter_name_formatted}/{save_file_name}"
+        save_path = f"{self.output_path}/content/{course_name_formatted}/{chapter_name_formatted}/{save_file_name}"
         write_markdown_file(save_path, material)
 
         return material
@@ -111,13 +107,19 @@ class PageMaterialCreator:
 
 
 
-def _process_topics(topics: list[str]):
+def process_topics(topics: list[str]):
     # Generate series list of courses
+    course_material_path = f"src/data/chat/course_material"
+
     for topic in topics:
         print(colored(f"Begin generating {topic} page material...", "yellow"))
 
-        creator = PageMaterialCreator(topic)
-        creator.setup()
+        # Initialize OpenAI
+        session_name = f"{topic} Page Material"
+        ai_client = OpenAiHandler(session_name)
+
+        creator = PageMaterialCreator(topic, ai_client, course_material_path)
+
         outline = creator.get_course_outline()
         creator.create_pages_from_outline(outline)
 
@@ -141,9 +143,9 @@ def run_page_creator():
             answer = choice['topic']
 
             if answer == 'All':
-                _process_topics(topics)
+                process_topics(topics)
             else:
-                _process_topics([answer])
+                process_topics([answer])
 
     except KeyboardInterrupt:
         print(colored("Exiting...", "red"))
