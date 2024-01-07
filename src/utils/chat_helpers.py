@@ -1,4 +1,5 @@
 import markdown
+import yaml
 import re
 from bs4 import BeautifulSoup
 from typing import Optional
@@ -9,6 +10,11 @@ def parse_markdown(content: str) -> BeautifulSoup:
 
     return soup
 
+
+def parse_yaml_from_markdown(content: str):
+    yaml_content = content.split("yaml")[1].split("```")[0]
+    data = yaml.safe_load(yaml_content)
+    return data
 
 def slugify(text: str):
     slugified = text.lower().replace(" ", "-")

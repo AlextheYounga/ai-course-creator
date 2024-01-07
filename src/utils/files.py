@@ -1,7 +1,9 @@
 import os
 import json
 import zipfile
+import yaml
 from pathlib import Path
+
 
 def read_txt_file(filepath):
     if os.path.exists(filepath):
@@ -51,6 +53,15 @@ def write_markdown_file(path, content):
         f.write(content)
         f.close()
 
+
+def read_yaml_file(filepath):
+    with open(filepath, "r") as stream:
+        try:
+            return yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+            return None
+
 def zip_folder(folder_path, output_file):
     with zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
         len_dir_path = len(folder_path)
@@ -64,5 +75,5 @@ def scan_directory(directory):
     all_files = []
     pathlist = Path(directory).rglob('*')  # This will recursively go through all files and folders
     for path in pathlist:
-         all_files.append(str(path))
+        all_files.append(str(path))
     return all_files

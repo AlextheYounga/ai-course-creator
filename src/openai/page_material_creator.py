@@ -13,7 +13,7 @@ class PageMaterialCreator:
         # Initialize OpenAI
         topic_formatted = slugify(topic)
         session_name = f"{topic} Page Material"
-        self.ai_handler = OpenAiHandler(session_name)
+        self.ai_client = OpenAiHandler(session_name)
         self.topic = topic
         self.topic_formatted = topic_formatted
         self.course_material_path = f"src/data/chat/course_material/{topic_formatted}"
@@ -97,7 +97,7 @@ class PageMaterialCreator:
 
         # Send to ChatGPT
         print(colored(f"Generating '{page}' page material...", "yellow"))
-        completion = self.ai_handler.send_prompt(messages)
+        completion = self.ai_client.send_prompt(messages)
         material = completion.choices[0].message.content
         print(colored("Done.", "green"))
 
