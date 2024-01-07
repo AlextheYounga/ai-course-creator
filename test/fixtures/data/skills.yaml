@@ -1,6 +1,4 @@
-Certainly! Here's a list of skills that someone would need to go from a total beginner to mastery in Ruby on Rails:
 
-```yaml
 - category: Ruby Fundamentals
   skills:
   - Understanding basic Ruby syntax and data types
@@ -90,6 +88,3 @@ Certainly! Here's a list of skills that someone would need to go from a total be
   - Building RESTful APIs with Rails
   - Implementing background jobs and task scheduling
   - Exploring advanced Rails gems and plugins
-```
-
-This list covers a wide range of skills from the basics of Ruby and web development to more advanced topics specific to Ruby on Rails. Mastery of these skills will enable someone to become proficient in developing web applications with Ruby on Rails.

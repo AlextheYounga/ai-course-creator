@@ -15,7 +15,7 @@ def main():
     answer = choice['subroutine']
 
     if answer == 'Generate Course Outlines':
-        from src.openai.outline_creator import create_outlines
+        from src.openai.outlines.create_outlines import create_outlines
         create_outlines()
     elif answer == 'Generate Course Pages':
         from src.openai.page_material_creator import run_page_creator
