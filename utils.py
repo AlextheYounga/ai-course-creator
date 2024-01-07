@@ -35,8 +35,12 @@ def save_chat():
     if chat_name:
         filename = f"chat-{slugify(chat_name)}.zip"
 
+    # Copying logs file to out folder
+    shutil.copy(f"{LOGS_PATH}/chat.log", "out/chat.log")
+
     zip_folder("out", f"{filename}")
     os.rename(filename, f"storage/{filename}")
+
     print(colored(f"Chat saved to {filename}", "green"))
 
 
