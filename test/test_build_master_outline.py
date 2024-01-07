@@ -2,13 +2,13 @@ from src.utils.files import read_yaml_file
 from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 from src.openai.openai_handler import OpenAiHandler
 
-
+OUTPUT_PATH = "test/out"
 EXPECTED_COURSE_OUTLINE_RESPONSE = open('test/fixtures/responses/course-outline.md').read()
 PARSED_DRAFT_OUTLINE = read_yaml_file('test/fixtures/data/draft-outline.yaml')
 PARSED_SKILLS = read_yaml_file('test/fixtures/data/skills.yaml')
 
 client = OpenAiHandler("Test")
-builder = MasterOutlineBuilder("Ruby on Rails", client)
+builder = MasterOutlineBuilder("Ruby on Rails", client, OUTPUT_PATH)
 
 
 def test_build_draft_prompt():

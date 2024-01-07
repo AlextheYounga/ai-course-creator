@@ -1,4 +1,3 @@
-from typing import List, Optional
 from unittest.mock import MagicMock
 
 
@@ -21,9 +20,9 @@ class OpenAIMockService:
         if name == 'skills':
             return self.build_mock_response(EXPECTED_SKILLS_RESPONSE)
         elif name == 'draft-outline':
-            return self.build_mock_response(EXPECTED_SKILLS_RESPONSE)
-        elif name == 'draft-outline':
-            return self.build_mock_response(EXPECTED_SKILLS_RESPONSE)
+            return self.build_mock_response(EXPECTED_DRAFT_OUTLINE_RESPONSE)
+        elif name == 'optimize-outline':
+            return self.build_mock_response(EXPECTED_COURSE_OUTLINE_RESPONSE)
         elif name == 'page-material':
             return None
         else:

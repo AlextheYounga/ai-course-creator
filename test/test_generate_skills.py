@@ -1,10 +1,11 @@
 from src.openai.outlines.generate_skills import SkillGenerator
 from src.openai.openai_handler import OpenAiHandler
 
+OUTPUT_PATH = "test/out"
 EXPECTED_SKILLS_RESPONSE = open('test/fixtures/responses/skills.md').read()
 
 client = OpenAiHandler("Test")
-generator = SkillGenerator("Ruby on Rails", client)
+generator = SkillGenerator("Ruby on Rails", client, OUTPUT_PATH)
 
 
 def test_build_skills_prompt():

@@ -1,6 +1,6 @@
 from termcolor import colored
 from openai import OpenAI
-from src.utils.files import write_json_file
+from src.utils.files import write_yaml_file, write_json_file
 from src.utils.chat_helpers import slugify, get_prompt
 import yaml
 
@@ -45,20 +45,20 @@ class MasterOutlineBuilder:
 
         return {
             'dict': data,
-            'yaml': yaml.dump(yaml_content),
-            'plain': yaml_content
+            'yaml': yaml_content
         }
 
 
     def optimize_course_outline(self, course: dict, draft_outline: dict):
-        print(colored(f"Generating {course_name} series chapters...", "yellow"))
         course_name = course['courseName']
         modules = course['modules']
+
+        print(colored(f"Generating {course_name} finalized outline...", "yellow"))
 
         course_name_formatted = slugify(course_name)
         save_file_name = f"outline-{course_name_formatted}"
         save_path = f"{self.output_path}/course-outlines"
-        save_file_path = f"{save_path}/{save_file_name}.json"
+        save_file_path = f"{save_path}/{save_file_name}.yaml"
 
         messages = self.build_optimize_outline_prompt(course_name, draft_outline['yaml'], modules)
 
@@ -70,7 +70,7 @@ class MasterOutlineBuilder:
         # Parse response
         parsed_response = self.handle_course_optimize_response(response_content)
 
-        write_json_file(save_file_path, parsed_response['dict'])
+        write_yaml_file(save_file_path, parsed_response['yaml'])
         return parsed_response
 
 

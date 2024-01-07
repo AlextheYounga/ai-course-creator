@@ -1,6 +1,6 @@
 from termcolor import colored
 from openai import OpenAI
-from src.utils.files import write_json_file
+from src.utils.files import write_yaml_file
 from src.utils.chat_helpers import slugify, get_prompt
 import yaml
 
@@ -32,15 +32,14 @@ class SkillGenerator:
 
         return {
             'dict': data,
-            'yaml': yaml.dump(yaml_content),
-            'plain': yaml_content
+            'yaml': yaml_content
         }
 
 
     def generate(self) -> dict:
         print(colored(f"Generating {self.topic} skills...", "yellow"))
 
-        save_file_name = f"{self.output_path}/skills-{self.topic_slug}"
+        save_file_name = f"{self.output_path}/skills-{self.topic_slug}.yaml"
         messages = self.build_skills_prompt()
 
         # Send to ChatGPT
@@ -50,6 +49,5 @@ class SkillGenerator:
 
         # Parse response
         parsed_response = self.handle_skills_response(response_content)
-
-        write_json_file(save_file_name, parsed_response['dict'])
+        write_yaml_file(save_file_name, parsed_response['yaml'])
         return parsed_response
