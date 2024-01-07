@@ -39,7 +39,7 @@ class PageMaterialCreator:
 
     def check_for_existing_material(self, course_name, chapter: dict, page: str):
         course_name_formatted = slugify(course_name)
-        chapter_name_formatted = slugify(chapter['chapterName'])
+        chapter_name_formatted = slugify(chapter['chapter'])
         page_name_formatted = slugify(page)
 
         saved_material_file = f"{self.course_material_path}/content/{course_name_formatted}/{chapter_name_formatted}/page-{page_name_formatted}.md"
@@ -90,7 +90,7 @@ class PageMaterialCreator:
 
     def generate_page_material(self, course_name, chapter: dict, page: str):
         course_name_formatted = slugify(course_name)
-        chapter_name_formatted = slugify(chapter['chapterName'])
+        chapter_name_formatted = slugify(chapter['chapter'])
         page_name_formatted = slugify(page)
 
         messages = self.build_page_material_prompt(course_name, chapter, page)
@@ -112,8 +112,6 @@ class PageMaterialCreator:
 
 
 def _process_topics(topics: list[str]):
-    topics = read_json_file("src/data/topics.json")
-
     # Generate series list of courses
     for topic in topics:
         print(colored(f"Begin generating {topic} page material...", "yellow"))

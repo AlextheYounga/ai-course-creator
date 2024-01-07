@@ -83,7 +83,7 @@ class MasterOutlineBuilder:
             chapters = self.optimize_course_outline(course, draft_outline)
             course_object = {
                 "courseName": course['courseName'],
-                "chapters": chapters
+                "chapters": chapters['dict']
             }
             master_outline.append(course_object)
 
