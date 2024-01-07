@@ -97,7 +97,7 @@ class PageMaterialCreator:
 
         # Send to ChatGPT
         print(colored(f"Generating '{page}' page material...", "yellow"))
-        completion = self.ai_client.send_prompt(messages)
+        completion = self.ai_client.send_prompt('page-material', messages)
         material = completion.choices[0].message.content
         print(colored("Done.", "green"))
 

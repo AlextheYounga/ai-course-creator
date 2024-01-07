@@ -1,0 +1,827 @@
+[
+    {
+        "courseName": "Ruby Fundamentals",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Web Development Basics",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Database Concepts",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Introduction to Ruby on Rails",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Model-View-Controller (MVC) Architecture",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Routing and URL Handling",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "ActiveRecord and Databases",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Views and Templates",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Controllers and Actions",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Authentication and Authorization",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Testing and Debugging",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Frontend Integration",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Deployment and Hosting",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Performance Optimization",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    },
+    {
+        "courseName": "Advanced Topics",
+        "chapters": [
+            {
+                "chapter": "Introduction to Ruby",
+                "pages": [
+                    "Welcome to Ruby Fundamentals",
+                    "What is Ruby?",
+                    "Setting Up Your Ruby Environment",
+                    "Your First Ruby Program",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Understanding Basic Ruby Syntax",
+                "pages": [
+                    "Variables in Ruby",
+                    "Data Types in Ruby",
+                    "Working with Strings",
+                    "Working with Numbers",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Control Flow in Ruby",
+                "pages": [
+                    "Conditional Statements (if, else, elsif)",
+                    "Loops (while, for, until)",
+                    "Working with Arrays",
+                    "Working with Hashes",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Methods",
+                "pages": [
+                    "Introduction to Methods",
+                    "Defining and Calling Methods",
+                    "Method Parameters and Return Values",
+                    "Common Built-in Ruby Methods",
+                    "Practice Skill Challenge Chapter"
+                ]
+            },
+            {
+                "chapter": "Ruby Classes",
+                "pages": [
+                    "Introduction to Object-Oriented Programming (OOP)",
+                    "Defining Classes and Objects",
+                    "Instance Variables and Methods",
+                    "Inheritance and Polymorphism",
+                    "Practice Skill Challenge Chapter"
+                ]
+            }
+        ]
+    }
+]

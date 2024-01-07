@@ -6,13 +6,13 @@ import yaml
 
 
 class MasterOutlineBuilder:
-    def __init__(self, topic: str, client: OpenAI):
+    def __init__(self, topic: str, client: OpenAI, output_path: str):
         # Initialize OpenAI
-        topic_formatted = slugify(topic)
+        topic_slug = slugify(topic)
         self.ai_client = client
         self.topic = topic
-        self.topic_formatted = topic_formatted
-        self.course_material_path = f"src/data/chat/course_material/{topic_formatted}"
+        self.topic_slug = topic_slug
+        self.output_path = f"{output_path}/{topic_slug}"
 
 
     def build_optimize_outline_prompt(self, course_name: str, draft_outline: list[dict], modules: list[dict]) -> list[dict]:
@@ -50,37 +50,43 @@ class MasterOutlineBuilder:
         }
 
 
-    def optimize_course_outline(self, course: dict, series: dict):
+    def optimize_course_outline(self, course: dict, draft_outline: dict):
         print(colored(f"Generating {course_name} series chapters...", "yellow"))
         course_name = course['courseName']
         modules = course['modules']
 
         course_name_formatted = slugify(course_name)
         save_file_name = f"outline-{course_name_formatted}"
-        save_path = f"{self.course_material_path}/course-outlines"
+        save_path = f"{self.output_path}/course-outlines"
         save_file_path = f"{save_path}/{save_file_name}.json"
 
-        messages = self.build_optimize_outline_prompt(course_name, series, modules)
-        completion = self.ai_client.send_prompt(messages)
-        json_content = self.handle_course_optimize_response(completion)
+        messages = self.build_optimize_outline_prompt(course_name, draft_outline['yaml'], modules)
 
-        write_json_file(save_file_path, json_content)
-        return json_content
+        # Send to ChatGPT
+        completion = self.ai_client.send_prompt('optimize-outline', messages)
+        response_content = completion.choices[0].message.content
+        print(colored("Done.", "green"))
+
+        # Parse response
+        parsed_response = self.handle_course_optimize_response(response_content)
+
+        write_json_file(save_file_path, parsed_response['dict'])
+        return parsed_response
 
 
 
-    def generate(self, series: dict):
+    def generate(self, draft_outline: dict):
         print(colored("\nBegin building master course outline...", "yellow"))
         master_outline = []
 
-        for course in series['dict']:
-            chapters = self.optimize_course_outline(course, series['yaml'])
+        for course in draft_outline['dict']:
+            chapters = self.optimize_course_outline(course, draft_outline)
             course_object = {
                 "courseName": course['courseName'],
                 "chapters": chapters
             }
             master_outline.append(course_object)
 
-        write_json_file(f"{self.course_material_path}/master-outline.json", master_outline)
+        write_json_file(f"{self.output_path}/master-outline.json", master_outline)
         print(colored(f"Course outline finalized.", "green"))
         return master_outline

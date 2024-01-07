@@ -6,13 +6,13 @@ import yaml
 
 
 class OutlineDraft:
-    def __init__(self, topic: str, client: OpenAI):
+    def __init__(self, topic: str, client: OpenAI, output_path: str):
         # Initialize OpenAI
-        topic_formatted = slugify(topic)
+        topic_slug = slugify(topic)
         self.ai_client = client
         self.topic = topic
-        self.topic_formatted = topic_formatted
-        self.course_material_path = f"src/data/chat/course_material/{topic_formatted}"
+        self.topic_slug = topic_slug
+        self.output_path = f"{output_path}/{topic_slug}"
     
 
     def build_draft_prompt(self, skills: yaml) -> list[dict]:
@@ -48,16 +48,21 @@ class OutlineDraft:
 
 
     def generate(self, skills: dict) -> dict:
-        print(colored(f"Generating {self.topic} series outline...", "yellow"))
+        print(colored(f"Generating {self.topic} draft outline...", "yellow"))
 
-        save_file_name = f"{self.course_material_path}/series-{self.topic_formatted}"
-        messages = self.build_series_prompt(skills['yaml'])
+        save_file_name = f"{self.output_path}/series-{self.topic_slug}"
+        messages = self.build_draft_prompt(skills['yaml'])
 
-        completion = self.ai_client.send_prompt(messages)
-        json_content = self.handle_outline_draft_response(completion)
+        # Send to ChatGPT
+        completion = self.ai_client.send_prompt('draft-outline', messages)
+        response_content = completion.choices[0].message.content
+        print(colored("Done.", "green"))
+
+        # Parse response
+        parsed_response = self.handle_outline_draft_response(response_content)
         
-        write_json_file(save_file_name, json_content)
-        return json_content
+        write_json_file(save_file_name, parsed_response['dict'])
+        return parsed_response
 
 
 

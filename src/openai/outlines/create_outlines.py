@@ -9,6 +9,8 @@ from src.utils.chat_helpers import slugify
 import inquirer
 
 
+COURSE_MATERIAL_PATH = f"src/data/chat/course_material"
+
 def check_for_existing_outlines(topic):
     topic_formatted = slugify(topic)
     course_material_path = f"src/data/chat/course_material/{topic_formatted}"
@@ -16,8 +18,8 @@ def check_for_existing_outlines(topic):
 
     if (existing):
         print(colored(f"Course outline for {topic} already exists.", "yellow"))
-        return False
-    return True
+        return True
+    return False
 
 
 def process_topics(topics: list[str]):
@@ -28,16 +30,17 @@ def process_topics(topics: list[str]):
         existing = check_for_existing_outlines(topic)
 
         if not existing:
+                        
             # Generate Skills
-            skill_generator = SkillGenerator(topic, ai_client)
+            skill_generator = SkillGenerator(topic, ai_client, COURSE_MATERIAL_PATH)
             skills = skill_generator.generate()
 
             # Generate Draft Outline
-            draft = OutlineDraft(topic)
+            draft = OutlineDraft(topic, ai_client, COURSE_MATERIAL_PATH)
             draft_outline = draft.generate(skills['yaml'])
 
             # Finalize Outline
-            builder = MasterOutlineBuilder(topic, ai_client)
+            builder = MasterOutlineBuilder(topic, ai_client, COURSE_MATERIAL_PATH)
             master_outline = builder.generate(draft_outline['yaml'])
 
             course_list = [c['courseName'] for c in master_outline]

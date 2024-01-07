@@ -6,13 +6,13 @@ import yaml
 
 
 class SkillGenerator:
-    def __init__(self, topic: str, client: OpenAI):
+    def __init__(self, topic: str, client: OpenAI, output_path: str):
         # Initialize OpenAI
-        topic_formatted = slugify(topic)
+        topic_slug = slugify(topic)
         self.ai_client = client
         self.topic = topic
-        self.topic_formatted = topic_formatted
-        self.course_material_path = f"src/data/chat/course_material/{topic_formatted}"
+        self.topic_slug = topic_slug
+        self.output_path = f"{output_path}/{topic_slug}"
 
 
     def build_skills_prompt(self) -> list[dict]:
@@ -40,11 +40,16 @@ class SkillGenerator:
     def generate(self) -> dict:
         print(colored(f"Generating {self.topic} skills...", "yellow"))
 
-        save_file_name = f"{self.course_material_path}/skills-{self.topic_formatted}"
+        save_file_name = f"{self.output_path}/skills-{self.topic_slug}"
         messages = self.build_skills_prompt()
 
-        completion = self.ai_client.send_prompt(messages)
-        parsed_response = self.handle_skills_response(completion)
+        # Send to ChatGPT
+        completion = self.ai_client.send_prompt('skills', messages)
+        response_content = completion.choices[0].message.content
+        print(colored("Done.", "green"))
+
+        # Parse response
+        parsed_response = self.handle_skills_response(response_content)
 
         write_json_file(save_file_name, parsed_response['dict'])
         return parsed_response

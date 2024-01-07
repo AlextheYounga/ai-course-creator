@@ -33,8 +33,9 @@ def write_txt_file(filepath, lst, overwrite=False):
 
 
 def write_json_file(path, data):
-    if not (os.path.exists(path)):
-        os.makedirs(path, exist_ok=True)
+    directory = os.path.dirname(path)
+    if not (os.path.exists(directory)):
+        os.makedirs(directory, exist_ok=True)
 
     with open(path, 'w') as json_file:
         json.dump(data, json_file)
@@ -46,8 +47,9 @@ def read_json_file(path):
 
 
 def write_markdown_file(path, content):
-    if not (os.path.exists(path)):
-        os.makedirs(path, exist_ok=True)
+    directory = os.path.dirname(path)
+    if not (os.path.exists(directory)):
+        os.makedirs(directory, exist_ok=True)
 
     with open(f"{path}.md", 'w') as f:
         f.write(content)

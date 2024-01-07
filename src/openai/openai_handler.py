@@ -29,11 +29,11 @@ class OpenAiHandler:
         self.logger = logging.getLogger(f"{self.model} {session_name}")
     
 
-    def send_prompt(self, messages: list[dict]) -> OpenAI:
+    def send_prompt(self, name: str, messages: list[dict]) -> OpenAI:
         for message in messages:
             if message['role'] == 'user':
                 prompt = message['content']
-                print(colored(f"Sending prompt: {prompt[:100]}...", "cyan"))
+                print(colored(f"Sending {name} prompt: {prompt[:100]}...", "cyan"))
                 break
 
         self.logger.info(f"SEND: {json.dumps(messages)}")
