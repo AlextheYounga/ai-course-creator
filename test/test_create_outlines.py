@@ -1,7 +1,7 @@
 import shutil
 import os
 from src.openai.outlines.build_master_outline import MasterOutlineBuilder
-from ..mocks.openai_mock_service import OpenAIMockService
+from .mocks.openai_mock_service import OpenAIMockService
 from src.openai.outlines.generate_skills import SkillGenerator
 from src.openai.outlines.draft_course_outline import OutlineDraft
 from src.openai.outlines.build_master_outline import MasterOutlineBuilder

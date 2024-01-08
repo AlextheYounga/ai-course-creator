@@ -14,3 +14,7 @@ please create an outline for a series of 10 small courses as you think are neede
 
 Make sure each course ends with a "final skill challenge" chapter that is an exam of at least 20 unique questions, at least 5 of which are very challenging but still within the bounds of what was taught in the course.
 ```
+optimize-course-outline
+```
+Make sure each chapter starts with a chapter introduction page and concludes with a "practice skill challenge" chapter
+```

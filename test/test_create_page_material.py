@@ -2,7 +2,7 @@ import shutil
 import os
 from src.utils.chat_helpers import slugify
 from src.openai.page_material_creator import PageMaterialCreator
-from ..mocks.openai_mock_service import OpenAIMockService
+from .mocks.openai_mock_service import OpenAIMockService
 
 # What the outline looks like before we run page material creator
 PATHLESS_MASTER_OUTLINE = 'test/fixtures/data/master-outline.json'
@@ -39,5 +39,6 @@ def test_create_page_material():
                 chapter_slug = chapter['slug']
                 assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course_slug}/{chapter_slug}")
 
-                for page_slug in chapter['pageSlugs']:
+                for page in chapter['pages']:
+                    page_slug = page['slug']
                     assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md")

@@ -1,10 +1,11 @@
 import os
-import shutil
+import json
 from termcolor import colored
 from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file, write_markdown_file
 from src.utils.chat_helpers import slugify, get_prompt
+import progressbar
 
 
 class PracticeSkillChallengeCreator:
@@ -55,3 +56,71 @@ class PracticeSkillChallengeCreator:
         user_payload = [{"role": "user", "content": user_prompt}]
 
         return system_payload + datasets + user_payload
+
+
+    def update_master_outline(self, save_path: str, chapter_name: str, page_slug: str):
+        page_name = 'Practice Skill Challenge'
+        for course_index, course in enumerate(self.master_outline['courses']):
+            if course['courseName'] == course['courseName']:
+                for cid, c in enumerate(course['chapters']):
+                    if c['name'] == chapter_name:
+                        page_path = f"{save_path}.md"
+                        self.master_outline['allPaths'].append(page_path)
+                        self.master_outline['courses'][course_index]['paths'].append(page_path)
+                        self.master_outline['courses'][course_index]['chapters'][cid]['paths'].append(page_path)
+                        self.master_outline['courses'][course_index]['chapters'][cid]['pages'].append(page_name)
+                        self.master_outline['courses'][course_index]['chapters'][cid]['pageSlugs'].append(page_slug)
+                        break
+                break
+        with open(self.outline_path, 'w') as json_file:
+            json.dump(self.master_outline, json_file)
+
+
+    def generate_practice_skill_challenge(self, course: dict, chapter: dict):
+        course_slug = course['slug']
+        chapter_slug = chapter['slug']
+        page_slug = 'practice-skill-challenge'
+
+        messages = self.build_skill_challenge_prompt(course)
+
+        # Send to ChatGPT
+        completion = self.ai_client.send_prompt('practice-skill-challenge', messages)
+        material = completion.choices[0].message.content
+
+        # Save responses
+        save_file_name = f"page-{page_slug}"
+        save_path = f"{self.output_path}/content/{course_slug}/{chapter_slug}/{save_file_name}"
+        write_markdown_file(save_path, material)
+
+        # Update master outline with new page
+        self.update_master_outline(save_path, chapter['name'], page_slug)
+
+        return material
+
+    def create_practice_skill_challenges_for_chapters(self):
+        total_count = self.master_outline['totalPages']
+        with progressbar.ProgressBar(max_value=total_count, prefix='Generating pages: ', redirect_stdout=True) as bar:
+            for course in self.master_outline['courses']:
+                chapters = course['chapters']
+                for chapter in chapters:
+                    self.generate_practice_skill_challenge(course, chapter)
+
+        return self.master_outline
+
+
+
+def process_pages(topics: list[str]):
+    # Generate series list of courses
+    course_material_path = f"out/course_material"
+
+    for topic in topics:
+        print(colored(f"Begin generating {topic} page material...", "yellow"))
+
+        # Initialize OpenAI
+        session_name = f"{topic} Page Material"
+        ai_client = OpenAiHandler(session_name)
+
+        creator = PracticeSkillChallengeCreator(topic, ai_client, course_material_path)
+        creator.create_pages_from_outline()
+
+    print(colored("Complete.", "green"))

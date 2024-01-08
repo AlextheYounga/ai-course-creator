@@ -1,1 +1,1 @@
-Prompt: Create a "practice skill challenge" page that includes 5 practice problems testing the user on materials provided. Please pull from one of our answerable components to create the questions.
+Prompt: Create a "Practice Skill Challenge" page that includes 5 practice problems testing the user on materials provided. Please pull from one of our answerable components to create the questions.
