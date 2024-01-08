@@ -46,7 +46,9 @@ def save_chat():
 
 def reset_chat():
     print(colored("Nuking chat...", "yellow"))
-    shutil.rmtree(OUTPUT_PATH)
+    if os.path.exists(OUTPUT_PATH):
+        shutil.rmtree(OUTPUT_PATH)
+    print(colored("Nuked", "green"))
 
 
 def clear_logs():
