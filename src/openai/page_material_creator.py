@@ -2,7 +2,7 @@ import os
 from termcolor import colored
 from openai import OpenAI
 from .openai_handler import OpenAiHandler
-from src.utils.files import read_json_file, write_markdown_file, write_json_file
+from src.utils.files import read_json_file, write_markdown_file
 from src.utils.chat_helpers import slugify, get_prompt
 import progressbar
 import inquirer
@@ -18,7 +18,10 @@ class PageMaterialCreator:
         self.topic_slug = topic_slug
         self.output_path = f"{output_path}/{topic_slug}"
         self.outline_path = f"{self.output_path}/master-outline.json"
-        self.master_outline = self.get_topic_outline()
+        self.master_outline = {
+            **self.get_topic_outline(),
+            'allPaths': []
+            }
 
         if os.path.exists(f"{self.output_path}/content"):
             shutil.rmtree(f"{self.output_path}/content")
@@ -85,13 +88,18 @@ class PageMaterialCreator:
         write_markdown_file(save_path, material)
 
         # Update master outline
-        for course in self.master_outline['courses']:
+        for course_index, course in enumerate(self.master_outline['courses']):
             if course['courseName'] == course_name:
-                for c in course['chapters']:
+                for cid, c in enumerate(course['chapters']):
                     if c['chapter'] == chapter['chapter']:
-                        c['paths'].append(f"{save_path}.md")
+                        page_path = f"{save_path}.md"
+                        self.master_outline['allPaths'].append(page_path)
+                        self.master_outline['courses'][course_index]['paths'].append(page_path)
+                        self.master_outline['courses'][course_index]['chapters'][cid]['paths'].append(page_path)
                         break
                 break
+        with open(self.outline_path, 'w') as json_file:
+            json.dump(self.master_outline, json_file)
 
         return material
 
@@ -120,8 +128,6 @@ class PageMaterialCreator:
                             continue
 
                         self.generate_page_material(course_name, chapter, page)
-
-        write_json_file(self.outline_path, self.master_outline)
         return self.master_outline
 
 

@@ -1,6 +1,6 @@
 from termcolor import colored
 from openai import OpenAI
-from src.utils.files import write_yaml_file, write_json_file, scan_directory
+from src.utils.files import write_yaml_file, write_json_file
 from src.utils.chat_helpers import slugify, get_prompt
 import progressbar
 import yaml

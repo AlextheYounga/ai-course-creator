@@ -5,7 +5,7 @@ from src.openai.page_material_creator import PageMaterialCreator
 from ..mocks.openai_mock_service import OpenAIMockService
 
 # What the outline looks like before we run page material creator
-PATHLESS_MASTER_OUTLINE = 'test/fixtures/data/pathless-master-outline.json'
+PATHLESS_MASTER_OUTLINE = 'test/fixtures/data/master-outline.json'
 OUTPUT_PATH = "test/out"
 
 

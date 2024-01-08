@@ -1,11 +1,8 @@
 import os
 import json
-import yaml
-import re
 from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
-from src.utils.chat_helpers import parse_markdown
 from time import sleep
 import logging
 
