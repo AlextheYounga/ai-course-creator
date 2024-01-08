@@ -13,8 +13,8 @@ COURSE_MATERIAL_PATH = f"out/course_material"
 
 
 def check_for_existing_outlines(topic):
-    topic_formatted = slugify(topic)
-    course_material_path = f"out/course_material/{topic_formatted}"
+    topic_slug = slugify(topic)
+    course_material_path = f"out/course_material/{topic_slug}"
     existing = os.path.exists(f"{course_material_path}/master-outline.json")
 
     if (existing):

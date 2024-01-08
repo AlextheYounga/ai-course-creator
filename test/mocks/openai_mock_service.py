@@ -17,7 +17,7 @@ class OpenAIMockService:
         mock_api.completion.choices[0].message.content = content
         return mock_api.completion
 
-    def send_prompt(self, name: str, _messages: list[dict]):
+    def send_prompt(self, name: str, _messages: list[dict], _quiet: bool = False) -> MagicMock:
         if name == 'skills':
             return self.build_mock_response(EXPECTED_SKILLS_RESPONSE)
         elif name == 'draft-outline':

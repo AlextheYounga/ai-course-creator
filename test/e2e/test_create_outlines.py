@@ -32,5 +32,5 @@ def test_create_outlines():
         builder = MasterOutlineBuilder(topic, ai_client, OUTPUT_PATH)
         master_outline = builder.generate(draft_outline)
 
-        course_list = [c['courseName'] for c in master_outline]
+        course_list = [c['courseName'] for c in master_outline['courses']]
         assert len(course_list) == 15

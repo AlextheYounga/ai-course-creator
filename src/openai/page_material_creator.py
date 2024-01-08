@@ -2,8 +2,9 @@ import os
 from termcolor import colored
 from openai import OpenAI
 from .openai_handler import OpenAiHandler
-from src.utils.files import read_json_file, write_markdown_file
+from src.utils.files import read_json_file, write_markdown_file, write_json_file
 from src.utils.chat_helpers import slugify, get_prompt
+import progressbar
 import inquirer
 import json
 import shutil
@@ -11,18 +12,19 @@ import shutil
 
 class PageMaterialCreator:
     def __init__(self, topic: str, client: OpenAI, output_path: str):
-        topic_formatted = slugify(topic)
+        topic_slug = slugify(topic)
         self.ai_client = client
         self.topic = topic
-        self.topic_formatted = topic_formatted
-        self.output_path = f"{output_path}/{topic_formatted}"
+        self.topic_slug = topic_slug
+        self.output_path = f"{output_path}/{topic_slug}"
         self.outline_path = f"{self.output_path}/master-outline.json"
+        self.master_outline = self.get_topic_outline()
 
         if os.path.exists(f"{self.output_path}/content"):
             shutil.rmtree(f"{self.output_path}/content")
 
 
-    def get_course_outline(self):
+    def get_topic_outline(self):
         if not os.path.exists(self.outline_path):
             raise Exception("Course outline not found.")
 
@@ -33,12 +35,11 @@ class PageMaterialCreator:
             return None
 
 
-    def check_for_existing_material(self, course_name, chapter: dict, page: str):
-        course_name_formatted = slugify(course_name)
-        chapter_name_formatted = slugify(chapter['chapter'])
-        page_name_formatted = slugify(page)
+    def check_for_existing_material(self, course_slug: str, chapter: dict, page: str):
+        chapter_slug = slugify(chapter['chapter'])
+        page_slug = slugify(page)
 
-        saved_material_file = f"{self.output_path}/content/{course_name_formatted}/{chapter_name_formatted}/page-{page_name_formatted}.md"
+        saved_material_file = f"{self.output_path}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md"
         return os.path.exists(saved_material_file)
 
 
@@ -67,43 +68,61 @@ class PageMaterialCreator:
         ]
 
 
-    def create_pages_from_outline(self, outline):
-        for course in outline:
-            course_name = course['courseName']
-            chapters = course['chapters']
-
-            for chapter in chapters:
-                pages = chapter['pages']
-
-                for page in pages:
-                    existing = self.check_for_existing_material(course_name, chapter, page)
-                    if (existing):
-                        print(colored(f"Skipping existing '{page}' page material...", "yellow"))
-                        continue
-
-                    self.generate_page_material(course_name, chapter, page)
-
-
     def generate_page_material(self, course_name, chapter: dict, page: str):
-        course_name_formatted = slugify(course_name)
-        chapter_name_formatted = slugify(chapter['chapter'])
-        page_name_formatted = slugify(page)
+        course_slug = slugify(course_name)
+        chapter_slug = slugify(chapter['chapter'])
+        page_slug = slugify(page)
 
         messages = self.build_page_material_prompt(course_name, chapter, page)
 
         # Send to ChatGPT
-        print(colored(f"Generating '{page}' page material...", "yellow"))
         completion = self.ai_client.send_prompt('page-material', messages)
         material = completion.choices[0].message.content
-        print(colored("Done.", "green"))
 
         # Save responses
-        save_file_name = f"page-{page_name_formatted}"
-        save_path = f"{self.output_path}/content/{course_name_formatted}/{chapter_name_formatted}/{save_file_name}"
+        save_file_name = f"page-{page_slug}"
+        save_path = f"{self.output_path}/content/{course_slug}/{chapter_slug}/{save_file_name}"
         write_markdown_file(save_path, material)
+
+        # Update master outline
+        for course in self.master_outline['courses']:
+            if course['courseName'] == course_name:
+                for c in course['chapters']:
+                    if c['chapter'] == chapter['chapter']:
+                        c['paths'].append(f"{save_path}.md")
+                        break
+                break
 
         return material
 
+
+    def create_pages_from_outline(self):
+        total_count = self.master_outline['totalPages']
+        with progressbar.ProgressBar(max_value=total_count, prefix='Generating pages: ', redirect_stdout=True) as bar:
+            for course in self.master_outline['courses']:
+                course_name = course['courseName']
+                slug = course['slug']
+                chapters = course['chapters']
+
+                # Add paths to master outline
+                course['paths'] = []
+
+                for chapter in chapters:
+                    # Add paths to master outline
+                    chapter['paths'] = []
+                    pages = chapter['pages']
+
+                    for page in pages:
+                        bar.increment()
+                        existing = self.check_for_existing_material(slug, chapter, page)
+                        if (existing):
+                            print(colored(f"Skipping existing '{page}' page material...", "yellow"))
+                            continue
+
+                        self.generate_page_material(course_name, chapter, page)
+
+        write_json_file(self.outline_path, self.master_outline)
+        return self.master_outline
 
 
 
@@ -119,9 +138,7 @@ def process_pages(topics: list[str]):
         ai_client = OpenAiHandler(session_name)
 
         creator = PageMaterialCreator(topic, ai_client, course_material_path)
-
-        outline = creator.get_course_outline()
-        creator.create_pages_from_outline(outline)
+        creator.create_pages_from_outline()
 
 
     print(colored("Complete.", "green"))

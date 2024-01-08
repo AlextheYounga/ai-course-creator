@@ -11,3 +11,4 @@ termcolor
 pyyaml
 Flask
 pytest
+progressbar2
