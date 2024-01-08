@@ -146,7 +146,6 @@ def process_pages(topics: list[str]):
         creator = PageMaterialCreator(topic, ai_client, course_material_path)
         creator.create_pages_from_outline()
 
-
     print(colored("Complete.", "green"))
 
 

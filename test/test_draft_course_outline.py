@@ -1,13 +1,13 @@
 from src.utils.files import read_yaml_file
 from src.openai.outlines.draft_course_outline import OutlineDraft
-from src.openai.openai_handler import OpenAiHandler
+from .mocks.openai_mock_service import OpenAIMockService
 
 OUTPUT_PATH = "test/out"
 REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
 EXPECTED_DRAFT_OUTLINE_RESPONSE = open('test/fixtures/responses/draft-outline.md').read()
 PARSED_SKILLS = read_yaml_file('test/fixtures/data/skills.yaml')
 
-client = OpenAiHandler("Test")
+client = OpenAIMockService("Test")
 draft = OutlineDraft("Ruby on Rails", client, OUTPUT_PATH)
 
 

@@ -1,11 +1,11 @@
 from src.openai.outlines.generate_skills import SkillGenerator
-from src.openai.openai_handler import OpenAiHandler
+from .mocks.openai_mock_service import OpenAIMockService
 
 OUTPUT_PATH = "test/out"
 REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
 EXPECTED_SKILLS_RESPONSE = open('test/fixtures/responses/skills.md').read()
 
-client = OpenAiHandler("Test")
+client = OpenAIMockService("Test")
 generator = SkillGenerator("Ruby on Rails", client, OUTPUT_PATH)
 
 
