@@ -34,7 +34,7 @@ class MasterOutlineBuilder:
             chapters_system_prompt,
         ])
 
-        user_prompt = get_prompt('user/chapters-outline', [
+        user_prompt = get_prompt('user/single-course-outline', [
             ("{course_name}", course_name),
             ("{modules}", yaml.dump(modules))
         ])
