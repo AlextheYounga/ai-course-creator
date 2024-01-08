@@ -105,16 +105,15 @@ class PracticeSkillChallengeCreator:
         chapters_count = sum([len(data['chapters']) for slug, data in self.master_outline['courses'].items()])
 
         with progressbar.ProgressBar(max_value=chapters_count, prefix='Generating practice skill challenges: ', redirect_stdout=True) as bar:
-            bar.init()
-            for _course_slug, course_data in self.master_outline['courses'].items():
-                for _chapter_slug, chapter_data in course_data['chapters'].items():
+            bar.increment()
+            for _, course_data in self.master_outline['courses'].items():
+                for __, chapter_data in course_data['chapters'].items():
                     self.generate_practice_skill_challenge(course_data, chapter_data)
-                    bar.increment()
         return self.master_outline
 
 
 
-def process_topics(topics: list[str]):
+def main(topics: list[str]):
     # Generate series list of courses
     course_material_path = f"out/course_material"
 
@@ -131,7 +130,7 @@ def process_topics(topics: list[str]):
     print(colored("Complete.", "green"))
 
 
-def run_practice_skill_challenge_creator():
+def cli_prompt_user():
     try:
         topics = read_json_file("data/topics.json")
         topic_choices = ['All'] + topics
@@ -147,13 +146,13 @@ def run_practice_skill_challenge_creator():
             answer = choice['topic']
 
             if answer == 'All':
-                process_topics(topics)
+                main(topics)
             else:
-                process_topics([answer])
+                main([answer])
 
     except KeyboardInterrupt:
         print(colored("Exiting...", "red"))
 
 
 if __name__ == "__main__":
-    run_practice_skill_challenge_creator()
+    cli_prompt_user()

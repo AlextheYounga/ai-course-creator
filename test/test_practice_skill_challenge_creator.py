@@ -47,8 +47,8 @@ def test_create_practice_skill_challenges():
         creator = PracticeSkillChallengeCreator(topic, ai_client, OUTPUT_PATH)
         outline = creator.create_practice_skill_challenges_for_chapters()
 
-        for _course_slug, course_data in outline['courses'].items():
-            for _chapter_slug, chapter_data in course_data['chapters'].items():
+        for _, course_data in outline['courses'].items():
+            for __, chapter_data in course_data['chapters'].items():
                 paths = chapter_data['paths']
                 page_names = [p.split('/')[-1] for p in paths]
                 challenge_pages = [p for p in page_names if 'challenge' in p]

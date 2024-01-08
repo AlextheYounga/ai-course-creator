@@ -129,7 +129,7 @@ class PageMaterialCreator:
 
 
 
-def process_pages(topics: list[str]):
+def main(topics: list[str]):
     # Generate series list of courses
     course_material_path = f"out/course_material"
 
@@ -146,7 +146,7 @@ def process_pages(topics: list[str]):
     print(colored("Complete.", "green"))
 
 
-def run_page_creator():
+def cli_prompt_user():
     try:
         topics = read_json_file("data/topics.json")
         topic_choices = ['All'] + topics
@@ -162,13 +162,13 @@ def run_page_creator():
             answer = choice['topic']
 
             if answer == 'All':
-                process_pages(topics)
+                main(topics)
             else:
-                process_pages([answer])
+                main([answer])
 
     except KeyboardInterrupt:
         print(colored("Exiting...", "red"))
 
 
 if __name__ == "__main__":
-    run_page_creator()
+    cli_prompt_user()

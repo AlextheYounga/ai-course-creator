@@ -23,7 +23,7 @@ def check_for_existing_outlines(topic):
     return False
 
 
-def process_topics(topics: list[str]):
+def main(topics: list[str]):
     # Generate series list of courses
     for topic in topics:
         session_name = f"{topic} Outlines"
@@ -43,7 +43,7 @@ def process_topics(topics: list[str]):
             builder = MasterOutlineBuilder(topic, ai_client, COURSE_MATERIAL_PATH)
             master_outline = builder.generate(draft_outline)
 
-            course_list = [course['courseName'] for _slug, course in master_outline['courses'].items()]
+            course_list = [course['courseName'] for _, course in master_outline['courses'].items()]
 
             print(colored("\nCourse list: ", "green"))
             print(colored("\n".join(course_list), "green"))
@@ -51,7 +51,7 @@ def process_topics(topics: list[str]):
     print(colored("\nAll outlines complete.", "green"))
 
 
-def create_outlines():
+def cli_prompt_user():
     try:
         topics = read_json_file("data/topics.json")
         topic_choices = ['All'] + topics
@@ -67,13 +67,13 @@ def create_outlines():
             answer = choice['topic']
 
             if answer == 'All':
-                process_topics(topics)
+                main(topics)
             else:
-                process_topics([answer])
+                main([answer])
 
     except KeyboardInterrupt:
         print(colored("Exiting...", "red"))
 
 
 if __name__ == "__main__":
-    create_outlines()
+    cli_prompt_user()

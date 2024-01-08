@@ -1,11 +1,10 @@
 import shutil
 import os
-from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 from ..mocks.openai_mock_service import OpenAIMockService
 from src.openai.outlines.generate_skills import SkillGenerator
 from src.openai.outlines.draft_course_outline import OutlineDraft
 from src.openai.outlines.build_master_outline import MasterOutlineBuilder
-from src.utils.chat_helpers import slugify
+from src.openai.practice_skill_challenge_creator import PracticeSkillChallengeCreator
 from src.openai.page_material_creator import PageMaterialCreator
 
 OUTPUT_PATH = "test/out"
@@ -40,7 +39,6 @@ def create_outlines(topic: str):
 
 
 def create_page_material(topic: str):
-    # Initialize OpenAI
     session_name = f"{topic} Page Material"
     ai_client = OpenAIMockService(session_name)
 
@@ -48,6 +46,17 @@ def create_page_material(topic: str):
     outline = creator.create_pages_from_outline()
 
     return outline
+
+
+def create_practice_skill_challenges(topic: str):
+    session_name = f"{topic} Practice Skill Challenge"
+    ai_client = OpenAIMockService(session_name)
+
+    creator = PracticeSkillChallengeCreator(topic, ai_client, OUTPUT_PATH)
+    outline = creator.create_practice_skill_challenges_for_chapters()
+
+    return outline
+
 
 
 def test_create_full_course():
@@ -74,3 +83,16 @@ def test_create_full_course():
 
                 for page_slug in chapter_data['pages']:
                     assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md")
+
+
+        # Begin creating practice skill challenges
+        outline = create_practice_skill_challenges(topic)
+
+        # Checking output
+        for _, course_data in outline['courses'].items():
+            for __, chapter_data in course_data['chapters'].items():
+                paths = chapter_data['paths']
+                page_names = [p.split('/')[-1] for p in paths]
+                challenge_pages = [p for p in page_names if 'challenge' in p]
+                
+                assert len(challenge_pages) == 1
