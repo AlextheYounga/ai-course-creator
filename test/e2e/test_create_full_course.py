@@ -35,7 +35,7 @@ def create_outlines(topic: str):
     builder = MasterOutlineBuilder(topic, ai_client, OUTPUT_PATH)
     master_outline = builder.generate(draft_outline)
 
-    course_list = [c['courseName'] for c in master_outline['courses']]
+    course_list = [slug for slug in master_outline['courses']]
     return course_list
 
 
@@ -66,14 +66,11 @@ def test_create_full_course():
         # Checking output
         assert len(os.listdir(f"{OUTPUT_PATH}/{slug}/content")) == 15
 
-        for course in outline['courses']:
-            course_slug = course['slug']
+        for course_slug, course_data in outline['courses'].items():
             assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course_slug}")
 
-            for chapter in course['chapters']:
-                chapter_slug = chapter['slug']
+            for chapter_slug, chapter_data in course_data['chapters'].items():
                 assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course_slug}/{chapter_slug}")
 
-                for page in chapter['pages']:
-                    page_slug = page['slug']
+                for page_slug in chapter_data['pages']:
                     assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md")

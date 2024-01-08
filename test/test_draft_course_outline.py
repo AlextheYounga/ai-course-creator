@@ -32,7 +32,7 @@ def test_parse_draft_response():
 
     for item in data:
         modules = item['modules']
-        
+
         assert item['courseName'] is not None
         assert len(modules) == 2
 

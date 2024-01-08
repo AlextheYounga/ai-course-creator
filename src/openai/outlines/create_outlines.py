@@ -43,7 +43,7 @@ def process_topics(topics: list[str]):
             builder = MasterOutlineBuilder(topic, ai_client, COURSE_MATERIAL_PATH)
             master_outline = builder.generate(draft_outline)
 
-            course_list = [c['courseName'] for c in master_outline['courses']]
+            course_list = [course['courseName'] for _slug, course in master_outline['courses'].items()]
 
             print(colored("\nCourse list: ", "green"))
             print(colored("\n".join(course_list), "green"))

@@ -86,6 +86,10 @@ def zip_folder(folder_path, output_file):
                 zipf.write(file_path, file_path[len_dir_path:])
 
 
+def unzip_folder(zip_file, output_path):
+    with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+        zip_ref.extractall(output_path)
+
 def scan_directory(directory):
     all_files = []
     pathlist = Path(directory).rglob('*')  # This will recursively go through all files and folders

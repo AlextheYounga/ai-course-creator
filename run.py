@@ -9,6 +9,7 @@ def main():
                       choices=[
                           'Generate Course Outlines',
                           'Generate Course Pages',
+                          'Generate Practice Skill Challenges',
                           'Run All',
                       ]),
     ]
@@ -22,6 +23,9 @@ def main():
     elif answer == 'Generate Course Pages':
         from src.openai.page_material_creator import run_page_creator
         run_page_creator()
+    elif answer == 'Generate Practice Skill Challenges':
+        from src.openai.practice_skill_challenge_creator import run_practice_skill_challenge_creator
+        run_practice_skill_challenge_creator()
     elif answer == 'Run All':
         topics = read_json_file("data/topics.json")
         from src.openai.outlines.create_outlines import process_topics

@@ -18,6 +18,7 @@ class PageMaterialCreator:
         self.topic_slug = topic_slug
         self.output_path = f"{output_path}/{topic_slug}"
         self.outline_path = f"{self.output_path}/master-outline.json"
+        self.writing = False
         self.master_outline = {
             **self.get_topic_outline(),
             'allPaths': []
@@ -70,21 +71,13 @@ class PageMaterialCreator:
 
     def update_master_outline(self, course_slug: str, chapter_slug: str, page_slug: str, save_path: str):
         # Update master outline
-        for course_index, course in enumerate(self.master_outline['courses']):
-            if course['slug'] == course_slug:
-                for cid, c in enumerate(course['chapters']):
-                    if c['slug'] == chapter_slug:
-                        page_path = f"{save_path}.md"
-                        self.master_outline['allPaths'].append(page_path)
-                        self.master_outline['courses'][course_index]['paths'].append(page_path)
-                        self.master_outline['courses'][course_index]['chapters'][cid]['paths'].append(page_path)
+        page_path = f"{save_path}.md"
 
-                        for page_index, page in enumerate(course['chapters'][cid]['pages']):
-                            if page['slug'] == page_slug:
-                                self.master_outline['courses'][course_index]['chapters'][cid]['pages'][page_index]['path'] = page_path
-                                break
-                        break
-                break
+        self.master_outline['allPaths'].append(page_path)
+        self.master_outline['courses'][course_slug]['paths'].append(page_path)
+        self.master_outline['courses'][course_slug]['chapters'][chapter_slug]['paths'].append(page_path)
+        self.master_outline['courses'][course_slug]['chapters'][chapter_slug]['pages'][page_slug]['path'] = page_path
+
         with open(self.outline_path, 'w') as json_file:
             json.dump(self.master_outline, json_file)
 
@@ -116,22 +109,22 @@ class PageMaterialCreator:
     def create_pages_from_outline(self):
         total_count = self.master_outline['totalPages']
         with progressbar.ProgressBar(max_value=total_count, prefix='Generating pages: ', redirect_stdout=True) as bar:
-            for course in self.master_outline['courses']:
-                chapters = course['chapters']
+            for course_slug, course_data in self.master_outline['courses'].items():
+                chapters = course_data['chapters']
 
-                for chapter in chapters:
-                    pages = chapter['pages']
+                for chapter_slug, chapter_data in chapters.items():
+                    pages = chapter_data['pages']
 
-                    for page in pages:
-                        page_name = page['name']
+                    for page_slug, page_data in pages.items():
+                        page_name = page_data['name']
                         bar.increment()
-                        existing = self.check_for_existing_material(course['slug'], chapter['slug'], page['slug'])
+                        existing = self.check_for_existing_material(course_slug, chapter_slug, page_slug)
 
                         if (existing):
                             print(colored(f"Skipping existing '{page_name}' page material...", "yellow"))
                             continue
 
-                        self.generate_page_material(course, chapter, page)
+                        self.generate_page_material(course_data, chapter_data, page_data)
         return self.master_outline
 
 

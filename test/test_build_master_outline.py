@@ -11,6 +11,7 @@ PARSED_SKILLS = read_yaml_file('test/fixtures/data/skills.yaml')
 client = OpenAIMockService("Test")
 builder = MasterOutlineBuilder("Ruby on Rails", client, OUTPUT_PATH)
 
+
 def test_build_draft_prompt():
     course_name = PARSED_DRAFT_OUTLINE[0]['courseName']
     modules = PARSED_DRAFT_OUTLINE[0]['modules']

@@ -17,7 +17,7 @@ class MasterOutlineBuilder:
         self.master_outline = {
             'topic': self.topic,
             'totalPages': 0,
-            'courses': []
+            'courses': {}
         }
 
 
@@ -60,35 +60,39 @@ class MasterOutlineBuilder:
         course_object = {
             "courseName": course['courseName'],
             'slug': course_slug,
-            "chapters": [],
+            "chapters": {},
             "pageCount": 0,
             'paths': []  # Will update this later in page material creator
         }
 
         for chapter in parsed_response['dict']:
             # Building chapter object
+            chapter_name = chapter.get('chapter', False) or chapter['name']
+            chapter_slug = slugify(chapter_name)
             chapter_page_count = len(chapter['pages'])
             course_object['pageCount'] += chapter_page_count
 
             chapter_object = {
-                'name': chapter['chapter'],
-                'slug': slugify(chapter['chapter']),
+                'name': chapter_name,
+                'slug': chapter_slug,
                 'pageCount': chapter_page_count,
-                'pages': [],
+                'pages': {},
                 'paths': [],  # Will update this later in page material creator
             }
 
             # Building page object
             for page in chapter['pages']:
-                page_object = {
-                    'name': page,
-                    'slug': slugify(page),
-                }
-                chapter_object['pages'].append(page_object)
-            course_object['chapters'].append(chapter_object)
+                if isinstance(page, str):
+                    page_slug = slugify(page)
+                    page_object = {
+                        'name': page,
+                        'slug': page_slug,
+                    }
+                    chapter_object['pages'][page_slug] = page_object
+            course_object['chapters'][chapter_slug] = chapter_object
 
         self.master_outline['totalPages'] += course_object['pageCount']
-        self.master_outline['courses'].append(course_object)
+        self.master_outline['courses'][course_slug] = course_object
 
 
     def optimize_course_outline(self, course: dict, draft_outline: dict):

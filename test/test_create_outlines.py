@@ -13,8 +13,11 @@ slug = 'ruby-on-rails'
 if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):
     shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
 
-# Semi decent happy path test
+
+
+
 def test_create_outlines():
+    # Semi decent happy path test
     topics = ['Ruby on Rails']
     for topic in topics:
         session_name = f"{topic} Outlines"
@@ -32,5 +35,5 @@ def test_create_outlines():
         builder = MasterOutlineBuilder(topic, ai_client, OUTPUT_PATH)
         master_outline = builder.generate(draft_outline)
 
-        course_list = [c['courseName'] for c in master_outline['courses']]
+        course_list = [slug for slug in master_outline['courses']]
         assert len(course_list) == 15
