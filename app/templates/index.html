@@ -90,9 +90,12 @@
         const tableGroup = $('#table-group')
         const tableRow = $('#table-row')
 
+        tableBody.find('.clone').remove()
+
         if (rows.length === 0) {
             const newRow = tableRow.clone()
             newRow.removeClass('hidden')
+            newRow.addClass('clone')
             newRow.find('.course').text(`No pages found... yet!`)
             tableBody.append(newRow)
             return
@@ -100,19 +103,19 @@
 
         let currentGroup = null
         for (const row of rows) {
-            if (rowIds.includes(row.id)) continue
-            
             if (row.group !== currentGroup) {
                 const newGroup = tableGroup.clone()
                 newGroup.removeClass('hidden')
+                newGroup.addClass('clone')
                 newGroup.text(row.group)
-                tableBody.append(newGroup)
 
+                tableBody.append(newGroup)
                 currentGroup = row.group
             }
 
             const newRow = tableRow.clone()
             newRow.removeClass('hidden')
+            newRow.addClass('clone')
             newRow.find('.course').text(`Course: ${row.course}`)
             newRow.find('.chapter').text(`Chapter: ${row.chapter}`)
             newRow.find('.page').text(row.page)
@@ -127,28 +130,27 @@
             }
 
             tableBody.append(newRow)
-            rowIds.push(row.id)
         }
     }
 
     function displayActivity(data) {
         const logList = $('#log-list')
-        const logLine = $('#initial-log-line')
+        const logLine = $('#log-line')
+
+        logList.find('.clone').remove()
 
         for (line of data) {
             const logId = line.substring(0, 23) // date timestamp
-            if (logIds.includes(logId)) continue
 
             const lineColor = logColor(line)
             const displayText = displayLogText(line)
             const newLine = logLine.clone()
 
             newLine.removeClass('hidden')
+            newLine.addClass('clone')
             newLine.addClass(lineColor)
             newLine.text(displayText)
             logList.append(newLine)
-
-            logIds.push(logId)
         }
     }
 

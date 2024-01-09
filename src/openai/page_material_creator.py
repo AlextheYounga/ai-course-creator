@@ -7,7 +7,6 @@ from src.utils.chat_helpers import slugify, get_prompt
 import progressbar
 import inquirer
 import json
-import shutil
 
 
 class PageMaterialCreator:
@@ -23,10 +22,6 @@ class PageMaterialCreator:
             **self.get_topic_outline(),
             'allPaths': []
         }
-
-        if os.path.exists(f"{self.output_path}/content"):
-            shutil.rmtree(f"{self.output_path}/content")
-
 
     def get_topic_outline(self):
         if not os.path.exists(self.outline_path):
@@ -119,12 +114,14 @@ class PageMaterialCreator:
                         page_name = page_data['name']
                         existing = self.check_for_existing_material(course_slug, chapter_slug, page_slug)
 
+                        bar.increment()
+
                         if (existing):
                             print(colored(f"Skipping existing '{page_name}' page material...", "yellow"))
                             continue
 
                         self.generate_page_material(course_data, chapter_data, page_data)
-                        bar.increment()
+                        
         return self.master_outline
 
 
