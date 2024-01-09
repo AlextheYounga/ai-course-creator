@@ -1,5 +1,6 @@
 function translateToTableRows(data) {
     const rows = []
+
     for (topic of data) {
         if (!Object.keys(topic?.courses)?.length) continue
         const topicSlug = topic.topic.toLowerCase().replaceAll(' ', '-')
@@ -11,20 +12,29 @@ function translateToTableRows(data) {
                 if (!Object.keys(chapterData?.pages)?.length) continue
 
                 for (const [pageSlug, pageData] of Object.entries(chapterData.pages)) {
+
+                    function _generateRowLink() {
+                        if (pageData?.exists && pageData?.path) {
+                            return `/page/${topicSlug}/${courseSlug}/${chapterSlug}/${pageSlug}`
+                        }
+                        return '#'
+                    }
+
                     rows.push({
                         id: `${topicSlug}/${courseSlug}/${chapterSlug}/${pageSlug}`,
-                        group: `Course: ${courseData.courseName}`,
-                        topic: topic.topic,
-                        course: courseData.courseName,
-                        chapter: chapterData.name,
-                        page: pageData.name,
-                        link: pageData.path,
-                        exists: pageData.exists,
+                        group: `${topic.topic} | Course: ${courseData.courseName}`,
+                        topic: topic?.topic ?? 'Not found',
+                        course: courseData?.courseName ?? 'Not found',
+                        chapter: chapterData?.name ?? 'Not found',
+                        page: pageData?.name ?? 'Not found',
+                        link: _generateRowLink(),
+                        exists: pageData?.exists ?? false,
                     })
                 }
             }
         }
     }
+
     return rows
 }
 

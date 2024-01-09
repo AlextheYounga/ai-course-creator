@@ -34,7 +34,10 @@
                         <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                             <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                                 <ul id="table-body" role="list" class="divide-y divide-gray-100">
-                                    <li id="initial-table-row" class="hidden relative flex justify-between py-5">
+                                    <li id="table-group" class="hidden bg-gray-200 text-gray-800 p-1 italic">
+                                        Table Group
+                                    </li>
+                                    <li id="table-row" class="hidden relative flex justify-between py-5">
                                         <div class="flex gap-x-4 pr-6 sm:w-1/2 sm:flex-none">
                                             <div class="min-w-0 flex-auto">
                                                 <p class="text-sm font-semibold leading-6 text-white">
@@ -54,7 +57,7 @@
                                                 <div class="mt-1 flex items-center gap-x-1.5">
                                                     <div class="exists-icon flex-none rounded-full p-1">
                                                         <div class="h-1.5 w-1.5 rounded-full bg-current"></div>
-                                                      </div>
+                                                    </div>
                                                     <p class="exists-label text-xs leading-5 text-gray-200">Created</p>
                                                 </div>
                                             </div>
@@ -83,38 +86,37 @@
 
     function displayTableData(data) {
         const rows = translateToTableRows(data)
-
         const tableBody = $('#table-body')
-        const tableRow = $('#initial-table-row')
-        // const tableGroup = $('#initial-table-group')
+        const tableGroup = $('#table-group')
+        const tableRow = $('#table-row')
 
-
+        if (rows.length === 0) {
+            const newRow = tableRow.clone()
+            newRow.removeClass('hidden')
+            newRow.find('.course').text(`No pages found... yet!`)
+            tableBody.append(newRow)
+            return
+        }
 
         let currentGroup = null
-        console.log(rows)
         for (const row of rows) {
             if (rowIds.includes(row.id)) continue
+            
+            if (row.group !== currentGroup) {
+                const newGroup = tableGroup.clone()
+                newGroup.removeClass('hidden')
+                newGroup.text(row.group)
+                tableBody.append(newGroup)
 
-            // if (row.group !== currentGroup) {
-            //     const newGroup = tableGroup.clone()
-            //     newGroup.removeClass('hidden')
-            //     newGroup.find('th').text(row.group)
-            //     tableBody.append(newGroup)
-
-            //     currentGroup = row.group
-            // }
+                currentGroup = row.group
+            }
 
             const newRow = tableRow.clone()
             newRow.removeClass('hidden')
-            // newRow.find('td').eq(0).text(row.topic)
-            // newRow.find('td').eq(1).text(row.course)
-            // newRow.find('td').eq(2).text(row.chapter)
-            // newRow.find('td').eq(3).text(row.page)
-            // newRow.find('td').eq(4).find('a').attr('href', row.link)
             newRow.find('.course').text(`Course: ${row.course}`)
             newRow.find('.chapter').text(`Chapter: ${row.chapter}`)
             newRow.find('.page').text(row.page)
-            newRow.find('.page').attr('href', `page/${row.id}`)
+            newRow.find('.page').attr('href', row.link)
 
             if (row.exists) {
                 newRow.find('.exists-icon').addClass('text-green-400 bg-green-400/10')
@@ -124,9 +126,7 @@
                 newRow.find('.exists-label').text('Not Generated')
             }
 
-            // newRow.find('td').eq(4).find('a').attr('href', row.link)
             tableBody.append(newRow)
-
             rowIds.push(row.id)
         }
     }
@@ -173,6 +173,10 @@
         }
     }
 
+    function courseCreatorStarted(data) {
+        alert("Course Creator started!")
+    }
+
     function fetchContent() {
         return ajaxFetch('/ajax-fetch-course-material', displayTableData)
     }
@@ -181,14 +185,23 @@
         return ajaxFetch('/ajax-fetch-activity', displayActivity)
     }
 
-    function startPolling() {
-        setInterval(fetchContent, 1000);
-        setInterval(fetchActivity, 1000);
+    function beginCourseGenerator() {
+        return ajaxFetch('/ajax-begin-course-generator', courseCreatorStarted)
     }
 
-    $(document).ready(function() {
+    function startPolling() {
+        setInterval(fetchContent, 5000);
+        setInterval(fetchActivity, 5000);
+    }
+
+    $(document).ready(function () {
         fetchContent()
         fetchActivity()
+
+        $("#course-generator").click(function () {
+            beginCourseGenerator()
+            startPolling()
+        });
     })
 </script>
 

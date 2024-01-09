@@ -4,7 +4,7 @@ from src.utils.chat_helpers import slugify
 from src.utils.files import read_json_file
 import markdown
 
-def find_page_by_keys(topic, course, chapter, page):
+def _find_page_by_keys(topic, course, chapter, page):
     # Slugify keys just in case
     topic_slug = slugify(topic)
     course_slug = slugify(course)
@@ -18,7 +18,9 @@ def find_page_by_keys(topic, course, chapter, page):
     return page_object
 
 
-def render_page(page):
+def render_page(topic, course, chapter, page):
+    page = _find_page_by_keys(topic, course, chapter, page)
+
     current_path = os.getcwd()
     content = open(page['path']).read()
     html = markdown.markdown(content, extensions=['fenced_code'])
@@ -28,13 +30,3 @@ def render_page(page):
         f.write(html)
 
     return render_template("page.html")
-
-
-# def green_stocks():
-#     current_path = os.getcwd()
-#     html_file_path = f"{current_path}/app/templates/partials/green_stocks_table.html"
-    
-#     stocks = get_green_stocks()
-#     stocks.to_html(html_file_path)
-
-#     return render_template("green_stocks.html")
