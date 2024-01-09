@@ -4,6 +4,9 @@
 __deprecated__
 notes
 
+# Templates
+app/templates/partials/page-content.html
+
 # Data
 data/logs/*.log
 out
