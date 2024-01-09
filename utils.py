@@ -18,8 +18,7 @@ def init():
         print("Created. Please add any sensitive information to the .env file.")
         initialized = True
 
-    if (not os.path.exists(LOGS_PATH)) or (not os.path.exists(f"{LOGS_PATH}/chat.log")):
-        os.makedirs(LOGS_PATH, exist_ok=True)
+    if (not os.path.exists(f"{LOGS_PATH}/chat.log")):
         open(f"{LOGS_PATH}/chat.log", 'w').close()
         initialized = True
 
