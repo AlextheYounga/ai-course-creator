@@ -1,6 +1,8 @@
 # flask --app app.app run
 from flask import Flask, jsonify, render_template
-from src.mapping.map_course_material_to_server_payload import *
+from .controllers.base_controller import compile_all_outlines
+from .controllers.page_controller import find_page_by_keys, render_page
+
 
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -10,13 +12,15 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 def home():
     return render_template("index.html")
 
+@app.route('/page/<topic>/<course>/<chapter>/<page>')
+def page(topic, course, chapter, page):
+    page = find_page_by_keys(topic, course, chapter, page)
+    return render_page(page)
+
 
 @app.route('/ajax-fetch-course-material', methods=['POST'])
 def fetch_course_material():
-    # Compiling all course material content in a single object
-    data = map_course_material_to_server_payload()
-
-    # Returning a response back to the AJAX call
+    data = compile_all_outlines()
     return jsonify(data)
 
 

@@ -1,24 +1,25 @@
 function translateToTableRows(data) {
     const rows = []
     for (topic of data) {
-        if (!topic?.courses?.length) continue
+        if (!Object.keys(topic?.courses)?.length) continue
+        const topicSlug = topic.topic.toLowerCase().replaceAll(' ', '-')
 
-        for (course of topic.courses) {
-            if (!course?.chapters?.length) continue
+        for (const [courseSlug, courseData] of Object.entries(topic.courses)) {
+            if (!Object.keys(courseData?.chapters)?.length) continue
 
-            for (chapter of course.chapters) {
-                if (!chapter?.pages?.length) continue
+            for (const [chapterSlug, chapterData] of Object.entries(courseData.chapters)) {
+                if (!Object.keys(chapterData?.pages)?.length) continue
 
-                for (page of chapter.pages) {
+                for (const [pageSlug, pageData] of Object.entries(chapterData.pages)) {
                     rows.push({
-                        id:`${course.slug}-${chapter.slug}-${page.slug}`,
-                        group: `Course: ${course.courseName}`,
+                        id: `${topicSlug}/${courseSlug}/${chapterSlug}/${pageSlug}`,
+                        group: `Course: ${courseData.courseName}`,
                         topic: topic.topic,
-                        course: course.courseName,
-                        chapter: chapter.chapterName,
-                        page: page.pageName,
-                        link: page.path,
-                        generated: page.exists
+                        course: courseData.courseName,
+                        chapter: chapterData.name,
+                        page: pageData.name,
+                        link: pageData.path,
+                        exists: pageData.exists,
                     })
                 }
             }
@@ -45,6 +46,6 @@ function displayLogText(line) {
     if (line.includes('SEND')) {
         return 'SEND: ' + line
     }
-    
+
     return line.substring(0, 100)
 }

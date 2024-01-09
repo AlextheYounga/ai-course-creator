@@ -1,0 +1,33 @@
+<h1>Consuming APIs in a Ruby on Rails Application</h1>
+<p>When it comes to building robust web applications, consuming external APIs in your Ruby on Rails projects can be a game-changer. In this section, we'll explore how to seamlessly integrate and consume APIs within your Ruby on Rails applications. </p>
+<h2>Understanding API Integration</h2>
+<p>Imagine your favorite pizza place delivering mouth-watering pizzas to your doorstep whenever you place an order through their mobile app. This seamless order placement and delivery process involve various services like payment processing, order tracking, and delivery route optimization. These services communicate with the pizza place's main system using APIs. Similarly, in the world of web development, applications often need to communicate with external services and systems using APIs. </p>
+<p>This process of integrating and consuming these external APIs within your Ruby on Rails applications allows you to access a wide range of functionalities, such as fetching data from third-party services, processing payments, or even integrating with social media platforms.</p>
+<h3>Handling API Responses in Ruby on Rails</h3>
+<p>Let's consider an example where you want to integrate a weather API into your Rails application to display the current weather in a specific location. The API request would be sent to the weather service, and the response with the weather data needs to be handled within your Rails application.</p>
+<pre><code class="language-ruby"># Example of consuming an external weather API in Rails
+
+require 'open-uri'
+require 'json'
+
+class WeatherController &lt; ApplicationController
+  def show
+    response = open('https://api.weather.com/forecast')
+    weather_data = JSON.parse(response.read)
+    @current_weather = weather_data['current']
+  end
+end
+</code></pre>
+<p>In this code snippet, we use the <code>open-uri</code> module to make a request to the weather API and the <code>json</code> module to parse the JSON response. We then store the current weather data in the <code>@current_weather</code> variable to be displayed in the view.</p>
+<h3>Interactive Component</h3>
+<div id="answerable-multiple-choice">
+    <p id="question">What modules are used to handle API responses in the given Ruby on Rails example?</p>
+    <select id="choices">
+        <option>HTTP and XML</option>
+        <option>OpenURI and CSV</option>
+        <option id="correct-answer">OpenURI and JSON</option>
+        <option>JSON and XML</option>
+    </select>
+</div>
+
+<p>By embracing API consumption in your Ruby on Rails applications, you open the door to a world of possibilities, making your apps more powerful and capable. In the next section, we'll delve into the intricacies of integrating microservices with Ruby on Rails to further enhance your application's capabilities.</p>
