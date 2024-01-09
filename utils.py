@@ -11,13 +11,20 @@ LOGS_PATH = 'data/logs'
 
 
 def init():
+    initialized = False
     if not os.path.exists('./.env'):
         print(colored("Creating .env file...", "yellow"))
         shutil.copy('.env.example', '.env')
-        open(f"{LOGS_PATH}/chat.log", 'w').close()
+        print("Created. Please add any sensitive information to the .env file.")
+        initialized = True
 
+    if (not os.path.exists(LOGS_PATH)) or (not os.path.exists(f"{LOGS_PATH}/chat.log")):
+        os.makedirs(LOGS_PATH, exist_ok=True)
+        open(f"{LOGS_PATH}/chat.log", 'w').close()
+        initialized = True
+
+    if initialized:
         print(colored("Project initialized.", "green"))
-        print("Please add any sensitive information to the .env file.")
         return
 
     print(colored("Project already initialized.", "yellow"))
