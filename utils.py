@@ -14,6 +14,7 @@ def init():
     if not os.path.exists('./.env'):
         print(colored("Creating .env file...", "yellow"))
         shutil.copy('.env.example', '.env')
+        open(f"{LOGS_PATH}/chat.log", 'w').close()
 
         print(colored("Project initialized.", "green"))
         print("Please add any sensitive information to the .env file.")
@@ -52,6 +53,8 @@ def reset_chat():
 
 
 def clear_logs():
+    if (os.path.exists(f"{LOGS_PATH}/chat.log")):
+        os.remove(f"{LOGS_PATH}/chat.log")
     open(f"{LOGS_PATH}/chat.log", 'w').close()
 
 
