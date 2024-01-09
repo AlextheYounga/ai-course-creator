@@ -1,6 +1,7 @@
 import inquirer
 from termcolor import colored
 from src.utils.files import read_json_file
+from server import run_server
 
 
 def prompt_user_for_topic():
@@ -45,6 +46,7 @@ def main():
                           'Generate Course Pages',
                           'Generate Practice Skill Challenges',
                           'Run All',
+                          'Run Server'
                       ]),
     ]
 
@@ -62,6 +64,8 @@ def main():
         cli_prompt_user()
     elif answer == 'Run All':
         run_all()
+    elif answer == 'Run Server':
+        run_server()
     else:
         "You did not select a subroutine. Exiting..."
 
