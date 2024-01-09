@@ -48,7 +48,7 @@ def main(topics: list[str]):
             print(colored("\nCourse list: ", "green"))
             print(colored("\n".join(course_list), "green"))
 
-    print(colored("\nAll outlines complete.", "green"))
+    print(colored("\nAll outlines complete.\n", "green"))
 
 
 def cli_prompt_user():

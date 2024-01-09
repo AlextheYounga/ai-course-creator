@@ -117,7 +117,6 @@ class PageMaterialCreator:
 
                     for page_slug, page_data in pages.items():
                         page_name = page_data['name']
-                        bar.increment()
                         existing = self.check_for_existing_material(course_slug, chapter_slug, page_slug)
 
                         if (existing):
@@ -125,6 +124,7 @@ class PageMaterialCreator:
                             continue
 
                         self.generate_page_material(course_data, chapter_data, page_data)
+                        bar.increment()
         return self.master_outline
 
 
@@ -143,7 +143,7 @@ def main(topics: list[str]):
         creator = PageMaterialCreator(topic, ai_client, course_material_path)
         creator.create_pages_from_outline()
 
-    print(colored("Complete.", "green"))
+    print(colored("Complete.\n", "green"))
 
 
 def cli_prompt_user():
