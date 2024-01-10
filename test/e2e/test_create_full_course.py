@@ -9,14 +9,10 @@ from src.openai.page_material_creator import PageMaterialCreator
 
 OUTPUT_PATH = "test/out"
 
-# Reset output directory
-slug = 'ruby-on-rails'
-if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):
-    shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
-
-
-
-
+def setup_test():
+    # Reset output directory
+    if (os.path.exists(f"{OUTPUT_PATH}")):
+        shutil.rmtree(f"{OUTPUT_PATH}")
 
 def create_outlines(topic: str):
     session_name = f"{topic} Outlines"
@@ -61,6 +57,9 @@ def create_practice_skill_challenges(topic: str):
 
 def test_create_full_course():
     # Semi decent happy path test
+    setup_test()
+    
+    slug = 'ruby-on-rails'
     topics = ['Ruby on Rails']
     for topic in topics:
         # Begin creating course outlines
@@ -94,5 +93,5 @@ def test_create_full_course():
                 paths = chapter_data['paths']
                 page_names = [p.split('/')[-1] for p in paths]
                 challenge_pages = [p for p in page_names if 'challenge' in p]
-                
+
                 assert len(challenge_pages) == 1

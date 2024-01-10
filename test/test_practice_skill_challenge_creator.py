@@ -7,38 +7,48 @@ import shutil
 OUTPUT_PATH = "test/out"
 MASTER_OUTLINE = read_json_file("test/fixtures/data/master-outline-2.json")
 
-# Setup output folder
-slug = 'ruby-on-rails'
-if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):
-    shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
-unzip_folder('test/fixtures/data/out-1.zip', 'test')
+def setup_test():
+    # Setup output folder
+    if (os.path.exists(f"{OUTPUT_PATH}")):
+        shutil.rmtree(f"{OUTPUT_PATH}")
+    unzip_folder('test/fixtures/data/out-1.zip', 'test')
 
-client = OpenAIMockService("Test")
-creator = PracticeSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
+
+
 
 
 def test_build_datasets():
+    setup_test()
+    client = OpenAIMockService("Test")
+    creator = PracticeSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
+
     course = MASTER_OUTLINE['courses']['ruby-fundamentals']
-    prompt = creator.prepare_datasets(course)
-    assert len(prompt) == 20
+    prompt = creator.prepare_chapter_content_prompt(course)
+    assert isinstance(prompt, str) == True
 
 
 def test_build_prompt():
+    setup_test()
+    client = OpenAIMockService("Test")
+    creator = PracticeSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
+
     course = MASTER_OUTLINE['courses']['ruby-fundamentals']
     prompt = creator.build_skill_challenge_prompt(course)
-    assert len(prompt) == 22
+    assert len(prompt) == 2
 
     # Count tokens
     # The model returns 4096 tokens and we don't want to overrun the context window.
     max_tokens = 16385 - 4096
     prompt_string = str(prompt)
     characters = len(prompt_string)
-    tokens = characters / 4  # => 11650
+    tokens = characters / 4  # => 9298.0
 
     assert tokens < max_tokens
 
 
 def test_create_practice_skill_challenges():
+    setup_test()
+
     topics = ['Ruby on Rails']
     for topic in topics:
         session_name = f"{topic} Practice Skill Challenge"

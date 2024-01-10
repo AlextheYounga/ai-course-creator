@@ -9,17 +9,21 @@ OUTPUT_PATH = "test/out"
 
 
 # Setup paths
-slug = 'ruby-on-rails'
-if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):
-    shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
+def setup_test():
+    slug = 'ruby-on-rails'
+    if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):
+        shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
 
-os.makedirs(f"{OUTPUT_PATH}/{slug}", exist_ok=True)
-shutil.copy(PATHLESS_MASTER_OUTLINE, f"{OUTPUT_PATH}/{slug}/master-outline.json")
+    os.makedirs(f"{OUTPUT_PATH}/{slug}", exist_ok=True)
+    shutil.copy(PATHLESS_MASTER_OUTLINE, f"{OUTPUT_PATH}/{slug}/master-outline.json")
 
 
 
 def test_create_page_material():
     # Semi decent happy path test
+    setup_test()
+
+    slug = 'ruby-on-rails'
     topics = ['Ruby on Rails']
     for topic in topics:
 
