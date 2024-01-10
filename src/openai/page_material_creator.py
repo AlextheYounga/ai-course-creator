@@ -3,7 +3,7 @@ from termcolor import colored
 from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file, write_markdown_file
-from src.utils.chat_helpers import slugify, get_prompt
+from src.utils.chat_helpers import slugify, get_prompt, copy_master_outline_to_yaml
 import progressbar
 import inquirer
 import json
@@ -121,7 +121,8 @@ class PageMaterialCreator:
                             continue
 
                         self.generate_page_material(course_data, chapter_data, page_data)
-                        
+        
+        copy_master_outline_to_yaml(f"{self.outline_path}", self.master_outline)
         return self.master_outline
 
 

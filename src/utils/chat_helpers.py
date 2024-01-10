@@ -1,6 +1,8 @@
 import markdown
 import yaml
 import re
+import os
+import json
 from bs4 import BeautifulSoup
 from typing import Optional
 
@@ -33,3 +35,28 @@ def get_prompt(filename, replace: Optional[list[tuple]]) -> str:
             prompt = prompt.replace(item[0], item[1])
 
     return prompt
+
+
+def copy_master_outline_to_yaml(file_path: str, outline: dict):
+    yaml_outline = []
+    for _, course_data in outline['courses'].items():
+        course = {
+            'course': {
+                'courseName': course_data['courseName'],
+                'chapters': []
+            }
+        }
+
+        for __, chapter_data in course_data['chapters'].items():
+            chapter = {'name': chapter_data['name'], 'pages': []}
+
+            for ___, page_data in chapter_data['pages'].items():
+                name = page_data['name']
+                chapter['pages'].append(name)
+            course['course']['chapters'].append(chapter)
+        yaml_outline.append(course)
+
+
+    directory = os.path.dirname(file_path)
+    with open(f"{directory}/master-outline.yaml", 'w') as yaml_file:
+        yaml.dump(yaml_outline, yaml_file, sort_keys=False)

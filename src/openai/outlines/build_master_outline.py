@@ -1,7 +1,7 @@
 from termcolor import colored
 from openai import OpenAI
 from src.utils.files import write_yaml_file, write_json_file
-from src.utils.chat_helpers import slugify, get_prompt
+from src.utils.chat_helpers import slugify, get_prompt, copy_master_outline_to_yaml
 import progressbar
 import yaml
 
@@ -135,6 +135,7 @@ class MasterOutlineBuilder:
 
 
         write_json_file(f"{self.output_path}/master-outline.json", self.master_outline)
+        copy_master_outline_to_yaml(f"{self.output_path}/master-outline.yaml", self.master_outline)
         print(colored(f"Course outline finalized.", "green"))
 
         return self.master_outline

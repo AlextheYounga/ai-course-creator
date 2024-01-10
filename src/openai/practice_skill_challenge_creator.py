@@ -4,7 +4,7 @@ from termcolor import colored
 from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file, write_markdown_file
-from src.utils.chat_helpers import slugify, get_prompt
+from src.utils.chat_helpers import slugify, get_prompt, copy_master_outline_to_yaml
 import progressbar
 import inquirer
 
@@ -31,18 +31,19 @@ class PracticeSkillChallengeCreator:
             return None
 
 
-    def prepare_datasets(self, course: dict):
-        datasets = []
+    def prepare_chapter_content_prompt(self, course: dict):
+        # Combine all page content into a single string
+        all_pages_content = "The following is all the content from this chapter:\n\n"
         for path in course['paths']:
             if (os.path.exists(path)):
                 page_content = open(path).read()
-                datasets.append({"role": "system", "content": page_content})
-        return datasets
+                all_pages_content += f"{page_content}\n\n"
+        return all_pages_content
 
 
     def build_skill_challenge_prompt(self, course: dict):
-        # Combine multiple system prompts into one
-        datasets = self.prepare_datasets(course)
+        # Combine all page content into a single string
+        all_pages_content = self.prepare_chapter_content_prompt(course)
 
         general_system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
         interactives_system_prompt = get_prompt('system/tune-interactives', None)
@@ -50,6 +51,7 @@ class PracticeSkillChallengeCreator:
         combined_system_prompt = "\n".join([
             general_system_prompt,
             interactives_system_prompt,
+            all_pages_content
         ])
 
         user_prompt = get_prompt('user/practice-skill-challenge', None)
@@ -58,7 +60,7 @@ class PracticeSkillChallengeCreator:
         system_payload = [{"role": "system", "content": combined_system_prompt}]
         user_payload = [{"role": "user", "content": user_prompt}]
 
-        return system_payload + datasets + user_payload
+        return system_payload + user_payload
 
 
     def update_master_outline(self, course_slug: str, chapter_slug: str, page_object: dict):
@@ -109,6 +111,8 @@ class PracticeSkillChallengeCreator:
                 for __, chapter_data in course_data['chapters'].items():
                     bar.increment()
                     self.generate_practice_skill_challenge(course_data, chapter_data)
+
+        copy_master_outline_to_yaml(f"{self.outline_path}", self.master_outline)
         return self.master_outline
 
 
