@@ -31,19 +31,19 @@ class PracticeSkillChallengeCreator:
             return None
 
 
-    def prepare_chapter_content_prompt(self, course: dict):
+    def prepare_chapter_content_prompt(self, chapter: dict):
         # Combine all page content into a single string
-        all_pages_content = "The following is all the content from this chapter:\n\n"
-        for path in course['paths']:
+        chapter_pages_content = "The following is all the content from this chapter:\n\n"
+        for path in chapter['paths']:
             if (os.path.exists(path)):
                 page_content = open(path).read()
-                all_pages_content += f"{page_content}\n\n"
-        return all_pages_content
+                chapter_pages_content += f"{page_content}\n\n"
+        return chapter_pages_content
 
 
-    def build_skill_challenge_prompt(self, course: dict):
+    def build_skill_challenge_prompt(self, chapter: dict):
         # Combine all page content into a single string
-        all_pages_content = self.prepare_chapter_content_prompt(course)
+        all_pages_content = self.prepare_chapter_content_prompt(chapter)
 
         general_system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
         interactives_system_prompt = get_prompt('system/tune-interactives', None)
@@ -80,7 +80,7 @@ class PracticeSkillChallengeCreator:
         chapter_slug = chapter['slug']
         page_slug = 'practice-skill-challenge'
 
-        messages = self.build_skill_challenge_prompt(course)
+        messages = self.build_skill_challenge_prompt(chapter)
 
         # Send to ChatGPT
         completion = self.ai_client.send_prompt('practice-skill-challenge', messages)
