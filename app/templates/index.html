@@ -10,7 +10,9 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <script src="https://mbraak.github.io/jqTree/tree.jquery.js"></script>
+    <link rel="stylesheet" href="https://mbraak.github.io/jqTree/jqtree.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 
@@ -22,7 +24,6 @@
 
         <div class="xl:pl-72">
             <main class="lg:pr-96">
-                <!-- Course Creator list -->
                 <div class="px-4 sm:px-6 lg:px-8">
                     <div class="sm:flex sm:items-center">
                         <div class="sm:flex-auto">
@@ -32,41 +33,9 @@
                     </div>
                     <div class="mt-8 flow-root">
                         <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                                <ul id="table-body" role="list" class="divide-y divide-gray-100">
-                                    <li id="table-group" class="hidden bg-gray-200 text-gray-800 p-1 italic">
-                                        Table Group
-                                    </li>
-                                    <li id="table-row" class="hidden relative flex justify-between py-5">
-                                        <div class="flex gap-x-4 pr-6 sm:w-1/2 sm:flex-none">
-                                            <div class="min-w-0 flex-auto">
-                                                <p class="text-sm font-semibold leading-6 text-white">
-                                                    <a class="page text-indigo-500" href="#">
-                                                        <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                                                        Page Name
-                                                    </a>
-                                                </p>
-                                                <p class="mt-1 flex text-xs leading-5 text-gray-200">
-                                                    <a class="course relative truncate hover:underline">Course</a>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center justify-between gap-x-4 sm:w-1/2 sm:flex-none">
-                                            <div class="hidden sm:block">
-                                                <p class="chapter text-sm leading-6 text-white">Chapter</p>
-                                                <div class="mt-1 flex items-center gap-x-1.5">
-                                                    <div class="exists-icon flex-none rounded-full p-1">
-                                                        <div class="h-1.5 w-1.5 rounded-full bg-current"></div>
-                                                    </div>
-                                                    <p class="exists-label text-xs leading-5 text-gray-200">Created</p>
-                                                </div>
-                                            </div>
-                                            <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                    </li>
-                                </ul>
+                            <!-- Content -->
+                            <div id="content" class="text-white inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                <div id="tree"></div>
                             </div>
                         </div>
                     </div>
@@ -79,108 +48,15 @@
 
 </body>
 
+<script src="{{ url_for('static', filename='custom.js') }}"></script>
+
 <script>
-    // jQuery, what a blast from the past...
-    const rowIds = []
-    const logIds = []
-
-    function displayTableData(data) {
-        const rows = translateToTableRows(data)
-        const tableBody = $('#table-body')
-        const tableGroup = $('#table-group')
-        const tableRow = $('#table-row')
-
-        tableBody.find('.clone').remove()
-
-        if (rows.length === 0) {
-            const newRow = tableRow.clone()
-            newRow.removeClass('hidden')
-            newRow.addClass('clone')
-            newRow.find('.course').text(`No pages found... yet!`)
-            tableBody.append(newRow)
-            return
-        }
-
-        let currentGroup = null
-        for (const row of rows) {
-            if (row.group !== currentGroup) {
-                const newGroup = tableGroup.clone()
-                newGroup.removeClass('hidden')
-                newGroup.addClass('clone')
-                newGroup.text(row.group)
-
-                tableBody.append(newGroup)
-                currentGroup = row.group
-            }
-
-            const newRow = tableRow.clone()
-            newRow.removeClass('hidden')
-            newRow.addClass('clone')
-            newRow.find('.course').text(`Course: ${row.course}`)
-            newRow.find('.chapter').text(`Chapter: ${row.chapter}`)
-            newRow.find('.page').text(row.page)
-            newRow.find('.page').attr('href', row.link)
-
-            if (row.exists) {
-                newRow.find('.exists-icon').addClass('text-green-400 bg-green-400/10')
-                newRow.find('.exists-label').text('Generated')
-            } else {
-                newRow.find('.exists-icon').addClass('text-rose-400 bg-rose-400/10')
-                newRow.find('.exists-label').text('Not Generated')
-            }
-
-            tableBody.append(newRow)
-        }
-    }
-
-    function displayActivity(data) {
-        const logList = $('#log-list')
-        const logLine = $('#log-line')
-
-        logList.find('.clone').remove()
-
-        for (line of data) {
-            const logId = line.substring(0, 23) // date timestamp
-
-            const lineColor = logColor(line)
-            const displayText = displayLogText(line)
-            const newLine = logLine.clone()
-
-            newLine.removeClass('hidden')
-            newLine.addClass('clone')
-            newLine.addClass(lineColor)
-            newLine.text(displayText)
-            logList.append(newLine)
-        }
-    }
-
-    function ajaxFetch(url, callback) {
-        try {
-            $.ajax({
-                url: url,  // the endpoint on your Flask app
-                type: 'POST',  // http method
-                contentType: 'application/json',  // type of data being sent
-                success: function (response) {  // A function to be called if the request succeeds
-                    console.log("Success: ", url);
-                    callback(response)
-                },
-                error: function (xhr) {
-                    // Handle error
-                    console.error("Error occurred: ", xhr);
-                }
-            });
-        } catch (error) {
-            console.error("Error occurred: ", xhr);
-            alert("Error occurred: " + error);
-        }
-    }
-
     function courseCreatorStarted(data) {
         alert("Course Creator started!")
     }
 
     function fetchContent() {
-        return ajaxFetch('/ajax-fetch-course-material', displayTableData)
+        return ajaxFetch('/ajax-fetch-course-material', displayData)
     }
 
     function fetchActivity() {
@@ -205,6 +81,7 @@
             startPolling()
         });
     })
+
 </script>
 
 </html>

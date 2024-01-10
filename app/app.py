@@ -1,4 +1,4 @@
-# flask --app app.app run
+# flask --app app.app run --port 5001
 from flask import Flask, jsonify, render_template
 from .controllers.course_material_controller import compile_course_material
 from .controllers.page_controller import render_page
