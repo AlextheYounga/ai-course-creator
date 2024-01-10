@@ -151,7 +151,10 @@ function createExistsIcon(exists) {
 
 
 function displayData(data) {
+    $('#tree').empty()
+
     const tree = translateToTreeStructure(data)
+    
     $('#tree').tree({
         data: tree,
         autoOpen: true,

@@ -59,4 +59,4 @@ def test_create_practice_skill_challenges():
         creator.create_final_skill_challenges_for_courses()
 
         for course in MASTER_OUTLINE['courses']:
-            assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course}/final-skill-challenge.md")
+            assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course}/final-skill-challenge/final-skill-challenge.md")

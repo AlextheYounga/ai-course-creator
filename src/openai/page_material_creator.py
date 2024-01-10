@@ -19,11 +19,11 @@ class PageMaterialCreator:
         self.outline_path = f"{self.output_path}/master-outline.json"
         self.writing = False
         self.master_outline = {
-            **self.get_topic_outline(),
+            **self.get_master_outline(),
             'allPaths': []
         }
 
-    def get_topic_outline(self):
+    def get_master_outline(self):
         if not os.path.exists(self.outline_path):
             raise Exception("Course outline not found.")
 
@@ -122,7 +122,7 @@ class PageMaterialCreator:
 
                         self.generate_page_material(course_data, chapter_data, page_data)
         
-        copy_master_outline_to_yaml(f"{self.outline_path}", self.master_outline)
+        copy_master_outline_to_yaml(self.outline_path, self.master_outline)
         return self.master_outline
 
 

@@ -17,10 +17,10 @@ class FinalSkillChallengeCreator:
         self.topic_slug = topic_slug
         self.output_path = f"{output_path}/{topic_slug}"
         self.outline_path = f"{self.output_path}/master-outline.json"
-        self.master_outline = self.get_topic_outline()
+        self.master_outline = self.get_master_outline()
 
 
-    def get_topic_outline(self):
+    def get_master_outline(self):
         if not os.path.exists(self.outline_path):
             raise Exception("Course outline not found.")
 
@@ -63,6 +63,28 @@ class FinalSkillChallengeCreator:
         return system_payload + user_payload
 
 
+    def update_master_outline(self, course_slug: str, save_file_path: str):
+        page_path = f"{save_file_path}.md"
+        self.master_outline['allPaths'].append(page_path)
+        self.master_outline['courses'][course_slug]['paths'].append(page_path)
+        self.master_outline['courses'][course_slug]['chapters']['final-skill-challenge'] = {
+            "name": "Final Skill Challenge",
+            "slug": "final-skill-challenge",
+            "paths": [page_path],
+            "pages": {
+                'page-final-skill-challenge': {
+                    "name": 'Final Skill Challenge',
+                    "slug": 'page-final-skill-challenge',
+                    "path": page_path
+                }
+
+            }
+        }
+
+        with open(self.outline_path, 'w') as json_file:
+            json.dump(self.master_outline, json_file)
+
+
     def generate_final_skill_challenge(self, course: dict):
         course_slug = course['slug']
 
@@ -74,8 +96,11 @@ class FinalSkillChallengeCreator:
 
         # Save responses
         save_file_name = "final-skill-challenge"
-        save_path = f"{self.output_path}/content/{course_slug}/{save_file_name}"
+        save_path = f"{self.output_path}/content/{course_slug}/final-skill-challenge/{save_file_name}"
         write_markdown_file(save_path, material)
+
+        # Update master outline with new page
+        self.update_master_outline(course_slug, save_path)
 
         return material
 
@@ -87,6 +112,8 @@ class FinalSkillChallengeCreator:
             for course_data in self.master_outline['courses'].values():
                 bar.increment()
                 self.generate_final_skill_challenge(course_data)
+
+        copy_master_outline_to_yaml(self.outline_path, self.master_outline)
 
 
 
