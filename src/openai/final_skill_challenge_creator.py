@@ -4,7 +4,7 @@ from termcolor import colored
 from openai import OpenAI
 from .openai_handler import OpenAiHandler
 from src.utils.files import read_json_file, write_markdown_file
-from src.utils.chat_helpers import slugify, get_prompt
+from src.utils.chat_helpers import slugify, get_prompt, copy_master_outline_to_yaml
 import progressbar
 import inquirer
 
@@ -31,18 +31,19 @@ class FinalSkillChallengeCreator:
             return None
 
 
-    def prepare_datasets(self, course: dict):
-        datasets = []
+    def prepare_course_content_prompt(self, course: dict):
+        # Combine all page content into a single string
+        course_pages_content = "The following is all the content from this course:\n\n"
         for path in course['paths']:
             if (os.path.exists(path)):
                 page_content = open(path).read()
-                datasets.append({"role": "system", "content": page_content})
-        return datasets
+                course_pages_content += f"{page_content}\n\n"
+        return course_pages_content
 
 
     def build_skill_challenge_prompt(self, course: dict):
-        # Combine multiple system prompts into one
-        datasets = self.prepare_datasets(course)
+        # Combine all page content into a single string
+        all_pages_content = self.prepare_course_content_prompt(course)
 
         general_system_prompt = get_prompt('system/general', [("{topic}", self.topic)])
         interactives_system_prompt = get_prompt('system/tune-interactives', None)
@@ -50,66 +51,42 @@ class FinalSkillChallengeCreator:
         combined_system_prompt = "\n".join([
             general_system_prompt,
             interactives_system_prompt,
+            all_pages_content
         ])
 
-        user_prompt = get_prompt('user/practice-skill-challenge', None)
+        user_prompt = get_prompt('user/final-skill-challenge', None)
 
         # Build message payload
         system_payload = [{"role": "system", "content": combined_system_prompt}]
         user_payload = [{"role": "user", "content": user_prompt}]
 
-        return system_payload + datasets + user_payload
+        return system_payload + user_payload
 
 
-    def update_master_outline(self, course_slug: str, chapter_slug: str, page_object: dict):
-        page_path = page_object['path']
-
-        self.master_outline['allPaths'].append(page_path)
-        self.master_outline['courses'][course_slug]['paths'].append(page_path)
-        self.master_outline['courses'][course_slug]['chapters'][chapter_slug]['paths'].append(page_path)
-        self.master_outline['courses'][course_slug]['chapters'][chapter_slug]['pages'][page_object['slug']] = page_object
-
-        with open(self.outline_path, 'w') as json_file:
-            json.dump(self.master_outline, json_file)
-
-
-    def generate_practice_skill_challenge(self, course: dict, chapter: dict):
+    def generate_final_skill_challenge(self, course: dict):
         course_slug = course['slug']
-        chapter_slug = chapter['slug']
-        page_slug = 'practice-skill-challenge'
 
         messages = self.build_skill_challenge_prompt(course)
 
         # Send to ChatGPT
-        completion = self.ai_client.send_prompt('practice-skill-challenge', messages)
+        completion = self.ai_client.send_prompt('final-skill-challenge', messages)
         material = completion.choices[0].message.content
 
         # Save responses
-        save_file_name = f"challenge-{page_slug}"
-        save_path = f"{self.output_path}/content/{course_slug}/{chapter_slug}/{save_file_name}"
+        save_file_name = "final-skill-challenge"
+        save_path = f"{self.output_path}/content/{course_slug}/{save_file_name}"
         write_markdown_file(save_path, material)
-
-        page_object = {
-            "name": 'Practice Skill Challenge',
-            "slug": page_slug,
-            "path": f"{save_path}.md"
-        }
-
-        # Update master outline with new page
-        self.update_master_outline(course_slug, chapter_slug, page_object)
 
         return material
 
 
-    def create_practice_skill_challenges_for_chapters(self):
-        chapters_count = sum([len(data['chapters']) for _, data in self.master_outline['courses'].items()])
+    def create_final_skill_challenges_for_courses(self):
+        courses_count = len([slug for slug in self.master_outline['courses']])
 
-        with progressbar.ProgressBar(max_value=chapters_count, prefix='Generating practice skill challenges: ', redirect_stdout=True) as bar:
-            for _, course_data in self.master_outline['courses'].items():
-                for __, chapter_data in course_data['chapters'].items():
-                    bar.increment()
-                    self.generate_practice_skill_challenge(course_data, chapter_data)
-        return self.master_outline
+        with progressbar.ProgressBar(max_value=courses_count, prefix='Generating final skill challenges: ', redirect_stdout=True) as bar:
+            for course_data in self.master_outline['courses'].values():
+                bar.increment()
+                self.generate_final_skill_challenge(course_data)
 
 
 
@@ -118,14 +95,14 @@ def main(topics: list[str]):
     course_material_path = f"out/course_material"
 
     for topic in topics:
-        print(colored(f"Begin generating {topic} practice skill challenges...", "yellow"))
+        print(colored(f"Begin generating {topic} final skill challenges...", "yellow"))
 
         # Initialize OpenAI
-        session_name = f"{topic} Practice Skill Challenge"
+        session_name = f"{topic} Final Skill Challenge"
         ai_client = OpenAiHandler(session_name)
 
-        creator = PracticeSkillChallengeCreator(topic, ai_client, course_material_path)
-        creator.create_practice_skill_challenges_for_chapters()
+        creator = FinalSkillChallengeCreator(topic, ai_client, course_material_path)
+        creator.create_final_skill_challenges_for_courses()
 
     print(colored("Complete.\n", "green"))
 
@@ -137,7 +114,7 @@ def cli_prompt_user():
 
         choices = [
             inquirer.List('topic',
-                          message="Which topic would you like to generate practice skill challenges for?",
+                          message="Which topic would you like to generate final skill challenges for?",
                           choices=topic_choices),
         ]
 

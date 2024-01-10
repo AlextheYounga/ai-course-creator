@@ -1,5 +1,5 @@
-from src.utils.files import read_json_file, unzip_folder, scan_directory
-from src.openai.practice_skill_challenge_creator import PracticeSkillChallengeCreator
+from src.utils.files import read_json_file, unzip_folder
+from src.openai.final_skill_challenge_creator import FinalSkillChallengeCreator
 from .mocks.openai_mock_service import OpenAIMockService
 import os
 import shutil
@@ -20,17 +20,17 @@ def setup_test():
 def test_build_datasets():
     setup_test()
     client = OpenAIMockService("Test")
-    creator = PracticeSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
+    creator = FinalSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
 
     course = MASTER_OUTLINE['courses']['ruby-fundamentals']
-    prompt = creator.prepare_chapter_content_prompt(course)
+    prompt = creator.prepare_course_content_prompt(course)
     assert isinstance(prompt, str) == True
 
 
 def test_build_prompt():
     setup_test()
     client = OpenAIMockService("Test")
-    creator = PracticeSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
+    creator = FinalSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
 
     course = MASTER_OUTLINE['courses']['ruby-fundamentals']
     prompt = creator.build_skill_challenge_prompt(course)
@@ -49,17 +49,14 @@ def test_build_prompt():
 def test_create_practice_skill_challenges():
     setup_test()
 
+    slug = 'ruby-on-rails'
     topics = ['Ruby on Rails']
     for topic in topics:
         session_name = f"{topic} Practice Skill Challenge"
         ai_client = OpenAIMockService(session_name)
 
-        creator = PracticeSkillChallengeCreator(topic, ai_client, OUTPUT_PATH)
-        outline = creator.create_practice_skill_challenges_for_chapters()
+        creator = FinalSkillChallengeCreator(topic, ai_client, OUTPUT_PATH)
+        creator.create_final_skill_challenges_for_courses()
 
-        for course_data in outline['courses'].values():
-            for chapter_data in course_data['chapters'].values():
-                paths = chapter_data['paths']
-                page_names = [p.split('/')[-1] for p in paths]
-                challenge_pages = [p for p in page_names if 'challenge' in p]
-                assert len(challenge_pages) == 1
+        for course in MASTER_OUTLINE['courses']:
+            assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course}/final-skill-challenge.md")

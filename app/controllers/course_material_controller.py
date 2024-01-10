@@ -19,7 +19,7 @@ def _get_slugs_from_path(path):
 
 def _scan_material_for_existing(outline: dict) -> dict:
     # Update the outline with the existing files
-    for _, data in outline['courses'].items():
+    for data in outline['courses'].values():
         for path in data['paths']:
             exists = os.path.exists(path)
             course_slug, chapter_slug, page_slug = _get_slugs_from_path(path)

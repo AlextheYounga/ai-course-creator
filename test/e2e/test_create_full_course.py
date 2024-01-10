@@ -88,8 +88,8 @@ def test_create_full_course():
         outline = create_practice_skill_challenges(topic)
 
         # Checking output
-        for _, course_data in outline['courses'].items():
-            for __, chapter_data in course_data['chapters'].items():
+        for course_data in outline['courses'].values():
+            for chapter_data in course_data['chapters'].values():
                 paths = chapter_data['paths']
                 page_names = [p.split('/')[-1] for p in paths]
                 challenge_pages = [p for p in page_names if 'challenge' in p]

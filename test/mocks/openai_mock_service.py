@@ -29,5 +29,7 @@ class OpenAIMockService:
             return self.build_mock_response(EXPECTED_PAGE_RESPONSE)
         elif name == 'practice-skill-challenge':
             return self.build_mock_response(EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE)
+        elif name == 'final-skill-challenge':
+            return self.build_mock_response(EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE)
         else:
             return None

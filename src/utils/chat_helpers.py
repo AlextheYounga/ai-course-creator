@@ -39,7 +39,7 @@ def get_prompt(filename, replace: Optional[list[tuple]]) -> str:
 
 def copy_master_outline_to_yaml(file_path: str, outline: dict):
     yaml_outline = []
-    for _, course_data in outline['courses'].items():
+    for course_data in outline['courses'].values():
         course = {
             'course': {
                 'courseName': course_data['courseName'],
@@ -47,10 +47,10 @@ def copy_master_outline_to_yaml(file_path: str, outline: dict):
             }
         }
 
-        for __, chapter_data in course_data['chapters'].items():
+        for chapter_data in course_data['chapters'].values():
             chapter = {'name': chapter_data['name'], 'pages': []}
 
-            for ___, page_data in chapter_data['pages'].items():
+            for page_data in chapter_data['pages'].values():
                 name = page_data['name']
                 chapter['pages'].append(name)
             course['course']['chapters'].append(chapter)

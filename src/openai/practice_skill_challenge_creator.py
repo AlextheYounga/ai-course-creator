@@ -104,11 +104,11 @@ class PracticeSkillChallengeCreator:
 
 
     def create_practice_skill_challenges_for_chapters(self):
-        chapters_count = sum([len(data['chapters']) for _, data in self.master_outline['courses'].items()])
+        chapters_count = sum([len(data['chapters']) for data in self.master_outline['courses'].values()])
 
         with progressbar.ProgressBar(max_value=chapters_count, prefix='Generating practice skill challenges: ', redirect_stdout=True) as bar:
-            for _, course_data in self.master_outline['courses'].items():
-                for __, chapter_data in course_data['chapters'].items():
+            for course_data in self.master_outline['courses'].values():
+                for chapter_data in course_data['chapters'].values():
                     bar.increment()
                     self.generate_practice_skill_challenge(course_data, chapter_data)
 

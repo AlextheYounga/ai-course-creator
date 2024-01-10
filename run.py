@@ -29,12 +29,16 @@ def run_all():
     from src.openai.outlines.create_outlines import main as run_create_outlines
     from src.openai.page_material_creator import main as run_create_pages
     from src.openai.practice_skill_challenge_creator import main as run_create_practice_skill_challenges
+    from src.openai.final_skill_challenge_creator import main as run_create_final_skill_challenges
 
     topics = prompt_user_for_topic()
-
-    run_create_outlines(topics)
-    run_create_pages(topics)
-    run_create_practice_skill_challenges(topics)
+    print(colored(f"Begin all topics course generation...", "yellow"))
+    for topic in topics:
+        print(colored(f"Begin generating {topic} course...", "yellow"))
+        run_create_outlines([topic])
+        run_create_pages([topic])
+        run_create_practice_skill_challenges([topic])
+        run_create_final_skill_challenges([topic])
 
 
 def main():
@@ -45,6 +49,7 @@ def main():
                           'Generate Course Outlines',
                           'Generate Course Pages',
                           'Generate Practice Skill Challenges',
+                          'Generate Final Skill Challenges',
                           'Run All',
                           'Run Server'
                       ]),
@@ -62,10 +67,14 @@ def main():
     elif answer == 'Generate Practice Skill Challenges':
         from src.openai.practice_skill_challenge_creator import cli_prompt_user
         cli_prompt_user()
+    elif answer == 'Generate Final Skill Challenges':
+        from src.openai.final_skill_challenge_creator import cli_prompt_user
+        cli_prompt_user()
     elif answer == 'Run All':
         run_all()
     elif answer == 'Run Server':
         run_server()
+
     else:
         "You did not select a subroutine. Exiting..."
 
