@@ -9,10 +9,14 @@ def _get_slugs_from_path(path):
     chapter_slug = dirs.pop()
     course_slug = dirs.pop()
 
-    if ('page-' in page_slug):
-        page_slug = page_slug.split('page-')[1].replace('.md', '')
-    if ('challenge-' in page_slug):
-        page_slug = page_slug.split('challenge-')[1].replace('.md', '')
+    # TODO: This is a little wonky 
+    if ('final-skill-challenge' in page_slug):
+        page_slug = 'page-final-skill-challenge'
+    else:
+        if ('page-' in page_slug):
+            page_slug = page_slug.split('page-')[1].replace('.md', '')
+        if ('challenge-' in page_slug):
+            page_slug = page_slug.split('challenge-')[1].replace('.md', '')
 
     return course_slug, chapter_slug, page_slug
 
@@ -35,14 +39,14 @@ def compile_course_material():
     material_path = f"{current_path}/out/course_material"
     data = []
 
-    if (not os.path.exists(material_path)): 
+    if (not os.path.exists(material_path)):
         return data
 
-    if (len(os.listdir(material_path)) > 0): 
+    if (len(os.listdir(material_path)) > 0):
         for dir in os.listdir(material_path):
             outline_path = f"{material_path}/{dir}/master-outline.json"
 
-            if (not os.path.exists(outline_path)): 
+            if (not os.path.exists(outline_path)):
                 continue
 
             outline = read_json_file(outline_path)
