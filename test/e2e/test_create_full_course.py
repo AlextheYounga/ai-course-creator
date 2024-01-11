@@ -7,7 +7,7 @@ from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 from src.openai.practice_skill_challenge_creator import PracticeSkillChallengeCreator
 from src.openai.page_material_creator import PageMaterialCreator
 
-OUTPUT_PATH = "test/out"
+OUTPUT_PATH = "test/out/course_material"
 
 def setup_test():
     # Reset output directory
@@ -66,13 +66,13 @@ def test_create_full_course():
         course_list = create_outlines(topic)
 
         # Checking output
-        assert len(course_list) == 15
+        assert len(course_list) == 7
 
         # Begin creating page material
         outline = create_page_material(topic)
 
         # Checking output
-        assert len(os.listdir(f"{OUTPUT_PATH}/{slug}/content")) == 15
+        assert len(os.listdir(f"{OUTPUT_PATH}/{slug}/content")) == 7
 
         for course_slug, course_data in outline['courses'].items():
             assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course_slug}")

@@ -6,6 +6,7 @@ EXPECTED_DRAFT_OUTLINE_RESPONSE = open('test/fixtures/responses/draft-outline.md
 EXPECTED_SKILLS_RESPONSE = open('test/fixtures/responses/skills.md').read()
 EXPECTED_PAGE_RESPONSE = open('test/fixtures/responses/page.md').read()
 EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE = open('test/fixtures/responses/practice-skill-challenge.md').read()
+EXPECTED_FINAL_SKILL_CHALLENGE_RESPONSE = open('test/fixtures/responses/final-skill-challenge.md').read()
 
 
 class OpenAIMockService:
@@ -30,6 +31,6 @@ class OpenAIMockService:
         elif name == 'practice-skill-challenge':
             return self.build_mock_response(EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE)
         elif name == 'final-skill-challenge':
-            return self.build_mock_response(EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE)
+            return self.build_mock_response(EXPECTED_FINAL_SKILL_CHALLENGE_RESPONSE)
         else:
             return None

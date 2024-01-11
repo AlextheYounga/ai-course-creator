@@ -1,40 +1,14 @@
-Here is the chapter outline for the "Ruby Fundamentals" course, including practice skill challenge chapters:
-
 ```yaml
-- chapter: Introduction to Ruby
+- chapter: Understanding Basic Programming Concepts
   pages:
-    - Welcome to Ruby Fundamentals
-    - What is Ruby?
-    - Setting Up Your Ruby Environment
-    - Your First Ruby Program
+    - Chapter Introduction Page
+    - What Are Variables and Why Are They Important?
+    - Exploring Loops and Their Application in Programming
+    - Understanding Conditional Statements in Programming
 
-- chapter: Understanding Basic Ruby Syntax
+- chapter: Getting Started with Ruby on Rails
   pages:
-    - Variables in Ruby
-    - Data Types in Ruby
-    - Working with Strings
-    - Working with Numbers
-
-- chapter: Control Flow in Ruby
-  pages:
-    - Conditional Statements (if, else, elsif)
-    - Loops (while, for, until)
-    - Working with Arrays
-    - Working with Hashes
-
-- chapter: Ruby Methods
-  pages:
-    - Introduction to Methods
-    - Defining and Calling Methods
-    - Method Parameters and Return Values
-    - Common Built-in Ruby Methods
-
-- chapter: Ruby Classes
-  pages:
-    - Introduction to Object-Oriented Programming (OOP)
-    - Defining Classes and Objects
-    - Instance Variables and Methods
-    - Inheritance and Polymorphism
+    - Chapter Introduction Page
+    - Understanding the Model-View-Controller (MVC) Design Pattern
+    - Installation and Setup of Ruby on Rails and Its Dependencies
 ```
-
-Each chapter concludes with a "Practice Skill Challenge Chapter" where students can apply what they've learned with practice problems. This approach ensures that students have a chance to reinforce their understanding of the material before moving on to the next chapter.

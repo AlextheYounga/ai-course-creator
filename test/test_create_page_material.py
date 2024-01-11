@@ -5,7 +5,7 @@ from .mocks.openai_mock_service import OpenAIMockService
 
 # What the outline looks like before we run page material creator
 PATHLESS_MASTER_OUTLINE = 'test/fixtures/data/master-outline-1.json'
-OUTPUT_PATH = "test/out"
+OUTPUT_PATH = "test/out/course_material"
 
 
 # Setup paths
@@ -33,7 +33,7 @@ def test_create_page_material():
         creator = PageMaterialCreator(topic, ai_client, OUTPUT_PATH)
         outline = creator.create_pages_from_outline()
 
-        assert len(os.listdir(f"{OUTPUT_PATH}/{slug}/content")) == 15
+        assert len(os.listdir(f"{OUTPUT_PATH}/{slug}/content")) == 7
 
         for course_slug, course_data in outline['courses'].items():
             assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course_slug}")

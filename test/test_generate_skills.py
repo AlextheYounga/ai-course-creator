@@ -1,7 +1,7 @@
 from src.openai.outlines.generate_skills import SkillGenerator
 from .mocks.openai_mock_service import OpenAIMockService
 
-OUTPUT_PATH = "test/out"
+OUTPUT_PATH = "test/out/course_material"
 REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
 EXPECTED_SKILLS_RESPONSE = open('test/fixtures/responses/skills.md').read()
 
@@ -26,7 +26,7 @@ def test_parse_skills_response():
     skills = generator.handle_skills_response(EXPECTED_SKILLS_RESPONSE)
     data = skills['dict']
 
-    assert len(data) == 15
+    assert len(data) == 8
 
     for item in data:
         assert item['category'] is not None

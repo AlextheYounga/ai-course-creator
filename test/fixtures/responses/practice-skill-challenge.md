@@ -1,44 +1,64 @@
-# Practice Skill Challenge
+### Practice Skill Challenge
 
-Now that you've learned the fundamentals of Ruby programming, it's time to put your knowledge to the test! Answer the following practice problems to solidify your understanding of the concepts we've covered.
+#### Question 1
+Why are database indexes crucial for optimizing the performance of database queries?
 
-## Problem 1
-### Multiple Choice
-What data type is used to store text in Ruby?
-<select id="choices">
-    <option>Integers</option>
-    <option id="correct-answer">Strings</option>
-    <option>Floating-point numbers</option>
-    <option>Booleans</option>
-</select>
+- A) Decrease query speed
+- B) Faster data modification operations
+- C) Improved data retrieval speed
+- D) Increased storage space
 
-## Problem 2
-### Fill in the Blank
-What Ruby method is used to get input from the user and remove the trailing newline character?
-Correct Answer: <div id="answerable-fill-blank">
-    <p id="correct-answer">gets.chomp</p>
+<div id="answerable-multiple-choice">
+    <p id="question">Why are database indexes crucial for optimizing the performance of database queries?</p>
+    <select id="choices">
+        <option>Decrease query speed</option>
+        <option>Faster data modification operations</option>
+        <option id="correct-answer">Improved data retrieval speed</option>
+        <option>Increased storage space</option>
+    </select>
 </div>
 
-## Problem 3
-### Code Editor/Code Executor
-Write a Ruby program that prints "Welcome to Ruby Programming" to the console.
-<p id="correct-answer">Welcome to Ruby Programming</p>
+#### Question 2
+How does a database index resemble the concept of a library index?
 
-## Problem 4
-### Multiple Choice
-Which component maintains the order of method calls in Ruby?
-<select id="choices">
-    <option>The Ruby Interpreter</option>
-    <option id="correct-answer">The Call Stack</option>
-    <option>The Code Execution Flow</option>
-    <option>The Ruby Compiler</option>
-</select>
-
-## Problem 5
-### Fill in the Blank
-Control structures in programming are used to ____________________________.
-Correct Answer: <div id="answerable-fill-blank">
-    <p id="correct-answer">make decisions and execute specific code based on given conditions.</p>
+<div id="answerable-fill-blank">
+    <p id="question">How does a database index resemble the concept of a library index?</p>
+    <p id="correct-answer">In a similar way to how a library index helps find books efficiently, a database index helps retrieve data quickly from large datasets.</p>
 </div>
 
-Complete these practice problems to challenge and reinforce your understanding of Ruby programming. Good luck!
+#### Question 3
+What is the primary benefit of using database transactions in Rails?
+
+- A) Ensuring data is stored without validation
+- B) Maintaining data integrity and consistency
+- C) Increasing database performance
+- D) Interfering with concurrent database operations
+
+<div id="answerable-multiple-choice">
+    <p id="question">What is the purpose of using database transactions in Rails?</p>
+    <select id="choices">
+        <option>Ensuring data is stored without validation</option>
+        <option id="correct-answer">Maintaining data integrity and consistency</option>
+        <option>Increasing database performance</option>
+        <option>Interfering with concurrent database operations</option>
+    </select>
+</div>
+
+#### Question 4
+Explain the potential downside of over-indexing in a database.
+
+<div id="answerable-fill-blank">
+    <p id="question">Explain the potential downside of over-indexing in a database.</p>
+    <p id="correct-answer">Over-indexing can lead to decreased performance, much like cluttering a book with an excessive number of bookmarks, making it harder to navigate.</p>
+</div>
+
+#### Question 5
+Write a program that uses a database transaction to update two tables in a Rails application.
+
+<div id="answerable-code-editor">
+    <p id="question">Write a program that uses a database transaction to update two tables in a Rails application.</p>
+    <p id="correct-answer">ActiveRecord::Base.transaction do
+  account.debit!(amount)
+  recipient_account.credit!(amount)
+end</p>
+</div>

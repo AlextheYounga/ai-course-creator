@@ -1,10 +1,10 @@
-from src.utils.files import read_json_file, unzip_folder, scan_directory
+from src.utils.files import read_json_file, unzip_folder
 from src.openai.practice_skill_challenge_creator import PracticeSkillChallengeCreator
 from .mocks.openai_mock_service import OpenAIMockService
 import os
 import shutil
 
-OUTPUT_PATH = "test/out"
+OUTPUT_PATH = "test/out/course_material"
 MASTER_OUTLINE = read_json_file("test/fixtures/data/master-outline-2.json")
 
 def setup_test():
@@ -22,7 +22,7 @@ def test_build_datasets():
     client = OpenAIMockService("Test")
     creator = PracticeSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
 
-    course = MASTER_OUTLINE['courses']['ruby-fundamentals']
+    course = MASTER_OUTLINE['courses']['working-with-databases-in-rails']
     prompt = creator.prepare_chapter_content_prompt(course)
     assert isinstance(prompt, str) == True
 
@@ -32,7 +32,7 @@ def test_build_prompt():
     client = OpenAIMockService("Test")
     creator = PracticeSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
 
-    course = MASTER_OUTLINE['courses']['ruby-fundamentals']
+    course = MASTER_OUTLINE['courses']['working-with-databases-in-rails']
     prompt = creator.build_skill_challenge_prompt(course)
     assert len(prompt) == 2
 
@@ -62,4 +62,4 @@ def test_create_practice_skill_challenges():
                 paths = chapter_data['paths']
                 page_names = [p.split('/')[-1] for p in paths]
                 challenge_pages = [p for p in page_names if 'challenge' in p]
-                assert len(challenge_pages) == 1
+                assert len(challenge_pages) == 2

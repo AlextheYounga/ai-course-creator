@@ -1,149 +1,77 @@
-- courseName: Ruby Fundamentals
-  modules:
-    - name: Introduction to Ruby
-      skills:
-        - Understanding basic Ruby syntax and data types
-        - Familiarity with variables, loops, and conditional statements in Ruby
-    - name: Ruby Methods and Classes
-      skills:
-        - Knowledge of Ruby methods and classes
 
-- courseName: Web Development Basics
+- courseName: Introduction to Web Development
   modules:
-    - name: HTML and CSS Fundamentals
+    - name: Understanding Basic Programming Concepts
       skills:
-        - Understanding of HTML and CSS
-    - name: Web Servers and HTTP
+        - Understanding basic programming concepts such as variables, loops, and conditionals
+        - Familiarity with HTML, CSS, and JavaScript
+    - name: Getting Started with Ruby on Rails
       skills:
-        - Basics of how web servers and browsers work
-        - Familiarity with HTTP protocols and request/response cycle
+        - Understanding the Model-View-Controller (MVC) design pattern
+        - Installation and setup of Ruby on Rails and its dependencies
 
-- courseName: Database Concepts
+- courseName: Working with Databases in Rails
   modules:
-    - name: Introduction to Databases
+    - name: Defining Models and Database Interactions
       skills:
-        - Introduction to databases and data modeling
-    - name: SQL and Database Design
+        - Defining and using database models in Rails
+        - Utilizing ActiveRecord for database interactions
+    - name: Database Migrations and Relationships
       skills:
-        - Knowledge of SQL (Structured Query Language)
-        - Understanding of database design principles
+        - Understanding database migrations and relationships
+        - Implementing database relationships
 
-- courseName: Introduction to Ruby on Rails
+- courseName: Managing Controllers and Views
   modules:
-    - name: Getting Started with Rails
+    - name: Creating and Managing Controllers
       skills:
-        - Installing Ruby on Rails on your computer
-        - Creating a new Rails application
-    - name: Rails Directory Structure
+        - Creating and managing controllers for handling HTTP requests
+        - Understanding routing and RESTful conventions in Rails
+    - name: Implementing Views and Layouts
       skills:
-        - Understanding the Rails directory structure
+        - Implementing views and layouts for the user interface
+        - Utilizing partials and view helpers
 
-- courseName: Model-View-Controller (MVC) Architecture
+- courseName: User Authentication and Authorization in Rails
   modules:
-    - name: MVC Fundamentals
+    - name: Implementing User Authentication
       skills:
-        - Understanding the MVC pattern and its importance in Rails
-    - name: Building MVC Components
+        - Implementing user authentication with Devise or other authentication gems
+        - Handling user sessions and cookies
+    - name: Managing User Authorization
       skills:
-        - Creating models, views, and controllers in Rails
-        - How data flows between models, views, and controllers
+        - Managing user authorization and access control
+        - Using role-based access control (RBAC) in Rails
 
-- courseName: Routing and URL Handling
+- courseName: Testing and Debugging Rails Applications
   modules:
-    - name: Configuring Routes
+    - name: Writing and Running Tests
       skills:
-        - Configuring routes in a Rails application
-        - Handling different URL patterns
-    - name: Advanced Routing
+        - Writing and running tests with RSpec or other testing frameworks
+        - Understanding test-driven development (TDD) in Rails
+    - name: Debugging and Error Handling
       skills:
-        - Using route parameters and named routes
+        - Debugging Rails applications using tools like byebug or pry
+        - Utilizing logging and error handling to troubleshoot issues
 
-- courseName: ActiveRecord and Databases
+- courseName: Working with APIs and Integrations in Rails
   modules:
-    - name: Working with ActiveRecord
+    - name: Consuming External APIs
       skills:
-        - Using ActiveRecord for database operations
-        - Creating and migrating database tables
-    - name: CRUD Operations
+        - Consuming external APIs in a Rails application
+        - Implementing API authentication and error handling
+    - name: Building and Exposing APIs
       skills:
-        - Performing CRUD (Create, Read, Update, Delete) operations with Rails models
+        - Building and exposing APIs with Rails
+        - Integrating third-party services and libraries
 
-- courseName: Views and Templates
+- courseName: Deploying and Scaling Rails Applications
   modules:
-    - name: Creating Dynamic Views
+    - name: Deploying to Production Servers
       skills:
-        - Creating dynamic views using ERB (Embedded Ruby)
-        - Working with layouts and partials
-    - name: Forms and Form Helpers
+        - Deploying Rails applications to production servers
+        - Configuring web server environments like Nginx and Puma
+    - name: Optimizing Performance and Scaling
       skills:
-        - Using forms and form helpers in Rails views
-
-- courseName: Controllers and Actions
-  modules:
-    - name: Defining Controller Actions
-      skills:
-        - Defining controller actions and their purpose
-        - Handling user input and parameters
-    - name: RESTful Routing
-      skills:
-        - Implementing RESTful routing and controller actions
-
-- courseName: Authentication and Authorization
-  modules:
-    - name: User Authentication
-      skills:
-        - Implementing user authentication with Devise or other gems
-        - Managing user sessions and cookies
-    - name: Role-Based Access Control (RBAC)
-      skills:
-        - Setting up role-based access control (RBAC)
-
-- courseName: Testing and Debugging
-  modules:
-    - name: Writing Unit Tests
-      skills:
-        - Writing unit tests with RSpec or MiniTest
-    - name: Debugging in Rails
-      skills:
-        - Using debugging tools like Pry
-        - Handling errors and exceptions in Rails applications
-
-- courseName: Frontend Integration
-  modules:
-    - name: Integrating JavaScript and jQuery
-      skills:
-        - Integrating JavaScript and jQuery with Rails
-    - name: Asset Management and Design
-      skills:
-        - Working with asset pipeline for managing assets
-        - Implementing responsive design and CSS frameworks
-
-- courseName: Deployment and Hosting
-  modules:
-    - name: Deploying to Heroku
-      skills:
-        - Deploying a Rails application to a web server (e.g., Heroku)
-    - name: Production Environment
-      skills:
-        - Configuring production environments
-        - Monitoring and scaling a live Rails application
-
-- courseName: Performance Optimization
-  modules:
-    - name: Profiling and Bottlenecks
-      skills:
-        - Profiling and identifying bottlenecks
-    - name: Optimizing Performance
-      skills:
-        - Caching strategies for improving performance
-        - Optimizing database queries and indexing
-
-- courseName: Advanced Topics
-  modules:
-    - name: Building RESTful APIs
-      skills:
-        - Building RESTful APIs with Rails
-    - name: Background Jobs and Plugins
-      skills:
-        - Implementing background jobs and task scheduling
-        - Exploring advanced Rails gems and plugins
+        - Scaling and optimizing Rails applications for performance
+        - Implementing caching and load balancing strategies

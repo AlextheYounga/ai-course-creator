@@ -1,90 +1,47 @@
-
-- category: Ruby Fundamentals
+- category: Basic Programming Skills
   skills:
-  - Understanding basic Ruby syntax and data types
-  - Familiarity with variables, loops, and conditional statements in Ruby
-  - Knowledge of Ruby methods and classes
+    - Understanding basic programming concepts such as variables, data types, loops, and conditionals
+    - Familiarity with object-oriented programming principles
+    - Ability to write and execute simple programs in a programming language such as Ruby or Python
 
-- category: Web Development Basics
+- category: Web Development Fundamentals
   skills:
-  - Understanding of HTML and CSS
-  - Basics of how web servers and browsers work
-  - Familiarity with HTTP protocols and request/response cycle
+    - Understanding of HTML and CSS
+    - Familiarity with client-side scripting languages like JavaScript
+    - Knowledge of how web servers and browsers communicate
 
-- category: Database Concepts
+- category: Understanding Ruby Language
   skills:
-  - Introduction to databases and data modeling
-  - Knowledge of SQL (Structured Query Language)
-  - Understanding of database design principles
+    - Understanding of Ruby syntax, data structures, and control flow
+    - Ability to use Ruby gems and libraries
+    - Proficiency in writing clean and readable Ruby code
 
-- category: Introduction to Ruby on Rails
+- category: Ruby on Rails Framework
   skills:
-  - Installing Ruby on Rails on your computer
-  - Creating a new Rails application
-  - Understanding the Rails directory structure
+    - Familiarity with MVC (Model-View-Controller) architecture
+    - Understanding of how routing works in Ruby on Rails
+    - Knowledge of ActiveRecord for database interaction
 
-- category: Model-View-Controller (MVC) Architecture
+- category: Building Web Applications
   skills:
-  - Understanding the MVC pattern and its importance in Rails
-  - Creating models, views, and controllers in Rails
-  - How data flows between models, views, and controllers
+    - Ability to create and manage databases using migrations in Ruby on Rails
+    - Understanding of RESTful architecture and how it applies to Rails applications
+    - Experience with creating and testing Rails models, views, and controllers
 
-- category: Routing and URL Handling
+- category: Front-End Development Integration
   skills:
-  - Configuring routes in a Rails application
-  - Handling different URL patterns
-  - Using route parameters and named routes
+    - Integration of JavaScript frameworks like jQuery or React with Ruby on Rails
+    - Knowledge of how to use front-end libraries and frameworks within a Rails application
+    - Implementing responsive design and user interface interactions
 
-- category: ActiveRecord and Databases
+- category: Deployment and Security
   skills:
-  - Using ActiveRecord for database operations
-  - Creating and migrating database tables
-  - Performing CRUD (Create, Read, Update, Delete) operations with Rails models
-
-- category: Views and Templates
-  skills:
-  - Creating dynamic views using ERB (Embedded Ruby)
-  - Working with layouts and partials
-  - Using forms and form helpers in Rails views
-
-- category: Controllers and Actions
-  skills:
-  - Defining controller actions and their purpose
-  - Handling user input and parameters
-  - Implementing RESTful routing and controller actions
-
-- category: Authentication and Authorization
-  skills:
-  - Implementing user authentication with Devise or other gems
-  - Managing user sessions and cookies
-  - Setting up role-based access control (RBAC)
-
-- category: Testing and Debugging
-  skills:
-  - Writing unit tests with RSpec or MiniTest
-  - Using debugging tools like Pry
-  - Handling errors and exceptions in Rails applications
-
-- category: Frontend Integration
-  skills:
-  - Integrating JavaScript and jQuery with Rails
-  - Working with asset pipeline for managing assets
-  - Implementing responsive design and CSS frameworks
-
-- category: Deployment and Hosting
-  skills:
-  - Deploying a Rails application to a web server (e.g., Heroku)
-  - Configuring production environments
-  - Monitoring and scaling a live Rails application
+    - Understanding of deploying Rails applications to web servers like Heroku
+    - Familiarity with securing and protecting web applications using best practices
+    - Knowledge of version control systems such as Git for collaborative development
 
 - category: Performance Optimization
   skills:
-  - Profiling and identifying bottlenecks
-  - Caching strategies for improving performance
-  - Optimizing database queries and indexing
-
-- category: Advanced Topics
-  skills:
-  - Building RESTful APIs with Rails
-  - Implementing background jobs and task scheduling
-  - Exploring advanced Rails gems and plugins
+    - Ability to optimize database queries in a Rails application
+    - Experience with caching techniques to improve application performance
+    - Understanding of profiling and debugging tools for performance tuning

@@ -6,7 +6,7 @@ from src.openai.outlines.generate_skills import SkillGenerator
 from src.openai.outlines.draft_course_outline import OutlineDraft
 from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 
-OUTPUT_PATH = "test/out"
+OUTPUT_PATH = "test/out/course_material"
 
 # Reset output directory
 def setup_test():
@@ -39,4 +39,4 @@ def test_create_outlines():
         master_outline = builder.generate(draft_outline)
 
         course_list = [slug for slug in master_outline['courses']]
-        assert len(course_list) == 15
+        assert len(course_list) == 7

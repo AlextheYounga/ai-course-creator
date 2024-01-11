@@ -2,7 +2,7 @@ from src.utils.files import read_yaml_file
 from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 from .mocks.openai_mock_service import OpenAIMockService
 
-OUTPUT_PATH = "test/out"
+OUTPUT_PATH = "test/out/course_material"
 REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
 EXPECTED_COURSE_OUTLINE_RESPONSE = open('test/fixtures/responses/course-outline.md').read()
 PARSED_DRAFT_OUTLINE = read_yaml_file('test/fixtures/data/draft-outline.yaml')
@@ -31,7 +31,7 @@ def test_parse_optimize_course_outline_response():
     course_outline = builder.handle_course_optimize_response(EXPECTED_COURSE_OUTLINE_RESPONSE)
     data = course_outline['dict']
 
-    assert len(data) == 5
+    assert len(data) == 2
 
     for item in data:
         assert item['chapter'] is not None

@@ -2,7 +2,7 @@ from src.utils.files import read_yaml_file
 from src.openai.outlines.draft_course_outline import OutlineDraft
 from .mocks.openai_mock_service import OpenAIMockService
 
-OUTPUT_PATH = "test/out"
+OUTPUT_PATH = "test/out/course_material"
 REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
 EXPECTED_DRAFT_OUTLINE_RESPONSE = open('test/fixtures/responses/draft-outline.md').read()
 PARSED_SKILLS = read_yaml_file('test/fixtures/data/skills.yaml')
@@ -28,7 +28,7 @@ def test_parse_draft_response():
     draft_outline = draft.handle_outline_draft_response(EXPECTED_DRAFT_OUTLINE_RESPONSE)
     data = draft_outline['dict']
 
-    assert len(data) == 15
+    assert len(data) == 7
 
     for item in data:
         modules = item['modules']
