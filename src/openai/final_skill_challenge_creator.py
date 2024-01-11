@@ -93,7 +93,6 @@ class FinalSkillChallengeCreator:
         # Send to ChatGPT
         validated_response = self.ai_client.send_prompt('final-skill-challenge', messages, options={})
         material = validated_response['content']
-        print(colored("Done.", "green"))
 
         # Save responses
         save_file_name = "final-skill-challenge"

@@ -99,7 +99,6 @@ class MasterOutlineBuilder:
         # Send to ChatGPT
         options = {'yamlExpected': True, 'quiet': True}
         validated_response = self.ai_client.send_prompt('optimize-outline', messages, options)
-        print(colored("Done.", "green"))
 
         # Parse yaml
         yaml_content = validated_response['yaml']

@@ -29,7 +29,7 @@ class SkillGenerator:
     def generate(self) -> dict:
         print(colored(f"Generating {self.topic} skills...", "yellow"))
 
-        save_file_name = f"{self.output_path}/skills-{self.topic_slug}.yaml"
+        save_file_name = f"{self.output_path}/skills.yaml"
         messages = self.build_skills_prompt()
 
         # Send to ChatGPT
