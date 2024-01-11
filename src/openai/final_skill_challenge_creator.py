@@ -91,8 +91,9 @@ class FinalSkillChallengeCreator:
         messages = self.build_skill_challenge_prompt(course)
 
         # Send to ChatGPT
-        completion = self.ai_client.send_prompt('final-skill-challenge', messages)
-        material = completion.choices[0].message.content
+        validated_response = self.ai_client.send_prompt('final-skill-challenge', messages, options={})
+        material = validated_response['content']
+        print(colored("Done.", "green"))
 
         # Save responses
         save_file_name = "final-skill-challenge"
@@ -114,6 +115,7 @@ class FinalSkillChallengeCreator:
                 self.generate_final_skill_challenge(course_data)
 
         copy_master_outline_to_yaml(self.outline_path, self.master_outline)
+        return self.master_outline
 
 
 

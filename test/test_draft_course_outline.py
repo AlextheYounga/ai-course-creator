@@ -23,19 +23,3 @@ def test_build_draft_prompt():
         assert key not in user_prompt
         assert key not in system_prompt
 
-
-def test_parse_draft_response():
-    draft_outline = draft.handle_outline_draft_response(EXPECTED_DRAFT_OUTLINE_RESPONSE)
-    data = draft_outline['dict']
-
-    assert len(data) == 7
-
-    for item in data:
-        modules = item['modules']
-
-        assert item['courseName'] is not None
-        assert len(modules) == 2
-
-        for module in modules:
-            assert module['name'] is not None
-            assert len(module['skills']) > 0

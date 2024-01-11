@@ -1,4 +1,4 @@
-from src.utils.files import read_yaml_file
+from src.utils.files import read_yaml_file, read_json_file
 from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 from .mocks.openai_mock_service import OpenAIMockService
 
@@ -26,13 +26,3 @@ def test_build_draft_prompt():
         assert key not in user_prompt
         assert key not in system_prompt
 
-
-def test_parse_optimize_course_outline_response():
-    course_outline = builder.handle_course_optimize_response(EXPECTED_COURSE_OUTLINE_RESPONSE)
-    data = course_outline['dict']
-
-    assert len(data) == 2
-
-    for item in data:
-        assert item['chapter'] is not None
-        assert len(item['pages']) > 0

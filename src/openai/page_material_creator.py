@@ -87,8 +87,9 @@ class PageMaterialCreator:
         messages = self.build_page_material_prompt(course_name, chapter, page_name)
 
         # Send to ChatGPT
-        completion = self.ai_client.send_prompt('page-material', messages)
-        material = completion.choices[0].message.content
+        validated_response = self.ai_client.send_prompt('page-material', messages, options={})
+        material = validated_response['content']
+        print(colored("Done.", "green"))
 
         # Save responses
         save_file_name = f"page-{page_slug}"

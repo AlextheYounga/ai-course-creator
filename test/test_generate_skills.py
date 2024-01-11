@@ -22,12 +22,3 @@ def test_build_skills_prompt():
         assert key not in system_prompt
 
 
-def test_parse_skills_response():
-    skills = generator.handle_skills_response(EXPECTED_SKILLS_RESPONSE)
-    data = skills['dict']
-
-    assert len(data) == 8
-
-    for item in data:
-        assert item['category'] is not None
-        assert len(item['skills']) == 3

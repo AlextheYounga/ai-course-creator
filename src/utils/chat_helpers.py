@@ -2,7 +2,6 @@ import markdown
 import yaml
 import re
 import os
-import json
 from bs4 import BeautifulSoup
 from typing import Optional
 

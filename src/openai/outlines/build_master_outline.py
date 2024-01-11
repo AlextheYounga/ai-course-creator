@@ -45,16 +45,6 @@ class MasterOutlineBuilder:
         ]
 
 
-    def handle_course_optimize_response(self, content):
-        yaml_content = content.split("yaml")[1].split("```")[0]
-        data = yaml.safe_load(yaml_content)
-
-        return {
-            'dict': data,
-            'yaml': yaml_content
-        }
-
-
     def update_master_outline(self, course: dict, course_slug: str, parsed_response: dict):
         # Building course
         course_object = {
@@ -107,20 +97,21 @@ class MasterOutlineBuilder:
         messages = self.build_optimize_outline_prompt(course_name, draft_outline['yaml'], modules)
 
         # Send to ChatGPT
-        completion = self.ai_client.send_prompt('optimize-outline', messages, True)
-        response_content = completion.choices[0].message.content
+        options = {'yamlExpected': True, 'quiet': True}
+        validated_response = self.ai_client.send_prompt('optimize-outline', messages, options)
+        print(colored("Done.", "green"))
 
-        # Parse response
-        parsed_response = self.handle_course_optimize_response(response_content)
+        # Parse yaml
+        yaml_content = validated_response['yaml']
+        validated_response['dict'] = yaml.safe_load(yaml_content)
 
         # Update master outline
-        self.update_master_outline(course, course_slug, parsed_response)
+        self.update_master_outline(course, course_slug, validated_response)
 
         # Save outline response
-        write_yaml_file(save_file_path, parsed_response['yaml'])
+        write_yaml_file(save_file_path, yaml_content)
 
-        return parsed_response
-
+        return validated_response
 
 
     def generate(self, draft_outline: dict):

@@ -83,8 +83,9 @@ class PracticeSkillChallengeCreator:
         messages = self.build_skill_challenge_prompt(chapter)
 
         # Send to ChatGPT
-        completion = self.ai_client.send_prompt('practice-skill-challenge', messages)
-        material = completion.choices[0].message.content
+        validated_response = self.ai_client.send_prompt('practice-skill-challenge', messages, options={})
+        material = validated_response['content']
+        print(colored("Done.", "green"))
 
         # Save responses
         save_file_name = f"challenge-{page_slug}"

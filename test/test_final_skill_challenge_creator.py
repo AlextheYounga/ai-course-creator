@@ -46,7 +46,7 @@ def test_build_prompt():
     assert tokens < max_tokens
 
 
-def test_create_practice_skill_challenges():
+def test_create_final_skill_challenges():
     setup_test()
 
     slug = 'ruby-on-rails'

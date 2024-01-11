@@ -26,16 +26,6 @@ class SkillGenerator:
         ]
 
 
-    def handle_skills_response(self, content: str):
-        yaml_content = content.split("yaml")[1].split("```")[0]
-        data = yaml.safe_load(yaml_content)
-
-        return {
-            'dict': data,
-            'yaml': yaml_content
-        }
-
-
     def generate(self) -> dict:
         print(colored(f"Generating {self.topic} skills...", "yellow"))
 
@@ -43,11 +33,14 @@ class SkillGenerator:
         messages = self.build_skills_prompt()
 
         # Send to ChatGPT
-        completion = self.ai_client.send_prompt('skills', messages)
-        response_content = completion.choices[0].message.content
+        options = {'yamlExpected': True}
+        validated_response = self.ai_client.send_prompt('skills', messages, options)
         print(colored("Done.", "green"))
 
-        # Parse response
-        parsed_response = self.handle_skills_response(response_content)
-        write_yaml_file(save_file_name, parsed_response['yaml'])
-        return parsed_response
+        # Parse yaml
+        yaml_content = validated_response['yaml']
+        validated_response['dict'] = yaml.safe_load(yaml_content)
+
+        write_yaml_file(save_file_name, yaml_content)
+
+        return validated_response

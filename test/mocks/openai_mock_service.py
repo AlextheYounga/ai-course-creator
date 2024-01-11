@@ -1,4 +1,5 @@
-from unittest.mock import MagicMock
+import markdown
+from bs4 import BeautifulSoup
 
 
 EXPECTED_COURSE_OUTLINE_RESPONSE = open('test/fixtures/responses/course-outline.md').read()
@@ -13,13 +14,11 @@ class OpenAIMockService:
     def __init__(self, session_name: str):
         # Initialize logger
         self.session_name = session_name
+        self.yaml_expected = False
 
-    def build_mock_response(self, content: str):
-        mock_api = MagicMock()
-        mock_api.completion.choices[0].message.content = content
-        return mock_api.completion
+    def send_prompt(self, name: str, messages: list[dict], options: dict = {}):
+        self.yaml_expected = options.get('yamlExpected', False)
 
-    def send_prompt(self, name: str, _messages: list[dict], _quiet: bool = False) -> MagicMock:
         if name == 'skills':
             return self.build_mock_response(EXPECTED_SKILLS_RESPONSE)
         elif name == 'draft-outline':
@@ -34,3 +33,24 @@ class OpenAIMockService:
             return self.build_mock_response(EXPECTED_FINAL_SKILL_CHALLENGE_RESPONSE)
         else:
             return None
+
+
+    def parse_yaml(self, content: str):
+        html = markdown.markdown(content, extensions=['fenced_code'])
+        soup = BeautifulSoup(html, 'html.parser')
+        code_block = soup.find('code')
+        yaml_content = code_block.get_text()
+
+        return yaml_content
+
+
+    def build_mock_response(self, content: str):
+        parsed_yaml = self.parse_yaml(content) if self.yaml_expected else None
+
+        validate_response = {
+            'valid': True,
+            'content': content,
+            'yaml': parsed_yaml
+        }
+
+        return validate_response

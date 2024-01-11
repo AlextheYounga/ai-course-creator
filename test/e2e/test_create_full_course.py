@@ -5,6 +5,7 @@ from src.openai.outlines.generate_skills import SkillGenerator
 from src.openai.outlines.draft_course_outline import OutlineDraft
 from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 from src.openai.practice_skill_challenge_creator import PracticeSkillChallengeCreator
+from src.openai.final_skill_challenge_creator import FinalSkillChallengeCreator
 from src.openai.page_material_creator import PageMaterialCreator
 
 OUTPUT_PATH = "test/out/course_material"
@@ -53,6 +54,15 @@ def create_practice_skill_challenges(topic: str):
 
     return outline
 
+def create_final_skill_challenges(topic: str):
+    session_name = f"{topic} Final Skill Challenge"
+    ai_client = OpenAIMockService(session_name)
+
+    creator = FinalSkillChallengeCreator(topic, ai_client, OUTPUT_PATH)
+    outline = creator.create_final_skill_challenges_for_courses()
+
+    return outline
+
 
 
 def test_create_full_course():
@@ -95,3 +105,11 @@ def test_create_full_course():
                 challenge_pages = [p for p in page_names if 'challenge' in p]
 
                 assert len(challenge_pages) == 1
+
+        
+        # Begin creating final skill challenges
+        outline = create_final_skill_challenges(topic)
+
+        # Checking output
+        for course in outline['courses']:
+            assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course}/final-skill-challenge/final-skill-challenge.md")

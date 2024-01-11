@@ -36,29 +36,21 @@ class OutlineDraft:
         ]
 
 
-    def handle_outline_draft_response(self, content: str):
-        yaml_content = content.split("yaml")[1].split("```")[0]
-        data = yaml.safe_load(yaml_content)
-
-        return {
-            'dict': data,
-            'yaml': yaml_content
-        }
-
-
     def generate(self, skills: dict) -> dict:
         print(colored(f"Generating {self.topic} draft outline...", "yellow"))
 
-        save_file_name = f"{self.output_path}/draft-outline-{self.topic_slug}.yaml"
+        save_file_name = f"{self.output_path}/draft-outline.yaml"
         messages = self.build_draft_prompt(skills['yaml'])
 
-        # Send to ChatGPT
-        completion = self.ai_client.send_prompt('draft-outline', messages)
-        response_content = completion.choices[0].message.content
+        # Send to ChatGPT 
+        options = {'yamlExpected': True}
+        validated_response = self.ai_client.send_prompt('draft-outline', messages, options)
         print(colored("Done.", "green"))
 
-        # Parse response
-        parsed_response = self.handle_outline_draft_response(response_content)
+        # Parse yaml
+        yaml_content = validated_response['yaml']
+        validated_response['dict'] = yaml.safe_load(yaml_content)
 
-        write_yaml_file(save_file_name, parsed_response['yaml'])
-        return parsed_response
+        write_yaml_file(save_file_name, yaml_content)
+
+        return validated_response
