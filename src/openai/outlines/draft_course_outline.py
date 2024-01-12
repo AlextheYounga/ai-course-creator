@@ -49,7 +49,6 @@ class OutlineDraft:
 
         # Parse yaml
         yaml_content = validated_response['yaml']
-        validated_response['dict'] = yaml.safe_load(yaml_content)
 
         write_yaml_file(save_file_name, yaml_content)
 

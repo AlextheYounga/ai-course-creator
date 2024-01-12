@@ -102,7 +102,6 @@ class MasterOutlineBuilder:
 
         # Parse yaml
         yaml_content = validated_response['yaml']
-        validated_response['dict'] = yaml.safe_load(yaml_content)
 
         # Update master outline
         self.update_master_outline(course, course_slug, validated_response)
