@@ -9,7 +9,7 @@ from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 OUTPUT_PATH = "test/out/course_material"
 
 # Reset output directory
-def setup_test():
+def _setup_test():
     slug = 'ruby-on-rails'
     if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):
         shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
@@ -19,7 +19,7 @@ def setup_test():
 
 def test_create_outlines():
     # Semi decent happy path test
-    setup_test()
+    _setup_test()
 
     topics = ['Ruby on Rails']
     for topic in topics:

@@ -10,12 +10,12 @@ from src.openai.page_material_creator import PageMaterialCreator
 
 OUTPUT_PATH = "test/out/course_material"
 
-def setup_test():
+def _setup_test():
     # Reset output directory
     if (os.path.exists(f"{OUTPUT_PATH}")):
         shutil.rmtree(f"{OUTPUT_PATH}")
 
-def create_outlines(topic: str):
+def _create_outlines(topic: str):
     session_name = f"{topic} Outlines"
     ai_client = OpenAIMockService(session_name)
 
@@ -35,7 +35,7 @@ def create_outlines(topic: str):
     return course_list
 
 
-def create_page_material(topic: str):
+def _create_page_material(topic: str):
     session_name = f"{topic} Page Material"
     ai_client = OpenAIMockService(session_name)
 
@@ -45,7 +45,7 @@ def create_page_material(topic: str):
     return outline
 
 
-def create_practice_skill_challenges(topic: str):
+def _create_practice_skill_challenges(topic: str):
     session_name = f"{topic} Practice Skill Challenge"
     ai_client = OpenAIMockService(session_name)
 
@@ -54,7 +54,7 @@ def create_practice_skill_challenges(topic: str):
 
     return outline
 
-def create_final_skill_challenges(topic: str):
+def _create_final_skill_challenges(topic: str):
     session_name = f"{topic} Final Skill Challenge"
     ai_client = OpenAIMockService(session_name)
 
@@ -67,19 +67,19 @@ def create_final_skill_challenges(topic: str):
 
 def test_create_full_course():
     # Semi decent happy path test
-    setup_test()
+    _setup_test()
     
     slug = 'ruby-on-rails'
     topics = ['Ruby on Rails']
     for topic in topics:
         # Begin creating course outlines
-        course_list = create_outlines(topic)
+        course_list = _create_outlines(topic)
 
         # Checking output
         assert len(course_list) == 7
 
         # Begin creating page material
-        outline = create_page_material(topic)
+        outline = _create_page_material(topic)
 
         # Checking output
         assert len(os.listdir(f"{OUTPUT_PATH}/{slug}/content")) == 7
@@ -95,7 +95,7 @@ def test_create_full_course():
 
 
         # Begin creating practice skill challenges
-        outline = create_practice_skill_challenges(topic)
+        outline = _create_practice_skill_challenges(topic)
 
         # Checking output
         for course_data in outline['courses'].values():
@@ -108,7 +108,7 @@ def test_create_full_course():
 
         
         # Begin creating final skill challenges
-        outline = create_final_skill_challenges(topic)
+        outline = _create_final_skill_challenges(topic)
 
         # Checking output
         for course in outline['courses']:

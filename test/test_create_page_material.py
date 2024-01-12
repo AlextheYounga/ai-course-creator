@@ -9,7 +9,7 @@ OUTPUT_PATH = "test/out/course_material"
 
 
 # Setup paths
-def setup_test():
+def _setup_test():
     slug = 'ruby-on-rails'
     if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):
         shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
@@ -21,7 +21,7 @@ def setup_test():
 
 def test_create_page_material():
     # Semi decent happy path test
-    setup_test()
+    _setup_test()
 
     slug = 'ruby-on-rails'
     topics = ['Ruby on Rails']

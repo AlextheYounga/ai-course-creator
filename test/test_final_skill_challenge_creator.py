@@ -7,7 +7,7 @@ import shutil
 OUTPUT_PATH = "test/out/course_material"
 MASTER_OUTLINE = read_json_file("test/fixtures/data/master-outline-2.json")
 
-def setup_test():
+def _setup_test():
     # Setup output folder
     if (os.path.exists(f"{OUTPUT_PATH}")):
         shutil.rmtree(f"{OUTPUT_PATH}")
@@ -18,7 +18,7 @@ def setup_test():
 
 
 def test_build_datasets():
-    setup_test()
+    _setup_test()
     client = OpenAIMockService("Test")
     creator = FinalSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
 
@@ -28,7 +28,7 @@ def test_build_datasets():
 
 
 def test_build_prompt():
-    setup_test()
+    _setup_test()
     client = OpenAIMockService("Test")
     creator = FinalSkillChallengeCreator("Ruby on Rails", client, OUTPUT_PATH)
 
@@ -47,7 +47,7 @@ def test_build_prompt():
 
 
 def test_create_final_skill_challenges():
-    setup_test()
+    _setup_test()
 
     slug = 'ruby-on-rails'
     topics = ['Ruby on Rails']
