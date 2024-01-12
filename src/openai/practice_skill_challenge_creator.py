@@ -109,8 +109,8 @@ class PracticeSkillChallengeCreator:
         with progressbar.ProgressBar(max_value=chapters_count, prefix='Generating practice skill challenges: ', redirect_stdout=True) as bar:
             for course_data in self.master_outline['courses'].values():
                 for chapter_data in course_data['chapters'].values():
-                    bar.increment()
                     self.generate_practice_skill_challenge(course_data, chapter_data)
+                    bar.increment()
 
         copy_master_outline_to_yaml(self.outline_path, self.master_outline)
         return self.master_outline

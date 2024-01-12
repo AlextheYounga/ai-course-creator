@@ -114,13 +114,12 @@ class PageMaterialCreator:
                         page_name = page_data['name']
                         existing = self.check_for_existing_material(course_slug, chapter_slug, page_slug)
 
-                        bar.increment()
-
                         if (existing):
                             print(colored(f"Skipping existing '{page_name}' page material...", "yellow"))
                             continue
 
                         self.generate_page_material(course_data, chapter_data, page_data)
+                        bar.increment()
         
         copy_master_outline_to_yaml(self.outline_path, self.master_outline)
         return self.master_outline
