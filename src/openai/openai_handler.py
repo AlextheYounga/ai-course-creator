@@ -87,7 +87,11 @@ class OpenAiHandler:
 
                 except yaml.scanner.ScannerError as e:
                     try: 
+                        print(colored(f"Failed to parse YAML content; attempting to repair content...", "yellow"))
                         validate_response['dict'] = self.attempt_repair_yaml_content(yaml_content)
+
+                        if validate_response['dict']:
+                            print(colored(f"Repair successful.", "green"))
 
                     except Exception as e:
                         if self.retry_count < 3:
