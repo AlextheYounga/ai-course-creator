@@ -48,6 +48,30 @@ def test_open_ai_handler_bad_response():
     assert open_ai_handler.retry_count == 0
 
 
+def test_open_ai_handler_bad_response_scenario_2():
+    _setup_test()
+
+    mock_response = open('test/fixtures/responses/bad-yaml-response-2.md').read()
+
+    open_ai_handler = MockOpenAi("test", mock_response)
+    validated_response = open_ai_handler.send_prompt("test", [], {'yamlExpected': True})
+    parsed_yaml = validated_response['dict']
+    assert len(parsed_yaml) == 10
+    assert open_ai_handler.retry_count == 0
+
+
+def test_open_ai_handler_bad_response_scenario_3():
+    _setup_test()
+
+    mock_response = open('test/fixtures/responses/bad-yaml-response-3.md').read()
+
+    open_ai_handler = MockOpenAi("test", mock_response)
+    validated_response = open_ai_handler.send_prompt("test", [], {'yamlExpected': True})
+    parsed_yaml = validated_response['dict']
+    assert len(parsed_yaml) == 2
+    assert open_ai_handler.retry_count == 0
+
+
 def test_open_ai_handler_hopeless_response():
     _setup_test()
 

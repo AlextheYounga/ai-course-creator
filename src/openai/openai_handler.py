@@ -138,7 +138,7 @@ class OpenAiHandler:
 
 
     def attempt_repair_yaml_content(self, content):
-        known_keys = ['course', 'chapter', 'pages', 'courseName', ' modules', 'name', 'skills', 'category']
+        known_keys = ['course', 'chapter', 'pages', 'courseName', 'modules', 'name', 'skills', 'category']
 
         for line in content.splitlines():
             # Repair misplaced colons
@@ -148,5 +148,4 @@ class OpenAiHandler:
                 value = key + ':'
                 corrected_value = value.replace(':', ' -')
                 content = content.replace(value, corrected_value)
-
         return yaml.safe_load(content)
