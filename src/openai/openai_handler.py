@@ -7,6 +7,8 @@ from time import sleep
 import markdown
 from bs4 import BeautifulSoup
 import logging
+import yaml
+import re
 
 
 load_dotenv()
@@ -58,13 +60,14 @@ class OpenAiHandler:
         sleep(1)  # Give OpenAI a break
 
         return response_validated
-    
+
 
     def response_validator(self, name: str, messages: list[dict], completion: OpenAI, options: dict):
         validate_response = {
             'valid': False,
             'content': None,
-            'yaml': None
+            'yaml': None,
+            'dict': None
         }
 
         yaml_expected = options.get('yamlExpected', False)
@@ -80,15 +83,27 @@ class OpenAiHandler:
                     code_block = soup.find('code')
                     yaml_content = code_block.get_text()
                     validate_response['yaml'] = yaml_content
+                    validate_response['dict'] = yaml.safe_load(yaml_content)
 
-                except Exception as e:
-                    if self.retry_count < 3:
-                        print(colored(f"Failed to parse YAML content {e}; retrying...", "red"))
-                        return self.send_prompt(name, messages, options)
+                except yaml.scanner.ScannerError as e:
+                    try: 
+                        validate_response['dict'] = self.attempt_repair_yaml_content(yaml_content)
+
+                    except Exception as e:
+                        if self.retry_count < 3:
+                            self.logger.error(f"Failed to parse YAML content {e}")
+                            print(colored(f"Failed to parse YAML content; retrying...", "red"))
+                            self.retry_count += 1
+                            return self.send_prompt(name, messages, options)
+                        else:
+                            self.logger.error(f"YAML parsing impossible {e}")
+                            print(colored(f"YAML parsing impossible; maximum retries exceeded. Aborting...", "red"))
+                            return validate_response
 
             if len(content) < 200:
                 if self.retry_count < 3:
                     print(colored("Shit response; retrying...", "red"))
+                    self.retry_count += 1
                     return self.send_prompt(name, messages, options)
 
                 print(colored("Failed to receive good response from OpenAI. Aborting...", "red"))
@@ -99,7 +114,25 @@ class OpenAiHandler:
         else:
             if self.retry_count < 3:
                 print(colored("Malformed completion, unknown error; retrying...", "red"))
+                self.logger.error("Malformed completion, unknown error")
+                self.retry_count += 1
                 return self.send_prompt(name, messages, options)
-
+            
+            self.logger.error("Malformed completion, unknown error. Maximum retries exceeded")
             print(colored("Malformed completion, unknown error. Maximum retries exceeded. Aborting...", "red"))
             return validate_response
+
+
+    def attempt_repair_yaml_content(self, content):
+        known_keys = ['chapter', 'pages', 'courseName', ' modules', 'name', 'skills', 'category']
+
+        for line in content.splitlines():
+            # Repair misplaced colons
+            keys = re.findall(r'\b[a-zA-Z0-9]+\b(?=:)', line)
+            for key in keys:
+                if key in known_keys: continue
+                value = key + ':'
+                corrected_value = value.replace(':', ' -')
+                content = content.replace(value, corrected_value)
+
+        return yaml.safe_load(content)
