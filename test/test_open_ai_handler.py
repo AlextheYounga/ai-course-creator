@@ -45,6 +45,7 @@ def test_open_ai_handler_bad_response():
     validated_response = open_ai_handler.send_prompt("test", [], {'yamlExpected': True})
     parsed_yaml = validated_response['dict']
     assert len(parsed_yaml) == 2
+    assert open_ai_handler.retry_count == 0
 
 
 def test_open_ai_handler_hopeless_response():

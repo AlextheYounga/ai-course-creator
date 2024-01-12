@@ -70,6 +70,7 @@ class OpenAiHandler:
             'dict': None
         }
 
+        # Check to see if we're expecting a block of yaml data
         yaml_expected = options.get('yamlExpected', False)
 
         if completion.choices[0].message.content:
@@ -78,31 +79,17 @@ class OpenAiHandler:
 
             if yaml_expected:
                 try:
-                    html = markdown.markdown(content, extensions=['fenced_code'])
-                    soup = BeautifulSoup(html, 'html.parser')
-                    code_block = soup.find('code')
-                    yaml_content = code_block.get_text()
-                    validate_response['yaml'] = yaml_content
-                    validate_response['dict'] = yaml.safe_load(yaml_content)
-
-                except yaml.scanner.ScannerError as e:
-                    try: 
-                        print(colored(f"Failed to parse YAML content; attempting to repair content...", "yellow"))
-                        validate_response['dict'] = self.attempt_repair_yaml_content(yaml_content)
-
-                        if validate_response['dict']:
-                            print(colored(f"Repair successful.", "green"))
-
-                    except Exception as e:
-                        if self.retry_count < 3:
-                            self.logger.error(f"Failed to parse YAML content {e}")
-                            print(colored(f"Failed to parse YAML content; retrying...", "red"))
-                            self.retry_count += 1
-                            return self.send_prompt(name, messages, options)
-                        else:
-                            self.logger.error(f"YAML parsing impossible {e}")
-                            print(colored(f"YAML parsing impossible; maximum retries exceeded. Aborting...", "red"))
-                            return validate_response
+                    validate_response = self.try_parse_yaml(validate_response, content)
+                except Exception as e:
+                    if self.retry_count < 3:
+                        self.logger.error(f"Failed to parse YAML content {e}")
+                        print(colored(f"Failed to parse YAML content; retrying...", "red"))
+                        self.retry_count += 1
+                        return self.send_prompt(name, messages, options)
+                    else:
+                        self.logger.error(f"YAML parsing impossible: {e}")
+                        print(colored(f"YAML parsing impossible; maximum retries exceeded. Aborting...", "red"))
+                        return validate_response
 
             if len(content) < 200:
                 if self.retry_count < 3:
@@ -113,18 +100,41 @@ class OpenAiHandler:
                 print(colored("Failed to receive good response from OpenAI. Aborting...", "red"))
                 return validate_response
 
+            # If here, all checks passed
             validate_response['valid'] = True
+            self.retry_count = 0
             return validate_response
-        else:
-            if self.retry_count < 3:
-                print(colored("Malformed completion, unknown error; retrying...", "red"))
-                self.logger.error("Malformed completion, unknown error")
-                self.retry_count += 1
-                return self.send_prompt(name, messages, options)
-            
-            self.logger.error("Malformed completion, unknown error. Maximum retries exceeded")
-            print(colored("Malformed completion, unknown error. Maximum retries exceeded. Aborting...", "red"))
-            return validate_response
+
+
+        if self.retry_count < 3:
+            print(colored("Malformed completion, unknown error; retrying...", "red"))
+            self.logger.error("Malformed completion, unknown error")
+            self.retry_count += 1
+            return self.send_prompt(name, messages, options)
+
+        self.logger.error("Malformed completion, unknown error. Maximum retries exceeded")
+        print(colored("Malformed completion, unknown error. Maximum retries exceeded. Aborting...", "red"))
+        return validate_response
+
+
+    def try_parse_yaml(self, return_object: dict, content: str):
+        try:
+            html = markdown.markdown(content, extensions=['fenced_code'])
+            soup = BeautifulSoup(html, 'html.parser')
+            code_block = soup.find('code')
+            yaml_content = code_block.get_text()
+            return_object['yaml'] = yaml_content
+            return_object['dict'] = yaml.safe_load(yaml_content)
+
+            return return_object
+
+        except yaml.scanner.ScannerError:
+            print(colored(f"Failed to parse YAML content; attempting to repair content...", "yellow"))
+
+            return_object['dict'] = self.attempt_repair_yaml_content(yaml_content)
+
+            if return_object['dict']: print(colored(f"Repair successful.", "green"))
+            return return_object
 
 
     def attempt_repair_yaml_content(self, content):
