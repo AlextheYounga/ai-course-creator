@@ -124,7 +124,7 @@ class OpenAiHandler:
 
 
     def attempt_repair_yaml_content(self, content):
-        known_keys = ['chapter', 'pages', 'courseName', ' modules', 'name', 'skills', 'category']
+        known_keys = ['course', 'chapter', 'pages', 'courseName', ' modules', 'name', 'skills', 'category']
 
         for line in content.splitlines():
             # Repair misplaced colons
