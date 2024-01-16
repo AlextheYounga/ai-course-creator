@@ -3,12 +3,12 @@ Prompt: Let's generate a chapter outline for the {course_name} course using the 
 Please return your results in the following YAML format:
 
 ```yaml
-- chapter: An Interesting Chapter Name
+- chapter: 'An Interesting Chapter Name'
   pages:
-    - Chapter Introduction Page
-    - First Page of Chapter
-    - Second Page of Chapter
-    - Third Page of Chapter, and so on
+    - 'Chapter Introduction Page'
+    - 'First Page of Chapter'
+    - 'Second Page of Chapter'
+    - 'Third Page of Chapter, and so on'
 
 # More chapters
 ```

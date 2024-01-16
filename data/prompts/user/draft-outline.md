@@ -3,16 +3,16 @@ Prompt: Using the provided list of required skills for mastery of {topic}, pleas
 Please return your results in the following YAML format:
 
 ```yaml
-- courseName: Python Basics and Control Structures
+- courseName: 'Python Basics and Control Structures'
   modules:
-    - name: Introduction to Python
+    - name: 'Introduction to Python'
       skills:
-        - Knowledge of Python syntax and semantics
-        - Understand variables, data types, and basic operations
-    - name: Control Structures and Functions
+        - 'Knowledge of Python syntax and semantics'
+        - 'Understand variables, data types, and basic operations'
+    - name: 'Control Structures and Functions'
       skills:
-        - Knowledge of control structures like loops and conditional statements
-        - Understanding of functions and modules
+        - 'Knowledge of control structures like loops and conditional statements'
+        - 'Understanding of functions and modules'
 
 # More courses...
 ```

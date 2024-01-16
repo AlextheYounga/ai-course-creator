@@ -3,14 +3,14 @@ Prompt: Can you list as many skill as possible that someone would need to go fro
 Please return your results in the following YAML format:
 
 ```yaml
-- category: First Category of Skills
+- category: 'First Category of Skills'
   skills:
-    - Here is a Skill
-    - Another Skill
-    - And so on
-- category: Second Category of Skills
+    - 'Here is a Skill'
+    - 'Another Skill'
+    - 'And so on'
+- category: 'Second Category of Skills'
   skills:
-    - Another skill
+    - 'Another skill'
 
 #   More skills...
 ```
