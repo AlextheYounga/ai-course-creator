@@ -12,7 +12,18 @@ const flaskApi = {
             .catch((error) => {
                 console.error(error);
             });
-    }
+    },
+    post(path: string, data: any = {}) {
+        const url = host + path
+
+        return axios.post(url, data)
+            .then((res) => {
+                return res.data
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    },
 }
 
 export default flaskApi
