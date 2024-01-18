@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     getMessage() {
-      flaskApi.get('/ping-pong').then((data) => {
+      flaskApi.get('/ping').then((data) => {
         this.msg = data;
       });
     },
