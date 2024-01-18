@@ -1,5 +1,5 @@
 import webbrowser
-from app.app import * 
+from app.server.app import * 
 
 def run_server():
     # Open a browser window
@@ -7,7 +7,7 @@ def run_server():
     webbrowser.open(url)
 
     # Run the Flask app
-    app.run(port=5001)
+    app.run(port=5173)
 
 
 if __name__ == '__main__':

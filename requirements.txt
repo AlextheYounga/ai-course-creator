@@ -10,5 +10,6 @@ autopep8
 termcolor
 pyyaml
 Flask
+Flask-Cors
 pytest
 progressbar2
