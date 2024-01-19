@@ -8,8 +8,8 @@ from .controllers.course_creator_controller import run_all_course_creator, get_c
 
 
 # Instantiate the app
-template_directory = os.path.abspath('app/client/dist')
-static_folder=os.path.abspath('app/client/dist/assets')
+template_directory = os.path.abspath('app/client/public')
+static_folder=os.path.abspath('app/client/public/assets')
 
 app = Flask(__name__, template_folder=template_directory, static_folder=static_folder)
 app.config["TEMPLATES_AUTO_RELOAD"] = True

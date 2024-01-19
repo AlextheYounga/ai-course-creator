@@ -1,12 +1,7 @@
 import webbrowser
-import os
 from app.server.app import * 
 
 def run_server():
-    # Build the Vue App
-    client_dir = os.path.abspath('app/client')
-    os.system(f"npm run build --prefix {client_dir}")
-
     # Open a browser window
     url = 'http://localhost:5001/'
     webbrowser.open(url)
