@@ -18,6 +18,14 @@ def init():
         print("Created. Please add any sensitive information to the .env file.")
         initialized = True
 
+    if not os.path.exists('./app/client/node_modules'):
+        client_dir = os.path.abspath('app/client')
+        print(colored("Installing client dependencies...", "yellow"))
+        os.system(f"nvm install {client_dir}/.nvmrc")
+        os.system(f"npm install --prefix {client_dir}")
+        print(colored("Client dependencies installed.", "green"))
+        initialized = True
+
     if (not os.path.exists(f"{LOGS_PATH}/chat.log")):
         open(f"{LOGS_PATH}/chat.log", 'w').close()
         initialized = True

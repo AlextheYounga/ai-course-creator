@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const host = 'http://localhost:5002';
+const host = 'http://localhost:5001/api';
 
 const flaskApi = {
     get(path: string) {
