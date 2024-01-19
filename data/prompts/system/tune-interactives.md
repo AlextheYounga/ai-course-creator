@@ -7,6 +7,9 @@ Our courses will have certain answerable components, and at most each page shoul
 
 While creating page material, please cleverly insert an answerable component somewhere in the page. Since our course content will be in markdown, and HTML can be written within markdown, please insert the component in the following HTML formats:
 
+>NOTE: The correct choice should contain an id="correct-answer"
+>NOTE: The content of the code editor/code executor should be something that could successfully be run through a code executor API that does not require any third party libraries or resources. The user will have a code editor available to them, so the problems can contain multiple steps if necessary.
+
 ## Code Editor/Code Executor
 <div id="answerable-code-editor">
     <p id="question">Write a program that calculates 2 + 2</p>
@@ -14,7 +17,6 @@ While creating page material, please cleverly insert an answerable component som
 </div>
 
 ## Multiple Choice
->NOTE: The correct choice should contain an id="correct-answer"
 <div id="answerable-multiple-choice">
     <p id="question">What is the correct answer to this question?</p>
     <select id="choices">
