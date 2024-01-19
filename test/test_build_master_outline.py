@@ -1,4 +1,4 @@
-from src.utils.files import read_yaml_file, read_json_file
+from src.utils.files import read_yaml_file
 from src.openai.outlines.build_master_outline import MasterOutlineBuilder
 from .mocks.openai_mock_service import OpenAIMockService
 

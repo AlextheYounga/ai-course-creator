@@ -37,9 +37,6 @@ class SkillGenerator:
         validated_response = self.ai_client.send_prompt('skills', messages, options)
         print(colored("Done.", "green"))
 
-        # Parse yaml
-        yaml_content = validated_response['yaml']
-
-        write_yaml_file(save_file_name, yaml_content)
+        write_yaml_file(save_file_name, validated_response['yaml'])
 
         return validated_response

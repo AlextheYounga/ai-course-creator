@@ -100,14 +100,11 @@ class MasterOutlineBuilder:
         options = {'yamlExpected': True, 'quiet': True}
         validated_response = self.ai_client.send_prompt('optimize-outline', messages, options)
 
-        # Parse yaml
-        yaml_content = validated_response['yaml']
-
         # Update master outline
         self.update_master_outline(course, course_slug, validated_response)
 
         # Save outline response
-        write_yaml_file(save_file_path, yaml_content)
+        write_yaml_file(save_file_path, validated_response['yaml'])
 
         return validated_response
 
