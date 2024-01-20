@@ -137,7 +137,7 @@ def main(topics: list[str]):
 
 def cli_prompt_user():
     try:
-        topics = read_json_file("data/topics.json")
+        topics = read_json_file("storage/topics.json")
         topic_choices = ['All'] + topics
 
         choices = [

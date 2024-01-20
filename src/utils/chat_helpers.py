@@ -12,7 +12,7 @@ def slugify(text: str):
 
 
 def get_prompt(filename, replace: Optional[list[tuple]]) -> str:
-    prompt = open(f"data/prompts/{filename}.md", "r").read()
+    prompt = open(f"storage/prompts/{filename}.md", "r").read()
 
     if (replace != None):
         for item in replace:

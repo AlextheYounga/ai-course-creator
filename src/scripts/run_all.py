@@ -9,7 +9,7 @@ from src.openai.final_skill_challenge_creator import main as run_create_final_sk
 
 def _prompt_user_for_topic():
     try:
-        topics = read_json_file("data/topics.json")
+        topics = read_json_file("storage/topics.json")
         topic_choices = ['All'] + topics
 
         choices = [

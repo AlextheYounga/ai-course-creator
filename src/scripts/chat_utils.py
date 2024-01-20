@@ -7,7 +7,7 @@ from src.utils.chat_helpers import slugify
 from src.utils.files import zip_folder
 
 OUTPUT_PATH = 'out/course_material'
-LOGS_PATH = 'data/logs'
+LOGS_PATH = 'storage/logs'
 
 
 def save_chat():
@@ -27,7 +27,7 @@ def save_chat():
     shutil.copy(f"{LOGS_PATH}/chat.log", "out/chat.log")
 
     zip_folder("out", f"{filename}")
-    os.rename(filename, f"storage/{filename}")
+    os.rename(filename, f"storage/chat/{filename}")
 
     print(colored(f"Chat saved to {filename}", "green"))
 

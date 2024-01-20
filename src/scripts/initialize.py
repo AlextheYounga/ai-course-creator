@@ -1,9 +1,8 @@
 from termcolor import colored
 import os
-import subprocess
 import shutil
 
-LOGS_PATH = 'data/logs'
+LOGS_PATH = 'storage/logs'
 
 
 def _create_env_file():

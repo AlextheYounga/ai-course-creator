@@ -18,7 +18,7 @@ class OpenAiHandler:
     def __init__(self, session_name: str):
         # Initialize logger
         logging.basicConfig(
-            filename="data/logs/chat.log",
+            filename="storage/logs/chat.log",
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             level=logging.INFO
         )

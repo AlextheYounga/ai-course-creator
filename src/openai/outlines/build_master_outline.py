@@ -112,6 +112,7 @@ class MasterOutlineBuilder:
     def generate(self, draft_outline: dict):
         print(colored("\nBegin building master course outline...", "yellow"))
 
+        print(draft_outline.keys())
         course_count = len(draft_outline['dict'])
         with progressbar.ProgressBar(max_value=course_count, prefix='Optimizing: ', redirect_stdout=True) as bar:
             for course in draft_outline['dict']:
