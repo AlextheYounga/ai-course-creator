@@ -1,0 +1,12 @@
+- chapter: Understanding Basic Programming Concepts
+  pages:
+    - Chapter Introduction Page
+    - What Are Variables and Why Are They Important?
+    - Exploring Loops and Their Application in Programming
+    - Understanding Conditional Statements in Programming
+
+- chapter: Getting Started with Ruby on Rails
+  pages:
+    - Chapter Introduction Page
+    - Understanding the Model-View-Controller (MVC) Design Pattern
+    - Installation and Setup of Ruby on Rails and Its Dependencies

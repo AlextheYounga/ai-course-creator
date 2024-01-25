@@ -12,4 +12,5 @@ pyyaml
 Flask
 Flask-Cors
 pytest
+pytest-env
 progressbar2

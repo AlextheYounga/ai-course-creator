@@ -1,49 +1,42 @@
 ```yaml
-- category: Basic Programming Skills
+- category: Understanding the Basics
   skills:
-    - Understanding basic programming concepts such as variables, data types, loops, and conditionals
-    - Familiarity with object-oriented programming principles
-    - Ability to write and execute simple programs in a programming language such as Ruby or Python
-
-- category: Web Development Fundamentals
+    - Understanding basic programming concepts such as variables, loops, and conditionals
+    - Familiarity with HTML, CSS, and JavaScript
+    - Ability to work with databases and SQL
+- category: Getting Started with Ruby on Rails
   skills:
-    - Understanding of HTML and CSS
-    - Familiarity with client-side scripting languages like JavaScript
-    - Knowledge of how web servers and browsers communicate
-
-- category: Understanding Ruby Language
+    - Understanding the Model-View-Controller (MVC) design pattern
+    - Installation and setup of Ruby on Rails and its dependencies
+    - Creating and working with Rails applications
+- category: Working with Models and Databases
   skills:
-    - Understanding of Ruby syntax, data structures, and control flow
-    - Ability to use Ruby gems and libraries
-    - Proficiency in writing clean and readable Ruby code
-
-- category: Ruby on Rails Framework
+    - Defining and using database models in Rails
+    - Utilizing ActiveRecord for database interactions
+    - Understanding database migrations and relationships
+- category: Managing Controllers and Views
   skills:
-    - Familiarity with MVC (Model-View-Controller) architecture
-    - Understanding of how routing works in Ruby on Rails
-    - Knowledge of ActiveRecord for database interaction
-
-- category: Building Web Applications
+    - Creating and managing controllers for handling HTTP requests
+    - Implementing views and layouts for the user interface
+    - Understanding routing and RESTful conventions in Rails
+- category: Handling Authentication and Authorization
   skills:
-    - Ability to create and manage databases using migrations in Ruby on Rails
-    - Understanding of RESTful architecture and how it applies to Rails applications
-    - Experience with creating and testing Rails models, views, and controllers
-
-- category: Front-End Development Integration
+    - Implementing user authentication with Devise or other authentication gems
+    - Managing user authorization and access control
+    - Handling user sessions and cookies
+- category: Testing and Debugging
   skills:
-    - Integration of JavaScript frameworks like jQuery or React with Ruby on Rails
-    - Knowledge of how to use front-end libraries and frameworks within a Rails application
-    - Implementing responsive design and user interface interactions
-
-- category: Deployment and Security
+    - Writing and running tests with RSpec or other testing frameworks
+    - Debugging Rails applications using tools like byebug or pry
+    - Utilizing logging and error handling to troubleshoot issues
+- category: Working with APIs and Integrations
   skills:
-    - Understanding of deploying Rails applications to web servers like Heroku
-    - Familiarity with securing and protecting web applications using best practices
-    - Knowledge of version control systems such as Git for collaborative development
-
-- category: Performance Optimization
+    - Consuming external APIs in a Rails application
+    - Building and exposing APIs with Rails
+    - Integrating third-party services and libraries
+- category: Deploying and Scaling
   skills:
-    - Ability to optimize database queries in a Rails application
-    - Experience with caching techniques to improve application performance
-    - Understanding of profiling and debugging tools for performance tuning
+    - Deploying Rails applications to production servers
+    - Configuring web server environments like Nginx and Puma
+    - Scaling and optimizing Rails applications for performance
 ```

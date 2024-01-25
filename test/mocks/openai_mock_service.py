@@ -1,7 +1,8 @@
 import logging
+import random
 from typing import Optional
 from unittest.mock import MagicMock
-from src.openai.openai_handler import OpenAiHandler
+from src.llm.openai_handler import OpenAiHandler
 
 
 EXPECTED_COURSE_OUTLINE_RESPONSE = open('test/fixtures/responses/course-outline.md').read()
@@ -39,11 +40,17 @@ class OpenAIMockService(OpenAiHandler):
             if name == 'optimize-outline':
                 response = EXPECTED_COURSE_OUTLINE_RESPONSE
             if name == 'page-material':
-                response = EXPECTED_PAGE_RESPONSE
+                hash = random.getrandbits(128)
+                material = str(hash) + "\n" + EXPECTED_PAGE_RESPONSE
+                response = material
             if name == 'practice-skill-challenge':
-                response = EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE
+                hash = random.getrandbits(128)
+                material = str(hash) + "\n" + EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE
+                response = material
             if name == 'final-skill-challenge':
-                response = EXPECTED_FINAL_SKILL_CHALLENGE_RESPONSE
+                hash = random.getrandbits(128)
+                material = str(hash) + "\n" + EXPECTED_FINAL_SKILL_CHALLENGE_RESPONSE
+                response = material
 
         self.client.completion.choices[0].message.content = response
         completion = self.client.completion

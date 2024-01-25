@@ -1,12 +1,14 @@
 import inquirer
 from termcolor import colored
+from dotenv import load_dotenv
 import os
 import shutil
 from datetime import datetime
-from src.utils.chat_helpers import slugify
+from src.utils.strings import slugify
 from src.utils.files import zip_folder
 
-OUTPUT_PATH = 'out/course_material'
+load_dotenv()
+OUTPUT_PATH = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 LOGS_PATH = 'storage/logs'
 
 
@@ -26,7 +28,7 @@ def save_chat():
     # Copying logs file to out folder
     shutil.copy(f"{LOGS_PATH}/chat.log", "out/chat.log")
 
-    zip_folder("out", f"{filename}")
+    zip_folder(OUTPUT_PATH, f"{filename}")
     os.rename(filename, f"storage/chat/{filename}")
 
     print(colored(f"Chat saved to {filename}", "green"))

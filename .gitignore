@@ -9,9 +9,9 @@ node_modules
 app/templates/partials/page-content.html
 
 # Data
-storage/logs/*.log
 out
-test/out
+*.db
+*.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

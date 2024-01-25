@@ -56,7 +56,7 @@ def test_create_final_skill_challenges():
         ai_client = OpenAIMockService(session_name)
 
         creator = FinalSkillChallengeCreator(topic, ai_client, OUTPUT_PATH)
-        creator.create_final_skill_challenges_for_courses()
+        creator.create_final_skill_challenges()
 
         for course in MASTER_OUTLINE['courses']:
             assert os.path.exists(f"{OUTPUT_PATH}/{slug}/content/{course}/final-skill-challenge/final-skill-challenge.md")

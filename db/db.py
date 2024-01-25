@@ -1,12 +1,16 @@
+import os
 from sqlalchemy import create_engine
-from db.models.chapter import *
-from db.models.course import *
-from db.models.page import *
-
+from db.schema import *
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
 
-database_path = "sqlite:///db/database.db"
-engine = create_engine(database_path)
-Base.metadata.create_all(engine)
 
-Session = sessionmaker(bind=engine)
+def db_client():
+    load_dotenv()
+
+    database_path = os.environ.get("DATABASE_URL") or 'sqlite:///db/database.db'
+    engine = create_engine(database_path)
+    Base.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine)
+
+    return Session()

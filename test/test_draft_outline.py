@@ -1,7 +1,7 @@
 import os
 import shutil
 from src.utils.files import read_yaml_file
-from src.creator.outlines.build_master_outline import MasterOutlineBuilder
+from src.creator.outlines.draft_outline import DraftOutline
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 
@@ -9,9 +9,8 @@ from .mocks.db import *
 DB = setup_db()
 OUTPUT_PATH = "test/out"
 REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
-EXPECTED_COURSE_OUTLINE_RESPONSE = open('test/fixtures/responses/course-outline.md').read()
+EXPECTED_DRAFT_OUTLINE_RESPONSE = open('test/fixtures/responses/draft-outline.md').read()
 PARSED_SKILLS = read_yaml_file('test/fixtures/data/skills.yaml')
-PARSED_DRAFT_OUTLINE = read_yaml_file('test/fixtures/data/draft-outline.yaml')
 
 
 
@@ -31,7 +30,6 @@ def _setup_test():
 
         outline_record = Outline.instantiate(topic_record)
         outline_record.skills = PARSED_SKILLS
-        outline_record.draft_outline = PARSED_DRAFT_OUTLINE
         DB.add(outline_record)
         DB.commit()
 
@@ -44,29 +42,26 @@ def test_build_draft_prompt():
     outline_id = _setup_test()
 
     client = OpenAIMockService("Test")
-    builder = MasterOutlineBuilder(outline_id, client)
+    draft = DraftOutline(outline_id, client)
 
-    course_name = PARSED_DRAFT_OUTLINE[0]['courseName']
-    modules = PARSED_DRAFT_OUTLINE[0]['modules']
-    prompt = builder.build_optimize_outline_prompt(course_name, modules)
+    prompt = draft.build_draft_prompt()
+
+    assert len(prompt) == 2
 
     system_prompt = prompt[0]['content']
     user_prompt = prompt[1]['content']
-
-    assert len(prompt) == 2
 
     for key in REPLACE_KEYS:
         assert key not in user_prompt
         assert key not in system_prompt
 
 
-def test_generate_master_outline():
+def test_generate_draft_outline():
     outline_id = _setup_test()
 
     client = OpenAIMockService("Test")
-    builder = MasterOutlineBuilder(outline_id, client)
+    draft = DraftOutline(outline_id, client)
 
-    master_outline = builder.generate()
+    draft_outline = draft.generate()
 
-    assert master_outline != None
-    assert os.path.exists('test/out/ruby-on-rails/master-outline.yaml') == True
+    assert draft_outline['valid'] == True

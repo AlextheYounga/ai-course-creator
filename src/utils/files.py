@@ -71,7 +71,7 @@ def write_yaml_file(path, data):
         os.makedirs(directory, exist_ok=True)
 
     with open(path, 'w') as file:
-        if isinstance(data, dict):
+        if isinstance(data, dict) or isinstance(data, list):
             yaml.dump(data, file)
         else:
             file.write(data)

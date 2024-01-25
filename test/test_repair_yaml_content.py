@@ -1,4 +1,4 @@
-from src.openai.openai_handler import OpenAiHandler
+from src.llm.openai_handler import OpenAiHandler
 import markdown
 import yaml
 from bs4 import BeautifulSoup

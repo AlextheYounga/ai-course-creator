@@ -1,6 +1,6 @@
 from flask import render_template
 import os
-from src.utils.chat_helpers import slugify
+from src.utils.strings import slugify
 from src.utils.files import read_json_file
 import markdown
 

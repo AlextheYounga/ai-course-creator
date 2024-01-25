@@ -1,18 +1,13 @@
 import os
 import shutil
-from src.utils.files import read_yaml_file
-from src.creator.outlines.build_master_outline import MasterOutlineBuilder
+from src.creator.outlines.skill_generator import SkillGenerator
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
-
 
 DB = setup_db()
 OUTPUT_PATH = "test/out"
 REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
-EXPECTED_COURSE_OUTLINE_RESPONSE = open('test/fixtures/responses/course-outline.md').read()
-PARSED_SKILLS = read_yaml_file('test/fixtures/data/skills.yaml')
-PARSED_DRAFT_OUTLINE = read_yaml_file('test/fixtures/data/draft-outline.yaml')
-
+EXPECTED_SKILLS_RESPONSE = open('test/fixtures/responses/skills.md').read()
 
 
 def _setup_test():
@@ -23,6 +18,7 @@ def _setup_test():
 
     # Instantiate db records
     topic_record = DB.query(Topic).filter(Topic.name == "Ruby on Rails").first()
+
     if not topic_record:
         # Save topic to database
         topic_record = Topic(name="Ruby on Rails", slug="ruby-on-rails")
@@ -30,8 +26,6 @@ def _setup_test():
         DB.commit()
 
         outline_record = Outline.instantiate(topic_record)
-        outline_record.skills = PARSED_SKILLS
-        outline_record.draft_outline = PARSED_DRAFT_OUTLINE
         DB.add(outline_record)
         DB.commit()
 
@@ -40,33 +34,31 @@ def _setup_test():
     return outline_record.id
 
 
-def test_build_draft_prompt():
+
+def test_build_skills_prompt():
     outline_id = _setup_test()
 
     client = OpenAIMockService("Test")
-    builder = MasterOutlineBuilder(outline_id, client)
+    generator = SkillGenerator(outline_id, client)
+    prompt = generator.build_skills_prompt()
 
-    course_name = PARSED_DRAFT_OUTLINE[0]['courseName']
-    modules = PARSED_DRAFT_OUTLINE[0]['modules']
-    prompt = builder.build_optimize_outline_prompt(course_name, modules)
+    assert len(prompt) == 2
 
     system_prompt = prompt[0]['content']
     user_prompt = prompt[1]['content']
-
-    assert len(prompt) == 2
 
     for key in REPLACE_KEYS:
         assert key not in user_prompt
         assert key not in system_prompt
 
 
-def test_generate_master_outline():
+def test_generate_skills():
     outline_id = _setup_test()
 
     client = OpenAIMockService("Test")
-    builder = MasterOutlineBuilder(outline_id, client)
 
-    master_outline = builder.generate()
+    generator = SkillGenerator(outline_id, client)
 
-    assert master_outline != None
-    assert os.path.exists('test/out/ruby-on-rails/master-outline.yaml') == True
+    skills = generator.generate()
+
+    assert skills['valid'] == True
