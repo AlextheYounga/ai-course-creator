@@ -2,7 +2,7 @@ import os
 from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
-from db.db import db_client, Topic, Outline
+from db.db import DB, Topic, Outline
 from src.utils.strings import slugify
 from .skill_generator import SkillGenerator
 from .draft_outline import DraftOutline
@@ -10,7 +10,6 @@ from .build_master_outline import MasterOutlineBuilder
 from .outline_processor import OutlineProcessor
 
 load_dotenv()
-DB = db_client()
 
 
 class OutlineCreator:
@@ -75,7 +74,8 @@ class OutlineCreator:
         topic_record = DB.query(Topic).filter(Topic.name == topic).first()
         if not topic_record:
             # Save topic to database
-            topic_record = Topic(name=topic, slug=slugify(topic),)
+            topic_slug = Topic.make_slug(topic)
+            topic_record = Topic(name=topic, slug=topic_slug)
             DB.add(topic_record)
             DB.commit()
 

@@ -4,7 +4,7 @@ from src.creator.outlines.skill_generator import SkillGenerator
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 
-DB = setup_db()
+
 OUTPUT_PATH = "test/out"
 REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
 EXPECTED_SKILLS_RESPONSE = open('test/fixtures/responses/skills.md').read()

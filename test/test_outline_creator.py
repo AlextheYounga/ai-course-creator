@@ -5,7 +5,7 @@ from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 import yaml
 
-DB = setup_db()
+
 OUTPUT_PATH = "test/out"
 
 

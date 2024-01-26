@@ -5,12 +5,11 @@ from termcolor import colored
 from src.creator.helpers import get_prompt
 from src.creator.outlines.outline_processor import OutlineProcessor
 from src.creator.pages.page_processor import PageProcessor
-from db.db import db_client, Topic, Page
+from db.db import DB, Topic, Page
 import progressbar
 
 
 load_dotenv()
-DB = db_client()
 
 
 class PracticeSkillChallengeCreator:
@@ -78,6 +77,7 @@ class PracticeSkillChallengeCreator:
         # Update page record
         page.content = material
         page.hash = PageProcessor.hash_page(material)
+        page.link =page.permalink
         page.generated = True
 
         # Save to Database
@@ -87,42 +87,25 @@ class PracticeSkillChallengeCreator:
         return page
 
 
-    def create_practice_skill_challenges(self):
-        outline_rows = OutlineProcessor.get_outline_metadata(self.outline.id)
-        challenge_pages = [row for row in outline_rows if row['type'] == 'challenge']
-        total_count = len(challenge_pages)
+    def create_from_outline(self):
+        updated_pages = []
+        outline_records = OutlineProcessor.get_outline_records(self.outline.id)
+        pages = [page for page in outline_records if page.type == 'challenge']
+        total_count = len(pages)
 
-        with progressbar.ProgressBar(max_value=total_count, prefix='Generating pages: ', redirect_stdout=True) as bar:
+        with progressbar.ProgressBar(max_value=total_count, prefix='Generating practice challenges: ', redirect_stdout=True) as bar:
             # Loop through outline pages
-            for row in challenge_pages:
-                page_slug = row['slug']
-                course_slug = row['courseSlug']
-                chapter_slug = row['chapterSlug']
-
-                existing = PageProcessor.check_for_existing_page_material(self.topic.id, row)   
+            for page in pages:
+                existing = PageProcessor.check_for_existing_page_material(page)   
                 if (existing):
-                    print(colored(f"Skipping existing '{row['name']}' page material...", "yellow"))
+                    print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
                     continue
 
-                # Instantiate page record
-                page_record = Page(
-                    topic_id=self.topic.id,
-                    name=row['name'],
-                    course_slug=course_slug,
-                    chapter_slug=chapter_slug,
-                    slug=page_slug,
-                    permalink=row['permalink'],
-                    link=f"/page/{self.topic.slug}/{course_slug}/{chapter_slug}/{page_slug}",
-                    type='challenge',
-                    position=row['position'],
-                    position_in_series=row['positionInSeries'],
-                    position_in_course=row['positionInCourse'],
-                    generated=False,
-                    course_data=row['courseData'],
-                )
-
-                self.generate_practice_skill_challenge(page_record)
+                updated_page_record = self.generate_practice_skill_challenge(page)
+                updated_pages.append(updated_page_record)
 
                 bar.increment()
-                
-        return outline_rows
+        
+        OutlineProcessor.dump_pages_from_outline(self.outline.id)
+
+        return updated_pages

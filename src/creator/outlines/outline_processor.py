@@ -1,14 +1,13 @@
 import os
 from termcolor import colored
 from dotenv import load_dotenv
-from db.db import db_client, Topic, Outline, Page
+from db.db import DB, Topic, Outline, Course, Chapter, Page
 from src.utils.files import read_yaml_file
-from src.utils.strings import slugify, string_hash
+from src.utils.strings import string_hash
 import yaml
 
 
 load_dotenv()
-DB = db_client()
 
 
 class OutlineProcessor:
@@ -19,10 +18,11 @@ class OutlineProcessor:
         self.output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 
 
+    # Private Methods
     def _get_page_type(self, chapter_object: dict, name: str):
         if chapter_object['name'] == "Final Skill Challenge":
             return 'final-skill-challenge'
-        
+
         page_index = chapter_object['pages'].index(name)
 
         if ('Challenge' in name) and (page_index == len(chapter_object['pages']) - 1):
@@ -30,146 +30,157 @@ class OutlineProcessor:
 
         return 'page'
 
-    def _create_page_object(self, data):
+
+    def _create_or_update_course_record_from_outline(self, data):
+        course_slug = Course.make_slug(data['name'])
+
+        course = DB.query(Course).filter(
+            Course.topic_id == self.topic.id,
+            Course.slug == course_slug
+        ).first()
+
+        if not course:
+            course = Course(topic_id=self.topic.id)
+
+        course.name = data['name']
+        course.slug = course_slug
+        course.level = data['position']
+        course.outline = data['outline']
+        course.skill_challenge_chapter = f"final-skill-challenge-{course_slug}"
+
+        return course
+
+
+    def _create_or_update_chapter_record_from_outline(self, data):
+        chapter_slug = Chapter.make_slug(data['name'], data['courseSlug'])
+
+        chapter = DB.query(Chapter).filter(
+            Chapter.topic_id == self.topic.id,
+            Chapter.slug == chapter_slug
+        ).first()
+
+        if not chapter:
+            chapter = Chapter(topic_id=self.topic.id)
+
+        chapter.name = data['name']
+        chapter.slug = chapter_slug
+        chapter.course_slug = data['courseSlug']
+        chapter.position = data['position']
+        chapter.outline = data['outline']
+        chapter.content_type = 'lesson' if data['name'] != 'Final Skill Challenge' else 'final-skill-challenge'
+
+        return chapter
+
+
+    def _create_or_update_page_record_from_outine(self, data):
         course_slug = data['courseSlug']
         chapter_slug = data['chapterSlug']
-        page_slug = data.get('slug', slugify(data['name']))
-        page_path = f"{self.output_directory}/{self.topic.slug}/{self.outline.name}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md"
-        page_link = f"/page/{self.topic.slug}/{course_slug}/{chapter_slug}/{page_slug}"
-        exists = os.path.exists(page_path)
 
-        return {
-            'name': data['name'],
-            'topicSlug': self.topic.slug,
-            'courseSlug': course_slug,
-            'chapterSlug': chapter_slug,
-            'slug': page_slug,
-            'path': page_path,
-            'position': data['position'],
-            'positionInCourse': data['positionInCourse'],
-            'positionInSeries': data['positionInSeries'],
-            'type': data.get('type', 'page'),
-            'exists': exists,
-            'permalink': page_link,
-            'link': page_link if exists else '#',
-        }
+        page_slug = Page.make_slug(data['name'], course_slug, chapter_slug)
+
+        page = DB.query(Page).filter(
+            Page.topic_id == self.topic.id,
+            Page.course_slug == course_slug,
+            Page.chapter_slug == chapter_slug,
+            Page.slug == page_slug
+        ).first()
+
+        if not page:
+            page = Page(topic_id=self.topic.id)
+
+        page.name = data['name']
+        page.course_slug = course_slug
+        page.chapter_slug = chapter_slug
+        page.slug = page_slug
+        page.path = f"{self.output_directory}/{self.topic.slug}/{self.outline.name}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md"
+        page.generated = os.path.exists(page.path)
+        page.permalink = f"/page/{self.topic.slug}/{course_slug}/{chapter_slug}/{page_slug}"
+        page.link = page.permalink if page.generated else '#'
+        page.position = data['position']
+        page.position_in_course = data['positionInCourse']
+        page.position_in_series = data['positionInSeries']
+        page.type = data.get('type', 'page')
+
+        return page
 
 
-    def _build_nested_outline_metadata(self):
-        metadata = {
-            'topic': self.topic.name,
-            'topicSlug': self.topic.slug,
-            'totalPages': 0,
-            'courses': {},
-            'allPaths': []
-        }
-
+    def _find_or_create_records_from_outline(self):
+        pages = []
         for course_index, course in enumerate(self.outline.master_outline):
             page_position_in_course = 0
             course = course['course']
-            course_slug = slugify(course['courseName'])
 
-            # Building course
-            course_object = {
-                "courseName": course['courseName'],
-                'slug': course_slug,
-                "chapters": {},
-                "level": course_index,
-                "pageCount": 0,
-                'paths': [],
-                'links': []
-            }
+            # Building course record
+            course_record = self._create_or_update_course_record_from_outline({
+                'name': course['courseName'],
+                'position': course_index,
+                'outline': yaml.dump(course, sort_keys=False),
+            })
+            DB.add(course_record)
 
             for chapter_index, chapter in enumerate(course['chapters']):
-                # Building chapter object
+                # Building chapter record
                 chapter_name = chapter['name']
-                chapter_slug = chapter['slug']
-                chapter_page_count = len(chapter['pages'])
-                course_object['pageCount'] += chapter_page_count
 
-                chapter_object = {
+                chapter_record = self._create_or_update_chapter_record_from_outline({
                     'name': chapter_name,
-                    'slug': chapter_slug,
-                    'pageCount': chapter_page_count,
+                    'courseSlug': course_record.slug,
                     'position': chapter_index,
-                    'pages': {},
-                    'paths': []
-                }
+                    'outline': yaml.dump(chapter, sort_keys=False),
+                })
 
-                # Building page object
+                DB.add(chapter_record)
+
+                # Building page record
                 for page_index, page in enumerate(chapter['pages']):
-                    if not isinstance(page, str): continue
-
-                    page_object = self._create_page_object({
+                    page_record = self._create_or_update_page_record_from_outine({
                         'name': page,
-                        'courseSlug': course_slug,
-                        'chapterSlug': chapter_slug,
+                        'courseSlug': course_record.slug,
+                        'chapterSlug': chapter_record.slug,
                         'position': page_index,
                         'type': self._get_page_type(chapter, page),
                         'positionInCourse': page_position_in_course,
-                        'positionInSeries': len(metadata['allPaths']),
+                        'positionInSeries': len(pages),
                     })
-
-                    chapter_object['pages'][page_object['slug']] = page_object
-                    chapter_object['paths'].append(page_object['path'])
-                    course_object['paths'].append(page_object['path'])
-
-                    metadata['links'].append(page_object['link'])
-                    metadata['allPaths'].append(page_object['path'])
-
-                course_object['chapters'][chapter_slug] = chapter_object
-
-            metadata['totalPages'] += course_object['pageCount']
-            metadata['courses'][course_slug] = course_object
-
-        return metadata
-
-
-    def _build_page_metadata_list(self):
-        metadata = []
-
-        for course_index, course in enumerate(self.outline.master_outline):
-            page_position_in_course = 0
-            course = course['course']
-            course_slug = slugify(course['courseName'])
-
-            for chapter_index, chapter in enumerate(course['chapters']):
-                chapter_name = chapter.get('chapter', False) or chapter['name']
-                chapter_slug = slugify(chapter_name)
-
-                for page_index, page in enumerate(chapter['pages']):
-                    if not isinstance(page, str): continue
-
-                    page_object = self._create_page_object({
-                        'name': page,
-                        'courseSlug': course_slug,
-                        'chapterSlug': chapter_slug,
-                        'type': self._get_page_type(chapter, page),
-                        'position': page_index,
-                        'positionInCourse': page_position_in_course,
-                        'positionInSeries': len(metadata),
-                    })
-
-                    page_object['courseData'] = {
-                        'course': {
-                            "name": course['courseName'],
-                            'slug': course_slug,
-                            'level': course_index,
-                            'outline': yaml.dump(course, sort_keys=False),
-                        },
-                        'chapter': {
-                            'name': chapter_name,
-                            'slug': chapter_slug,
-                            'position': chapter_index,
-                            'outline': yaml.dump(course, sort_keys=False),
-                        }
-                    }
-
                     page_position_in_course += 1
-                    metadata.append(page_object)
-        return metadata
+
+                    # Saving to the database
+                    DB.add(page_record)
+                    DB.commit()
+                    DB.refresh(page_record)
+
+                    pages.append(page_record)
+
+        return pages
 
 
+    def _get_record_ids_from_outline(self):
+        records = {
+            'courses': [],
+            'chapters': [],
+            'pages': []
+        }
+
+        for course in self.outline.master_outline:
+            course = course['course']
+            course_slug = Course.make_slug(course['courseName'])
+            course_record = DB.query(Course).filter(Course.topic_id == self.topic.id, Course.slug == course_slug).first()
+            records['courses'].append(course_record.id)
+
+            for chapter in course['chapters']:
+                chapter_slug = Chapter.make_slug(chapter['name'], course_slug)
+                chapter_record = DB.query(Chapter).filter(Chapter.topic_id == self.topic.id, Chapter.slug == chapter_slug).first()
+                records['chapters'].append(chapter_record.id)
+
+                for page in chapter['pages']:
+                    page_slug = Page.make_slug(page, course_slug, chapter_slug)
+                    page_record = DB.query(Page).filter(Page.topic_id == self.topic.id, Page.slug == page_slug).first()
+                    records['pages'].append(page_record.id)
+
+        return records
+
+
+    # Static Methods
     @staticmethod
     def hash_outline(outline_data):
         # Convert outline text to deterministic hash for comparison
@@ -191,17 +202,6 @@ class OutlineProcessor:
 
         print(colored("Detected outline changes.\n", "green"))
         return OutlineProcessor.create_new_outline_from_file(topic_id, outline_file)
-
-
-    @staticmethod
-    def get_outline_record_from_file(outline_file: str):
-        outline_data = open(outline_file).read()
-        outline_hash = OutlineProcessor.hash_outline(outline_data)
-        outline = DB.query(Outline).filter(Outline.hash == outline_hash).first()
-
-        if outline:
-            return outline
-        return None
 
 
     @staticmethod
@@ -228,53 +228,58 @@ class OutlineProcessor:
 
 
     @staticmethod
-    def get_outline_metadata(outline_id: int, format: str = 'list'):
+    def dump_pages_from_outline(outline_id: int):
         processor = OutlineProcessor(outline_id)
 
-        if (format == 'nested'):
-            return processor._build_nested_outline_metadata()
-
-        return processor._build_page_metadata_list()
-
-
-
-    @staticmethod
-    def dump_pages_from_outline(outline_id: int):
-        outline = DB.get(Outline, outline_id)
-        topic = outline.topic
+        outline_record_ids = processor._get_record_ids_from_outline()
+        page_ids = outline_record_ids['pages']
 
         output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
-        output_path = f"{output_directory}/{topic.slug}"
+        output_path = f"{output_directory}/{processor.topic.slug}"
 
-        outline_rows = OutlineProcessor.get_outline_metadata(outline_id)
+        page_records = DB.query(Page).filter(Page.id.in_(page_ids)).all()
 
-        for row in outline_rows:
-            page_path = row['path']
+        for page in page_records:
+            if not page.content: continue
 
-            page = DB.query(Page).filter(
-                Page.topic_id == topic.id,
-                Page.course_slug == row['courseSlug'],
-                Page.chapter_slug == row['chapterSlug'],
-                Page.slug == row['slug']
-            ).first()
+            print(colored(f"Writing page: {page.path}", "green"))
 
-            if not page or not page.content: continue
-
-            print(colored(f"Writing page: {page_path}", "green"))
-
-            os.makedirs(os.path.dirname(page_path), exist_ok=True)
-            with open(page_path, 'w') as f:
+            os.makedirs(os.path.dirname(page.path), exist_ok=True)
+            with open(page.path, 'w') as f:
                 f.write(page.content)
                 f.close()
 
-        with open(f"{output_path}/{outline.name}/skills.yaml", 'w') as skills_file:
-            skills_file.write(yaml.dump(outline.skills, sort_keys=False))
+        with open(f"{output_path}/{processor.outline.name}/skills.yaml", 'w') as skills_file:
+            skills_file.write(yaml.dump(processor.outline.skills, sort_keys=False))
             skills_file.close()
 
-        with open(f"{output_path}/{outline.name}/draft-outline.yaml", 'w') as draft_file:
-            draft_file.write(yaml.dump(outline.draft_outline, sort_keys=False))
+        with open(f"{output_path}/{processor.outline.name}/draft-outline.yaml", 'w') as draft_file:
+            draft_file.write(yaml.dump(processor.outline.draft_outline, sort_keys=False))
             draft_file.close()
 
-        with open(f"{output_path}/{outline.name}/outline.yaml", 'w') as outline_file:
-            outline_file.write(yaml.dump(outline.master_outline, sort_keys=False))
+        with open(f"{output_path}/{processor.outline.name}/outline.yaml", 'w') as outline_file:
+            outline_file.write(yaml.dump(processor.outline.master_outline, sort_keys=False))
             outline_file.close()
+
+
+    @staticmethod
+    def get_outline_record_from_file(outline_file: str):
+        outline_data = open(outline_file).read()
+        outline_hash = OutlineProcessor.hash_outline(outline_data)
+        outline = DB.query(Outline).filter(Outline.hash == outline_hash).first()
+
+        if outline:
+            return outline
+        return None
+
+
+    @staticmethod
+    def get_outline_record_ids(outline_id: int):
+        processor = OutlineProcessor(outline_id)
+        return processor._get_record_ids_from_outline()
+
+
+    @staticmethod
+    def get_outline_records(outline_id: int):
+        processor = OutlineProcessor(outline_id)
+        return processor._find_or_create_records_from_outline()

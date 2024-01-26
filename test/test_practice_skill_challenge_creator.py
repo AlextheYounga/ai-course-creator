@@ -7,7 +7,7 @@ from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 
 
-DB = setup_db()
+
 MASTER_OUTLINE = 'test/fixtures/data/master-outline.yaml'
 OUTPUT_PATH = "test/out"
 
@@ -75,7 +75,7 @@ def test_build_prompt():
 #     ai_client = OpenAIMockService(session_name)
 
 #     creator = PracticeSkillChallengeCreator(topic, ai_client)
-#     outline_rows = creator.create_practice_skill_challenges()
+#     outline_rows = creator.create_from_outline()
 
 #     for row in outline_rows:
 #         if row['type'] == 'challenge':

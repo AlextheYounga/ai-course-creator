@@ -16,3 +16,5 @@ def setup_db():
     truncate_tables(engine)
 
     return engine
+
+DB = setup_db()

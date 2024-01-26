@@ -7,7 +7,7 @@ from .mocks.db import *
 from src.utils.files import write_json_file
 
 
-DB = setup_db()
+
 OUTPUT_PATH = "test/out"
 TOPIC = 'Ruby on Rails'
 SLUG = 'ruby-on-rails'

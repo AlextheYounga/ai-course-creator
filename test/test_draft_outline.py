@@ -6,7 +6,7 @@ from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 
 
-DB = setup_db()
+
 OUTPUT_PATH = "test/out"
 REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
 EXPECTED_DRAFT_OUTLINE_RESPONSE = open('test/fixtures/responses/draft-outline.md').read()

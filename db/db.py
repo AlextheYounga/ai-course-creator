@@ -14,3 +14,6 @@ def db_client():
     Session = sessionmaker(bind=engine)
 
     return Session()
+
+
+DB = db_client()

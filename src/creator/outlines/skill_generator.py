@@ -2,13 +2,12 @@ import os
 from termcolor import colored
 from openai import OpenAI
 from dotenv import load_dotenv
-from db.db import db_client, Outline
+from db.db import DB, Outline
 from src.creator.helpers import get_prompt
 from src.utils.files import write_yaml_file
 
 
 load_dotenv()
-DB = db_client()
 
 
 class SkillGenerator:
@@ -17,7 +16,7 @@ class SkillGenerator:
 
         self.ai_client = client
         self.outline = DB.get(Outline, outline_id)
-        self.topic = self.outline.topic 
+        self.topic = self.outline.topic
         self.output_path = f"{output_directory}/{self.topic.slug}/{self.outline.name}"
 
 

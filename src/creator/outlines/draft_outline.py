@@ -4,12 +4,11 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from src.creator.helpers import get_prompt
 from src.utils.files import write_yaml_file
-from db.db import db_client, Outline
+from db.db import DB, Outline
 import yaml
 
 
 load_dotenv()
-DB = db_client()
 
 
 class DraftOutline:

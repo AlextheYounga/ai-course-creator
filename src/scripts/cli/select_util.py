@@ -1,5 +1,5 @@
 import inquirer
-from .chat_utils import *
+from ..chat_utils import *
 
 def select_util():
     choices = [

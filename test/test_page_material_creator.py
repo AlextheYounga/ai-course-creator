@@ -7,7 +7,7 @@ from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 
 
-DB = setup_db()
+
 MASTER_OUTLINE = 'test/fixtures/data/master-outline.yaml'
 OUTPUT_PATH = "test/out"
 

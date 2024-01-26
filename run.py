@@ -1,6 +1,6 @@
 import inquirer
-from src.scripts.select_subroutine import select_subroutine
-from src.scripts.select_util import select_util
+from src.scripts.cli.select_subroutine import select_subroutine
+from src.scripts.cli.select_util import select_util
 from src.scripts.initialize import initialize_project
 from server import run_server
 
