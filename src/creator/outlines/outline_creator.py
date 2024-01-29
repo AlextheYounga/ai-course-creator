@@ -3,10 +3,8 @@ from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
 from db.db import DB, Topic, Outline
-from src.utils.strings import slugify
 from .skill_generator import SkillGenerator
-from .draft_outline import DraftOutline
-from .build_master_outline import MasterOutlineBuilder
+from .master_outline_generator import MasterOutlineGenerator
 from .outline_processor import OutlineProcessor
 
 load_dotenv()
@@ -39,10 +37,7 @@ class OutlineCreator:
         # Generate Skills
         self.generate_skills(outline.id)
 
-        # Generate Draft Outline
-        self.generate_draft_outline(outline.id)
-
-        # Finalize Outline
+        # Generate Master Outline
         master_outline = self.generate_master_outline(outline.id)
 
         print(colored("\nOutline generation complete.", "green"))
@@ -60,14 +55,12 @@ class OutlineCreator:
         return skill_generator.generate()
 
 
-    def generate_draft_outline(self, outline_id):
-        draft = DraftOutline(outline_id, self.ai_client)
-        return draft.generate()
-
-
     def generate_master_outline(self, outline_id):
-        builder = MasterOutlineBuilder(outline_id, self.ai_client)
-        return builder.generate()
+        generator = MasterOutlineGenerator(outline_id, self.ai_client)
+        return generator.generate()
+
+
+    # Private Methods
 
 
     def _instantiate_topic(self, topic: str):

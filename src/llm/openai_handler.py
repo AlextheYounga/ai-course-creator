@@ -26,12 +26,15 @@ class OpenAiHandler:
         # Initialize OpenAI
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         self.model = os.environ.get("MODEL") or 'gpt-3.5-turbo-1106'
-        self.logger = logging.getLogger(f"{self.model} {session_name}")
+        self.logger = logging.getLogger(f"{session_name}")
         self.retry_count = 0
 
 
     def send_prompt(self, name: str, messages: list[dict], options: dict = {}) -> OpenAI:
         quiet = options.get('quiet', False)
+        model = options.get('model', self.model)
+        max_tokens = options.get('maxTokens', None)
+        temperature = options.get('temperature', None)
 
         if not quiet:
             for message in messages:
@@ -40,20 +43,22 @@ class OpenAiHandler:
                     print(colored(f"Sending {name} prompt: {prompt[:100]}...", "cyan"))
                     break
 
-        self.logger.info(f"SEND: {json.dumps(messages)}")
+        self.logger.info(f"SEND: {model} - {json.dumps(messages)}")
 
         completion = None
         try:
             # Send to ChatGPT
             completion = self.client.chat.completions.create(
-                model=self.model,
+                model=model,
                 messages=messages,
+                max_tokens=max_tokens,
+                temperature=temperature
             )
         except Exception as e:
             print(colored(f"Unknown error from OpenAI: {e}", "red"))
             return None
 
-        self.logger.info(f"RESPONSE: {completion.model_dump_json()}")
+        self.logger.info(f"RESPONSE: {model} - {completion.model_dump_json()}")
 
         response_validated = self.response_validator(name, messages, completion, options)
 

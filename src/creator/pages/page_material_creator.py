@@ -5,7 +5,9 @@ from openai import OpenAI
 from src.creator.helpers import get_prompt
 from src.creator.outlines.outline_processor import OutlineProcessor
 from src.creator.pages.page_processor import PageProcessor
+from src.creator.pages.page_summarizer import PageSummarizer
 from db.db import DB, Topic, Course, Chapter, Page
+import yaml
 import progressbar
 
 
@@ -25,23 +27,52 @@ class PageMaterialCreator:
         )
 
 
-    def build_page_material_prompt(self, course_name, chapter_outline: str, page_name: str):
+    def collect_prior_page_summaries(self):
+        summaries = ""
+
+        # Fetch all pages from outline
+        outline_records = OutlineProcessor.get_outline_record_ids(self.outline.id)
+        page_ids = outline_records['pages']
+        outline_pages = DB.query(Page).filter(Page.id.in_(page_ids)).all()
+        lesson_pages = [page for page in outline_pages if page.type == 'page']
+
+        for page in lesson_pages:
+            if page.type == 'page' and page.summary != None:
+                formatted_summary = page.summary.replace("\n", " ")
+                summaries += f"## {page.name}\n {formatted_summary}\n\n"
+
+        return summaries
+
+
+    def build_page_material_prompt(self, page_name: str):
         # Combine multiple system prompts into one
         general_system_prompt = get_prompt('system/general', [("{topic}", self.topic.name)])
+
+        # Inform model on how we want to format interactives
         interactives_system_prompt = get_prompt('system/tune-interactives', None)
-        material_system_prompt = get_prompt('system/tune-page-material', [
+
+        # Inform model on our outline
+        material_system_prompt = get_prompt('system/pages/tune-outline', [
             ("{topic}", self.topic.name),
-            ("{course_name}", course_name),
-            ("{chapter}", chapter_outline)
+            ("{outline}", yaml.dump(self.outline.master_outline)),
         ])
 
-        combined_system_prompt = "\n".join([
+        # Get prior page summaries
+        summaries = self.collect_prior_page_summaries()
+
+        prior_page_material_prompt = get_prompt(
+            'system/pages/tune-page-summaries',
+            [("{summaries}", summaries)]
+        )
+
+        combined_system_prompt = "\n---\n".join([
             general_system_prompt,
             interactives_system_prompt,
-            material_system_prompt
+            material_system_prompt,
+            prior_page_material_prompt
         ])
 
-        user_prompt = get_prompt('user/page-material', [("{page_name}", page_name)])
+        user_prompt = get_prompt('user/pages/page-material', [("{page_name}", page_name)])
 
         # Build message payload
         return [
@@ -51,12 +82,8 @@ class PageMaterialCreator:
 
 
     def generate_page_material(self, page: Page):
-
-        course = DB.query(Course).filter(Course.topic_id == self.topic.id, Course.slug == page.course_slug).first()
-        chapter = DB.query(Chapter).filter(Chapter.topic_id == self.topic.id, Chapter.slug == page.chapter_slug).first()
-
         # Build prompt
-        messages = self.build_page_material_prompt(course.name, chapter.outline, page.name)
+        messages = self.build_page_material_prompt(page.name)
 
         # Send to ChatGPT
         validated_response = self.ai_client.send_prompt('page-material', messages, options={})
@@ -65,13 +92,36 @@ class PageMaterialCreator:
         # Update page record
         page.content = material
         page.hash = PageProcessor.hash_page(material)
-        page.link =page.permalink
+        page.link = page.permalink
         page.generated = True
 
         # Save to Database
         DB.commit()
 
+        # Summarize Page
+        summarizer = PageSummarizer(page, self.ai_client)
+        summarizer.summarize()
+
+        # Write to file
+        PageProcessor.dump_page(page)
+
         return page
+
+
+    def regenerate(self, pages: list[Page]):
+        regenerated_pages = []
+
+        with progressbar.ProgressBar(max_value=len(pages), prefix='Regenerating pages: ', redirect_stdout=True) as bar:
+            for page in pages:
+                page.generated = False
+                DB.add(page)
+
+                regenerated = self.generate_page_material(page)
+                regenerated_pages.append(regenerated)
+
+            bar.increment()
+
+        return regenerated_pages
 
 
     def create_from_outline(self):
@@ -84,15 +134,17 @@ class PageMaterialCreator:
         with progressbar.ProgressBar(max_value=total_count, prefix='Generating pages: ', redirect_stdout=True) as bar:
             # Loop through outline pages
             for page in pages:
+                bar.increment()
+
                 existing = PageProcessor.check_for_existing_page_material(page)
                 if (existing):
                     print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
+                    PageProcessor.dump_page(page)  # Write to file
                     continue
 
                 updated_page_record = self.generate_page_material(page)
                 updated_pages.append(updated_page_record)
-                bar.increment()
 
-        OutlineProcessor.dump_pages_from_outline(self.outline.id)
+
 
         return updated_pages

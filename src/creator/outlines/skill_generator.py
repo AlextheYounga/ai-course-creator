@@ -23,7 +23,7 @@ class SkillGenerator:
     def build_skills_prompt(self) -> list[dict]:
         # Build message payload
         system_prompt = get_prompt('system/general', [("{topic}", self.topic.name)])
-        user_prompt = get_prompt('user/topic-skills', [("{topic}", self.topic.name)])
+        user_prompt = get_prompt('user/outlines/topic-skills', [("{topic}", self.topic.name)])
 
         return [
             {"role": "system", "content": system_prompt},

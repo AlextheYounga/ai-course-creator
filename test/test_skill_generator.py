@@ -6,11 +6,13 @@ from .mocks.db import *
 
 
 OUTPUT_PATH = "test/out"
-REPLACE_KEYS = ["{topic}", "{draft_outline}", "{skills}", "{page_name}"]
+REPLACE_KEYS = ["{topic}", "{skills}", "{page_name}"]
 EXPECTED_SKILLS_RESPONSE = open('test/fixtures/responses/skills.md').read()
 
 
 def _setup_test():
+    truncate_tables()
+
     # Nuke output folder
     slug = 'ruby-on-rails'
     if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):

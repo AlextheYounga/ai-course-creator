@@ -56,7 +56,7 @@ class PracticeSkillChallengeCreator:
             all_pages_content
         ])
 
-        user_prompt = get_prompt('user/practice-skill-challenge', None)
+        user_prompt = get_prompt('user/challenges/practice-skill-challenge', None)
 
         # Build message payload
         system_payload = [{"role": "system", "content": combined_system_prompt}]
@@ -77,14 +77,34 @@ class PracticeSkillChallengeCreator:
         # Update page record
         page.content = material
         page.hash = PageProcessor.hash_page(material)
-        page.link =page.permalink
+        page.link = page.permalink
         page.generated = True
 
         # Save to Database
         DB.add(page)
         DB.commit()
 
+        # Write to file
+        PageProcessor.dump_page(page)
+
         return page
+
+
+    def regenerate(self, pages: list[Page]):
+        regenerated_pages = []
+
+        with progressbar.ProgressBar(max_value=len(pages), prefix='Regenerating practice challenges: ', redirect_stdout=True) as bar:
+            for page in pages:
+                page.generated = False
+                DB.add(page)
+
+                regenerated = self.generate_practice_skill_challenge(page)
+                regenerated_pages.append(regenerated)
+
+            bar.increment()
+
+        return regenerated_pages
+
 
 
     def create_from_outline(self):
@@ -96,16 +116,15 @@ class PracticeSkillChallengeCreator:
         with progressbar.ProgressBar(max_value=total_count, prefix='Generating practice challenges: ', redirect_stdout=True) as bar:
             # Loop through outline pages
             for page in pages:
-                existing = PageProcessor.check_for_existing_page_material(page)   
+                bar.increment()
+
+                existing = PageProcessor.check_for_existing_page_material(page)
                 if (existing):
                     print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
+                    PageProcessor.dump_page(page)  # Write to file
                     continue
 
                 updated_page_record = self.generate_practice_skill_challenge(page)
                 updated_pages.append(updated_page_record)
-
-                bar.increment()
-        
-        OutlineProcessor.dump_pages_from_outline(self.outline.id)
 
         return updated_pages

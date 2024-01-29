@@ -12,6 +12,8 @@ OUTPUT_PATH = "test/out"
 
 
 def _setup_test():
+    truncate_tables()
+
     # Reset output directory
     if (os.path.exists(f"{OUTPUT_PATH}")):
         shutil.rmtree(f"{OUTPUT_PATH}")
@@ -33,9 +35,9 @@ def _create_page_material(topic: str):
     ai_client = OpenAIMockService(session_name)
 
     creator = PageMaterialCreator(topic, ai_client)
-    outline = creator.create_from_outline()
+    pages = creator.create_from_outline()
 
-    return outline
+    return pages
 
 
 def _create_practice_skill_challenges(topic: str):
@@ -43,9 +45,9 @@ def _create_practice_skill_challenges(topic: str):
     ai_client = OpenAIMockService(session_name)
 
     creator = PracticeSkillChallengeCreator(topic, ai_client)
-    outline = creator.create_from_outline()
+    pages = creator.create_from_outline()
 
-    return outline
+    return pages
 
 
 def _create_final_skill_challenges(topic: str):
@@ -53,21 +55,20 @@ def _create_final_skill_challenges(topic: str):
     ai_client = OpenAIMockService(session_name)
 
     creator = FinalSkillChallengeCreator(topic, ai_client)
-    outline = creator.create_from_outline()
+    pages = creator.create_from_outline()
 
-    return outline
+    return pages
 
 
 
 def test_create_full_course():
     _setup_test()
 
-    slug = 'ruby-on-rails'
     topic = 'Ruby on Rails'
 
     # Begin creating course outlines
     outline_id = _create_outlines(topic)
-    
+
     # Checking output
     assert outline_id == 1
 
@@ -99,4 +100,3 @@ def test_create_full_course():
         assert page != None
         assert page.content != None
         assert page.generated == True
-

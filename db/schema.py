@@ -16,7 +16,6 @@ class Outline(Base):
     name = mapped_column(String)
     hash = mapped_column(String, unique=True)
     skills = mapped_column(JSON)
-    draft_outline = mapped_column(JSON)
     master_outline = mapped_column(JSON)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
@@ -49,8 +48,9 @@ class Course(Base):
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
     topic: Mapped["Topic"] = relationship("Topic", back_populates="courses")
+
     def make_slug(name):
-        return slugify(name) 
+        return slugify(name)
 
 
 class Chapter(Base):
@@ -89,8 +89,8 @@ class Page(Base):
     summary = mapped_column(Text)
     nodes = mapped_column(JSON)
     position = mapped_column(Integer, nullable=False)
-    position_in_series = mapped_column(Integer, nullable=False)
     position_in_course = mapped_column(Integer, nullable=False)
+    position_in_series = mapped_column(Integer, nullable=False)
     generated = mapped_column(Boolean, default=False)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
@@ -99,10 +99,11 @@ class Page(Base):
 
     def make_slug(name, course_slug, chapter_slug):
         if name == 'Practice Skill Challenge':
-            return f"challenge-{chapter_slug}"  
+            return f"challenge-{chapter_slug}"
         if 'Final Skill Challenge' in name:
             return f"{course_slug}-{slugify(name)}"
-        return slugify(name) 
+        return slugify(name)
+
 
 class Answer(Base):
     __tablename__ = "answer"

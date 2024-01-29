@@ -2,6 +2,7 @@
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
+from termcolor import colored
 from src.creator.helpers import get_prompt
 from src.creator.outlines.outline_processor import OutlineProcessor
 from src.creator.pages.page_processor import PageProcessor
@@ -35,7 +36,8 @@ class FinalSkillChallengeCreator:
 
         pages = DB.query(Page).filter(
             Page.topic_id == self.topic.id,
-            Page.course_slug == course_slug
+            Page.course_slug == course_slug,
+            Page.type == 'page'
         ).all()
 
         for page in pages:
@@ -57,7 +59,7 @@ class FinalSkillChallengeCreator:
             all_pages_content
         ])
 
-        user_prompt = get_prompt('user/final-skill-challenge', None)
+        user_prompt = get_prompt('user/challenges/final-skill-challenge', None)
 
         # Build message payload
         system_payload = [{"role": "system", "content": combined_system_prompt}]
@@ -73,12 +75,24 @@ class FinalSkillChallengeCreator:
         validated_response = self.ai_client.send_prompt('final-skill-challenge', messages, options={})
         material = validated_response['content']
 
-        generated_pages = self._handle_split_page_material(course, material)
+        generated_pages = self._handle_allocate_page_material_to_multiple_pages(course, material)
 
         return generated_pages
 
 
-    # Main
+    def regenerate(self, course: Course):
+        # Delete all previous final skill challenge pages
+        DB.query(Page).filter(
+            Topic.id == Page.topic_id,
+            Page.course_slug == course.slug,
+            Page.type == 'final-skill-challenge'
+        ).delete()
+
+        DB.commit()
+
+        return self.generate_final_skill_challenge(course)
+
+
     def create_from_outline(self):
         generated_pages = []
         outline_records = OutlineProcessor.get_outline_record_ids(self.outline.id)
@@ -88,19 +102,41 @@ class FinalSkillChallengeCreator:
 
         with progressbar.ProgressBar(max_value=courses_count, prefix='Generating final skill challenges: ', redirect_stdout=True) as bar:
             for course in courses:
-                pages = self.generate_final_skill_challenge(course)
-                generated_pages += pages
                 bar.increment()
 
-        OutlineProcessor.dump_pages_from_outline(self.outline.id)
+                existing = self._check_for_existing_page_material(course)
+                if (existing):
+                    print(colored(f"Skipping existing '{course.name}' final skill challenge material...", "yellow"))
+                    continue
+
+                pages = self.generate_final_skill_challenge(course)
+                generated_pages += pages
 
         return generated_pages
 
 
     # Private Methods
-    def _handle_split_page_material(self, course: Course, material: str):
+
+
+    def _check_for_existing_page_material(self, course: Course):
+        fsc_pages = DB.query(Page).filter(
+            Page.topic_id == self.topic.id,
+            Page.course_slug == course.slug,
+            Page.type == 'final-skill-challenge'
+        ).all()
+
+        content_generated = [page.content != None for page in fsc_pages]
+
+        if (False not in content_generated):
+            PageProcessor.dump_pages(fsc_pages)  # Write to file
+            return True
+
+        return False
+
+
+    def _handle_allocate_page_material_to_multiple_pages(self, course: Course, material: str):
         # Parse response for answerables
-        answerables = self._parse_response_answerables(material)
+        answerables = self._handle_split_page_material(material)
         fsc_chapter = course.skill_challenge_chapter
         fsc_pages = DB.query(Page).filter(Page.topic_id == self.topic.id, Page.chapter_slug == fsc_chapter).all()
 
@@ -108,23 +144,33 @@ class FinalSkillChallengeCreator:
         for index, page in enumerate(fsc_pages):
             page_material = answerables[index]
 
-            # Update page record
-            page.content = page_material
-            page.hash = PageProcessor.hash_page(page_material)
-            page.link = page.permalink
-            page.generated = True
-
-            # Save to Database
-            DB.add(page)
-            DB.commit()
-            DB.refresh(page)
+            page = self._update_fsc_page_record(page, page_material)
 
             generated_pages.append(page)
-        
+
         return generated_pages
 
 
-    def _parse_response_answerables(self, material: str) -> list:
+    def _update_fsc_page_record(self, page: Page, page_material: str):
+        # Update page record
+        page.content = page_material
+        page.hash = PageProcessor.hash_page(page_material)
+        page.link = page.permalink
+        page.generated = True
+
+        # Save to Database
+        DB.add(page)
+        DB.commit()
+        DB.refresh(page)
+
+        # Write to file
+        PageProcessor.dump_page(page)
+
+        return page
+
+
+
+    def _handle_split_page_material(self, material: str) -> list:
         # Split 20 questions into chunks of 4 questions per page
         html = markdown.markdown(material, extensions=['fenced_code'])
         soup = BeautifulSoup(html, 'html.parser')

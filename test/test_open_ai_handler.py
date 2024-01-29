@@ -5,6 +5,7 @@ from test.mocks.openai_mock_service import OpenAIMockService
 
 LOG_PATH = "test/out/logs"
 
+
 def _setup_test():
     if (os.path.exists(LOG_PATH)):
         shutil.rmtree(LOG_PATH)

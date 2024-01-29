@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from db.db import DB, Topic, Outline, Course, Chapter, Page
 from src.utils.files import read_yaml_file
 from src.utils.strings import string_hash
+from src.creator.pages.page_processor import PageProcessor
 import yaml
 
 
@@ -19,6 +20,8 @@ class OutlineProcessor:
 
 
     # Private Methods
+
+
     def _get_page_type(self, chapter_object: dict, name: str):
         if chapter_object['name'] == "Final Skill Challenge":
             return 'final-skill-challenge'
@@ -72,7 +75,7 @@ class OutlineProcessor:
         return chapter
 
 
-    def _create_or_update_page_record_from_outine(self, data):
+    def _create_or_update_page_record_from_outline(self, data):
         course_slug = data['courseSlug']
         chapter_slug = data['chapterSlug']
 
@@ -94,6 +97,8 @@ class OutlineProcessor:
         page.slug = page_slug
         page.path = f"{self.output_directory}/{self.topic.slug}/{self.outline.name}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md"
         page.generated = os.path.exists(page.path)
+        page.content = open(page.path).read() if page.generated else None
+        page.hash = PageProcessor.hash_page(page.content) if page.generated else None
         page.permalink = f"/page/{self.topic.slug}/{course_slug}/{chapter_slug}/{page_slug}"
         page.link = page.permalink if page.generated else '#'
         page.position = data['position']
@@ -133,7 +138,7 @@ class OutlineProcessor:
 
                 # Building page record
                 for page_index, page in enumerate(chapter['pages']):
-                    page_record = self._create_or_update_page_record_from_outine({
+                    page_record = self._create_or_update_page_record_from_outline({
                         'name': page,
                         'courseSlug': course_record.slug,
                         'chapterSlug': chapter_record.slug,
@@ -181,6 +186,8 @@ class OutlineProcessor:
 
 
     # Static Methods
+
+
     @staticmethod
     def hash_outline(outline_data):
         # Convert outline text to deterministic hash for comparison
@@ -200,8 +207,11 @@ class OutlineProcessor:
         outline = OutlineProcessor.get_outline_record_from_file(outline_file)
         if outline: return outline
 
-        print(colored("Detected outline changes.\n", "green"))
-        return OutlineProcessor.create_new_outline_from_file(topic_id, outline_file)
+        print(colored("Detected new outline. Processing...\n", "yellow"))
+        new_outline = OutlineProcessor.create_new_outline_from_file(topic_id, outline_file)
+        print(colored(f"New outline created {new_outline.name}\n", "green"))
+
+        return new_outline
 
 
     @staticmethod
@@ -216,10 +226,11 @@ class OutlineProcessor:
         ).first()
 
         new_outline = Outline.instantiate(topic)
-        new_outline.skills = last_outline.skills
-        new_outline.draft_outline = last_outline.draft_outline
         new_outline.master_outline = read_yaml_file(outline_file)  # Add changed outline to record
         new_outline.hash = OutlineProcessor.hash_outline(new_outline.master_outline)
+
+        if last_outline:
+            new_outline.skills = last_outline.skills
 
         DB.add(new_outline)
         DB.commit()
@@ -241,21 +252,13 @@ class OutlineProcessor:
 
         for page in page_records:
             if not page.content: continue
+            # Write to file
+            PageProcessor.dump_page(page)
 
-            print(colored(f"Writing page: {page.path}", "green"))
-
-            os.makedirs(os.path.dirname(page.path), exist_ok=True)
-            with open(page.path, 'w') as f:
-                f.write(page.content)
-                f.close()
 
         with open(f"{output_path}/{processor.outline.name}/skills.yaml", 'w') as skills_file:
             skills_file.write(yaml.dump(processor.outline.skills, sort_keys=False))
             skills_file.close()
-
-        with open(f"{output_path}/{processor.outline.name}/draft-outline.yaml", 'w') as draft_file:
-            draft_file.write(yaml.dump(processor.outline.draft_outline, sort_keys=False))
-            draft_file.close()
 
         with open(f"{output_path}/{processor.outline.name}/outline.yaml", 'w') as outline_file:
             outline_file.write(yaml.dump(processor.outline.master_outline, sort_keys=False))

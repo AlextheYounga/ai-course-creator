@@ -1,0 +1,3 @@
+- Database relationships are important for creating robust and scalable applications in web development.
+- In Ruby on Rails, there are three types of database relationships: one-to-one, one-to-many, and many-to-many.
+- These relationships are implemented using ActiveRecord associations in Ruby on Rails.

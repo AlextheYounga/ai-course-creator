@@ -17,16 +17,23 @@ def _setup_test():
 
 
 
+_setup_test()
+
+
 def test_create_outlines():
-    _setup_test()
-
+    truncate_tables()
     topic = 'Ruby on Rails'
-    ai_client = OpenAIMockService(f"{topic} Outlines")
+    session_name = f"{topic} Outlines"
+    ai_client = OpenAIMockService(session_name)
 
+    # Create Outlines
     creator = OutlineCreator(topic, ai_client)
     outline_id = creator.create()
 
     outline = DB.get(Outline, outline_id)
+
+    # Checking output
+    assert outline_id == 1
 
     assert os.path.exists('test/out/ruby-on-rails/master-outline.yaml') == True
     assert len(outline.master_outline) == 7
@@ -53,6 +60,7 @@ def test_create_outlines_with_existing_outline():
 
 
 def test_create_outlines_with_existing_outline_record_without_file():
+    truncate_tables()
     _setup_test()
 
     topic = 'Ruby on Rails'

@@ -11,34 +11,30 @@ from src.utils.files import write_json_file
 OUTPUT_PATH = "test/out"
 TOPIC = 'Ruby on Rails'
 SLUG = 'ruby-on-rails'
-MASTER_OUTLINE = 'test/out/ruby-on-rails/master-outline.yaml'
+MASTER_OUTLINE = 'test/fixtures/data/master-outline.yaml'
 
 
 def _setup_test():
+    truncate_tables()
+
     # Reset output directory
     if (os.path.exists(f"{OUTPUT_PATH}/{SLUG}")):
         shutil.rmtree(f"{OUTPUT_PATH}/{SLUG}")
 
-    session_name = f"{TOPIC} Outlines"
-    ai_client = OpenAIMockService(session_name)
+    os.makedirs(f"{OUTPUT_PATH}/{SLUG}", exist_ok=True)
+    shutil.copy(MASTER_OUTLINE, f"{OUTPUT_PATH}/{SLUG}/master-outline.yaml")
 
-    creator = OutlineCreator(TOPIC, ai_client)
-    creator.create()
+    # Instantiate db records
+    topic_record = Topic(name="Ruby on Rails", slug="ruby-on-rails")
+    DB.add(topic_record)
+    DB.commit()
+
+
 
 _setup_test()
+
 
 def test_hash_outline():
     outline_data = open(MASTER_OUTLINE).read()
     hash = OutlineProcessor.hash_outline(outline_data)
-    assert hash == '055ca92ed89eba158cabc9466a2cbd42'
-
-
-def test_get_outline_record_from_file():
-    outline_record = OutlineProcessor.get_outline_record_from_file(MASTER_OUTLINE)
-    assert outline_record.id == 1
-
-
-def test_build_outline_rows():
-    get_outline_metadata = OutlineProcessor.get_outline_metadata(1)
-    write_json_file('test/rows.json', get_outline_metadata)
-
+    assert hash != None

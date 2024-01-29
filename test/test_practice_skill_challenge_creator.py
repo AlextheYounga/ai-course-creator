@@ -1,6 +1,7 @@
 import shutil
 import os
-from src.utils.files import read_yaml_file
+from src.utils.strings import slugify
+from src.utils.files import read_yaml_file, unzip_folder
 from src.creator.outlines.outline_processor import OutlineProcessor
 from src.creator.challenges.practice_skill_challenge_creator import PracticeSkillChallengeCreator
 from .mocks.openai_mock_service import OpenAIMockService
@@ -13,24 +14,24 @@ OUTPUT_PATH = "test/out"
 
 
 def _setup_test():
+    truncate_tables()
+
     slug = 'ruby-on-rails'
 
     if (os.path.exists(f"{OUTPUT_PATH}/{slug}")):
         shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
-
-    os.makedirs(f"{OUTPUT_PATH}/{slug}", exist_ok=True)
-    shutil.copy(MASTER_OUTLINE, f"{OUTPUT_PATH}/{slug}/master-outline.yaml")
+    unzip_folder('test/fixtures/data/out.zip', 'test')
 
     # Instantiate db records
     topic_record = Topic(name="Ruby on Rails", slug="ruby-on-rails")
     DB.add(topic_record)
     DB.commit()
 
-    outline_record = Outline.instantiate(topic_record)
-    outline_record.master_outline = read_yaml_file(MASTER_OUTLINE)
-    outline_record.hash = OutlineProcessor.hash_outline(outline_record.master_outline)
-    DB.add(outline_record)
-    DB.commit()
+    # Import outline
+    OutlineProcessor.get_or_create_outline_record_from_file(
+        topic_record.id,
+        MASTER_OUTLINE
+    )
 
 
 def test_build_datasets():
@@ -40,8 +41,10 @@ def test_build_datasets():
     client = OpenAIMockService("Test")
     creator = PracticeSkillChallengeCreator("Ruby on Rails", client)
 
-    course = master_outline['courses']['working-with-databases-in-rails']
-    prompt = creator.prepare_chapter_content_prompt(course)
+    course_slug = slugify(master_outline[1]['course']['courseName'])
+    chapter_slug = slugify(master_outline[1]['course']['chapters'][0]['name'])
+
+    prompt = creator.prepare_chapter_content_prompt(course_slug, chapter_slug)
     assert isinstance(prompt, str) == True
 
 
@@ -52,8 +55,10 @@ def test_build_prompt():
     client = OpenAIMockService("Test")
     creator = PracticeSkillChallengeCreator("Ruby on Rails", client)
 
-    course = master_outline['courses']['working-with-databases-in-rails']
-    prompt = creator.build_skill_challenge_prompt(course)
+    course_slug = slugify(master_outline[1]['course']['courseName'])
+    chapter_slug = slugify(master_outline[1]['course']['chapters'][0]['name'])
+
+    prompt = creator.build_skill_challenge_prompt(course_slug, chapter_slug)
     assert len(prompt) == 2
 
     # Count tokens
@@ -61,31 +66,22 @@ def test_build_prompt():
     max_tokens = 16385 - 4096
     prompt_string = str(prompt)
     characters = len(prompt_string)
-    tokens = characters / 4  # => 9298.0
+    tokens = characters / 4
 
     assert tokens < max_tokens
 
 
-# def test_create_practice_skill_challenges():
-#     _setup_test()
+def test_create_practice_skill_challenges():
+    _setup_test()
+    topic = 'Ruby on Rails'
 
-#     topic = 'Ruby on Rails'
-#     session_name = f"{topic} Page Material"
+    client = OpenAIMockService(f"{topic} Practice Skill Challenge")
+    creator = PracticeSkillChallengeCreator(topic, client)
+    practice_pages = creator.create_from_outline()
 
-#     ai_client = OpenAIMockService(session_name)
-
-#     creator = PracticeSkillChallengeCreator(topic, ai_client)
-#     outline_rows = creator.create_from_outline()
-
-#     for row in outline_rows:
-#         if row['type'] == 'challenge':
-
-#             page_record = DB.query(Page).filter(
-#                 Page.course_slug == row['courseSlug'],
-#                 Page.chapter_slug == row['chapterSlug'],
-#                 Page.slug == row['slug']
-#             ).first()
-
-#             assert page_record != None
-#             assert page_record.content != None
-#             assert page_record.generated == True
+    # Checking output
+    for page in practice_pages:
+        if page.type == 'challenge':
+            assert page != None
+            assert page.content != None
+            assert page.generated == True
