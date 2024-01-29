@@ -189,6 +189,20 @@ class OutlineProcessor:
 
 
     @staticmethod
+    def instantiate_new_outline(topic_id: int) -> Outline:
+        existing_outline_count = DB.query(Outline).filter(Outline.topic_id == topic_id).count()
+        next_outline_number = str(existing_outline_count + 1)
+        outline_name = f"series-{next_outline_number}"
+
+        new_outline = Outline(
+            topic_id=topic_id,
+            name=outline_name
+        )
+
+        return new_outline
+
+
+    @staticmethod
     def hash_outline(outline_data):
         # Convert outline text to deterministic hash for comparison
         if isinstance(outline_data, dict) or isinstance(outline_data, list):
@@ -225,7 +239,7 @@ class OutlineProcessor:
             Outline.id.desc()
         ).first()
 
-        new_outline = Outline.instantiate(topic)
+        new_outline = OutlineProcessor.instantiate_new_outline(topic.id)
         new_outline.master_outline = read_yaml_file(outline_file)  # Add changed outline to record
         new_outline.hash = OutlineProcessor.hash_outline(new_outline.master_outline)
 

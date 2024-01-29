@@ -30,6 +30,17 @@ class OpenAiHandler:
         self.retry_count = 0
 
 
+    def get_tokens(self, messages):
+        prompt = ""
+        for message in messages:
+            prompt += message['content']
+
+        characters = len(prompt)
+        tokens = characters / 4
+
+        return tokens
+
+
     def send_prompt(self, name: str, messages: list[dict], options: dict = {}) -> OpenAI:
         quiet = options.get('quiet', False)
         model = options.get('model', self.model)
@@ -40,9 +51,10 @@ class OpenAiHandler:
             for message in messages:
                 if message['role'] == 'user':
                     prompt = message['content']
-                    print(colored(f"Sending {name} prompt: {prompt[:100]}...", "cyan"))
+                    print(colored(f"Sending {name} - tokens: {tokens} - prompt: {prompt[:100]}...", "cyan"))
                     break
 
+        tokens = self.get_tokens(messages)
         self.logger.info(f"SEND: {model} - {json.dumps(messages)}")
 
         completion = None

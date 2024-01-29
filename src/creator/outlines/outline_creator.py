@@ -2,7 +2,7 @@ import os
 from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
-from db.db import DB, Topic, Outline
+from db.db import DB, Topic
 from .skill_generator import SkillGenerator
 from .master_outline_generator import MasterOutlineGenerator
 from .outline_processor import OutlineProcessor
@@ -32,7 +32,9 @@ class OutlineCreator:
             return outline_record.id
 
         # Create new outline
-        outline = self._instantiate_outline()
+        outline = OutlineProcessor.instantiate_new_outline(self.topic.id)
+        DB.add(outline)
+        DB.commit()
 
         # Generate Skills
         self.generate_skills(outline.id)
@@ -73,11 +75,3 @@ class OutlineCreator:
             DB.commit()
 
         return topic_record
-
-
-    def _instantiate_outline(self):
-        outline = Outline.instantiate(self.topic)
-        DB.add(outline)
-        DB.commit()
-
-        return outline

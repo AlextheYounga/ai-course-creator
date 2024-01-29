@@ -2,6 +2,7 @@ import os
 import shutil
 from src.utils.files import read_yaml_file
 from src.creator.outlines.master_outline_generator import MasterOutlineGenerator
+from src.creator.outlines.outline_processor import OutlineProcessor
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 
@@ -30,7 +31,7 @@ def _setup_test():
         DB.add(topic_record)
         DB.commit()
 
-        outline_record = Outline.instantiate(topic_record)
+        outline_record = OutlineProcessor.instantiate_new_outline(topic_record.id)
         outline_record.skills = PARSED_SKILLS
         DB.add(outline_record)
         DB.commit()

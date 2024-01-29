@@ -1,9 +1,9 @@
 import logging
 import random
 from typing import Optional
+from termcolor import colored
 from unittest.mock import MagicMock
 from src.llm.openai_handler import OpenAiHandler
-import re
 import markdown
 from bs4 import BeautifulSoup
 
@@ -34,6 +34,13 @@ class OpenAIMockService(OpenAiHandler):
 
     def send_prompt(self, name: str, messages: list[dict], options: dict = {}):
         self.yaml_expected = options.get('yamlExpected', False)
+
+        tokens = self.get_tokens(messages)
+        for message in messages:
+            if message['role'] == 'user':
+                prompt = message['content']
+                print(colored(f"Sending {name} - tokens: {tokens} - prompt: {prompt[:100]}...", "cyan"))
+                break
 
         response = self.response
         if not response:

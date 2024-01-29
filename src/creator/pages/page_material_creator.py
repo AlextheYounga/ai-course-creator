@@ -6,7 +6,7 @@ from src.creator.helpers import get_prompt
 from src.creator.outlines.outline_processor import OutlineProcessor
 from src.creator.pages.page_processor import PageProcessor
 from src.creator.pages.page_summarizer import PageSummarizer
-from db.db import DB, Topic, Course, Chapter, Page
+from db.db import DB, Topic, Page
 import yaml
 import progressbar
 
@@ -44,6 +44,30 @@ class PageMaterialCreator:
         return summaries
 
 
+    def format_outline_for_prompt(self):
+        outline_formatted = []
+
+        for course in self.outline.master_outline:
+            course_object = {
+                'course': {
+                    'courseName': course['course']['courseName'],
+                    'chapters': []
+                }
+            }
+
+            chapters = course['course']['chapters']
+            pruned_chapters = [chapter for chapter in chapters if chapter['name'] != 'Final Skill Challenge']
+            course_object['course']['chapters'] = pruned_chapters
+
+            for index, chapter in enumerate(course_object['course']['chapters']):
+                pages = chapter['pages']
+                pruned_pages = [page for page in pages if page != 'Practice Skill Challenge']
+                course_object['course']['chapters'][index]['pages'] = pruned_pages
+
+            outline_formatted.append(course_object)
+        return outline_formatted
+
+
     def build_page_material_prompt(self, page_name: str):
         # Combine multiple system prompts into one
         general_system_prompt = get_prompt('system/general', [("{topic}", self.topic.name)])
@@ -52,9 +76,10 @@ class PageMaterialCreator:
         interactives_system_prompt = get_prompt('system/tune-interactives', None)
 
         # Inform model on our outline
+        outline_formatted = self.format_outline_for_prompt()
         material_system_prompt = get_prompt('system/pages/tune-outline', [
             ("{topic}", self.topic.name),
-            ("{outline}", yaml.dump(self.outline.master_outline)),
+            ("{outline}", yaml.dump(outline_formatted, sort_keys=False)),
         ])
 
         # Get prior page summaries

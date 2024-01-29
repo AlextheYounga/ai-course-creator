@@ -22,15 +22,6 @@ class Outline(Base):
 
     topic: Mapped["Topic"] = relationship("Topic", back_populates="outlines")
 
-    def instantiate(topic: Mapped["Topic"]):
-        time_id = timestamp_id()
-        outline_name = f"series-{time_id}"
-
-        return Outline(
-            topic_id=topic.id,
-            name=outline_name
-        )
-
 
 class Course(Base):
     __tablename__ = "course"
