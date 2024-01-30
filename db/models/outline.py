@@ -18,8 +18,8 @@ class Outline(Base):
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
     topic = relationship("Topic", back_populates="outlines")
-    entities = relationship(
-        "OutlineEntity",
-        back_populates="outline",
-        cascade="all, delete-orphan"
-    )
+    # entities = relationship(
+    #     "OutlineEntity",
+    #     back_populates="outline",
+    #     cascade="all, delete-orphan"
+    # )

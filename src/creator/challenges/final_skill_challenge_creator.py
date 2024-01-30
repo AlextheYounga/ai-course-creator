@@ -104,13 +104,14 @@ class FinalSkillChallengeCreator:
             for course in courses:
                 bar.increment()
 
-                course_incomplete = self._check_course_incomplete(outline_records['pages'])
-                if course_incomplete:
-                    raise Exception(f"Course '{course.name}' is incomplete. Please complete all pages before generating final skill challenge.")
-
                 existing = self._check_for_existing_page_material(course)
                 if (existing):
                     print(colored(f"Skipping existing '{course.name}' final skill challenge material...", "yellow"))
+                    continue
+
+                course_incomplete = self._check_course_incomplete(outline_records['pages'])
+                if course_incomplete:
+                    print(colored(f"Skipping incomplete course '{course.name}'...", "yellow"))
                     continue
 
                 pages = self.generate_final_skill_challenge(course)
@@ -141,7 +142,7 @@ class FinalSkillChallengeCreator:
     def _check_course_incomplete(self, page_ids: list[int]):
         pages = DB.query(Page).filter(
             Page.id.in_(page_ids),
-            Page.type.in_(['page', 'challenge']),
+            Page.type == 'page',
         ).all()
 
         pages_generated = [page.generated for page in pages]

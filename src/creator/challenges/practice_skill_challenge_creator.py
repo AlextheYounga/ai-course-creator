@@ -118,15 +118,16 @@ class PracticeSkillChallengeCreator:
             for page in challenge_pages:
                 bar.increment()
 
-                chapter_incomplete = self._check_chapter_incomplete(outline_records, page)
-                if chapter_incomplete:
-                    print(colored(f"Skipping incomplete chapter {page.chapter_slug}...", "yellow"))
-                    continue
-
                 existing = PageProcessor.check_for_existing_page_material(page)
                 if (existing):
                     print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
                     PageProcessor.dump_page(page)  # Write to file
+                    continue
+
+
+                chapter_incomplete = self._check_chapter_incomplete(outline_records, page)
+                if chapter_incomplete:
+                    print(colored(f"Skipping incomplete chapter {page.chapter_slug}...", "yellow"))
                     continue
 
                 updated_page_record = self.generate_practice_skill_challenge(page)

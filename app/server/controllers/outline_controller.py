@@ -54,4 +54,4 @@ class OutlineController:
                         course_object['children'].append(chapter_object)
             course_material.append(tree)
 
-        return course_material
+        return jsonify(course_material)

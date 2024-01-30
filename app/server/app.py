@@ -1,8 +1,9 @@
 # flask --app app.server.app run --port 5001
 import os
-from flask import Flask, jsonify, render_template
+from flask import Flask, render_template
 from flask_cors import CORS
 from .controllers.outline_controller import OutlineController
+from .controllers.ping_controller import PingController
 
 
 
@@ -27,7 +28,7 @@ def index():
 @app.route('/api/ping', methods=['GET'])
 def ping_pong():
     # sanity check route
-    return jsonify('pong!')
+    return PingController.ping_pong()
 
 
 @app.route('/api/course-material', methods=['GET'])

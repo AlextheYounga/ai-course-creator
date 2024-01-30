@@ -22,18 +22,6 @@ class OutlineProcessor:
     # Private Methods
 
 
-    def _get_page_type(self, chapter_object: dict, name: str):
-        if chapter_object['name'] == "Final Skill Challenge":
-            return 'final-skill-challenge'
-
-        page_index = chapter_object['pages'].index(name)
-
-        if ('Challenge' in name) and (page_index == len(chapter_object['pages']) - 1):
-            return 'challenge'
-
-        return 'page'
-
-
     def _create_or_update_course_record_from_outline(self, data):
         course_slug = Course.make_slug(data['name'])
 
@@ -104,7 +92,7 @@ class OutlineProcessor:
         page.position = data['position']
         page.position_in_course = data['positionInCourse']
         page.position_in_series = data['positionInSeries']
-        page.type = data.get('type', 'page')
+        page.type = Page.get_page_type(page.name, chapter_slug)
 
         return page
 
@@ -143,7 +131,6 @@ class OutlineProcessor:
                         'courseSlug': course_record.slug,
                         'chapterSlug': chapter_record.slug,
                         'position': page_index,
-                        'type': self._get_page_type(chapter, page),
                         'positionInCourse': page_position_in_course,
                         'positionInSeries': len(pages),
                     })

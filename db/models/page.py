@@ -1,8 +1,11 @@
+import os
 from .base import Base
+from .topic import Topic
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, JSON, DateTime, Text, ForeignKey, Boolean
 from sqlalchemy.orm import mapped_column, relationship
-from src.utils.strings import slugify
+from src.utils.strings import slugify, string_hash
+from sqlalchemy.orm import Session
 
 
 
@@ -37,3 +40,62 @@ class Page(Base):
         if 'Final Skill Challenge' in name:
             return f"{course_slug}-{slugify(name)}"
         return slugify(name)
+
+
+    def hash_page(content):
+        page_material = content.strip()
+
+        try:
+            return string_hash(page_material)
+        except Exception:
+            return None
+
+
+    def get_page_type(name, chapter_slug):
+        if "final-skill-challenge" in chapter_slug:
+            return 'final-skill-challenge'
+
+        if ('Challenge' in name):
+            return 'challenge'
+
+        return 'page'
+
+
+    @classmethod
+    def first_or_create(self, session: Session, data: dict):
+        topic = session.get(Topic, data['topicId'])
+
+        name = data['name']
+        course_slug = data['courseSlug']
+        chapter_slug = data['chapterSlug']
+        outline_name = data['outlineName']
+        output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
+
+        page_slug = self.make_slug(name, course_slug, chapter_slug)
+
+        page = session.query(self).filter(
+            Page.topic_id == topic.id,
+            Page.course_slug == course_slug,
+            Page.chapter_slug == chapter_slug,
+            Page.slug == page_slug
+        ).first()
+
+        if not page:
+            page = Page(topic_id=topic.id)
+
+        page.name = name
+        page.course_slug = course_slug
+        page.chapter_slug = chapter_slug
+        page.slug = page_slug
+        page.path = f"{output_directory}/{topic.slug}/{outline_name}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md"
+        page.generated = os.path.exists(page.path)
+        page.content = open(page.path).read() if page.generated else None
+        page.hash = self.hash_page(page.content) if page.generated else None
+        page.permalink = f"/page/{topic.slug}/{course_slug}/{chapter_slug}/{page_slug}"
+        page.link = page.permalink if page.generated else '#'
+        page.position = data['position']
+        page.position_in_course = data['positionInCourse']
+        page.position_in_series = data['positionInSeries']
+        page.type = self.get_page_type()
+
+        return page
