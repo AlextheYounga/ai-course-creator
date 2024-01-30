@@ -47,6 +47,8 @@ class OpenAiHandler:
         max_tokens = options.get('maxTokens', None)
         temperature = options.get('temperature', None)
 
+        tokens = self.get_tokens(messages)
+
         if not quiet:
             for message in messages:
                 if message['role'] == 'user':
@@ -54,7 +56,7 @@ class OpenAiHandler:
                     print(colored(f"Sending {name} - tokens: {tokens} - prompt: {prompt[:100]}...", "cyan"))
                     break
 
-        tokens = self.get_tokens(messages)
+
         self.logger.info(f"SEND: {model} - {json.dumps(messages)}")
 
         completion = None

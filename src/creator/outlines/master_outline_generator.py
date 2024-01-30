@@ -3,7 +3,7 @@ from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
 from src.creator.helpers import get_prompt
-from src.utils.files import write_yaml_file
+from src.creator.outlines.outline_processor import OutlineProcessor
 from db.db import DB, Outline
 import yaml
 
@@ -75,6 +75,8 @@ class MasterOutlineGenerator:
 
         # Save to database
         self.outline.master_outline = master_outline
+        self.outline.hash = OutlineProcessor.hash_outline(master_outline)
+
         DB.add(self.outline)
         DB.commit()
 

@@ -11,7 +11,7 @@ Please return your results in the following YAML format:
         - 'First Page of Chapter'
         - 'Second Page of Chapter'
         - 'Third Page of Chapter, and so on'
-    - name: Another Interesting Chapter Name'
+    - name: 'Another Interesting Chapter Name'
       pages:
         - 'Chapter Introduction Page'
         - 'First Page of Chapter'

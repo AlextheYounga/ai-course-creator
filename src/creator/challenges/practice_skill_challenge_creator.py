@@ -110,13 +110,18 @@ class PracticeSkillChallengeCreator:
     def create_from_outline(self):
         updated_pages = []
         outline_records = OutlineProcessor.get_outline_records(self.outline.id)
-        pages = [page for page in outline_records if page.type == 'challenge']
-        total_count = len(pages)
+        challenge_pages = [page for page in outline_records if page.type == 'challenge']
+        total_count = len(challenge_pages)
 
         with progressbar.ProgressBar(max_value=total_count, prefix='Generating practice challenges: ', redirect_stdout=True) as bar:
             # Loop through outline pages
-            for page in pages:
+            for page in challenge_pages:
                 bar.increment()
+
+                chapter_incomplete = self._check_chapter_incomplete(outline_records, page)
+                if chapter_incomplete:
+                    print(colored(f"Skipping incomplete chapter {page.chapter_slug}...", "yellow"))
+                    continue
 
                 existing = PageProcessor.check_for_existing_page_material(page)
                 if (existing):
@@ -128,3 +133,10 @@ class PracticeSkillChallengeCreator:
                 updated_pages.append(updated_page_record)
 
         return updated_pages
+
+
+    def _check_chapter_incomplete(self, outline_records: list[Page], challenge_page: Page):
+        chapter_pages = [page for page in outline_records if page.chapter_slug == challenge_page.chapter_slug]
+        page_contents = [page.generated for page in chapter_pages]
+
+        return False in page_contents
