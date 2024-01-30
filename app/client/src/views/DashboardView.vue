@@ -122,7 +122,7 @@
                                 </template>
                                 <template #url="slotProps">
                                     <div class="flex">
-                                        <a class="p-1 text-blue-500" :href="slotProps.node.url ?? '#'">
+                                        <a class="p-1 text-blue-500" :href="slotProps.node?.data?.url ?? '#'">
                                             {{ slotProps.node.label }}
                                         </a>
                                         <span class="p-2.5 items-center">
@@ -212,7 +212,7 @@ export default {
                                 icon: 'pi pi-fw pi-file',
                                 data: {
                                     exists: page?.generated ?? false,
-                                    url: page.link
+                                    url: `/page/${page.id}`
                                 },
                                 type: 'url'
                             }

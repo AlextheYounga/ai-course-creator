@@ -4,6 +4,7 @@ from flask import Flask, render_template
 from flask_cors import CORS
 from .controllers.outline_controller import OutlineController
 from .controllers.ping_controller import PingController
+from .controllers.page_controller import PageController
 
 
 
@@ -34,3 +35,8 @@ def ping_pong():
 @app.route('/api/course-material', methods=['GET'])
 def get_course_material():
     return OutlineController.get_all_course_material()
+
+
+@app.route('/api/page/<id>', methods=['GET'])
+def get_page(id: int):
+    return PageController.get_page_html(id)

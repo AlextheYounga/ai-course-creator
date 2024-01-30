@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView from '@/views/DashboardView.vue'
+import PageView from '@/views/PageView.vue'
 import Ping from '@/components/Ping.vue'
 
 const router = createRouter({
@@ -9,6 +10,11 @@ const router = createRouter({
       path: '/',
       name: 'dashboard',
       component: DashboardView
+    },
+    {
+      path: '/page/:id',
+      name: 'page',
+      component: PageView
     },
     {
       path: '/ping',
