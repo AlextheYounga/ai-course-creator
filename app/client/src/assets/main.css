@@ -4,3 +4,882 @@
 .p-treenode-children {
     padding-left: 1.5rem;
 }
+
+/* * The default style sheet used to render HTML. * * Copyright (C) 2000 Lars Knoll (knoll@kde.org) * Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Apple Inc. All rights reserved. * * This library is free software;
+ you can redistribute it and/or * modify it under the terms of the GNU Library General Public * License as published by the Free Software Foundation;
+ either * version 2 of the License, or (at your option) any later version. * * This library is distributed in the hope that it will be useful, * but WITHOUT ANY WARRANTY;
+ without even the implied warranty of * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU * Library General Public License for more details. * * You should have received a copy of the GNU Library General Public License * along with this library;
+ see the file COPYING.LIB. If not, write to * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, * Boston, MA 02110-1301, USA. * */
+
+ #page-body head {
+	 display: none;
+}
+ #page-body meta {
+	 display: none;
+}
+ #page-body title {
+	 display: none;
+}
+ #page-body link {
+	 display: none;
+}
+ #page-body style {
+	 display: none;
+}
+ #page-body script {
+	 display: none;
+}
+ #page-body body {
+	 display: block;
+	 margin: 8px;
+}
+ #page-body body:-webkit-full-page-media {
+	 background-color: #000;
+}
+ #page-body p {
+	 display: block;
+	 -webkit-margin-before: 1 __qem;
+	 -webkit-margin-after: 1 __qem;
+	 -webkit-margin-start: 0;
+	 -webkit-margin-end: 0;
+}
+ #page-body div {
+	 display: block;
+}
+ #page-body layer {
+	 display: block;
+}
+ #page-body article, #page-body aside, #page-body footer, #page-body header, #page-body hgroup, #page-body main, #page-body nav, #page-body section {
+	 display: block;
+}
+ #page-body marquee {
+	 display: inline-block;
+}
+ #page-body address {
+	 display: block;
+}
+ #page-body blockquote {
+	 display: block;
+	 -webkit-margin-before: 1 __qem;
+	 -webkit-margin-after: 1em;
+	 -webkit-margin-start: 40px;
+	 -webkit-margin-end: 40px;
+}
+ #page-body figcaption {
+	 display: block;
+}
+ #page-body figure {
+	 display: block;
+	 -webkit-margin-before: 1em;
+	 -webkit-margin-after: 1em;
+	 -webkit-margin-start: 40px;
+	 -webkit-margin-end: 40px;
+}
+ #page-body q {
+	 display: inline;
+}
+ #page-body q:before {
+	 content: open-quote;
+}
+ #page-body q:after {
+	 content: close-quote;
+}
+ #page-body center {
+	 display: block;
+	/* special centering to be able to emulate the html4/netscape behaviour */
+	 text-align: -webkit-center;
+}
+ #page-body hr {
+	 display: block;
+	 -webkit-margin-before: 0.5em;
+	 -webkit-margin-after: 0.5em;
+	 -webkit-margin-start: auto;
+	 -webkit-margin-end: auto;
+	 border-style: inset;
+	 border-width: 1px;
+}
+ #page-body map {
+	 display: inline;
+}
+ #page-body video {
+	 object-fit: contain;
+}
+ #page-body h1 {
+	 display: block;
+	 font-size: 2em;
+	 -webkit-margin-before: 0.67 __qem;
+	 -webkit-margin-after: 0.67em;
+	 -webkit-margin-start: 0;
+	 -webkit-margin-end: 0;
+	 font-weight: bold;
+}
+ #page-body :-webkit-any(article, aside, nav, section) h1 {
+	 font-size: 1.5em;
+	 -webkit-margin-before: 0.83 __qem;
+	 -webkit-margin-after: 0.83em;
+}
+ #page-body :-webkit-any(article, aside, nav, section):-webkit-any(article, aside, nav, section) h1 {
+	 font-size: 1.17em;
+	 -webkit-margin-before: 1 __qem;
+	 -webkit-margin-after: 1em;
+}
+ #page-body :-webkit-any(article, aside, nav, section):-webkit-any(article, aside, nav, section):-webkit-any(article, aside, nav, section) h1 {
+	 font-size: 1em;
+	 -webkit-margin-before: 1.33 __qem;
+	 -webkit-margin-after: 1.33em;
+}
+ #page-body :-webkit-any(article, aside, nav, section):-webkit-any(article, aside, nav, section):-webkit-any(article, aside, nav, section):-webkit-any(article, aside, nav, section) h1 {
+	 font-size: 0.83em;
+	 -webkit-margin-before: 1.67 __qem;
+	 -webkit-margin-after: 1.67em;
+}
+ #page-body :-webkit-any(article, aside, nav, section):-webkit-any(article, aside, nav, section):-webkit-any(article, aside, nav, section):-webkit-any(article, aside, nav, section):-webkit-any(article, aside, nav, section) h1 {
+	 font-size: 0.67em;
+	 -webkit-margin-before: 2.33 __qem;
+	 -webkit-margin-after: 2.33em;
+}
+ #page-body h2 {
+	 display: block;
+	 font-size: 1.5em;
+	 -webkit-margin-before: 0.83 __qem;
+	 -webkit-margin-after: 0.83em;
+	 -webkit-margin-start: 0;
+	 -webkit-margin-end: 0;
+	 font-weight: bold;
+}
+ #page-body h3 {
+	 display: block;
+	 font-size: 1.17em;
+	 -webkit-margin-before: 1 __qem;
+	 -webkit-margin-after: 1em;
+	 -webkit-margin-start: 0;
+	 -webkit-margin-end: 0;
+	 font-weight: bold;
+}
+ #page-body h4 {
+	 display: block;
+	 -webkit-margin-before: 1.33 __qem;
+	 -webkit-margin-after: 1.33em;
+	 -webkit-margin-start: 0;
+	 -webkit-margin-end: 0;
+	 font-weight: bold;
+}
+ #page-body h5 {
+	 display: block;
+	 font-size: 0.83em;
+	 -webkit-margin-before: 1.67 __qem;
+	 -webkit-margin-after: 1.67em;
+	 -webkit-margin-start: 0;
+	 -webkit-margin-end: 0;
+	 font-weight: bold;
+}
+ #page-body h6 {
+	 display: block;
+	 font-size: 0.67em;
+	 -webkit-margin-before: 2.33 __qem;
+	 -webkit-margin-after: 2.33em;
+	 -webkit-margin-start: 0;
+	 -webkit-margin-end: 0;
+	 font-weight: bold;
+}
+ #page-body table {
+	 display: table;
+	 border-collapse: separate;
+	 border-spacing: 2px;
+	 border-color: gray;
+}
+ #page-body thead {
+	 display: table-header-group;
+	 vertical-align: middle;
+	 border-color: inherit;
+}
+ #page-body tbody {
+	 display: table-row-group;
+	 vertical-align: middle;
+	 border-color: inherit;
+}
+ #page-body tfoot {
+	 display: table-footer-group;
+	 vertical-align: middle;
+	 border-color: inherit;
+}
+ #page-body table > tr {
+	 vertical-align: middle;
+}
+ #page-body col {
+	 display: table-column;
+}
+ #page-body colgroup {
+	 display: table-column-group;
+}
+ #page-body tr {
+	 display: table-row;
+	 vertical-align: inherit;
+	 border-color: inherit;
+}
+ #page-body td, #page-body th {
+	 display: table-cell;
+	 vertical-align: inherit;
+}
+ #page-body th {
+	 font-weight: bold;
+}
+ #page-body caption {
+	 display: table-caption;
+	 text-align: -webkit-center;
+}
+ #page-body ul, #page-body menu, #page-body dir {
+	 display: block;
+	 list-style-type: disc;
+	 -webkit-margin-before: 1 __qem;
+	 -webkit-margin-after: 1em;
+	 -webkit-margin-start: 0;
+	 -webkit-margin-end: 0;
+	 -webkit-padding-start: 40px;
+}
+ #page-body ol {
+	 display: block;
+	 list-style-type: decimal;
+	 -webkit-margin-before: 1 __qem;
+	 -webkit-margin-after: 1em;
+	 -webkit-margin-start: 0;
+	 -webkit-margin-end: 0;
+	 -webkit-padding-start: 40px;
+}
+ #page-body li {
+	 display: list-item;
+	 text-align: -webkit-match-parent;
+}
+ #page-body ul ul, #page-body ol ul {
+	 list-style-type: circle;
+}
+ #page-body ol ol ul, #page-body ol ul ul, #page-body ul ol ul, #page-body ul ul ul {
+	 list-style-type: square;
+}
+ #page-body dd {
+	 display: block;
+	 -webkit-margin-start: 40px;
+}
+ #page-body dl {
+	 display: block;
+	 -webkit-margin-before: 1 __qem;
+	 -webkit-margin-after: 1em;
+	 -webkit-margin-start: 0;
+	 -webkit-margin-end: 0;
+}
+ #page-body dt {
+	 display: block;
+}
+ #page-body ol ul, #page-body ul ol, #page-body ul ul, #page-body ol ol {
+	 -webkit-margin-before: 0;
+	 -webkit-margin-after: 0;
+}
+ #page-body form {
+	 display: block;
+	 margin-top: 0 __qem;
+}
+ #page-body label {
+	 cursor: default;
+}
+ #page-body legend {
+	 display: block;
+	 -webkit-padding-start: 2px;
+	 -webkit-padding-end: 2px;
+	 border: none;
+}
+ #page-body fieldset {
+	 display: block;
+	 -webkit-margin-start: 2px;
+	 -webkit-margin-end: 2px;
+	 -webkit-padding-before: 0.35em;
+	 -webkit-padding-start: 0.75em;
+	 -webkit-padding-end: 0.75em;
+	 -webkit-padding-after: 0.625em;
+	 border: 2px groove ThreeDFace;
+	 min-width: -webkit-min-content;
+}
+ #page-body button {
+	 -webkit-appearance: button;
+	 appearance: button;
+}
+ #page-body input, #page-body textarea, #page-body keygen, #page-body select, #page-body button, #page-body meter, #page-body progress {
+	 -webkit-writing-mode: horizontal-tb !important;
+	 writing-mode: horizontal-tb !important;
+}
+ #page-body input, #page-body textarea, #page-body keygen, #page-body select, #page-body button {
+	 margin: 0 __qem;
+	 font: -webkit-small-control;
+	 text-rendering: auto;
+	/* FIXME: Remove when tabs work with optimizeLegibility. */
+	 color: initial;
+	 letter-spacing: normal;
+	 word-spacing: normal;
+	 line-height: normal;
+	 text-transform: none;
+	 text-indent: 0;
+	 text-shadow: none;
+	 display: inline-block;
+	 text-align: start;
+}
+ #page-body input[type="hidden" i] {
+	 display: none;
+}
+ #page-body input {
+	 -webkit-appearance: textfield;
+	 appearance: textfield;
+	 padding: 1px;
+	 background-color: white;
+	 border: 2px inset;
+	 -webkit-rtl-ordering: logical;
+	 -webkit-user-select: text;
+	 user-select: text;
+	 cursor: auto;
+}
+ #page-body input[type="search" i] {
+	 -webkit-appearance: searchfield;
+	 appearance: searchfield;
+	 box-sizing: border-box;
+}
+ #page-body input::-webkit-textfield-decoration-container {
+	 display: flex;
+	 align-items: center;
+	 -webkit-user-modify: read-only !important;
+	 content: none !important;
+}
+ #page-body input[type="search" i]::-webkit-textfield-decoration-container {
+	 direction: ltr;
+}
+ #page-body input::-webkit-clear-button {
+	 -webkit-appearance: searchfield-cancel-button;
+	 display: inline-block;
+	 flex: none;
+	 -webkit-user-modify: read-only !important;
+	 -webkit-margin-start: 2px;
+	 opacity: 0;
+	 pointer-events: none;
+}
+ #page-body input:enabled:read-write:-webkit-any(:focus, :hover)::-webkit-clear-button {
+	 opacity: 1;
+	 pointer-events: auto;
+}
+ #page-body input[type="search" i]::-webkit-search-cancel-button {
+	 -webkit-appearance: searchfield-cancel-button;
+	 display: block;
+	 flex: none;
+	 -webkit-user-modify: read-only !important;
+	 -webkit-margin-start: 1px;
+	 opacity: 0;
+	 pointer-events: none;
+}
+ #page-body input[type="search" i]:enabled:read-write:-webkit-any(:focus, :hover)::-webkit-search-cancel-button {
+	 opacity: 1;
+	 pointer-events: auto;
+}
+ #page-body input[type="search" i]::-webkit-search-decoration {
+	 -webkit-appearance: searchfield-decoration;
+	 display: block;
+	 flex: none;
+	 -webkit-user-modify: read-only !important;
+	 -webkit-align-self: flex-start;
+	 margin: auto 0;
+}
+ #page-body input[type="search" i]::-webkit-search-results-decoration {
+	 -webkit-appearance: searchfield-results-decoration;
+	 display: block;
+	 flex: none;
+	 -webkit-user-modify: read-only !important;
+	 -webkit-align-self: flex-start;
+	 margin: auto 0;
+}
+ #page-body input::-webkit-inner-spin-button {
+	 -webkit-appearance: inner-spin-button;
+	 display: inline-block;
+	 cursor: default;
+	 flex: none;
+	 align-self: stretch;
+	 -webkit-user-select: none;
+	 -webkit-user-modify: read-only !important;
+	 opacity: 0;
+	 pointer-events: none;
+}
+ #page-body input:enabled:read-write:-webkit-any(:focus, :hover)::-webkit-inner-spin-button {
+	 opacity: 1;
+	 pointer-events: auto;
+}
+ #page-body keygen, #page-body select {
+	 border-radius: 5px;
+}
+ #page-body keygen::-webkit-keygen-select {
+	 margin: 0px;
+}
+ #page-body textarea {
+	 -webkit-appearance: textarea;
+	 appearance: textarea;
+	 background-color: white;
+	 border: 1px solid;
+	 -webkit-rtl-ordering: logical;
+	 -webkit-user-select: text;
+	 user-select: text;
+	 flex-direction: column;
+	 resize: auto;
+	 cursor: auto;
+	 padding: 2px;
+	 white-space: pre-wrap;
+	 word-wrap: break-word;
+}
+ #page-body ::-webkit-input-placeholder {
+	 -webkit-text-security: none;
+	 color: darkGray;
+	 pointer-events: none !important;
+}
+ #page-body input::-webkit-input-placeholder {
+	 white-space: pre;
+	 word-wrap: normal;
+	 overflow: hidden;
+	 -webkit-user-modify: read-only !important;
+}
+ #page-body input[type="password" i] {
+	 -webkit-text-security: disc !important;
+}
+ #page-body input[type="hidden" i], #page-body input[type="image" i], #page-body input[type="file" i] {
+	 -webkit-appearance: initial;
+	 appearance: initial;
+	 padding: initial;
+	 background-color: initial;
+	 border: initial;
+}
+ #page-body input[type="file" i] {
+	 align-items: baseline;
+	 color: inherit;
+	 text-align: start !important;
+}
+ #page-body input:-webkit-autofill, #page-body textarea:-webkit-autofill, #page-body select:-webkit-autofill {
+	 background-color: #faffbd !important;
+	 background-image: none !important;
+	 color: #000 !important;
+}
+ #page-body input[type="radio" i], #page-body input[type="checkbox" i] {
+	 margin: 3px 0.5ex;
+	 padding: initial;
+	 background-color: initial;
+	 border: initial;
+}
+ #page-body input[type="button" i], #page-body input[type="submit" i], #page-body input[type="reset" i] {
+	 -webkit-appearance: push-button;
+	 appearance: push-button;
+	 -webkit-user-select: none;
+	 user-select: none;
+	 white-space: pre;
+}
+ #page-body input[type="file" i]::-webkit-file-upload-button {
+	 -webkit-appearance: push-button;
+	 -webkit-user-modify: read-only !important;
+	 white-space: nowrap;
+	 margin: 0;
+	 font-size: inherit;
+}
+ #page-body input[type="button" i], #page-body input[type="submit" i], #page-body input[type="reset" i], #page-body input[type="file" i]::-webkit-file-upload-button, #page-body button {
+	 align-items: flex-start;
+	 text-align: center;
+	 cursor: default;
+	 color: ButtonText;
+	 padding: 2px 6px 3px 6px;
+	 border: 2px outset ButtonFace;
+	 background-color: ButtonFace;
+	 box-sizing: border-box;
+}
+ #page-body input[type="range" i] {
+	 -webkit-appearance: slider-horizontal;
+	 appearance: slider-horizontal;
+	 padding: initial;
+	 border: initial;
+	 margin: 2px;
+	 color: #909090;
+}
+ #page-body input[type="range" i]::-webkit-slider-container, #page-body input[type="range" i]::-webkit-media-slider-container {
+	 flex: 1;
+	 min-width: 0;
+	 box-sizing: border-box;
+	 -webkit-user-modify: read-only !important;
+	 display: flex;
+}
+ #page-body input[type="range" i]::-webkit-slider-runnable-track {
+	 flex: 1;
+	 min-width: 0;
+	 -webkit-align-self: center;
+	 box-sizing: border-box;
+	 -webkit-user-modify: read-only !important;
+	 display: block;
+}
+ #page-body input[type="range" i]::-webkit-slider-thumb, #page-body input[type="range" i]::-webkit-media-slider-thumb {
+	 -webkit-appearance: sliderthumb-horizontal;
+	 box-sizing: border-box;
+	 -webkit-user-modify: read-only !important;
+	 display: block;
+}
+ #page-body input[type="button" i]:disabled, #page-body input[type="submit" i]:disabled, #page-body input[type="reset" i]:disabled, #page-body input[type="file" i]:disabled::-webkit-file-upload-button, #page-body button:disabled, #page-body select:disabled, #page-body keygen:disabled, #page-body optgroup:disabled, #page-body option:disabled, #page-body select[disabled] > option {
+	 color: GrayText;
+}
+ #page-body input[type="button" i]:active, #page-body input[type="submit" i]:active, #page-body input[type="reset" i]:active, #page-body input[type="file" i]:active::-webkit-file-upload-button, #page-body button:active {
+	 border-style: inset;
+}
+ #page-body input[type="button" i]:active:disabled, #page-body input[type="submit" i]:active:disabled, #page-body input[type="reset" i]:active:disabled, #page-body input[type="file" i]:active:disabled::-webkit-file-upload-button, #page-body button:active:disabled {
+	 border-style: outset;
+}
+ #page-body option:-internal-spatial-navigation-focus {
+	 outline: black dashed 1px;
+	 outline-offset: -1px;
+}
+ #page-body datalist {
+	 display: none;
+}
+ #page-body area {
+	 display: inline;
+	 cursor: pointer;
+}
+ #page-body param {
+	 display: none;
+}
+ #page-body input[type="checkbox" i] {
+	 -webkit-appearance: checkbox;
+	 appearance: checkbox;
+	 box-sizing: border-box;
+}
+ #page-body input[type="radio" i] {
+	 -webkit-appearance: radio;
+	 appearance: radio;
+	 box-sizing: border-box;
+}
+ #page-body input[type="color" i] {
+	 -webkit-appearance: square-button;
+	 appearance: square-button;
+	 width: 44px;
+	 height: 23px;
+	 background-color: ButtonFace;
+	/* Same as native_theme_base. */
+	 border: 1px #a9a9a9 solid;
+	 padding: 1px 2px;
+}
+ #page-body input[type="color" i]::-webkit-color-swatch-wrapper {
+	 display: flex;
+	 padding: 4px 2px;
+	 box-sizing: border-box;
+	 -webkit-user-modify: read-only !important;
+	 width: 100%;
+	 height: 100%;
+}
+ #page-body input[type="color" i]::-webkit-color-swatch {
+	 background-color: #000;
+	 border: 1px solid #777;
+	 flex: 1;
+	 min-width: 0;
+	 -webkit-user-modify: read-only !important;
+}
+ #page-body input[type="color" i][list] {
+	 -webkit-appearance: menulist;
+	 appearance: menulist;
+	 width: 88px;
+	 height: 23px;
+}
+ #page-body input[type="color" i][list]::-webkit-color-swatch-wrapper {
+	 padding-left: 8px;
+	 padding-right: 24px;
+}
+ #page-body input[type="color" i][list]::-webkit-color-swatch {
+	 border-color: #000;
+}
+ #page-body input::-webkit-calendar-picker-indicator {
+	 display: inline-block;
+	 width: 0.66em;
+	 height: 0.66em;
+	 padding: 0.17em 0.34em;
+	 -webkit-user-modify: read-only !important;
+	 opacity: 0;
+	 pointer-events: none;
+}
+ #page-body input::-webkit-calendar-picker-indicator:hover {
+	 background-color: #eee;
+}
+ #page-body input:enabled:read-write:-webkit-any(:focus, :hover)::-webkit-calendar-picker-indicator, #page-body input::-webkit-calendar-picker-indicator:focus {
+	 opacity: 1;
+	 pointer-events: auto;
+}
+ #page-body input[type="date" i]:disabled::-webkit-clear-button, #page-body input[type="date" i]:disabled::-webkit-inner-spin-button, #page-body input[type="datetime-local" i]:disabled::-webkit-clear-button, #page-body input[type="datetime-local" i]:disabled::-webkit-inner-spin-button, #page-body input[type="month" i]:disabled::-webkit-clear-button, #page-body input[type="month" i]:disabled::-webkit-inner-spin-button, #page-body input[type="week" i]:disabled::-webkit-clear-button, #page-body input[type="week" i]:disabled::-webkit-inner-spin-button, #page-body input:disabled::-webkit-calendar-picker-indicator, #page-body input[type="date" i][readonly]::-webkit-clear-button, #page-body input[type="date" i][readonly]::-webkit-inner-spin-button, #page-body input[type="datetime-local" i][readonly]::-webkit-clear-button, #page-body input[type="datetime-local" i][readonly]::-webkit-inner-spin-button, #page-body input[type="month" i][readonly]::-webkit-clear-button, #page-body input[type="month" i][readonly]::-webkit-inner-spin-button, #page-body input[type="week" i][readonly]::-webkit-clear-button, #page-body input[type="week" i][readonly]::-webkit-inner-spin-button, #page-body input[readonly]::-webkit-calendar-picker-indicator {
+	 visibility: hidden;
+}
+ #page-body select {
+	 -webkit-appearance: menulist;
+	 appearance: menulist;
+	 box-sizing: border-box;
+	 align-items: center;
+	 border: 1px solid;
+	 white-space: pre;
+	 -webkit-rtl-ordering: logical;
+	 color: black;
+	 background-color: white;
+	 cursor: default;
+}
+ #page-body select:not(:-internal-list-box) {
+	 overflow: visible !important;
+}
+ #page-body select:-internal-list-box {
+	 -webkit-appearance: listbox;
+	 appearance: listbox;
+	 align-items: flex-start;
+	 border: 1px inset gray;
+	 border-radius: initial;
+	 overflow-x: hidden;
+	 overflow-y: scroll;
+	 vertical-align: text-bottom;
+	 -webkit-user-select: none;
+	 user-select: none;
+	 white-space: nowrap;
+}
+ #page-body optgroup {
+	 font-weight: bolder;
+	 display: block;
+}
+ #page-body option {
+	 font-weight: normal;
+	 display: block;
+	 padding: 0 2px 1px 2px;
+	 white-space: pre;
+	 min-height: 1.2em;
+}
+ #page-body select:-internal-list-box optgroup option:before {
+	 content: "\00a0\00a0\00a0\00a0";
+}
+ #page-body select:-internal-list-box option, #page-body select:-internal-list-box optgroup {
+	 line-height: initial !important;
+}
+ #page-body select:-internal-list-box:focus option:checked {
+	 background-color: -internal-active-list-box-selection !important;
+	 color: -internal-active-list-box-selection-text !important;
+}
+ #page-body select:-internal-list-box option:checked {
+	 background-color: -internal-inactive-list-box-selection !important;
+	 color: -internal-inactive-list-box-selection-text !important;
+}
+ #page-body select:-internal-list-box:disabled option:checked, #page-body select:-internal-list-box option:checked:disabled {
+	 color: gray !important;
+}
+ #page-body select:-internal-list-box hr {
+	 border-style: none;
+}
+ #page-body output {
+	 display: inline;
+}
+ #page-body meter {
+	 -webkit-appearance: meter;
+	 appearance: meter;
+	 box-sizing: border-box;
+	 display: inline-block;
+	 height: 1em;
+	 width: 5em;
+	 vertical-align: -0.2em;
+}
+ #page-body meter::-webkit-meter-inner-element {
+	 -webkit-appearance: inherit;
+	 box-sizing: inherit;
+	 -webkit-user-modify: read-only !important;
+	 height: 100%;
+	 width: 100%;
+}
+ #page-body meter::-webkit-meter-bar {
+	 background: linear-gradient(to bottom, #ddd, #eee 20%, #ccc 45%, #ccc 55%, #ddd);
+	 height: 100%;
+	 width: 100%;
+	 -webkit-user-modify: read-only !important;
+	 box-sizing: border-box;
+}
+ #page-body meter::-webkit-meter-optimum-value {
+	 background: linear-gradient(to bottom, #ad7, #cea 20%, #7a3 45%, #7a3 55%, #ad7);
+	 height: 100%;
+	 -webkit-user-modify: read-only !important;
+	 box-sizing: border-box;
+}
+ #page-body meter::-webkit-meter-suboptimum-value {
+	 background: linear-gradient(to bottom, #fe7, #ffc 20%, #db3 45%, #db3 55%, #fe7);
+	 height: 100%;
+	 -webkit-user-modify: read-only !important;
+	 box-sizing: border-box;
+}
+ #page-body meter::-webkit-meter-even-less-good-value {
+	 background: linear-gradient(to bottom, #f77, #fcc 20%, #d44 45%, #d44 55%, #f77);
+	 height: 100%;
+	 -webkit-user-modify: read-only !important;
+	 box-sizing: border-box;
+}
+ #page-body progress {
+	 -webkit-appearance: progress-bar;
+	 appearance: progress-bar;
+	 box-sizing: border-box;
+	 display: inline-block;
+	 height: 1em;
+	 width: 10em;
+	 vertical-align: -0.2em;
+}
+ #page-body progress::-webkit-progress-inner-element {
+	 -webkit-appearance: inherit;
+	 box-sizing: inherit;
+	 -webkit-user-modify: read-only;
+	 height: 100%;
+	 width: 100%;
+}
+ #page-body progress::-webkit-progress-bar {
+	 background-color: gray;
+	 height: 100%;
+	 width: 100%;
+	 -webkit-user-modify: read-only !important;
+	 box-sizing: border-box;
+}
+ #page-body progress::-webkit-progress-value {
+	 background-color: green;
+	 height: 100%;
+	 width: 50%;
+	/* should be removed later */
+	 -webkit-user-modify: read-only !important;
+	 box-sizing: border-box;
+}
+ #page-body u, #page-body ins {
+	 text-decoration: underline;
+}
+ #page-body strong, #page-body b {
+	 font-weight: bold;
+}
+ #page-body i, #page-body cite, #page-body em, #page-body var, #page-body address, #page-body dfn {
+	 font-style: italic;
+}
+ #page-body tt, #page-body code, #page-body kbd, #page-body samp {
+	 font-family: monospace;
+}
+ #page-body pre, #page-body xmp, #page-body plaintext, #page-body listing {
+	 display: block;
+	 font-family: monospace;
+	 white-space: pre;
+	 margin: 1 __qem 0;
+}
+ #page-body mark {
+	 background-color: yellow;
+	 color: black;
+}
+ #page-body big {
+	 font-size: larger;
+}
+ #page-body small {
+	 font-size: smaller;
+}
+ #page-body s, #page-body strike, #page-body del {
+	 text-decoration: line-through;
+}
+ #page-body sub {
+	 vertical-align: sub;
+	 font-size: smaller;
+}
+ #page-body sup {
+	 vertical-align: super;
+	 font-size: smaller;
+}
+ #page-body nobr {
+	 white-space: nowrap;
+}
+ #page-body :focus {
+	 outline: auto 5px -webkit-focus-ring-color;
+}
+ #page-body html:focus, #page-body body:focus, #page-body input[readonly]:focus {
+	 outline: none;
+}
+ #page-body embed:focus, #page-body iframe:focus, #page-body object:focus {
+	 outline: none;
+}
+ #page-body input:focus, #page-body textarea:focus, #page-body keygen:focus, #page-body select:focus {
+	 outline-offset: -2px;
+}
+ #page-body input[type="button" i]:focus, #page-body input[type="checkbox" i]:focus, #page-body input[type="file" i]:focus, #page-body input[type="hidden" i]:focus, #page-body input[type="image" i]:focus, #page-body input[type="radio" i]:focus, #page-body input[type="reset" i]:focus, #page-body input[type="search" i]:focus, #page-body input[type="submit" i]:focus, #page-body input[type="file" i]:focus::-webkit-file-upload-button {
+	 outline-offset: 0;
+}
+ #page-body a:-webkit-any-link {
+	 color: -webkit-link;
+	 text-decoration: underline;
+	 cursor: auto;
+}
+ #page-body a:-webkit-any-link:active {
+	 color: -webkit-activelink;
+}
+ #page-body ruby, #page-body rt {
+	 text-indent: 0;
+	/* blocks used for ruby rendering should not trigger this */
+}
+ #page-body rt {
+	 line-height: normal;
+	 -webkit-text-emphasis: none;
+	 text-emphasis: none;
+}
+ #page-body ruby > rt {
+	 display: block;
+	 font-size: 50%;
+	 text-align: start;
+}
+ #page-body ruby > rp {
+	 display: none;
+}
+ #page-body noframes {
+	 display: none;
+}
+ #page-body frameset, #page-body frame {
+	 display: block;
+}
+ #page-body frameset {
+	 border-color: inherit;
+}
+ #page-body iframe {
+	 border: 2px inset;
+}
+ #page-body details {
+	 display: block;
+}
+ #page-body summary {
+	 display: block;
+}
+ #page-body summary::-webkit-details-marker {
+	 display: inline-block;
+	 width: 0.66em;
+	 height: 0.66em;
+	 -webkit-margin-end: 0.4em;
+}
+ #page-body template {
+	 display: none;
+}
+ #page-body bdi, #page-body output {
+	 unicode-bidi: -webkit-isolate;
+}
+ #page-body bdo {
+	 unicode-bidi: bidi-override;
+}
+ #page-body textarea[dir=auto i] {
+	 unicode-bidi: -webkit-plaintext;
+}
+ #page-body dialog:not([open]) {
+	 display: none;
+}
+ #page-body dialog {
+	 position: absolute;
+	 left: 0;
+	 right: 0;
+	 width: -webkit-fit-content;
+	 height: -webkit-fit-content;
+	 margin: auto;
+	 border: solid;
+	 padding: 1em;
+	 background: white;
+	 color: black;
+}
+ #page-body dialog::backdrop {
+	 position: fixed;
+	 top: 0;
+	 right: 0;
+	 bottom: 0;
+	 left: 0;
+	 background: rgba(0, 0, 0, 0.1);
+}
+ 
