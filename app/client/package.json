@@ -8,7 +8,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "build-release": "npm run build && mv ./dist/** ./public",
+    "build-release": "rm -rf ./public/assets && npm run build && mv ./dist/** ./public",
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
