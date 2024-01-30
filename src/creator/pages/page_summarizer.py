@@ -1,10 +1,8 @@
-import os
 from dotenv import load_dotenv
 from termcolor import colored
 from src.creator.helpers import get_prompt
 from openai import OpenAI
 from db.db import DB, Page
-from src.utils.strings import string_hash
 
 
 load_dotenv()

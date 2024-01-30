@@ -5,7 +5,6 @@ import markdown
 class PageController:
     @staticmethod
     def get_page_html(id: int):
-        print(id)
         page = DB.get(Page, id)
 
         content = page.content
