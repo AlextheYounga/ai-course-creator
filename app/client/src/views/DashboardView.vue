@@ -29,10 +29,10 @@
                                         <li>
                                             <ul role="list" class="-mx-2 space-y-1">
                                                 <li v-for="item in navigation" :key="item.name">
-                                                    <a :href="item.href" :class="[item.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
+                                                    <router-link :to="item.href" :class="[item.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
                                                         <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
                                                         {{ item.name }}
-                                                    </a>
+                                                    </router-link>
                                                 </li>
                                             </ul>
                                         </li>
@@ -45,11 +45,11 @@
                                             </ul>
                                         </li>
                                         <li class="-mx-6 mt-auto">
-                                            <a href="#" class="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800">
+                                            <router-link to="#" class="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800">
                                                 <img class="h-8 w-8 rounded-full bg-gray-800" :src="profileImg" alt="" />
                                                 <span class="sr-only">Your profile</span>
                                                 <span aria-hidden="true">George Bush</span>
-                                            </a>
+                                            </router-link>
                                         </li>
                                     </ul>
                                 </nav>
@@ -72,10 +72,10 @@
                         <li>
                             <ul role="list" class="-mx-2 space-y-1">
                                 <li v-for="item in navigation" :key="item.name">
-                                    <a :href="item.href" :class="[item.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
+                                    <router-link :to="item.href" :class="[item.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
                                         <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
                                         {{ item.name }}
-                                    </a>
+                                    </router-link>
                                 </li>
                             </ul>
                         </li>
@@ -88,11 +88,11 @@
                             </ul>
                         </li>
                         <li class="-mx-6 mt-auto">
-                            <a href="#" class="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800">
+                            <router-link to="#" class="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800">
                                 <img class="h-8 w-8 rounded-full bg-gray-800" :src="profileImg" alt="" />
                                 <span class="sr-only">Your profile</span>
                                 <span aria-hidden="true">George Bush</span>
-                            </a>
+                            </router-link>
                         </li>
                     </ul>
                 </nav>
@@ -122,9 +122,9 @@
                                 </template>
                                 <template #url="slotProps">
                                     <div class="flex">
-                                        <a class="p-1 text-blue-500" :href="slotProps.node?.data?.url ?? '#'">
+                                        <router-link class="p-1 text-blue-500" :to="slotProps.node?.data?.url ?? '#'">
                                             {{ slotProps.node.label }}
-                                        </a>
+                                        </router-link>
                                         <span class="p-2.5 items-center">
                                             <div :class="[slotProps.node?.data?.exists ? 'text-green-400 bg-green-400/10' : 'text-rose-400 bg-rose-400/10', 'flex-none rounded-full p-1']">
                                                 <div class="h-1.5 w-1.5 rounded-full bg-current"></div>
@@ -145,7 +145,7 @@
 </template>
   
 <script lang="ts">
-import { ref } from 'vue'
+import { ref} from 'vue'
 import flaskApi from '@/router/api'
 import Tree from 'primevue/tree';
 import 'primeicons/primeicons.css'
