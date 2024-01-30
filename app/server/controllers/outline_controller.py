@@ -17,7 +17,7 @@ class OutlineController:
             ).first()
 
             tree = {
-                **topic.__dict__(),
+                **topic.to_dict(),
                 'children': []
             }
 
@@ -30,7 +30,7 @@ class OutlineController:
 
                 for course in course_records:
                     course_object = {
-                        **course.__dict__(),
+                        **course.to_dict(),
                         'children': []
                     }
 
@@ -47,11 +47,12 @@ class OutlineController:
                         ).all()
 
                         chapter_object = {
-                            **chapter.__dict__(),
-                            'children': page_records
+                            **chapter.to_dict(),
+                            'children': [page.to_dict() for page in page_records]
                         }
 
                         course_object['children'].append(chapter_object)
+                    tree['children'].append(course_object)
             course_material.append(tree)
 
         return jsonify(course_material)

@@ -123,7 +123,7 @@
                                         {{ slotProps.node.label }}
                                     </a>
                                     <span class="p-2.5 items-center">
-                                        <div :class="[slotProps.node?.exists ? 'text-green-400 bg-green-400/10' : 'text-rose-400 bg-rose-400/10', 'flex-none rounded-full p-1']">
+                                        <div :class="[slotProps.node?.data?.exists ? 'text-green-400 bg-green-400/10' : 'text-rose-400 bg-rose-400/10', 'flex-none rounded-full p-1']">
                                             <div class="h-1.5 w-1.5 rounded-full bg-current"></div>
                                         </div>
                                     </span>
@@ -189,93 +189,47 @@ export default {
         }
     },
     methods: {
-        translateToTreeStructure(data: any) {
-            // Will type this properly later
-            const tree = []
-            for (const material of data) {
-                const topic = material.topic as any
-                const pages = material.pages as any
-                if (pages.length === 0) continue
-
-                // const topicSlug = topic.topic.toLowerCase().replaceAll(' ', '-')
-
-                const topicNode: any = {
+        translateToTreeLibrary(data: any) {
+            return data.map((topic: any) => {
+                const topicChildren = topic.children.map((course: any) => {
+                    const courseChildren = course.children.map((chapter: any) => {
+                        const chapterChildren = chapter.children.map((page: any) => {
+                            return {
+                                name: page.slug,
+                                key: `lesson-${page.id}`,
+                                label: `Page: ${page.name}`,
+                                icon: 'pi pi-fw pi-file',
+                                data: {
+                                    exists: page?.generated ?? false,
+                                    url: page.link
+                                },
+                                type: 'url'
+                            }
+                        })
+                        return {
+                            name: chapter.slug,
+                            key: `lesson-${chapter.id}`,
+                            label: chapter.name,
+                            icon: 'pi pi-fw pi-file',
+                            children: chapterChildren
+                        }
+                    })
+                    return { 
+                        name: course.slug,
+                        key: `course-${course.id}`,
+                        label: course.name,
+                        icon: 'pi pi-fw pi-book',
+                        children: courseChildren
+                    }
+                })
+                return {
                     name: topic.slug,
                     key: `topic-${topic.id}`,
                     label: topic.name,
                     icon: 'pi pi-fw pi-hashtag',
-                    children: []
+                    children: topicChildren
                 }
-
-                const courses = []
-                
-                for (const page of pages) {
-                    const courseSlug = page.course_slug
-                    const chapterSlug = page.chapter_slug
-
-                    if (!(courseSlug in courses)) {
-                        courses[courseSlug] = {
-                            courseName: page.course_name,
-                            chapters: {}
-                        }
-                    }
-                }
-
-                for (const [courseSlug, courseData] of Object.entries(courses)) {
-                    const course = courseData as any
-                    if (!Object.keys(course?.chapters)?.length) continue
-
-                    const courseNode: any = {
-                        key: `course-${courseId++}`,
-                        label: `Course: ${course.courseName}`,
-                        name: course.courseName,
-                        icon: 'pi pi-fw pi-desktop',
-                        children: []
-                    }
-
-                    let chapterId = 0
-                    for (const [chapterSlug, chapterData] of Object.entries(course.chapters)) {
-                        const chapter = chapterData as any
-                        if (!Object.keys(chapter?.pages)?.length) continue
-
-                        const chapterNode: any = {
-                            label: `Chapter: ${chapter.name}`,
-                            key: `chapter-${chapterId++}`,
-                            name: chapter.name,
-                            icon: 'pi pi-fw pi-folder',
-                            children: []
-                        }
-
-                        let pageId = 0
-                        for (const [pageSlug, pageData] of Object.entries(chapter.pages)) {
-                            const page = pageData as any
-                            function _generateRowLink() {
-                                if (page?.exists && page?.path) {
-                                    return `/page/${topicSlug}/${courseSlug}/${chapterSlug}/${pageSlug}`
-                                }
-                                return '#'
-                            }
-
-                            chapterNode.children.push({
-                                label: `Page: ${page.name}`,
-                                key: `page-${pageId++}`,
-                                name: page.name,
-                                icon: 'pi pi-fw pi-file',
-                                data: {
-                                    exists: page?.exists ?? false,
-                                    url: _generateRowLink()
-                                },
-                                type: 'url'
-                            })
-                        }
-                        courseNode.children.push(chapterNode)
-                    }
-                    topicNode.children.push(courseNode)
-                }
-                tree.push(topicNode)
-            }
-
-            return tree
+            })
         },
         expandAll() {
             for (let node of this.nodes) {
@@ -304,7 +258,6 @@ export default {
 
         async getCourseMaterial() {
             return await flaskApi.get('/course-material')
-
         },
 
         startPolling() {
@@ -313,7 +266,7 @@ export default {
     },
     async mounted() {
         const material = await this.getCourseMaterial()
-        this.nodes = this.translateToTreeStructure(material)
+        this.nodes = this.translateToTreeLibrary(material)
     }
 }
 </script>

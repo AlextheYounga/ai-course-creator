@@ -24,3 +24,19 @@ class Course(Base):
 
     def make_slug(name):
         return slugify(name)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "topic_id": self.topic_id,
+            "name": self.name,
+            "slug": self.slug,
+            "level": self.level,
+            "outline": self.outline,
+            "meta": self.meta,
+            "skill_challenge_chapter": self.skill_challenge_chapter,
+            "skill_challenge_total_questions": self.skill_challenge_total_questions,
+            "generated": self.generated,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }

@@ -23,3 +23,17 @@ class Chapter(Base):
 
     def make_slug(name, course_slug):
         return slugify(name) if name != 'Final Skill Challenge' else f"final-skill-challenge-{course_slug}"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "topic_id": self.topic_id,
+            "course_slug": self.course_slug,
+            "name": self.name,
+            "slug": self.slug,
+            "outline": self.outline,
+            "content_type": self.content_type,
+            "position": self.position,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }

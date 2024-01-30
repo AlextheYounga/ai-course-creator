@@ -60,6 +60,30 @@ class Page(Base):
 
         return 'page'
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "topic_id": self.topic_id,
+            "course_slug": self.course_slug,
+            "chapter_slug": self.chapter_slug,
+            "name": self.name,
+            "slug": self.slug,
+            "permalink": self.permalink,
+            "link": self.link,
+            "path": self.path,
+            "hash": self.hash,
+            "type": self.type,
+            "content": self.content,
+            "summary": self.summary,
+            "nodes": self.nodes,
+            "position": self.position,
+            "position_in_course": self.position_in_course,
+            "position_in_series": self.position_in_series,
+            "generated": self.generated,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
 
     @classmethod
     def first_or_create(self, session: Session, data: dict):

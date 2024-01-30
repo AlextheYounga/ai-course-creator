@@ -37,3 +37,12 @@ class Topic(Base):
 
     def make_slug(name):
         return slugify(name)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "slug": self.slug,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
