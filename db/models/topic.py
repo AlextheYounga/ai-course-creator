@@ -3,6 +3,7 @@ from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, DateTime
 from sqlalchemy.orm import mapped_column, relationship
 from src.utils.strings import slugify
+from sqlalchemy.orm import Session
 
 
 
@@ -46,3 +47,17 @@ class Topic(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+    @classmethod
+    def first_or_create(self, session: Session, name: str):
+        topic_record = session.query(Topic).filter(Topic.name == name).first()
+
+        if not topic_record:
+            topic_slug = Topic.make_slug(name)
+            topic_record = Topic(name=name, slug=topic_slug)
+
+            # Save topic to database
+            session.add(topic_record)
+            session.commit()
+
+        return topic_record

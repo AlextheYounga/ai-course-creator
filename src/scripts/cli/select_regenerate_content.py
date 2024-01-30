@@ -1,5 +1,7 @@
 from db.db import DB, Topic, Course, Chapter, Page
 from src.creator.pages.page_processor import PageProcessor
+from termcolor import colored
+import sys
 import inquirer
 
 
@@ -27,6 +29,11 @@ def _select_content_item(items):
 
 def select_regenerate_content(topic):
     topic_record = DB.query(Topic).filter(Topic.name == topic).first()
+
+    if not topic_record:
+        print(colored("No topic found. Exiting...", "red"))
+        sys.exit()
+
 
     content_level = [
         inquirer.List('contentLevel',

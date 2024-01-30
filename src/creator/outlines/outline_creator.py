@@ -18,7 +18,7 @@ class OutlineCreator:
     ):
         output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 
-        self.topic = self._instantiate_topic(topic)
+        self.topic = Topic.first_or_create(DB, topic)
         self.ai_client = client
         self.output_path = output_directory
         self.outline_file = f"{output_directory}/{self.topic.slug}/master-outline.yaml"
@@ -60,18 +60,3 @@ class OutlineCreator:
     def generate_master_outline(self, outline_id):
         generator = MasterOutlineGenerator(outline_id, self.ai_client)
         return generator.generate()
-
-
-    # Private Methods
-
-
-    def _instantiate_topic(self, topic: str):
-        topic_record = DB.query(Topic).filter(Topic.name == topic).first()
-        if not topic_record:
-            # Save topic to database
-            topic_slug = Topic.make_slug(topic)
-            topic_record = Topic(name=topic, slug=topic_slug)
-            DB.add(topic_record)
-            DB.commit()
-
-        return topic_record

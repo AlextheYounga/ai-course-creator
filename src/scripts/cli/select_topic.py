@@ -1,5 +1,4 @@
 from src.utils.files import read_json_file
-from termcolor import colored
 import inquirer
 
 
