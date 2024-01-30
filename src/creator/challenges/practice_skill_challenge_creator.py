@@ -136,7 +136,9 @@ class PracticeSkillChallengeCreator:
 
 
     def _check_chapter_incomplete(self, outline_records: list[Page], challenge_page: Page):
-        chapter_pages = [page for page in outline_records if page.chapter_slug == challenge_page.chapter_slug]
-        page_contents = [page.generated for page in chapter_pages]
+        for page in outline_records:
+            if page.chapter_slug == challenge_page.chapter_slug:
+                if page.type == 'page' and page.generated == False:
+                    return True
 
-        return False in page_contents
+        return False

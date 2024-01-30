@@ -139,9 +139,13 @@ class FinalSkillChallengeCreator:
 
 
     def _check_course_incomplete(self, page_ids: list[int]):
-        pages = DB.query(Page).filter(Page.id.in_(page_ids)).all()
-        page_contents = [page.generated for page in pages]
-        return False in page_contents
+        pages = DB.query(Page).filter(
+            Page.id.in_(page_ids),
+            Page.type.in_(['page', 'challenge']),
+        ).all()
+
+        pages_generated = [page.generated for page in pages]
+        return False in pages_generated
 
 
     def _handle_allocate_page_material_to_multiple_pages(self, course: Course, material: str):
