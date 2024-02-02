@@ -1,3 +1,4 @@
+from db.db import DB, Topic
 import inquirer
 from .select_topic import select_topic
 from .select_regenerate_content import select_regenerate_content
@@ -28,23 +29,27 @@ def select_subroutine():
 
 
     if subroutine == 'Generate Course Outlines':
-        topics = select_topic()
-        return CourseCreator.create_outlines(topics)
+        topic_name = select_topic()
+        return CourseCreator.create_outline(topic)
 
     elif subroutine == 'Generate Course Pages':
-        topics = select_topic()
-        return CourseCreator.create_page_material(topics)
+        topic_name = select_topic()
+        topic = DB.query(Topic).filter(Topic.name == topic_name).first()
+        return CourseCreator.create_page_material(topic)
 
     elif subroutine == 'Generate Practice Skill Challenges':
-        topics = select_topic()
-        return CourseCreator.create_practice_skill_challenges(topics)
+        topic_name = select_topic()
+        topic = DB.query(Topic).filter(Topic.name == topic_name).first()
+        return CourseCreator.create_practice_skill_challenges(topic)
 
     elif subroutine == 'Generate Final Skill Challenges':
-        topics = select_topic()
-        return CourseCreator.create_final_skill_challenges(topics)
+        topic_name = select_topic()
+        topic = DB.query(Topic).filter(Topic.name == topic_name).first()
+        return CourseCreator.create_final_skill_challenges(topic)
 
     elif subroutine == 'Generate Specific Content':
-        topic_name = select_topic(include_all=False)
+        topic_name = select_topic()
+        topic = DB.query(Topic).filter(Topic.name == topic_name).first()
         return select_generate_content(topic_name)
 
     elif subroutine == 'Regenerate Content':
@@ -53,8 +58,8 @@ def select_subroutine():
         return Regenerator.regenerate_content(content)
 
     elif subroutine == 'Run All':
-        topics = select_topic()
-        return CourseCreator.run_all(topics)
+        topic = select_topic()
+        return CourseCreator.run_all(topic)
 
     elif subroutine == 'Dump Content From Existing Outline':
         topic = select_topic(include_all=False)

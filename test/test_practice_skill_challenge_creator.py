@@ -3,6 +3,7 @@ import os
 from src.utils.strings import slugify
 from src.utils.files import read_yaml_file, unzip_folder
 from src.creator.challenges.practice_skill_challenge_creator import PracticeSkillChallengeCreator
+from src.creator.course_creator import CourseCreator
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 
@@ -22,9 +23,7 @@ def _setup_test():
     unzip_folder('test/fixtures/data/out.zip', 'test')
 
     # Instantiate db records
-    topic_record = Topic(name="Ruby on Rails", slug="ruby-on-rails")
-    DB.add(topic_record)
-    DB.commit()
+    topic_record = Topic.first_or_create(DB, "Ruby on Rails")
 
     # Import outline
     Outline.get_or_create_from_file(DB, topic_record.id, MASTER_OUTLINE)
@@ -35,7 +34,8 @@ def test_build_datasets():
     master_outline = read_yaml_file(MASTER_OUTLINE)
 
     client = OpenAIMockService("Test")
-    creator = PracticeSkillChallengeCreator("Ruby on Rails", client)
+    topic_record = Topic.first_or_create(DB, "Ruby on Rails")
+    creator = PracticeSkillChallengeCreator(topic_record.id, client)
 
     course_slug = slugify(master_outline[1]['course']['courseName'])
     chapter_slug = slugify(master_outline[1]['course']['chapters'][0]['name'])
@@ -49,7 +49,8 @@ def test_build_prompt():
     master_outline = read_yaml_file(MASTER_OUTLINE)
 
     client = OpenAIMockService("Test")
-    creator = PracticeSkillChallengeCreator("Ruby on Rails", client)
+    topic_record = Topic.first_or_create(DB, "Ruby on Rails")
+    creator = PracticeSkillChallengeCreator(topic_record.id, client)
 
     course_slug = slugify(master_outline[1]['course']['courseName'])
     chapter_slug = slugify(master_outline[1]['course']['chapters'][0]['name'])
@@ -72,11 +73,11 @@ def test_create_practice_skill_challenges():
     topic = 'Ruby on Rails'
 
     client = OpenAIMockService(f"{topic} Practice Skill Challenge")
-    creator = PracticeSkillChallengeCreator(topic, client)
-    practice_pages = creator.create_from_outline()
+    creator = CourseCreator(topic, client)
+    challenge_pages = creator.create_topic_practice_skill_challenges()
 
     # Checking output
-    for page in practice_pages:
+    for page in challenge_pages:
         if page.type == 'challenge':
             assert page != None
             assert page.content != None

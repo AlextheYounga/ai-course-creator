@@ -1,6 +1,6 @@
 import shutil
 import os
-from src.creator.pages.page_material_creator import PageMaterialCreator
+from src.creator.course_creator import CourseCreator
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 
@@ -22,9 +22,7 @@ def _setup_test():
     shutil.copy(MASTER_OUTLINE, f"{OUTPUT_PATH}/{slug}/master-outline.yaml")
 
     # Instantiate db records
-    topic_record = Topic(name="Ruby on Rails", slug="ruby-on-rails")
-    DB.add(topic_record)
-    DB.commit()
+    Topic.first_or_create(DB, "Ruby on Rails")
 
 
 def test_create_page_material():
@@ -35,8 +33,8 @@ def test_create_page_material():
     session_name = f"{topic} Test Page Material"
     ai_client = OpenAIMockService(session_name)
 
-    creator = PageMaterialCreator(topic, ai_client)
-    pages = creator.create_from_outline()
+    creator = CourseCreator(topic, ai_client)
+    pages = creator.create_topic_page_material()
 
     # Checking output
     for page in pages:

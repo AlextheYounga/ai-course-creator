@@ -23,21 +23,14 @@ def _setup_test():
         shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
 
     # Instantiate db records
-    topic_record = DB.query(Topic).filter(Topic.name == "Ruby on Rails").first()
-    if not topic_record:
-        # Save topic to database
-        topic_record = Topic(name="Ruby on Rails", slug="ruby-on-rails")
-        DB.add(topic_record)
-        DB.commit()
+    topic_record = Topic.first_or_create(DB, "Ruby on Rails")
 
-        outline_record = Outline.instantiate(DB, topic_record.id)
-        outline_record.skills = PARSED_SKILLS
-        DB.add(outline_record)
-        DB.commit()
+    outline = Outline.instantiate(DB, topic_record.id)
+    outline.skills = PARSED_SKILLS
+    DB.add(outline)
+    DB.commit()
 
-    outline_record = topic_record.outlines[0]
-
-    return outline_record.id
+    return outline.id
 
 
 def test_build_master_outline_prompt():

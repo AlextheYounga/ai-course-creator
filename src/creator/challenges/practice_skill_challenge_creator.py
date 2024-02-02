@@ -11,10 +11,10 @@ load_dotenv()
 
 
 class PracticeSkillChallengeCreator:
-    def __init__(self, topic_name: str, client: OpenAI):
+    def __init__(self, topic_id: int, client: OpenAI):
         output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 
-        self.topic = DB.query(Topic).filter(Topic.name == topic_name).first()
+        self.topic = DB.get(Topic, topic_id)
         self.ai_client = client
         self.output_path = f"{output_directory}/{self.topic.slug}"
         self.outline = self.outline = Outline.process_outline(DB, self.topic.id, f"{self.output_path}/master-outline.yaml")

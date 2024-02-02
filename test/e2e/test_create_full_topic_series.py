@@ -2,10 +2,7 @@ import shutil
 import os
 from ..mocks.openai_mock_service import OpenAIMockService
 from ..mocks.db import *
-from src.creator.outlines.outline_creator import OutlineCreator
-from src.creator.challenges.practice_skill_challenge_creator import PracticeSkillChallengeCreator
-from src.creator.challenges.final_skill_challenge_creator import FinalSkillChallengeCreator
-from src.creator.pages.page_material_creator import PageMaterialCreator
+from src.creator.course_creator import CourseCreator
 
 
 OUTPUT_PATH = "test/out"
@@ -19,61 +16,23 @@ def _setup_test():
         shutil.rmtree(f"{OUTPUT_PATH}")
 
 
-def _create_outlines(topic: str):
-    session_name = f"{topic} Outlines"
-    ai_client = OpenAIMockService(session_name)
-
-    # Create Outlines
-    creator = OutlineCreator(topic, ai_client)
-    outline_id = creator.create()
-
-    return outline_id
-
-
-def _create_page_material(topic: str):
-    session_name = f"{topic} Page Material"
-    ai_client = OpenAIMockService(session_name)
-
-    creator = PageMaterialCreator(topic, ai_client)
-    pages = creator.create_from_outline()
-
-    return pages
-
-
-def _create_practice_skill_challenges(topic: str):
-    session_name = f"{topic} Practice Skill Challenge"
-    ai_client = OpenAIMockService(session_name)
-
-    creator = PracticeSkillChallengeCreator(topic, ai_client)
-    pages = creator.create_from_outline()
-
-    return pages
-
-
-def _create_final_skill_challenges(topic: str):
-    session_name = f"{topic} Final Skill Challenge"
-    ai_client = OpenAIMockService(session_name)
-
-    creator = FinalSkillChallengeCreator(topic, ai_client)
-    pages = creator.create_from_outline()
-
-    return pages
-
-
 
 def test_create_full_course():
     _setup_test()
 
     topic = 'Ruby on Rails'
 
+    ai_client = OpenAIMockService("Test Course Creation")
+    creator = CourseCreator(topic, ai_client)
+
     # Begin creating course outlines
-    outline_id = _create_outlines(topic)
+    outline_id = creator.create_outline()
 
     # Checking output
     assert outline_id == 1
 
     # Begin creating page material
-    pages = _create_page_material(topic)
+    pages = creator.create_topic_page_material()
 
     # Checking output
     for page in pages:
@@ -83,7 +42,7 @@ def test_create_full_course():
             assert page.generated == True
 
     # Begin creating practice skill challenges
-    practice_pages = _create_practice_skill_challenges(topic)
+    practice_pages = creator.create_topic_practice_skill_challenges()
 
     # Checking output
     for page in practice_pages:
@@ -93,7 +52,7 @@ def test_create_full_course():
             assert page.generated == True
 
     # Begin creating final skill challenges
-    fsc_pages = _create_final_skill_challenges(topic)
+    fsc_pages = creator.create_topic_final_skill_challenges()
 
     # Checking output
     for page in fsc_pages:

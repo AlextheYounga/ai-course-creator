@@ -12,18 +12,25 @@ load_dotenv()
 class OutlineCreator:
     def __init__(
         self,
-            topic: str,
+            topic_id: int,
             client: OpenAI,
     ):
         output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 
-        self.topic = Topic.first_or_create(DB, topic)
+        self.topic = DB.get(Topic, topic_id)
         self.ai_client = client
         self.output_path = output_directory
         self.outline_file = f"{output_directory}/{self.topic.slug}/master-outline.yaml"
 
 
     def create(self):
+        existing_outline = os.path.exists(self.outline_file)
+
+        if (existing_outline):
+            outline_record = Outline.get_or_create_from_file(DB, self.topic.id, self.outline_file)
+            return outline_record.id
+
+
         # Create new outline
         outline = Outline.instantiate(DB, self.topic.id)
         DB.add(outline)

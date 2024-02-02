@@ -1,6 +1,6 @@
 import shutil
 import os
-from src.creator.outlines.outline_creator import OutlineCreator
+from src.creator.course_creator import CourseCreator
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 import yaml
@@ -20,26 +20,25 @@ def _setup_test():
 _setup_test()
 
 
-def test_create_outlines():
+def test_create_outline():
     truncate_tables()
     topic = 'Ruby on Rails'
-    session_name = f"{topic} Outlines"
-    ai_client = OpenAIMockService(session_name)
 
-    # Create Outlines
-    creator = OutlineCreator(topic, ai_client)
-    outline_id = creator.create()
+    ai_client = OpenAIMockService("Test Course Creation")
 
-    outline = DB.get(Outline, outline_id)
+    creator = CourseCreator(topic, ai_client)
+    outline_id = creator.create_outline()
 
     # Checking output
     assert outline_id == 1
+
+    outline = DB.get(Outline, outline_id)
 
     assert os.path.exists('test/out/ruby-on-rails/master-outline.yaml') == True
     assert len(outline.master_outline) == 7
 
 
-def test_create_outlines_with_existing_outline():
+def test_create_outline_with_existing_outline():
     topic = 'Ruby on Rails'
     ai_client = OpenAIMockService(f"{topic} Outlines")
 
@@ -50,8 +49,8 @@ def test_create_outlines_with_existing_outline():
     with open(outline_file, 'w') as yaml_file:
         yaml.dump(outline_data, yaml_file, sort_keys=False)
 
-    creator = OutlineCreator(topic, ai_client)
-    outline_id = creator.create()
+    creator = CourseCreator(topic, ai_client)
+    outline_id = creator.create_outline()
 
     outline = DB.get(Outline, outline_id)
 
@@ -59,15 +58,15 @@ def test_create_outlines_with_existing_outline():
     assert len(outline.master_outline) == 7
 
 
-def test_create_outlines_with_existing_outline_record_without_file():
+def test_create_outline_with_existing_outline_record_without_file():
     truncate_tables()
     _setup_test()
 
     topic = 'Ruby on Rails'
     ai_client = OpenAIMockService(f"{topic} Outlines")
 
-    creator = OutlineCreator(topic, ai_client)
-    outline_id = creator.create()
+    creator = CourseCreator(topic, ai_client)
+    outline_id = creator.create_outline()
 
     outline_file = 'test/out/ruby-on-rails/master-outline.yaml'
     outline_data = yaml.safe_load(open(outline_file).read())
@@ -76,8 +75,8 @@ def test_create_outlines_with_existing_outline_record_without_file():
     with open(outline_file, 'w') as yaml_file:
         yaml.dump(outline_data, yaml_file, sort_keys=False)
 
-    creator = OutlineCreator(topic, ai_client)
-    outline_id = creator.create()
+    creator = CourseCreator(topic, ai_client)
+    outline_id = creator.create_outline()
 
     outline = DB.get(Outline, outline_id)
 

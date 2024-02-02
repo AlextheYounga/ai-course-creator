@@ -2,13 +2,8 @@ from src.utils.files import read_json_file
 import inquirer
 
 
-def select_topic(include_all: bool = True):
-    topics = read_json_file("storage/topics.json")
-    topic_choices = topics
-
-    if include_all:
-        topic_choices = ['All'] + topics
-
+def select_topic():
+    topic_choices = read_json_file("storage/topics.json")
 
     choices = [
         inquirer.List('topic',
@@ -17,14 +12,6 @@ def select_topic(include_all: bool = True):
     ]
 
     choice = inquirer.prompt(choices)
-
-    if choice != None:
-        answer = choice['topic']
-
-    if include_all:
-        if answer == 'All':
-            return topics
-        else:
-            return [answer]
+    answer = choice['topic']
 
     return answer

@@ -2,6 +2,7 @@ import shutil
 import os
 from src.utils.strings import slugify
 from src.utils.files import read_yaml_file, unzip_folder
+from src.creator.course_creator import CourseCreator
 from src.creator.challenges.final_skill_challenge_creator import FinalSkillChallengeCreator
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
@@ -23,9 +24,7 @@ def _setup_test():
     unzip_folder('test/fixtures/data/out.zip', 'test')
 
     # Instantiate db records
-    topic_record = Topic(name="Ruby on Rails", slug="ruby-on-rails")
-    DB.add(topic_record)
-    DB.commit()
+    topic_record = Topic.first_or_create(DB, "Ruby on Rails")
 
     # Import outline
     Outline.get_or_create_from_file(DB, topic_record.id, MASTER_OUTLINE)
@@ -37,9 +36,10 @@ def test_build_datasets():
     _setup_test()
 
     master_outline = read_yaml_file(MASTER_OUTLINE)
+    topic_record = Topic.first_or_create(DB, "Ruby on Rails")
 
     client = OpenAIMockService("Test")
-    creator = FinalSkillChallengeCreator("Ruby on Rails", client)
+    creator = FinalSkillChallengeCreator(topic_record.id, client)
 
     course_slug = slugify(master_outline[1]['course']['courseName'])
 
@@ -51,9 +51,10 @@ def test_build_prompt():
     _setup_test()
 
     master_outline = read_yaml_file(MASTER_OUTLINE)
+    topic_record = Topic.first_or_create(DB, "Ruby on Rails")
 
     client = OpenAIMockService("Test")
-    creator = FinalSkillChallengeCreator("Ruby on Rails", client)
+    creator = FinalSkillChallengeCreator(topic_record.id, client)
 
     course_slug = slugify(master_outline[1]['course']['courseName'])
     prompt = creator.build_skill_challenge_prompt(course_slug)
@@ -76,8 +77,8 @@ def test_create_final_skill_challenges():
     session_name = f"{topic} Final Skill Challenge"
     ai_client = OpenAIMockService(session_name)
 
-    creator = FinalSkillChallengeCreator(topic, ai_client)
-    fsc_pages = creator.create_from_outline()
+    creator = CourseCreator(topic, ai_client)
+    fsc_pages = creator.create_topic_final_skill_challenges()
 
     # Checking output
     for page in fsc_pages:
