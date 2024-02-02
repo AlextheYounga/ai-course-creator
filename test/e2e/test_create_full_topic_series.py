@@ -22,8 +22,7 @@ def test_create_full_course():
 
     topic = 'Ruby on Rails'
 
-    ai_client = OpenAIMockService("Test Course Creation")
-    creator = CourseCreator(topic, ai_client)
+    creator = CourseCreator(OpenAIMockService, topic)
 
     # Begin creating course outlines
     outline_id = creator.create_outline()

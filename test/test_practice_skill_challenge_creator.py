@@ -72,8 +72,7 @@ def test_create_practice_skill_challenges():
     _setup_test()
     topic = 'Ruby on Rails'
 
-    client = OpenAIMockService(f"{topic} Practice Skill Challenge")
-    creator = CourseCreator(topic, client)
+    creator = CourseCreator(OpenAIMockService, topic)
     challenge_pages = creator.create_topic_practice_skill_challenges()
 
     # Checking output

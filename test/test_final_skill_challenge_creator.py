@@ -74,10 +74,7 @@ def test_create_final_skill_challenges():
     _setup_test()
     topic = "Ruby on Rails"
 
-    session_name = f"{topic} Final Skill Challenge"
-    ai_client = OpenAIMockService(session_name)
-
-    creator = CourseCreator(topic, ai_client)
+    creator = CourseCreator(OpenAIMockService, topic)
     fsc_pages = creator.create_topic_final_skill_challenges()
 
     # Checking output

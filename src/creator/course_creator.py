@@ -1,7 +1,6 @@
 import os
 from db.db import DB, Topic, Outline, Course, Chapter, Page
 from openai import OpenAI
-from src.llm.openai_handler import OpenAiHandler
 from src.creator.outlines.outline_creator import OutlineCreator
 from src.creator.challenges.practice_skill_challenge_creator import PracticeSkillChallengeCreator
 from src.creator.challenges.final_skill_challenge_creator import FinalSkillChallengeCreator
@@ -10,21 +9,24 @@ import yaml
 
 
 class CourseCreator:
-    def __init__(self, topic_name: str, client: OpenAI):
+    def __init__(self, client: OpenAI, topic_name: str):
         self.topic = Topic.first_or_create(DB, name=topic_name)
-        self.ai_handler = client
+        self.client = client
         self.pages = []
 
 
     def create_outline(self):
-        creator = OutlineCreator(self.topic.id, self.ai_handler)
+        session_name = f"Topic Outline Generation - {self.topic.name}"
+        creator = OutlineCreator(self.topic.id, self.client(session_name))
         outline_id = creator.create()
 
         return outline_id
 
 
     def create_topic_page_material(self):
-        creator = PageMaterialCreator(self.topic.id, self.ai_handler)
+        session_name = f"Topic Page Generation - {self.topic.name}"
+
+        creator = PageMaterialCreator(self.topic.id, self.client(session_name))
         pages = creator.create_from_outline()
 
         return pages
@@ -32,14 +34,18 @@ class CourseCreator:
 
 
     def create_topic_practice_skill_challenges(self):
-        creator = PracticeSkillChallengeCreator(self.topic.id, self.ai_handler)
+        session_name = f"Topic Challenge Generation - {self.topic.name}"
+
+        creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
         pages = creator.create_from_outline()
 
         return pages
 
 
     def create_topic_final_skill_challenges(self):
-        creator = FinalSkillChallengeCreator(self.topic.id, self.ai_handler)
+        session_name = f"Topic Final Skill Challenge Generation - {self.topic.name}"
+
+        creator = FinalSkillChallengeCreator(self.topic.id, self.client(session_name))
         pages = creator.create_from_outline()
 
         return pages
@@ -47,17 +53,17 @@ class CourseCreator:
 
     def generate_topic_courses(self):
         CourseCreator.create_outline()
-        CourseCreator.create_page_material()
-        CourseCreator.create_practice_skill_challenges()
-        CourseCreator.create_final_skill_challenges()
+        CourseCreator.create_topic_page_material()
+        CourseCreator.create_topic_practice_skill_challenges()
+        CourseCreator.create_topic_final_skill_challenges()
 
 
     def generate_course_material(self, course: Course):
-        ai_client = OpenAiHandler(f"Course Generation - {course.name}")
+        session_name = f"Course Generation - {course.name}"
 
-        page_creator = PageMaterialCreator(self.topic.id, ai_client)
-        challenge_creator = PracticeSkillChallengeCreator(self.topic.id, ai_client)
-        fsc_creator = FinalSkillChallengeCreator(self.topic.id, ai_client)
+        page_creator = PageMaterialCreator(self.topic.id, self.client(session_name))
+        challenge_creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
+        fsc_creator = FinalSkillChallengeCreator(self.topic.id, self.client(session_name))
 
         pages = DB.query(Page).filter(
             Page.topic_id == self.topic.id,
@@ -78,10 +84,10 @@ class CourseCreator:
 
 
     def generate_chapter_material(self, chapter: Chapter):
-        ai_client = OpenAiHandler(f"Chapter Generation - {chapter.name}")
+        session_name = f"Chapter Generation - {chapter.name}"
 
-        page_creator = PageMaterialCreator(self.topic.id, ai_client)
-        challenge_creator = PracticeSkillChallengeCreator(self.topic.id, ai_client)
+        page_creator = PageMaterialCreator(self.topic.id, self.client(session_name))
+        challenge_creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
 
         pages = DB.query(Page).filter(
             Page.topic_id == self.topic.id,
@@ -101,8 +107,8 @@ class CourseCreator:
 
 
     def generate_page_material(self, page: Page):
-        ai_client = OpenAiHandler(f"{page.name} Page Generation")
-        page_creator = PageMaterialCreator(self.topic.id, ai_client)
+        session_name = f"Page Generation - {page.name}"
+        page_creator = PageMaterialCreator(self.topic.id, self.client(session_name))
 
         if page.type == 'page':
             page = page_creator.generate_page_material(page)

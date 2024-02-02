@@ -24,9 +24,7 @@ def test_create_outline():
     truncate_tables()
     topic = 'Ruby on Rails'
 
-    ai_client = OpenAIMockService("Test Course Creation")
-
-    creator = CourseCreator(topic, ai_client)
+    creator = CourseCreator(OpenAIMockService, topic)
     outline_id = creator.create_outline()
 
     # Checking output
@@ -40,7 +38,6 @@ def test_create_outline():
 
 def test_create_outline_with_existing_outline():
     topic = 'Ruby on Rails'
-    ai_client = OpenAIMockService(f"{topic} Outlines")
 
     outline_file = 'test/out/ruby-on-rails/master-outline.yaml'
     outline_data = yaml.safe_load(open(outline_file).read())
@@ -49,7 +46,7 @@ def test_create_outline_with_existing_outline():
     with open(outline_file, 'w') as yaml_file:
         yaml.dump(outline_data, yaml_file, sort_keys=False)
 
-    creator = CourseCreator(topic, ai_client)
+    creator = CourseCreator(OpenAIMockService, topic)
     outline_id = creator.create_outline()
 
     outline = DB.get(Outline, outline_id)
@@ -63,9 +60,8 @@ def test_create_outline_with_existing_outline_record_without_file():
     _setup_test()
 
     topic = 'Ruby on Rails'
-    ai_client = OpenAIMockService(f"{topic} Outlines")
 
-    creator = CourseCreator(topic, ai_client)
+    creator = CourseCreator(OpenAIMockService, topic)
     outline_id = creator.create_outline()
 
     outline_file = 'test/out/ruby-on-rails/master-outline.yaml'
@@ -75,7 +71,7 @@ def test_create_outline_with_existing_outline_record_without_file():
     with open(outline_file, 'w') as yaml_file:
         yaml.dump(outline_data, yaml_file, sort_keys=False)
 
-    creator = CourseCreator(topic, ai_client)
+    creator = CourseCreator(OpenAIMockService, topic)
     outline_id = creator.create_outline()
 
     outline = DB.get(Outline, outline_id)

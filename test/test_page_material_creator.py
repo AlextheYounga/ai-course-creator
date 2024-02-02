@@ -29,11 +29,7 @@ def test_create_page_material():
     _setup_test()
 
     topic = 'Ruby on Rails'
-
-    session_name = f"{topic} Test Page Material"
-    ai_client = OpenAIMockService(session_name)
-
-    creator = CourseCreator(topic, ai_client)
+    creator = CourseCreator(OpenAIMockService, topic)
     pages = creator.create_topic_page_material()
 
     # Checking output
