@@ -2,7 +2,6 @@ import shutil
 import os
 from src.utils.strings import slugify
 from src.utils.files import read_yaml_file, unzip_folder
-from src.creator.outlines.outline_processor import OutlineProcessor
 from src.creator.challenges.final_skill_challenge_creator import FinalSkillChallengeCreator
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
@@ -29,13 +28,7 @@ def _setup_test():
     DB.commit()
 
     # Import outline
-    outline = OutlineProcessor.get_or_create_outline_record_from_file(
-        topic_record.id,
-        MASTER_OUTLINE
-    )
-
-    OutlineProcessor.get_outline_records(outline.id)
-
+    Outline.get_or_create_from_file(DB, topic_record.id, MASTER_OUTLINE)
 
 
 

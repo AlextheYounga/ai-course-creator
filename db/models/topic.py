@@ -48,6 +48,7 @@ class Topic(Base):
             "updated_at": self.updated_at,
         }
 
+
     @classmethod
     def first_or_create(self, session: Session, name: str):
         topic_record = session.query(Topic).filter(Topic.name == name).first()

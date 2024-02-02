@@ -1,8 +1,10 @@
 from .base import Base
+from .topic import Topic
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
 from src.utils.strings import slugify
+from sqlalchemy.orm import Session
 
 
 
@@ -37,3 +39,25 @@ class Chapter(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+
+    @classmethod
+    def first_or_create(self, session: Session, topic: Topic, data: dict):
+        chapter_slug = self.make_slug(data['name'], data['courseSlug'])
+
+        chapter = session.query(self).filter(
+            self.topic_id == topic.id,
+            self.slug == chapter_slug
+        ).first()
+
+        if not chapter:
+            chapter = self(topic_id=topic.id)
+
+        chapter.name = data['name']
+        chapter.slug = chapter_slug
+        chapter.course_slug = data['courseSlug']
+        chapter.position = data['position']
+        chapter.outline = data['outline']
+        chapter.content_type = 'lesson' if data['name'] != 'Final Skill Challenge' else 'final-skill-challenge'
+
+        return chapter

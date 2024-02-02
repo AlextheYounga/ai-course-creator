@@ -3,10 +3,9 @@ from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
 from src.creator.helpers import get_prompt
-from src.creator.outlines.outline_processor import OutlineProcessor
 from src.creator.pages.page_processor import PageProcessor
 from src.creator.pages.page_summarizer import PageSummarizer
-from db.db import DB, Topic, Page
+from db.db import DB, Topic, Page, Outline
 import yaml
 import progressbar
 
@@ -21,20 +20,15 @@ class PageMaterialCreator:
         self.topic = DB.query(Topic).filter(Topic.name == topic_name).first()
         self.ai_client = client
         self.output_path = f"{output_directory}/{self.topic.slug}"
-        self.outline = OutlineProcessor.get_or_create_outline_record_from_file(
-            self.topic.id,
-            f"{self.output_path}/master-outline.yaml"
-        )
+        self.outline = Outline.process_outline(DB, self.topic.id, f"{self.output_path}/master-outline.yaml")
 
 
     def collect_prior_page_summaries(self):
         summaries = ""
 
         # Fetch all pages from outline
-        outline_records = OutlineProcessor.get_outline_record_ids(self.outline.id)
-        page_ids = outline_records['pages']
-        outline_pages = DB.query(Page).filter(Page.id.in_(page_ids)).all()
-        lesson_pages = [page for page in outline_pages if page.type == 'page']
+        outline_entities = Outline.get_entities(DB, self.outline.id)
+        lesson_pages = [page for page in outline_entities['pages'] if page.type == 'page']
 
         for page in lesson_pages:
             if page.type == 'page' and page.summary != None:
@@ -149,10 +143,13 @@ class PageMaterialCreator:
         return regenerated_pages
 
 
+    # Main
+
+
     def create_from_outline(self):
         updated_pages = []
-        outline_records = OutlineProcessor.get_outline_records(self.outline.id)
-        pages = [page for page in outline_records if page.type == 'page']  # Ignore challenges
+        outline_entities = Outline.get_entities(DB, self.outline.id)
+        pages = [page for page in outline_entities['pages'] if page.type == 'page']  # Ignore challenges
 
         total_count = len(pages)
 

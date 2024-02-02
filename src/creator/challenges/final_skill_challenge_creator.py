@@ -4,9 +4,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from termcolor import colored
 from src.creator.helpers import get_prompt
-from src.creator.outlines.outline_processor import OutlineProcessor
 from src.creator.pages.page_processor import PageProcessor
-from db.db import DB, Topic, Course, Page
+from db.db import DB, Topic, Course, Page, Outline
 from src.utils.chunks import chunks
 import re
 import markdown
@@ -24,10 +23,7 @@ class FinalSkillChallengeCreator:
         self.topic = DB.query(Topic).filter(Topic.name == topic_name).first()
         self.ai_client = client
         self.output_path = f"{output_directory}/{self.topic.slug}"
-        self.outline = OutlineProcessor.get_or_create_outline_record_from_file(
-            self.topic.id,
-            f"{self.output_path}/master-outline.yaml"
-        )
+        self.outline = self.outline = Outline.process_outline(DB, self.topic.id, f"{self.output_path}/master-outline.yaml")
 
 
     def prepare_course_content_prompt(self, course_slug: str):
@@ -95,9 +91,8 @@ class FinalSkillChallengeCreator:
 
     def create_from_outline(self):
         generated_pages = []
-        outline_records = OutlineProcessor.get_outline_record_ids(self.outline.id)
-        course_ids = outline_records['courses']
-        courses = DB.query(Course).filter(Course.id.in_(course_ids)).all()
+        outline_records = Outline.get_entities(DB, self.outline.id)
+        courses = outline_records['courses']
         courses_count = len(courses)
 
         with progressbar.ProgressBar(max_value=courses_count, prefix='Generating final skill challenges: ', redirect_stdout=True) as bar:
@@ -139,12 +134,7 @@ class FinalSkillChallengeCreator:
         return False
 
 
-    def _check_course_incomplete(self, page_ids: list[int]):
-        pages = DB.query(Page).filter(
-            Page.id.in_(page_ids),
-            Page.type == 'page',
-        ).all()
-
+    def _check_course_incomplete(self, pages: list[Page]):
         pages_generated = [page.generated for page in pages]
         return False in pages_generated
 

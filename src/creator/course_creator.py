@@ -1,15 +1,15 @@
 from src.llm.openai_handler import OpenAiHandler
 from src.creator.outlines.outline_creator import OutlineCreator
-from src.creator.outlines.outline_processor import OutlineProcessor
 from src.creator.challenges.practice_skill_challenge_creator import PracticeSkillChallengeCreator
 from src.creator.challenges.final_skill_challenge_creator import FinalSkillChallengeCreator
 from src.creator.pages.page_material_creator import PageMaterialCreator
+from .helpers import dump_pages_from_outline
 
 
 class CourseCreator:
     @staticmethod
     def dump_outline_content(outline_id: int):
-        return OutlineProcessor.dump_pages_from_outline(outline_id)
+        return dump_pages_from_outline(outline_id)
 
 
     @staticmethod
@@ -17,7 +17,7 @@ class CourseCreator:
         outline_ids = []
         for topic in topics:
             session_name = f"{topic} Outlines"
-            ai_client = OpenAiHandler(session_name)
+            ai_client = OpenAiHandle(session_name)
 
             creator = OutlineCreator(topic, ai_client)
             outline_id = creator.create()

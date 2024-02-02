@@ -1,8 +1,10 @@
 from .base import Base
+from .topic import Topic
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import mapped_column, relationship
 from src.utils.strings import slugify
+from sqlalchemy.orm import Session
 
 
 class Course(Base):
@@ -22,8 +24,10 @@ class Course(Base):
 
     topic = relationship("Topic", back_populates="courses")
 
+
     def make_slug(name):
         return slugify(name)
+
 
     def to_dict(self):
         return {
@@ -40,3 +44,24 @@ class Course(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+
+    @classmethod
+    def first_or_create(self, session: Session, topic: Topic, data: dict):
+        course_slug = self.make_slug(data['name'])
+
+        course = session.query(self).filter(
+            self.topic_id == topic.id,
+            self.slug == course_slug
+        ).first()
+
+        if not course:
+            course = self(topic_id=topic.id)
+
+        course.name = data['name']
+        course.slug = course_slug
+        course.level = data['position']
+        course.outline = data['outline']
+        course.skill_challenge_chapter = f"final-skill-challenge-{course_slug}"
+
+        return course

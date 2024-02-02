@@ -1,13 +1,9 @@
+from db.db import DB, Outline
 import os
 from termcolor import colored
 from openai import OpenAI
-from dotenv import load_dotenv
-from db.db import DB, Outline
 from src.creator.helpers import get_prompt
 from src.utils.files import write_yaml_file
-
-
-load_dotenv()
 
 
 class SkillGenerator:

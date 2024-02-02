@@ -2,10 +2,9 @@ import os
 from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
-from db.db import DB, Topic
+from db.db import DB, Topic, Outline
 from .skill_generator import SkillGenerator
 from .master_outline_generator import MasterOutlineGenerator
-from .outline_processor import OutlineProcessor
 
 load_dotenv()
 
@@ -28,11 +27,11 @@ class OutlineCreator:
         existing_outline = os.path.exists(self.outline_file)
 
         if (existing_outline):
-            outline_record = OutlineProcessor.get_or_create_outline_record_from_file(self.topic.id, self.outline_file)
+            outline_record = Outline.get_or_create_from_file(DB, self.topic.id, self.outline_file)
             return outline_record.id
 
         # Create new outline
-        outline = OutlineProcessor.instantiate_new_outline(self.topic.id)
+        outline = Outline.instantiate(DB, self.topic.id)
         DB.add(outline)
         DB.commit()
 

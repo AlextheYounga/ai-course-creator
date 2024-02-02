@@ -5,6 +5,7 @@ from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, JSON, DateTime, Text, ForeignKey, Boolean
 from sqlalchemy.orm import mapped_column, relationship
 from src.utils.strings import slugify, string_hash
+from termcolor import colored
 from sqlalchemy.orm import Session
 
 
@@ -60,6 +61,7 @@ class Page(Base):
 
         return 'page'
 
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -86,9 +88,7 @@ class Page(Base):
 
 
     @classmethod
-    def first_or_create(self, session: Session, data: dict):
-        topic = session.get(Topic, data['topicId'])
-
+    def first_or_create(self, session: Session, topic: Topic, data: dict):
         name = data['name']
         course_slug = data['courseSlug']
         chapter_slug = data['chapterSlug']
@@ -98,14 +98,14 @@ class Page(Base):
         page_slug = self.make_slug(name, course_slug, chapter_slug)
 
         page = session.query(self).filter(
-            Page.topic_id == topic.id,
-            Page.course_slug == course_slug,
-            Page.chapter_slug == chapter_slug,
-            Page.slug == page_slug
+            self.topic_id == topic.id,
+            self.course_slug == course_slug,
+            self.chapter_slug == chapter_slug,
+            self.slug == page_slug
         ).first()
 
         if not page:
-            page = Page(topic_id=topic.id)
+            page = self(topic_id=topic.id)
 
         page.name = name
         page.course_slug = course_slug
@@ -120,6 +120,46 @@ class Page(Base):
         page.position = data['position']
         page.position_in_course = data['positionInCourse']
         page.position_in_series = data['positionInSeries']
-        page.type = self.get_page_type()
+        page.type = self.get_page_type(name, chapter_slug)
 
         return page
+
+
+    @classmethod
+    def handle_existing_page_material(self, session: Session, page):
+        material = open(page.path, 'r').read()
+        hash = self.hash_page(material)
+
+        if page.hash != hash:
+            page.content = material
+            page.generated = True
+            page.link = page.permalink
+            page.hash = hash
+
+            session.add(page)
+            session.commit()
+
+            return True
+        return False
+
+
+    @classmethod
+    def check_for_existing_page_material(self, page) -> bool:
+        existing_content = page.content != None
+        file_exists = os.path.exists(page.path)
+
+        if file_exists and not existing_content:
+            return self.handle_existing_page_material(page)
+
+        return existing_content
+
+
+    @staticmethod
+    def dump_pages(pages: list):
+        for page in pages:
+            print(colored(f"Writing page: {page.path}", "green"))
+
+            os.makedirs(os.path.dirname(page.path), exist_ok=True)
+            with open(page.path, 'w') as f:
+                f.write(page.content)
+                f.close()

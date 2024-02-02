@@ -1,9 +1,8 @@
+from .mocks.db import *
 import os
 import shutil
 from src.creator.outlines.skill_generator import SkillGenerator
 from .mocks.openai_mock_service import OpenAIMockService
-from src.creator.outlines.outline_processor import OutlineProcessor
-from .mocks.db import *
 
 
 OUTPUT_PATH = "test/out"
@@ -28,7 +27,7 @@ def _setup_test():
         DB.add(topic_record)
         DB.commit()
 
-        outline_record = OutlineProcessor.instantiate_new_outline(topic_record.id)
+        outline_record = Outline.instantiate(DB, topic_record.id)
         DB.add(outline_record)
         DB.commit()
 

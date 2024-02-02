@@ -3,9 +3,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from termcolor import colored
 from src.creator.helpers import get_prompt
-from src.creator.outlines.outline_processor import OutlineProcessor
 from src.creator.pages.page_processor import PageProcessor
-from db.db import DB, Topic, Page
+from db.db import DB, Topic, Page, Outline
 import progressbar
 
 
@@ -19,10 +18,7 @@ class PracticeSkillChallengeCreator:
         self.topic = DB.query(Topic).filter(Topic.name == topic_name).first()
         self.ai_client = client
         self.output_path = f"{output_directory}/{self.topic.slug}"
-        self.outline = OutlineProcessor.get_or_create_outline_record_from_file(
-            self.topic.id,
-            f"{self.output_path}/master-outline.yaml"
-        )
+        self.outline = self.outline = Outline.process_outline(DB, self.topic.id, f"{self.output_path}/master-outline.yaml")
 
 
     def prepare_chapter_content_prompt(self, course_slug: str, chapter_slug: str):
@@ -109,8 +105,8 @@ class PracticeSkillChallengeCreator:
 
     def create_from_outline(self):
         updated_pages = []
-        outline_records = OutlineProcessor.get_outline_records(self.outline.id)
-        challenge_pages = [page for page in outline_records if page.type == 'challenge']
+        outline_entities = Outline.get_entities(DB, self.outline.id)
+        challenge_pages = [page for page in outline_entities['pages'] if page.type == 'challenge']
         total_count = len(challenge_pages)
 
         with progressbar.ProgressBar(max_value=total_count, prefix='Generating practice challenges: ', redirect_stdout=True) as bar:
@@ -125,7 +121,7 @@ class PracticeSkillChallengeCreator:
                     continue
 
 
-                chapter_incomplete = self._check_chapter_incomplete(outline_records, page)
+                chapter_incomplete = self._check_chapter_incomplete(outline_entities, page)
                 if chapter_incomplete:
                     print(colored(f"Skipping incomplete chapter {page.chapter_slug}...", "yellow"))
                     continue
@@ -136,8 +132,8 @@ class PracticeSkillChallengeCreator:
         return updated_pages
 
 
-    def _check_chapter_incomplete(self, outline_records: list[Page], challenge_page: Page):
-        for page in outline_records:
+    def _check_chapter_incomplete(self, outline_entities: list[Page], challenge_page: Page):
+        for page in outline_entities['pages']:
             if page.chapter_slug == challenge_page.chapter_slug:
                 if page.type == 'page' and page.generated == False:
                     return True

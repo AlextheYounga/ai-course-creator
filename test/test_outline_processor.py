@@ -1,7 +1,6 @@
 import shutil
 import os
 from src.creator.outlines.outline_creator import OutlineCreator
-from src.creator.outlines.outline_processor import OutlineProcessor
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 from src.utils.files import write_json_file
@@ -36,5 +35,5 @@ _setup_test()
 
 def test_hash_outline():
     outline_data = open(MASTER_OUTLINE).read()
-    hash = OutlineProcessor.hash_outline(outline_data)
+    hash = Outline.hash_outline(outline_data)
     assert hash != None

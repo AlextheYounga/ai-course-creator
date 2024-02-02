@@ -1,9 +1,16 @@
 from .base import Base
-from sqlalchemy.sql import func
+from .chapter import Chapter
+from .course import Course
+from .page import Page
+from .outline_entity import OutlineEntity
+from sqlalchemy.sql import func, text
+from termcolor import colored
 from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
-
-
+from src.utils.files import read_yaml_file
+from sqlalchemy.orm import Session
+from src.utils.strings import string_hash
+import yaml
 
 
 class Outline(Base):
@@ -18,8 +25,161 @@ class Outline(Base):
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
     topic = relationship("Topic", back_populates="outlines")
-    # entities = relationship(
-    #     "OutlineEntity",
-    #     back_populates="outline",
-    #     cascade="all, delete-orphan"
-    # )
+
+    entities = relationship(
+        "OutlineEntity",
+        back_populates="outline",
+        cascade="all, delete-orphan"
+    )
+
+
+    @classmethod
+    def instantiate(self, session: Session, topic_id: int):
+        existing_outline_count = session.query(self).filter(self.topic_id == topic_id).count()
+        next_outline_number = str(existing_outline_count + 1)
+        outline_name = f"series-{next_outline_number}"
+
+        new_outline = self(
+            topic_id=topic_id,
+            name=outline_name
+        )
+
+        return new_outline
+
+
+    @classmethod
+    def get_or_create_from_file(self, session: Session, topic_id: int, outline_file: str):
+        outline_data = open(outline_file).read()
+        outline_hash = self.hash_outline(outline_data)
+        outline = session.query(self).filter(self.hash == outline_hash).first()
+        if outline: return outline
+
+        # Create new outline record
+        last_outline = session.query(self).filter(
+            Outline.topic_id == topic_id
+        ).order_by(
+            Outline.id.desc()
+        ).first()
+
+        new_outline = self.instantiate(session, topic_id)
+        new_outline.master_outline = read_yaml_file(outline_file)  # Add changed outline to record
+        new_outline.hash = self.hash_outline(new_outline.master_outline)
+
+        if last_outline:
+            new_outline.skills = last_outline.skills
+
+        print(colored("Detected new outline. Processing...\n", "yellow"))
+        session.add(new_outline)
+        session.commit()
+        print(colored(f"New outline created {new_outline.name}\n", "green"))
+
+        return new_outline
+
+
+    @classmethod
+    def create_outline_entities(self, session: Session, outline_id: int):
+        outline = session.get(self, outline_id)
+        topic = outline.topic
+
+        if not outline: return None
+
+        pages = []
+
+        for course_index, course in enumerate(outline.master_outline):
+            page_position_in_course = 0
+            course = course['course']
+
+            # Building course record
+            course_record = Course.first_or_create(session, outline.topic, {
+                'name': course['courseName'],
+                'position': course_index,
+                'outline': yaml.dump(course, sort_keys=False),
+            })
+            session.add(course_record)
+
+            for chapter_index, chapter in enumerate(course['chapters']):
+                # Building chapter record
+                chapter_record = Chapter.first_or_create(
+                    session,
+                    topic,
+                    {
+                        'name': chapter['name'],
+                        'courseSlug': course_record.slug,
+                        'position': chapter_index,
+                        'outline': yaml.dump(chapter, sort_keys=False),
+                    })
+                session.add(chapter_record)
+
+                # Building page record
+                for page_index, page in enumerate(chapter['pages']):
+                    page_record = Page.first_or_create(
+                        session,
+                        topic,
+                        {
+                            'name': page,
+                            'outlineName': outline.name,
+                            'courseSlug': course_record.slug,
+                            'chapterSlug': chapter_record.slug,
+                            'position': page_index,
+                            'positionInCourse': page_position_in_course,
+                            'positionInSeries': len(pages),
+                        })
+                    session.add(page_record)
+                    page_position_in_course += 1
+
+                    # Saving to the database
+                    session.commit()
+                    pages.append(page_record)
+
+                    # Create outline entities
+                    OutlineEntity.first_or_create(session, outline.id, page_record)
+                OutlineEntity.first_or_create(session, outline.id, chapter_record)
+            OutlineEntity.first_or_create(session, outline.id, course_record)
+
+        return pages
+
+
+    @classmethod
+    def process_outline(self, session: Session, topic_id: int, outline_file: str):
+        outline = self.get_or_create_from_file(session, topic_id, outline_file)
+        self.create_outline_entities(session, outline.id)
+
+        return outline
+
+
+    @staticmethod
+    def hash_outline(outline_data):
+        # Convert outline text to deterministic hash for comparison
+        if isinstance(outline_data, dict) or isinstance(outline_data, list):
+            outline_data = str(yaml.dump(outline_data, sort_keys=False)).strip()
+        if isinstance(outline_data, str):
+            outline_data = outline_data.strip()
+
+        try:
+            return string_hash(outline_data)
+        except Exception:
+            return None
+
+
+    @staticmethod
+    def get_entities(session: Session, outline_id: int):
+        course_records = session.query(OutlineEntity, Course).filter(
+            OutlineEntity.outline_id == outline_id,
+            OutlineEntity.entity_type == 'Course'
+        ).join(Course, OutlineEntity.entity_id == Course.id).all()
+
+        chapter_records = session.query(OutlineEntity, Chapter).filter(
+            OutlineEntity.outline_id == outline_id,
+            OutlineEntity.entity_type == 'Chapter'
+        ).join(Chapter, OutlineEntity.entity_id == Chapter.id).all()
+
+        page_records = session.query(OutlineEntity, Page).filter(
+            OutlineEntity.outline_id == outline_id,
+            OutlineEntity.entity_type == 'Page'
+        ).join(Page, OutlineEntity.entity_id == Page.id).all()
+
+        return {
+            'courses': [course[1] for course in course_records],
+            'chapters': [chapter[1] for chapter in chapter_records],
+            'pages': [page[1] for page in page_records],
+        }

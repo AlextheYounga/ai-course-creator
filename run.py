@@ -3,7 +3,6 @@ from termcolor import colored
 from src.scripts.cli.select_subroutine import select_subroutine
 from src.scripts.cli.select_util import select_util
 from src.scripts.initialize import initialize_project
-from src.creator.outlines.outline_processor import OutlineProcessor
 from server import run_server
 
 
