@@ -114,7 +114,7 @@ class FinalSkillChallengeCreator:
     @classmethod
     def regenerate(self, client: OpenAI, topic_name: str, course: Course):
         DB.query(Page).filter(
-            Topic.id == course.topic_id,
+            Page.topic_id == course.topic_id,
             Page.course_slug == course.slug,
             Page.type == 'final-skill-challenge'
         ).delete()

@@ -78,19 +78,27 @@ class CourseCreator:
 
 
     @staticmethod
-    def generate_specific_pages(topic: Topic, pages: list[Page]):
-        ai_client = OpenAiHandler(f"Generate Specific Pages")
+    def generate_specific_course(topic: Topic, course: Course):
+        topic = DB.query(Topic).filter(Topic.id == course.topic_id).first()
+        ai_client = OpenAiHandler(f"Full Course Regeneration")
 
-        creator = PageMaterialCreator(topic.name, ai_client)
-        generated_pages = []
+        pages = DB.query(Page).filter(
+            Page.topic_id == course.topic_id,
+            Page.course_slug == course.slug,
+        ).all()
+
+        if len(pages) == 0:
+            raise Exception(f"No pages found for course '{course.name}'")
+
+        page_creator = PageMaterialCreator(topic.name, ai_client)
+        challenge_creator = PracticeSkillChallengeCreator(topic.name, ai_client)
+        fsc_creator = FinalSkillChallengeCreator(topic.name, ai_client)
 
         for page in pages:
-            page_generated = creator.generate_page_material(page)
-            generated_pages.append(page_generated)
+            page_creator.generate_page_material(page)
+            challenge_creator.generate_practice_skill_challenge(page)
 
-        return generated_pages
-
-
+        fsc_creator.generate_final_skill_challenge(course)
 
     @staticmethod
     def generate_specific_chapter(topic: Topic, chapter: Chapter):
@@ -107,7 +115,7 @@ class CourseCreator:
             return fsc_creator.generate_final_skill_challenge(course)
 
         pages = DB.query(Page).filter(
-            Topic.id == topic.id,
+            Page.topic_id == topic.id,
             Page.course_slug == chapter.course_slug,
             Page.chapter_slug == chapter.slug
         ).all()
@@ -118,30 +126,9 @@ class CourseCreator:
         page_creator = PageMaterialCreator(topic.name, ai_client)
         challenge_creator = PracticeSkillChallengeCreator(topic.name, ai_client)
 
-        page_creator.generate_page_material(pages)
-        challenge_creator.generate_practice_skill_challenge(pages)
-
-
-    @staticmethod
-    def generate_specific_course(topic: Topic, course: Course):
-        topic = DB.query(Topic).filter(Topic.id == course.topic_id).first()
-        ai_client = OpenAiHandler(f"Full Course Regeneration")
-
-        pages = DB.query(Page).filter(
-            Topic.id == course.topic_id,
-            Page.course_slug == course.slug,
-        ).all()
-
-        if len(pages) == 0:
-            raise Exception(f"No pages found for course '{course.name}'")
-
-        page_creator = PageMaterialCreator(topic.name, ai_client)
-        challenge_creator = PracticeSkillChallengeCreator(topic.name, ai_client)
-        fsc_creator = FinalSkillChallengeCreator(topic.name, ai_client)
-
-        page_creator.generate_page_material(pages)
-        challenge_creator.generate_practice_skill_challenge(pages)
-        fsc_creator.generate_final_skill_challenge(course)
+        for page in pages:
+            page_creator.generate_page_material(page)
+            challenge_creator.generate_practice_skill_challenge(pages)
 
 
     @staticmethod

@@ -24,12 +24,6 @@ class OutlineCreator:
 
 
     def create(self):
-        existing_outline = os.path.exists(self.outline_file)
-
-        if (existing_outline):
-            outline_record = Outline.get_or_create_from_file(DB, self.topic.id, self.outline_file)
-            return outline_record.id
-
         # Create new outline
         outline = Outline.instantiate(DB, self.topic.id)
         DB.add(outline)

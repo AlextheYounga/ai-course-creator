@@ -1,6 +1,7 @@
 import inquirer
 from .select_topic import select_topic
 from .select_regenerate_content import select_regenerate_content
+from .select_generate_content import select_generate_content
 from .select_outline import select_outline
 from src.creator.regenerator import Regenerator
 from src.creator.course_creator import CourseCreator
@@ -15,9 +16,10 @@ def select_subroutine():
                           'Generate Course Pages',
                           'Generate Practice Skill Challenges',
                           'Generate Final Skill Challenges',
+                          'Generate Specific Content',
+                          'Regenerate Content',
                           'Run All',
                           'Dump Content From Existing Outline',
-                          'Regenerate Content'
                       ]),
     ]
 
@@ -41,6 +43,15 @@ def select_subroutine():
         topics = select_topic()
         return CourseCreator.create_final_skill_challenges(topics)
 
+    elif subroutine == 'Generate Specific Content':
+        topic_name = select_topic(include_all=False)
+        return select_generate_content(topic_name)
+
+    elif subroutine == 'Regenerate Content':
+        topic_name = select_topic(include_all=False)
+        content = select_regenerate_content(topic_name)
+        return Regenerator.regenerate_content(content)
+
     elif subroutine == 'Run All':
         topics = select_topic()
         return CourseCreator.run_all(topics)
@@ -49,11 +60,6 @@ def select_subroutine():
         topic = select_topic(include_all=False)
         outline = select_outline(topic)
         return CourseCreator.dump_outline_content(outline.id)
-
-    elif subroutine == 'Regenerate Content':
-        topic = select_topic(include_all=False)
-        content = select_regenerate_content(topic)
-        return Regenerator.regenerate_content(content)
 
     else:
         "You did not select a subroutine. Exiting..."
