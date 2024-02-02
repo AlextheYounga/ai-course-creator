@@ -4,7 +4,6 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from termcolor import colored
 from src.creator.helpers import get_prompt
-from src.creator.pages.page_processor import PageProcessor
 from db.db import DB, Topic, Course, Page, Outline
 from src.utils.chunks import chunks
 import re
@@ -128,7 +127,7 @@ class FinalSkillChallengeCreator:
         content_generated = [page.content != None for page in fsc_pages]
 
         if (False not in content_generated):
-            PageProcessor.dump_pages(fsc_pages)  # Write to file
+            Page.dump_pages(fsc_pages)  # Write to file
             return True
 
         return False
@@ -159,7 +158,7 @@ class FinalSkillChallengeCreator:
     def _update_fsc_page_record(self, page: Page, page_material: str):
         # Update page record
         page.content = page_material
-        page.hash = PageProcessor.hash_page(page_material)
+        page.hash = Page.hash_page(page_material)
         page.link = page.permalink
         page.generated = True
 
@@ -169,7 +168,7 @@ class FinalSkillChallengeCreator:
         DB.refresh(page)
 
         # Write to file
-        PageProcessor.dump_page(page)
+        page.dump_page()
 
         return page
 

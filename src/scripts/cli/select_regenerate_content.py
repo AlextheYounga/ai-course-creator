@@ -1,5 +1,5 @@
 from db.db import DB, Topic, Course, Chapter, Page
-from src.creator.pages.page_processor import PageProcessor
+from src.creator.regenerator import Regenerator
 from termcolor import colored
 import sys
 import inquirer
@@ -56,7 +56,7 @@ def select_regenerate_content(topic):
             course_name = _select_content_item(courses)
             course = _get_item_by_name(course_name, course_records)
 
-            return PageProcessor.regenerate_content(topic_record, course)
+            return Regenerator.regenerate_content(topic_record, course)
 
         elif answer == 'Regenerate Chapter':
             chapter_records = DB.query(Chapter).filter(Chapter.topic_id == topic_record.id).all()
@@ -64,7 +64,7 @@ def select_regenerate_content(topic):
             chapter_name = _select_content_item(chapters)
             chapter = _get_item_by_name(chapter_name, chapter_records)
 
-            return CourseCreator.regenerate_content(topic_record, chapter)
+            return Regenerator.regenerate_content(topic_record, chapter)
 
         elif answer == 'Regenerate Specific Page':
             page_records = DB.query(Page).filter(Page.topic_id == topic_record.id).all()
@@ -72,7 +72,7 @@ def select_regenerate_content(topic):
             page_name = _select_content_item(pages)
             page = _get_item_by_name(page_name, page_records)
 
-            return CourseCreator.regenerate_content(topic_record, page)
+            return Regenerator.regenerate_content(topic_record, page)
 
         else:
             "You did not select any content. Exiting..."

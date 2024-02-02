@@ -3,7 +3,6 @@ from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
 from src.creator.helpers import get_prompt
-from src.creator.pages.page_processor import PageProcessor
 from src.creator.pages.page_summarizer import PageSummarizer
 from db.db import DB, Topic, Page, Outline
 import yaml
@@ -110,7 +109,7 @@ class PageMaterialCreator:
 
         # Update page record
         page.content = material
-        page.hash = PageProcessor.hash_page(material)
+        page.hash = Page.hash_page(material)
         page.link = page.permalink
         page.generated = True
 
@@ -122,7 +121,7 @@ class PageMaterialCreator:
         summarizer.summarize()
 
         # Write to file
-        PageProcessor.dump_page(page)
+        page.dump_page()
 
         return page
 
@@ -158,10 +157,10 @@ class PageMaterialCreator:
             for page in pages:
                 bar.increment()
 
-                existing = PageProcessor.check_for_existing_page_material(page)
+                existing = Page.check_for_existing_page_material(page)
                 if (existing):
                     print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
-                    PageProcessor.dump_page(page)  # Write to file
+                    page.dump_page()  # Write to file
                     continue
 
                 updated_page_record = self.generate_page_material(page)

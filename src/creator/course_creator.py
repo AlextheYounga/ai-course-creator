@@ -17,7 +17,7 @@ class CourseCreator:
         outline_ids = []
         for topic in topics:
             session_name = f"{topic} Outlines"
-            ai_client = OpenAiHandle(session_name)
+            ai_client = OpenAiHandler(session_name)
 
             creator = OutlineCreator(topic, ai_client)
             outline_id = creator.create()

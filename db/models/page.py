@@ -62,6 +62,15 @@ class Page(Base):
         return 'page'
 
 
+    def dump_page(self):
+        print(colored(f"Writing page: {self.path}", "green"))
+
+        os.makedirs(os.path.dirname(self.path), exist_ok=True)
+        with open(self.path, 'w') as f:
+            f.write(self.content)
+            f.close()
+
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -157,9 +166,4 @@ class Page(Base):
     @staticmethod
     def dump_pages(pages: list):
         for page in pages:
-            print(colored(f"Writing page: {page.path}", "green"))
-
-            os.makedirs(os.path.dirname(page.path), exist_ok=True)
-            with open(page.path, 'w') as f:
-                f.write(page.content)
-                f.close()
+            page.dump_page()

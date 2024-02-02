@@ -35,9 +35,7 @@ def dump_pages_from_outline(outline_id: int):
     output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
     output_path = f"{output_directory}/{topic.slug}"
 
-    page_records = []
-
-    for page in page_records:
+    for page in entities['pages']:
         if not page.content: continue
         # Write to file
         Page.dump_page([page])
