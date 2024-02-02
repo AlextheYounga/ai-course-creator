@@ -144,6 +144,17 @@ class CourseCreator:
         fsc_creator.generate_final_skill_challenge(course)
 
 
+    @staticmethod
+    def generate_specific_pages(topic: Topic, pages: list[Page]):
+        ai_client = OpenAiHandler(f"Specific Page Generation")
+        topic = DB.query(Topic).filter(Topic.id == topic.id).first()
+        creator = PageMaterialCreator(topic.name, ai_client)
+
+        for page in pages:
+            if page.type == 'page':
+                creator.generate_page_material(page)
+
+
 
     @staticmethod
     def dump_outline_content(outline_id: int):
