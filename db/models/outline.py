@@ -163,23 +163,25 @@ class Outline(Base):
 
     @staticmethod
     def get_entities(session: Session, outline_id: int):
-        course_records = session.query(OutlineEntity, Course).filter(
-            OutlineEntity.outline_id == outline_id,
-            OutlineEntity.entity_type == 'Course'
-        ).join(Course, OutlineEntity.entity_id == Course.id).all()
-
-        chapter_records = session.query(OutlineEntity, Chapter).filter(
-            OutlineEntity.outline_id == outline_id,
-            OutlineEntity.entity_type == 'Chapter'
-        ).join(Chapter, OutlineEntity.entity_id == Chapter.id).all()
-
-        page_records = session.query(OutlineEntity, Page).filter(
-            OutlineEntity.outline_id == outline_id,
-            OutlineEntity.entity_type == 'Page'
-        ).join(Page, OutlineEntity.entity_id == Page.id).all()
-
         return {
-            'courses': [course[1] for course in course_records],
-            'chapters': [chapter[1] for chapter in chapter_records],
-            'pages': [page[1] for page in page_records],
+            'courses': session.query(Course).join(
+                OutlineEntity, OutlineEntity.entity_id == Course.id
+            ).filter(
+                OutlineEntity.outline_id == outline_id,
+                OutlineEntity.entity_type == 'Course'
+            ).all(),
+
+            'chapters': session.query(Chapter).join(
+                OutlineEntity, OutlineEntity.entity_id == Chapter.id
+            ).filter(
+                OutlineEntity.outline_id == outline_id,
+                OutlineEntity.entity_type == 'Chapter'
+            ).all(),
+
+            'pages': session.query(Page).join(
+                OutlineEntity, OutlineEntity.entity_id == Page.id
+            ).filter(
+                OutlineEntity.outline_id == outline_id,
+                OutlineEntity.entity_type == 'Page'
+            ).all()
         }
