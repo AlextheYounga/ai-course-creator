@@ -68,7 +68,7 @@ class Outline(Base):
         if last_outline:
             new_outline.skills = last_outline.skills
 
-        print(colored("Detected new outline. Processing...\n", "yellow"))
+        print(colored("Detected new outline. Processing...", "yellow"))
         session.add(new_outline)
         session.commit()
         print(colored(f"New outline created {new_outline.name}\n", "green"))

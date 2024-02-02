@@ -25,6 +25,50 @@ class FinalSkillChallengeCreator:
         self.outline = self.outline = Outline.process_outline(DB, self.topic.id, f"{self.output_path}/master-outline.yaml")
 
 
+    # Main
+
+
+    def generate_final_skill_challenge(self, course: Course):
+        messages = self.build_skill_challenge_prompt(course.slug)
+
+        # Send to ChatGPT
+        validated_response = self.ai_client.send_prompt('final-skill-challenge', messages, options={})
+        material = validated_response['content']
+
+        generated_pages = self._handle_allocate_page_material_to_multiple_pages(course, material)
+
+        return generated_pages
+
+
+    def create_from_outline(self):
+        generated_pages = []
+        outline_records = Outline.get_entities(DB, self.outline.id)
+        courses = outline_records['courses']
+        courses_count = len(courses)
+
+        with progressbar.ProgressBar(max_value=courses_count, prefix='Generating final skill challenges: ', redirect_stdout=True) as bar:
+            for course in courses:
+                bar.increment()
+
+                existing = self._check_for_existing_page_material(course)
+                if (existing):
+                    print(colored(f"Skipping existing '{course.name}' final skill challenge material...", "yellow"))
+                    continue
+
+                course_incomplete = self._check_course_incomplete(outline_records['pages'])
+                if course_incomplete:
+                    print(colored(f"Skipping incomplete course '{course.name}'...", "yellow"))
+                    continue
+
+                pages = self.generate_final_skill_challenge(course)
+                generated_pages += pages
+
+        return generated_pages
+
+
+    # Prompts
+
+
     def prepare_course_content_prompt(self, course_slug: str):
         # Combine all page content into a single string
         course_pages_content = "The following is all the content from this course:\n\n"
@@ -63,55 +107,22 @@ class FinalSkillChallengeCreator:
         return system_payload + user_payload
 
 
-    def generate_final_skill_challenge(self, course: Course):
-        messages = self.build_skill_challenge_prompt(course.slug)
 
-        # Send to ChatGPT
-        validated_response = self.ai_client.send_prompt('final-skill-challenge', messages, options={})
-        material = validated_response['content']
-
-        generated_pages = self._handle_allocate_page_material_to_multiple_pages(course, material)
-
-        return generated_pages
+    # Class Methods
 
 
-    def regenerate(self, course: Course):
-        # Delete all previous final skill challenge pages
+    @classmethod
+    def regenerate(self, client: OpenAI, topic_name: str, course: Course):
         DB.query(Page).filter(
-            Topic.id == Page.topic_id,
+            Topic.id == course.topic_id,
             Page.course_slug == course.slug,
             Page.type == 'final-skill-challenge'
         ).delete()
 
         DB.commit()
 
-        return self.generate_final_skill_challenge(course)
-
-
-    def create_from_outline(self):
-        generated_pages = []
-        outline_records = Outline.get_entities(DB, self.outline.id)
-        courses = outline_records['courses']
-        courses_count = len(courses)
-
-        with progressbar.ProgressBar(max_value=courses_count, prefix='Generating final skill challenges: ', redirect_stdout=True) as bar:
-            for course in courses:
-                bar.increment()
-
-                existing = self._check_for_existing_page_material(course)
-                if (existing):
-                    print(colored(f"Skipping existing '{course.name}' final skill challenge material...", "yellow"))
-                    continue
-
-                course_incomplete = self._check_course_incomplete(outline_records['pages'])
-                if course_incomplete:
-                    print(colored(f"Skipping incomplete course '{course.name}'...", "yellow"))
-                    continue
-
-                pages = self.generate_final_skill_challenge(course)
-                generated_pages += pages
-
-        return generated_pages
+        challenge_creator = self(topic_name, client)
+        return challenge_creator.generate_final_skill_challenge(course)
 
 
     # Private Methods

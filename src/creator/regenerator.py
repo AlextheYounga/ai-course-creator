@@ -11,35 +11,40 @@ class Regenerator:
         self.topic = DB.query(Topic).filter(Topic.id == record.topic_id).first()
 
 
-    def regenerate_course(self):
-        course = self.record
+    @staticmethod
+    def regenerate_course(course: Course):
+        topic = DB.query(Topic).filter(Topic.id == course.topic_id).first()
+        ai_client = OpenAiHandler(f"Full Course Regeneration")
 
         pages = DB.query(Page).filter(
-            Topic.id == Page.topic_id,
+            Topic.id == course.topic_id,
             Page.course_slug == course.slug,
         ).all()
 
         if len(pages) == 0:
             raise Exception(f"No pages found for course '{course.name}'")
 
-        self._regenerate_lesson_pages(pages)
-        self._regenerate_challenge_pages(pages)
-        self._regenerate_final_skill_challenge(course)
+        PageMaterialCreator.regenerate(ai_client, topic.name, pages)
+        PracticeSkillChallengeCreator.regenerate(ai_client, topic.name, pages)
+        FinalSkillChallengeCreator.regenerate(ai_client, topic.name, course)
 
 
-    def regenerate_chapter(self):
-        chapter = self.record
+
+    @staticmethod
+    def regenerate_chapter(chapter: Chapter):
+        topic = DB.query(Topic).filter(Topic.id == chapter.topic_id).first()
+        ai_client = OpenAiHandler(f"Chapter Regeneration")
 
         if chapter.content_type == 'final-skill-challenge':
             course = DB.query(Course).filter(
-                Course.topic_id == self.topic.id,
+                Course.topic_id == topic.id,
                 Course.slug == chapter.course_slug
             ).first()
 
-            return self._regenerate_final_skill_challenge(course)
+            return FinalSkillChallengeCreator.regenerate(ai_client, topic.name, course)
 
         pages = DB.query(Page).filter(
-            Topic.id == Page.topic_id,
+            Topic.id == chapter.topic_id,
             Page.course_slug == chapter.course_slug,
             Page.chapter_slug == chapter.slug
         ).all()
@@ -47,62 +52,20 @@ class Regenerator:
         if len(pages) == 0:
             raise Exception(f"No pages found for course '{chapter.name}'")
 
-        self._regenerate_challenge_pages(pages)
-
-        self._regenerate_challenge_pages(pages)
-
-
-    def regenerate_page(self):
-        page_creator = PageMaterialCreator(
-            self.topic.name,
-            OpenAiHandler(f"Page Regeneration")
-        )
-
-        page_creator.regenerate([self.record])
-
-
-    def _regenerate_lesson_pages(self, pages: list[Page]):
-        lesson_pages = [page for page in pages if page.type == 'page']
-        if len(lesson_pages) == 0: return
-
-        page_creator = PageMaterialCreator(
-            self.topic.name,
-            OpenAiHandler(f"Page Regeneration")
-        )
-
-        return page_creator.regenerate(lesson_pages)
-
-
-    def _regenerate_challenge_pages(self, pages: list[Page]):
-        challenge_pages = [page for page in pages if page.type == 'practice-skill-challenge']
-        if len(challenge_pages) == 0: return
-
-        challenge_creator = PracticeSkillChallengeCreator(
-            self.topic.name,
-            OpenAiHandler(f"Practice Skill Challenge Regeneration")
-        )
-
-        return challenge_creator.regenerate(challenge_pages)
-
-
-    def _regenerate_final_skill_challenge(self, course: Course):
-        fsc_creator = FinalSkillChallengeCreator(
-            self.topic.name,
-            OpenAiHandler(f"Final Skill Challenge Regeneration")
-        )
-        fsc_creator.regenerate(course)
+        PageMaterialCreator.regenerate(ai_client, topic.name, pages)
+        PracticeSkillChallengeCreator.regenerate(ai_client, topic.name, pages)
 
 
 
     @staticmethod
     def regenerate_content(record: Course | Chapter | Page):
-        regenerator = Regenerator(record)
-
         if isinstance(record, Course):
-            return regenerator.regenerate_course()
+            return Regenerator.regenerate_course()
 
         elif isinstance(record, Chapter):
-            return regenerator.regenerate_chapter()
+            return Regenerator.regenerate_chapter()
 
         elif isinstance(record, Page):
-            return regenerator.regenerate_page()
+            ai_client = OpenAiHandler(f"Page Regeneration")
+            topic = DB.query(Topic).filter(Topic.id == record.topic_id).first()
+            return PageMaterialCreator.regenerate(ai_client, topic.name, [record])

@@ -14,11 +14,7 @@ class PageSummarizer():
         self.ai_client = client
 
 
-    def build_summarize_page_prompt(self):
-        summarize_prompt = get_prompt('user/pages/summarize', [("{content}", self.page.content)])
-        return [
-            {"role": "user", "content": summarize_prompt},
-        ]
+    # Main
 
 
     def summarize(self):
@@ -42,3 +38,13 @@ class PageSummarizer():
         DB.commit()
 
         return self.page
+
+
+    # Prompts
+
+
+    def build_summarize_page_prompt(self):
+        summarize_prompt = get_prompt('user/pages/summarize', [("{content}", self.page.content)])
+        return [
+            {"role": "user", "content": summarize_prompt},
+        ]

@@ -41,12 +41,17 @@ class OutlineCreator:
         # Generate Master Outline
         master_outline = self.generate_master_outline(outline.id)
 
-        print(colored("\nOutline generation complete.", "green"))
+        # Process Outline
+        print(colored("\nProcessing Outline...", "yellow"))
+        Outline.process_outline(DB, self.topic.id, self.outline_file)
+        print(colored("Outline generation complete.\n", "green"))
 
-        course_list = [course['course']['courseName'] for course in master_outline]
-
+        # Print course
+        course_list = [f" - {course['course']['courseName']}" for course in master_outline]
         print(colored("\nCourse list: ", "green"))
-        print(colored("\n".join(course_list), "green"))
+        print(colored("\n".join(course_list) + "\n", "green"))
+
+
 
         return outline.id
 

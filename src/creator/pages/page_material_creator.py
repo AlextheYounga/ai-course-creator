@@ -22,6 +22,68 @@ class PageMaterialCreator:
         self.outline = Outline.process_outline(DB, self.topic.id, f"{self.output_path}/master-outline.yaml")
 
 
+    # Main
+
+
+    def generate_page_material(self, page: Page):
+        # Build prompt
+        messages = self.build_page_material_prompt(page.name)
+
+        # Send to ChatGPT
+        validated_response = self.ai_client.send_prompt('page-material', messages, options={})
+        material = validated_response['content']
+
+        # Update page record
+        page.content = material
+        page.hash = Page.hash_page(material)
+        page.link = page.permalink
+        page.generated = True
+
+        # Save to Database
+        DB.commit()
+
+        # Summarize Page
+        summarizer = PageSummarizer(page, self.ai_client)
+        summarizer.summarize()
+
+        # Write to file
+        page.dump_page()
+
+        return page
+
+
+
+    def create_from_outline(self):
+        updated_pages = []
+        outline_entities = Outline.get_entities(DB, self.outline.id)
+        pages = [page for page in outline_entities['pages'] if page.type == 'page']  # Ignore challenges
+
+        total_count = len(pages)
+
+        with progressbar.ProgressBar(max_value=total_count, prefix='Generating pages: ', redirect_stdout=True) as bar:
+            # Loop through outline pages
+            for page in pages:
+                bar.increment()
+
+                existing = Page.check_for_existing_page_material(page)
+                if (existing):
+                    print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
+                    page.dump_page()  # Write to file
+                    continue
+
+                # Generate page material
+                updated_page_record = self.generate_page_material(page)
+                updated_pages.append(updated_page_record)
+
+
+
+        return updated_pages
+
+
+
+    # Prompts
+
+
     def collect_prior_page_summaries(self):
         summaries = ""
 
@@ -99,73 +161,28 @@ class PageMaterialCreator:
         ]
 
 
-    def generate_page_material(self, page: Page):
-        # Build prompt
-        messages = self.build_page_material_prompt(page.name)
-
-        # Send to ChatGPT
-        validated_response = self.ai_client.send_prompt('page-material', messages, options={})
-        material = validated_response['content']
-
-        # Update page record
-        page.content = material
-        page.hash = Page.hash_page(material)
-        page.link = page.permalink
-        page.generated = True
-
-        # Save to Database
-        DB.commit()
-
-        # Summarize Page
-        summarizer = PageSummarizer(page, self.ai_client)
-        summarizer.summarize()
-
-        # Write to file
-        page.dump_page()
-
-        return page
+    # Class Methods
 
 
-    def regenerate(self, pages: list[Page]):
+    @classmethod
+    def regenerate(self, client: OpenAI, topic_name: str, pages: list[Page]):
+        lesson_pages = [page for page in pages if page.type == 'page']
+
+        if len(lesson_pages) == 0:
+            raise Exception(f"No lesson pages found for topic '{topic_name}'")
+
+        page_creator = self(topic_name, client)
+
         regenerated_pages = []
 
-        with progressbar.ProgressBar(max_value=len(pages), prefix='Regenerating pages: ', redirect_stdout=True) as bar:
-            for page in pages:
+        with progressbar.ProgressBar(max_value=len(lesson_pages), prefix='Regenerating pages: ', redirect_stdout=True) as bar:
+            for page in lesson_pages:
                 page.generated = False
                 DB.add(page)
 
-                regenerated = self.generate_page_material(page)
+                regenerated = page_creator.generate_page_material(page)
                 regenerated_pages.append(regenerated)
 
             bar.increment()
 
         return regenerated_pages
-
-
-    # Main
-
-
-    def create_from_outline(self):
-        updated_pages = []
-        outline_entities = Outline.get_entities(DB, self.outline.id)
-        pages = [page for page in outline_entities['pages'] if page.type == 'page']  # Ignore challenges
-
-        total_count = len(pages)
-
-        with progressbar.ProgressBar(max_value=total_count, prefix='Generating pages: ', redirect_stdout=True) as bar:
-            # Loop through outline pages
-            for page in pages:
-                bar.increment()
-
-                existing = Page.check_for_existing_page_material(page)
-                if (existing):
-                    print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
-                    page.dump_page()  # Write to file
-                    continue
-
-                updated_page_record = self.generate_page_material(page)
-                updated_pages.append(updated_page_record)
-
-
-
-        return updated_pages
