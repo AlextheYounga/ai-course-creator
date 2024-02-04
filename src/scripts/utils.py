@@ -6,6 +6,8 @@ import shutil
 from datetime import datetime
 from src.utils.strings import slugify
 from src.utils.files import zip_folder
+from db.db import Outline, Page
+import yaml
 
 load_dotenv()
 OUTPUT_PATH = os.environ.get("OUTPUT_DIRECTORY") or 'out'
@@ -38,3 +40,25 @@ def clear_logs():
     if (os.path.exists(f"{LOGS_PATH}/chat.log")):
         os.remove(f"{LOGS_PATH}/chat.log")
     open(f"{LOGS_PATH}/chat.log", 'w').close()
+
+
+def dump_outline_content(outline: Outline):
+    topic = outline.topic
+    entities = Outline.get_entities()
+
+    output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
+    output_path = f"{output_directory}/{topic.slug}"
+
+    for page in entities['pages']:
+        if not page.content: continue
+        # Write to file
+        Page.dump_page([page])
+
+
+    with open(f"{output_path}/{outline.name}/skills.yaml", 'w') as skills_file:
+        skills_file.write(yaml.dump(outline.skills, sort_keys=False))
+        skills_file.close()
+
+    with open(f"{output_path}/{outline.name}/outline.yaml", 'w') as outline_file:
+        outline_file.write(yaml.dump(outline.master_outline, sort_keys=False))
+        outline_file.close()

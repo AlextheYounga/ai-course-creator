@@ -55,8 +55,8 @@ class PageMaterialCreator:
 
     def create_from_outline(self):
         updated_pages = []
-        outline_entities = Outline.get_entities(DB, self.outline.id)
-        pages = [page for page in outline_entities['pages'] if page.type == 'page']  # Ignore challenges
+        page_entities = Outline.get_entities_by_type(DB, self.outline.id, 'Page')
+        pages = [page for page in page_entities if page.type == 'page']  # Ignore challenges
 
         total_count = len(pages)
 
@@ -86,8 +86,8 @@ class PageMaterialCreator:
         summaries = ""
 
         # Fetch all pages from outline
-        outline_entities = Outline.get_entities(DB, self.outline.id)
-        lesson_pages = [page for page in outline_entities['pages'] if page.type == 'page']
+        page_entities = Outline.get_entities_by_type(DB, self.outline.id, 'Page')
+        lesson_pages = [page for page in page_entities if page.type == 'page']
 
         for page in lesson_pages:
             if page.type == 'page' and page.summary != None:

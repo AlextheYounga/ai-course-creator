@@ -162,6 +162,34 @@ class Outline(Base):
 
 
     @staticmethod
+    def get_entities_by_type(session: Session, outline_id: int, type: str):
+        if type == 'Course':
+            return session.query(Course).join(
+                OutlineEntity, OutlineEntity.entity_id == Course.id
+            ).filter(
+                OutlineEntity.outline_id == outline_id,
+                OutlineEntity.entity_type == type
+            ).all()
+        elif type == 'Chapter':
+            return session.query(Chapter).join(
+                OutlineEntity, OutlineEntity.entity_id == Chapter.id
+            ).filter(
+                OutlineEntity.outline_id == outline_id,
+                OutlineEntity.entity_type == type
+            ).all()
+
+        elif type == 'Page':
+            return session.query(Page).join(
+                OutlineEntity, OutlineEntity.entity_id == Page.id
+            ).filter(
+                OutlineEntity.outline_id == outline_id,
+                OutlineEntity.entity_type == type
+            ).all()
+        else:
+            return None
+
+
+    @staticmethod
     def get_entities(session: Session, outline_id: int):
         return {
             'courses': session.query(Course).join(

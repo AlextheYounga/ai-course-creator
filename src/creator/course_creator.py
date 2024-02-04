@@ -5,6 +5,7 @@ from src.creator.outlines.outline_creator import OutlineCreator
 from src.creator.challenges.practice_skill_challenge_creator import PracticeSkillChallengeCreator
 from src.creator.challenges.final_skill_challenge_creator import FinalSkillChallengeCreator
 from src.creator.pages.page_material_creator import PageMaterialCreator
+import progressbar
 import yaml
 
 
@@ -32,7 +33,6 @@ class CourseCreator:
         return pages
 
 
-
     def create_topic_practice_skill_challenges(self):
         session_name = f"Topic Challenge Generation - {self.topic.name}"
 
@@ -52,10 +52,19 @@ class CourseCreator:
 
 
     def generate_topic_courses(self):
-        CourseCreator.create_outline()
-        CourseCreator.create_topic_page_material()
-        CourseCreator.create_topic_practice_skill_challenges()
-        CourseCreator.create_topic_final_skill_challenges()
+        self.create_outline()
+        self.create_topic_page_material()
+        self.create_topic_practice_skill_challenges()
+        self.create_topic_final_skill_challenges()
+
+
+    def generate_course_final_skill_challenge(self, course: Course):
+        session_name = f"Course Final Skill Challenge Generation - {self.topic.name}"
+
+        creator = FinalSkillChallengeCreator(self.topic.id, self.client(session_name))
+        pages = creator.generate_final_skill_challenge(course)
+
+        return pages
 
 
     def generate_course_material(self, course: Course):
@@ -106,35 +115,54 @@ class CourseCreator:
                 generated_pages.append(page)
 
 
-    def generate_page_material(self, page: Page):
-        session_name = f"Page Generation - {page.name}"
-        page_creator = PageMaterialCreator(self.topic.id, self.client(session_name))
+    def dynamic_generate_page_material(self, content_type: str, record: Course | Chapter | Page):
+        outline = self.topic.get_latest_outline()
+        page_entities = Outline.get_entities_by_type(DB, outline.id, 'Page')
 
-        if page.type == 'page':
-            page = page_creator.generate_page_material(page)
+        creator_function_call = None
+        if content_type == 'challenge':
+            session_name = f"{type(record).__name__} Skill Challenge Generation - {record.name}"
+            creator = PageMaterialCreator(self.topic.id, self.client(session_name))
+            creator_function_call = creator.generate_page_material
+        else:
+            session_name = f"{type(record).__name__} Page Generation - {record.name}"
+            creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
+            creator_function_call = creator.generate_practice_skill_challenge
 
-        return page
+        generated_pages = []
 
+        # Generate all pages for course
+        if isinstance(record, Course):
+            course_pages = [
+                page for page in page_entities
+                if page.course_slug == record.slug and page.type == content_type
+            ]
 
-    @staticmethod
-    def dump_outline_content(outline_id: int):
-        outline = DB.get(Outline, outline_id)
-        topic = outline.topic
-        entities = Outline.get_entities()
+            with progressbar.ProgressBar(max_value=len(course_pages), prefix='Generating: ', redirect_stdout=True) as bar:
+                for page in course_pages:
+                    bar.increment()
+                    if Page.check_for_existing_page_material(page): continue
+                    page = creator_function_call(page)
+                    generated_pages.append(page)
 
-        output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
-        output_path = f"{output_directory}/{topic.slug}"
+        # Generate all pages for chapter
+        elif isinstance(record, Chapter):
+            chapter_pages = [
+                page for page in page_entities
+                if page.course_slug == record.slug and page.slug == record.slug and page.type == content_type
+            ]
 
-        for page in entities['pages']:
-            if not page.content: continue
-            # Write to file
-            Page.dump_page([page])
+            with progressbar.ProgressBar(max_value=len(chapter_pages), prefix='Generating: ', redirect_stdout=True) as bar:
+                for page in chapter_pages:
+                    bar.increment()
+                    if Page.check_for_existing_page_material(page): continue
+                    page = creator_function_call(page)
+                    generated_pages.append(page)
 
+        # Generate page
+        elif isinstance(record, Page):
+            if page.type == content_type:
+                if Page.check_for_existing_page_material(page): return
+                return creator_function_call(page)
 
-        with open(f"{output_path}/{outline.name}/skills.yaml", 'w') as skills_file:
-            skills_file.write(yaml.dump(outline.skills, sort_keys=False))
-            skills_file.close()
-
-        with open(f"{output_path}/{outline.name}/outline.yaml", 'w') as outline_file:
-            outline_file.write(yaml.dump(outline.master_outline, sort_keys=False))
-            outline_file.close()
+        return generated_pages

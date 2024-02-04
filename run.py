@@ -23,13 +23,13 @@ def main():
         answer = choice['category']
 
         if answer == 'Start Course Creator':
-            select_subroutine()
+            return select_subroutine()
         elif answer == 'Utilities':
-            select_util()
+            return select_util()
         elif answer == 'Initialize Project':
-            initialize_project()
+            return initialize_project()
         elif answer == 'Run App Server':
-            run_server()
+            return run_server()
         else:
             "You did not select a command category. Exiting..."
 

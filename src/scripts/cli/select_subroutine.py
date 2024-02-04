@@ -1,71 +1,38 @@
 import inquirer
-from src.llm.openai_handler import OpenAiHandler
+from db.db import DB, Topic
 from .select_topic import select_topic
-from .select_regenerate_content import select_regenerate_content
 from .select_generate_content import select_generate_content
-from .select_outline import select_outline
-from src.creator.regenerator import Regenerator
-from src.creator.course_creator import CourseCreator
+from .select_regenerate_content import select_regenerate_content
+from ..utils import dump_outline_content
+from .generate_functions import generate_outline
+
+
+def run_dump_outline_content(topic: Topic):
+    outline = topic.get_latest_outline()
+    return dump_outline_content(outline)
 
 
 def select_subroutine():
-    choices = [
+    topic_name = select_topic()
+    topic = Topic.first_or_create(DB, name=topic_name)
+
+    base_subroutines = {
+        'Generate Outline': generate_outline,
+        'Generate Content': select_generate_content,
+        'Regenerate Content': select_regenerate_content,
+        'Dump Content From Existing Outline': run_dump_outline_content,
+    }
+
+    subroutines = [
         inquirer.List('subroutine',
                       message="Select subroutine.",
-                      choices=[
-                          'Generate Course Outlines',
-                          'Generate Course Pages',
-                          'Generate Practice Skill Challenges',
-                          'Generate Final Skill Challenges',
-                          'Generate Specific Content',
-                          'Regenerate Content',
-                          'Run All',
-                          'Dump Content From Existing Outline',
-                      ]),
+                      choices=list(base_subroutines.keys())),
     ]
 
-    choice = inquirer.prompt(choices)
+    choice = inquirer.prompt(subroutines)
     subroutine = choice['subroutine']
+    subroutine_function = base_subroutines[subroutine]
 
-
-    if subroutine == 'Generate Course Outlines':
-        topic_name = select_topic()
-        creator = CourseCreator(OpenAiHandler, topic_name)
-        return creator.create_outline()
-
-    elif subroutine == 'Generate Course Pages':
-        topic_name = select_topic()
-        creator = CourseCreator(OpenAiHandler, topic_name)
-        return creator.create_topic_page_material()
-
-    elif subroutine == 'Generate Practice Skill Challenges':
-        topic_name = select_topic()
-        creator = CourseCreator(OpenAiHandler, topic_name)
-        return creator.create_topic_practice_skill_challenges()
-
-    elif subroutine == 'Generate Final Skill Challenges':
-        topic_name = select_topic()
-        creator = CourseCreator(OpenAiHandler, topic_name)
-        return creator.create_topic_final_skill_challenges()
-
-    elif subroutine == 'Generate Specific Content':
-        topic_name = select_topic()
-        return select_generate_content(topic_name)
-
-    elif subroutine == 'Regenerate Content':
-        topic_name = select_topic(include_all=False)
-        content = select_regenerate_content(topic_name)
-        return Regenerator.regenerate_content(content)
-
-    elif subroutine == 'Run All':
-        topic = select_topic()
-        creator = CourseCreator(OpenAiHandler, topic_name)
-        return creator.generate_topic_courses()
-
-    elif subroutine == 'Dump Content From Existing Outline':
-        topic = select_topic(include_all=False)
-        outline = select_outline(topic)
-        return CourseCreator.dump_outline_content(outline.id)
-
-    else:
-        "You did not select a subroutine. Exiting..."
+    # Dynamic function call
+    subroutine_function(topic)
+    print('Done')

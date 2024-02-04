@@ -49,8 +49,8 @@ class PracticeSkillChallengeCreator:
 
     def create_from_outline(self):
         updated_pages = []
-        outline_entities = Outline.get_entities(DB, self.outline.id)
-        challenge_pages = [page for page in outline_entities['pages'] if page.type == 'challenge']
+        page_entities = Outline.get_entities_by_type(DB, self.outline.id, 'Page')
+        challenge_pages = [page for page in page_entities if page.type == 'challenge']
         total_count = len(challenge_pages)
 
         with progressbar.ProgressBar(max_value=total_count, prefix='Generating practice challenges: ', redirect_stdout=True) as bar:
@@ -65,7 +65,7 @@ class PracticeSkillChallengeCreator:
                     continue
 
 
-                chapter_incomplete = self._check_chapter_incomplete(outline_entities, page)
+                chapter_incomplete = self._check_chapter_incomplete(page_entities, page)
                 if chapter_incomplete:
                     print(colored(f"Skipping incomplete chapter {page.chapter_slug}...", "yellow"))
                     continue
@@ -149,8 +149,8 @@ class PracticeSkillChallengeCreator:
     # Private Methods
 
 
-    def _check_chapter_incomplete(self, outline_entities: list[Page], challenge_page: Page):
-        for page in outline_entities['pages']:
+    def _check_chapter_incomplete(self, page_entities: list[Page], challenge_page: Page):
+        for page in page_entities:
             if page.chapter_slug == challenge_page.chapter_slug:
                 if page.type == 'page' and page.generated == False:
                     return True

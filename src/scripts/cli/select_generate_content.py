@@ -1,79 +1,46 @@
-from db.db import DB, Topic, Course, Chapter, Page
-from src.creator.course_creator import CourseCreator
-from termcolor import colored
-import sys
-import inquirer
+from .select_hierarchy import select_hierarchy
+from .select_content_function import select_content_function
+from .generate_functions import *
+from db.db import Topic
 
 
-def _get_item_by_name(name, items):
-    for item in items:
-        if item.name == name:
-            return item
+def select_generate_content(topic: Topic):
+    content_function_mapping = {
+        'Topic': {
+            'All': generate_topic_courses,
+            'Page Material': dynamic_generate_material,
+            'Practice Skill Challenges': dynamic_generate_material,
+            'Final Skill Challenges': generate_topic_fsc,
+        },
+        'Course': {
+            'All': generate_course,
+            'Page Material': dynamic_generate_material,
+            'Practice Skill Challenges': dynamic_generate_material,
+            'Final Skill Challenges': generate_course_fsc,
+        },
+        'Chapter': {
+            'All': generate_chapter,
+            'Page Material': dynamic_generate_material,
+            'Practice Skill Challenges': dynamic_generate_material,
+        },
+        'Page': generate_page,
+    }
 
-    raise Exception("You did not select an item. Exiting...")
+    content_type_mapping = {
+        'All': None,
+        'Page Material': 'page',
+        'Practice Skill Challenges': 'challenge',
+        'Final Skill Challenges': 'final-skill-challenge',
+    }
 
+    hierarchy = select_hierarchy()
+    content_type = select_content_function(hierarchy)
+    subroutine_function = content_function_mapping[hierarchy][content_type]
 
-def _select_content_item(items):
-    content_select = [
-        inquirer.List('contentSelect',
-                      message="Select content item",
-                      choices=items),
-    ]
+    data = {
+        'topic': topic,
+        'hierarchy': hierarchy,
+        'contentType': content_type_mapping[content_type],
+    }
 
-    user_prompt = inquirer.prompt(content_select)
-
-    if user_prompt != None:
-        answer = user_prompt['contentSelect']
-        return answer
-
-
-
-def select_generate_content(topic_name: str):
-    topic_record = DB.query(Topic).filter(Topic.name == topic_name).first()
-
-    if not topic_record:
-        print(colored("No topic found. Exiting...", "red"))
-        sys.exit()
-
-
-    content_level = [
-        inquirer.List('contentLevel',
-                      message="At which hierarchy would you like to regenerate content?",
-                      choices=[
-                          'Generate Specific Course',
-                          'Generate Specific Chapter',
-                          'Generate Specific Page',
-                      ]),
-    ]
-
-    user_prompt = inquirer.prompt(content_level)
-
-    if user_prompt != None:
-        answer = user_prompt['contentLevel']
-
-        if answer == 'Generate Specific Course':
-            course_records = DB.query(Course).filter(Course.topic_id == topic_record.id).all()
-            courses = [course.name for course in course_records]
-            course_name = _select_content_item(courses)
-            course = _get_item_by_name(course_name, course_records)
-
-            return CourseCreator.generate_specific_course(topic_record, course)
-
-        elif answer == 'Generate Specific Chapter':
-            chapter_records = DB.query(Chapter).filter(Chapter.topic_id == topic_record.id).all()
-            chapters = [chapter.name for chapter in chapter_records]
-            chapter_name = _select_content_item(chapters)
-            chapter = _get_item_by_name(chapter_name, chapter_records)
-
-            return CourseCreator.generate_specific_chapter(topic_record, chapter)
-
-        elif answer == 'Generate Specific Page':
-            page_records = DB.query(Page).filter(Page.topic_id == topic_record.id).all()
-            pages = [page.name for page in page_records]
-            page_name = _select_content_item(pages)
-            page = _get_item_by_name(page_name, page_records)
-
-            CourseCreator.generate_specific_pages(topic_record, [page])
-
-        else:
-            "You did not select any content. Exiting..."
+    return subroutine_function(data)

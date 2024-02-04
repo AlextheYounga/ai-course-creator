@@ -157,10 +157,10 @@ class FinalSkillChallengeCreator:
 
         generated_pages = []
         for index, page in enumerate(fsc_pages):
+            if index >= len(answerables): break
+
             page_material = answerables[index]
-
             page = self._update_fsc_page_record(page, page_material)
-
             generated_pages.append(page)
 
         return generated_pages

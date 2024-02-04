@@ -39,6 +39,7 @@ class Topic(Base):
     def make_slug(name):
         return slugify(name)
 
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -47,6 +48,11 @@ class Topic(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+
+    def get_latest_outline(self):
+        latest_outline = self.outlines[-1]
+        return latest_outline
 
 
     @classmethod
