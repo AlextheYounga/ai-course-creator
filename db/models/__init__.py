@@ -8,3 +8,5 @@ from .outline import Outline
 from .page import Page
 from .question import Question
 from .topic import Topic
+from .prompt import Prompt
+from .response import Response

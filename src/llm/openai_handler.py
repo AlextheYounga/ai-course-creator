@@ -1,4 +1,5 @@
 import os
+from db.db import DB, Prompt, Response
 import json
 from termcolor import colored
 from dotenv import load_dotenv
@@ -9,6 +10,7 @@ from bs4 import BeautifulSoup
 import logging
 import yaml
 import re
+
 
 
 load_dotenv()
@@ -44,10 +46,13 @@ class OpenAiHandler:
     def send_prompt(self, name: str, messages: list[dict], options: dict = {}) -> OpenAI:
         quiet = options.get('quiet', False)
         model = options.get('model', self.model)
-        max_tokens = options.get('maxTokens', None)
-        temperature = options.get('temperature', None)
-
         tokens = self.get_tokens(messages)
+
+        properties = {
+            **options,
+            'maxTokens': options.get('maxTokens', None),
+            'temperature': options.get('temperature', None),
+        }
 
         if not quiet:
             for message in messages:
@@ -58,6 +63,7 @@ class OpenAiHandler:
 
 
         self.logger.info(f"SEND: {model} - {json.dumps(messages)}")
+        prompt_id = self.save_prompt(name, messages, tokens, properties)
 
         completion = None
         try:
@@ -65,20 +71,56 @@ class OpenAiHandler:
             completion = self.client.chat.completions.create(
                 model=model,
                 messages=messages,
-                max_tokens=max_tokens,
-                temperature=temperature
+                max_tokens=properties['maxTokens'],
+                temperature=properties['temperature'],
             )
         except Exception as e:
             print(colored(f"Unknown error from OpenAI: {e}", "red"))
             return None
 
         self.logger.info(f"RESPONSE: {model} - {completion.model_dump_json()}")
+        self.save_response(prompt_id, completion, options)
 
-        response_validated = self.response_validator(name, messages, completion, options)
+        response_validated = self.response_validator(name, messages, completion, properties)
 
         sleep(1)  # Give OpenAI a break
 
         return response_validated
+
+
+    def save_prompt(self, name: str, messages: list[dict], tokens: int, options: dict) -> int:
+        content = ""
+        for message in messages:
+            content += message['content'] + "\n\n"
+
+        prompt = Prompt(
+            action=name,
+            model=options.get('model', self.model),
+            content=content,
+            payload=messages,
+            estimated_tokens=tokens,
+            properties=options,
+        )
+        DB.add(prompt)
+        DB.commit()
+
+        return prompt.id
+
+
+    def save_response(self, prompt_id: int, completion: OpenAI, options: dict) -> None:
+        response = Response(
+            prompt_id=prompt_id,
+            role=completion.choices[0].message.role,
+            model=completion.model,
+            completion_tokens=completion.usage.completion_tokens,
+            prompt_tokens=completion.usage.prompt_tokens,
+            total_tokens=completion.usage.total_tokens,
+            content=completion.choices[0].message.content,
+            payload=json.loads(completion.model_dump_json()),
+            properties=options,
+        )
+        DB.add(response)
+        DB.commit()
 
 
     def response_validator(self, name: str, messages: list[dict], completion: OpenAI, options: dict):
@@ -134,6 +176,7 @@ class OpenAiHandler:
         self.logger.error("Malformed completion, unknown error. Maximum retries exceeded")
         print(colored("Malformed completion, unknown error. Maximum retries exceeded. Aborting...", "red"))
         return validate_response
+
 
 
     def try_parse_yaml(self, return_object: dict, content: str):
