@@ -145,7 +145,7 @@ class FinalSkillChallengeCreator:
 
 
     def _check_course_incomplete(self, pages: list[Page]):
-        pages_generated = [page.generated for page in pages]
+        pages_generated = [page.generated for page in pages if page.type == 'page']
         return False in pages_generated
 
 
