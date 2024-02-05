@@ -30,4 +30,4 @@ def test_parse_content():
     page = parser.parse_nodes()
 
     assert page.nodes != None
-    assert len(page.nodes) == 2
+    assert len(page.nodes) == 3

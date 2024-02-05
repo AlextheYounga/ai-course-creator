@@ -1,5 +1,5 @@
 from db.db import DB, Page, Interactive, Question, Answer
-import re
+import json
 import markdown
 from bs4 import BeautifulSoup
 
@@ -52,8 +52,9 @@ class ContentParser:
 
             }
         if content_type == "html":
+            html_elements = BeautifulSoup("".join([str(element) for element in node]), 'html.parser')
             return {
-                "content": str(node),
+                "content": str(html_elements),
                 "nodeType": content_type
             }
 
@@ -63,18 +64,20 @@ class ContentParser:
         if self.page.content:
             html = markdown.markdown(self.page.content, extensions=['fenced_code'])
             soup = BeautifulSoup(html, 'html.parser')
+            html_node = []
 
-            html_node = BeautifulSoup('', 'html.parser')
-
-            for element in soup.children:
-                if type(element).__name__ == "Tag" and element.attrs.get('id', False) and 'answerable' in element.attrs['id']:
+            for element in soup.contents:
+                if type(element).__name__ == 'Tag' and element.attrs.get('id', False) and 'answerable' in element.attrs['id']:
                     interactive = self.parse_interactive(element)
                     nodes.append(self.build_node("html", html_node))
                     nodes.append(self.build_node("interactive", interactive))
-                    html_node = BeautifulSoup('', 'html.parser')
+                    html_node = []
                     continue
 
                 html_node.append(element)
+
+            nodes.append(self.build_node("html", html_node))
+            print(json.dumps(nodes, indent=4))
 
 
             self.page.nodes = nodes
