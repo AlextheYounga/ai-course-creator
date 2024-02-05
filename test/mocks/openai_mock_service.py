@@ -4,6 +4,7 @@ from typing import Optional
 from termcolor import colored
 from unittest.mock import MagicMock
 from src.llm.openai_handler import OpenAiHandler
+from src.llm.token_counter import count_tokens_using_encoding
 import markdown
 from bs4 import BeautifulSoup
 
@@ -35,7 +36,7 @@ class OpenAIMockService(OpenAiHandler):
     def send_prompt(self, name: str, messages: list[dict], options: dict = {}):
         self.yaml_expected = options.get('yamlExpected', False)
 
-        tokens = self.get_tokens(messages)
+        tokens = count_tokens_using_encoding(messages)
         for message in messages:
             if message['role'] == 'user':
                 prompt = message['content']

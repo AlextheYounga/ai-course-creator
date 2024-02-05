@@ -6,6 +6,7 @@ from termcolor import colored
 from src.creator.helpers import get_prompt
 from db.db import DB, Topic, Course, Page, Outline
 from src.utils.chunks import chunks
+from src.creator.content_parser import ContentParser
 import re
 import markdown
 from bs4 import BeautifulSoup
@@ -177,6 +178,10 @@ class FinalSkillChallengeCreator:
         DB.add(page)
         DB.commit()
         DB.refresh(page)
+
+        # Parse nodes from page material
+        parser = ContentParser(page)
+        page = parser.parse_nodes()
 
         # Write to file
         page.dump_page()
