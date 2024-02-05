@@ -112,7 +112,7 @@ class FinalSkillChallengeCreator:
 
 
     @classmethod
-    def regenerate(self, client: OpenAI, topic_name: str, course: Course):
+    def regenerate(self, client: OpenAI, topic: Topic, course: Course):
         DB.query(Page).filter(
             Page.topic_id == course.topic_id,
             Page.course_slug == course.slug,
@@ -121,7 +121,7 @@ class FinalSkillChallengeCreator:
 
         DB.commit()
 
-        challenge_creator = self(topic_name, client)
+        challenge_creator = self(topic.id, client)
         return challenge_creator.generate_final_skill_challenge(course)
 
 

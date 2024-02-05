@@ -123,13 +123,13 @@ class PracticeSkillChallengeCreator:
 
 
     @classmethod
-    def regenerate(self, client: OpenAI, topic_name: str, pages: list[Page]):
+    def regenerate(self, client: OpenAI, topic: Topic, pages: list[Page]):
         challenge_pages = [page for page in pages if page.type == 'challenge']
 
         if len(challenge_pages) == 0:
-            raise Exception(f"No challenge pages found for topic '{topic_name}'")
+            raise Exception(f"No challenge pages found for topic '{topic.name}'")
 
-        challenge_creator = self(topic_name, client)
+        challenge_creator = self(topic.id, client)
 
         regenerated_pages = []
 

@@ -163,13 +163,13 @@ class PageMaterialCreator:
 
 
     @classmethod
-    def regenerate(self, client: OpenAI, topic_name: str, pages: list[Page]):
+    def regenerate(self, client: OpenAI, topic: Topic, pages: list[Page]):
         lesson_pages = [page for page in pages if page.type == 'page']
 
         if len(lesson_pages) == 0:
-            raise Exception(f"No lesson pages found for topic '{topic_name}'")
+            raise Exception(f"No lesson pages found for topic '{topic.name}'")
 
-        page_creator = self(topic_name, client)
+        page_creator = self(topic.id, client)
 
         regenerated_pages = []
 
