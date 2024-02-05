@@ -7,9 +7,7 @@ from ..utils import dump_outline_content
 from .generate_functions import generate_outline
 
 
-def run_dump_outline_content(topic: Topic):
-    outline = topic.get_latest_outline()
-    return dump_outline_content(outline)
+
 
 
 def select_subroutine():
@@ -20,7 +18,6 @@ def select_subroutine():
         'Generate Outline': generate_outline,
         'Generate Content': select_generate_content,
         'Regenerate Content': select_regenerate_content,
-        'Dump Content From Existing Outline': run_dump_outline_content,
     }
 
     subroutines = [

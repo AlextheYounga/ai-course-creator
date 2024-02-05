@@ -1,15 +1,15 @@
 import inquirer
+from db.db import DB, Topic, Outline
 from termcolor import colored
-from dotenv import load_dotenv
 import os
 import shutil
 from datetime import datetime
 from src.utils.strings import slugify
 from src.utils.files import zip_folder
-from db.db import Outline, Page
+
 import yaml
 
-load_dotenv()
+
 OUTPUT_PATH = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 LOGS_PATH = 'storage/logs'
 
@@ -42,9 +42,9 @@ def clear_logs():
     open(f"{LOGS_PATH}/chat.log", 'w').close()
 
 
-def dump_outline_content(outline: Outline):
+def dump_outline_content(topic: Topic, outline: Outline):
     topic = outline.topic
-    entities = Outline.get_entities()
+    entities = Outline.get_entities(DB, outline.id)
 
     output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
     output_path = f"{output_directory}/{topic.slug}"
@@ -52,7 +52,7 @@ def dump_outline_content(outline: Outline):
     for page in entities['pages']:
         if not page.content: continue
         # Write to file
-        Page.dump_page([page])
+        page.dump_page()
 
 
     with open(f"{output_path}/{outline.name}/skills.yaml", 'w') as skills_file:
