@@ -1,1 +1,5 @@
-Summarize the following material a maximum of three sentences. Note any examples used: {content}
+Summarize the following material a maximum of three sentences. 
+
+```markdown
+{content}
+```
