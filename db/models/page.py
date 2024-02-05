@@ -122,7 +122,7 @@ class Page(Base):
         page.slug = page_slug
         page.path = f"{output_directory}/{topic.slug}/{outline_name}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md"
         page.generated = os.path.exists(page.path)
-        page.content = open(page.path).read() if page.generated else None
+        page.content = data.get('content', (open(page.path).read() if page.generated else None))
         page.hash = self.hash_page(page.content) if page.generated else None
         page.permalink = f"/page/{topic.slug}/{course_slug}/{chapter_slug}/{page_slug}"
         page.link = page.permalink if page.generated else '#'

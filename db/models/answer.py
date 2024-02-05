@@ -1,7 +1,8 @@
 from .base import Base
 from sqlalchemy.sql import func
-from sqlalchemy import Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
+from sqlalchemy.orm import Session
 
 
 
@@ -20,3 +21,26 @@ class Answer(Base):
         back_populates="answer",
         cascade="all, delete-orphan"
     )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "question_id": self.question_id,
+            "value": self.value,
+            "value_type": self.value_type,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def save(self, session: Session, question_id: int, value: str):
+        answer = self(
+            question_id=question_id,
+            value=value,
+            value_type=type(value).__name__
+        )
+
+        session.add(answer)
+        session.commit()
+
+        return answer
