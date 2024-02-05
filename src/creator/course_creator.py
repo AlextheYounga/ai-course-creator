@@ -6,7 +6,6 @@ from src.creator.challenges.practice_skill_challenge_creator import PracticeSkil
 from src.creator.challenges.final_skill_challenge_creator import FinalSkillChallengeCreator
 from src.creator.pages.page_material_creator import PageMaterialCreator
 import progressbar
-import yaml
 
 
 class CourseCreator:

@@ -89,11 +89,11 @@ class PracticeSkillChallengeCreator:
         chapter_pages_content = "The following is all the content from this chapter:\n\n"
 
         # Fetch all chapter pages
-        chapter_pages = DB.query(Page).filter(
-            Page.topic_id == self.topic.id,
-            Page.course_slug == course_slug,
-            Page.chapter_slug == chapter_slug
-        ).all()
+        page_entities = Outline.get_entities_by_type(DB, self.outline.id, 'Page')
+        chapter_pages = [
+            page for page in page_entities
+            if page.type == 'page' and page.course_slug == course_slug and page.chapter_slug == chapter_slug
+        ]
 
         for page in chapter_pages:
             if page.content != None:

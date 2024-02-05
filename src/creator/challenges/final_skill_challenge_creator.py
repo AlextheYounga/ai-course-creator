@@ -74,11 +74,12 @@ class FinalSkillChallengeCreator:
         # Combine all page content into a single string
         course_pages_content = "The following is all the content from this course:\n\n"
 
-        pages = DB.query(Page).filter(
-            Page.topic_id == self.topic.id,
-            Page.course_slug == course_slug,
-            Page.type == 'page'
-        ).all()
+        # Fetch all chapter pages
+        page_entities = Outline.get_entities_by_type(DB, self.outline.id, 'Page')
+        pages = [
+            page for page in page_entities
+            if page.type == 'page' and page.course_slug == course_slug
+        ]
 
         for page in pages:
             course_pages_content += f"{page.content}\n\n"

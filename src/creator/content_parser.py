@@ -67,13 +67,14 @@ class ContentParser:
             html_node = BeautifulSoup('', 'html.parser')
 
             for element in soup.children:
-                html_node.append(element)
-
                 if type(element).__name__ == "Tag" and element.attrs.get('id', False) and 'answerable' in element.attrs['id']:
                     interactive = self.parse_interactive(element)
                     nodes.append(self.build_node("html", html_node))
                     nodes.append(self.build_node("interactive", interactive))
                     html_node = BeautifulSoup('', 'html.parser')
+                    continue
+
+                html_node.append(element)
 
 
             self.page.nodes = nodes
