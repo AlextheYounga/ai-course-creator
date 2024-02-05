@@ -15,6 +15,18 @@ def generate_topic_courses(data: dict):
     return creator.generate_topic_courses()
 
 
+def generate_topic_page_material(data: dict):
+    topic = data.get('topic')
+    creator = CourseCreator(OpenAiHandler, topic.name)
+    return creator.create_topic_page_material()
+
+
+def generate_topic_challenges(data: dict):
+    topic = data.get('topic')
+    creator = CourseCreator(OpenAiHandler, topic.name)
+    return creator.create_topic_practice_skill_challenges()
+
+
 def generate_topic_fsc(data: dict):
     topic = data.get('topic')
     creator = CourseCreator(OpenAiHandler, topic.name)

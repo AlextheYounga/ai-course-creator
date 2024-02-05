@@ -8,8 +8,8 @@ def select_generate_content(topic: Topic):
     content_function_mapping = {
         'Topic': {
             'All': generate_topic_courses,
-            'Page Material': dynamic_generate_material,
-            'Practice Skill Challenges': dynamic_generate_material,
+            'Page Material': generate_topic_page_material,
+            'Practice Skill Challenges': generate_topic_challenges,
             'Final Skill Challenges': generate_topic_fsc,
         },
         'Course': {

@@ -2,8 +2,6 @@ import inquirer
 from db.db import DB, Topic
 from .select_topic import select_topic
 from .select_generate_content import select_generate_content
-from .select_regenerate_content import select_regenerate_content
-from ..utils import dump_outline_content
 from .generate_functions import generate_outline
 
 
@@ -17,7 +15,6 @@ def select_subroutine():
     base_subroutines = {
         'Generate Outline': generate_outline,
         'Generate Content': select_generate_content,
-        'Regenerate Content': select_regenerate_content,
     }
 
     subroutines = [
