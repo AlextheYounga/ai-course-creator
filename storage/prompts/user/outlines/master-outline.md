@@ -3,20 +3,20 @@ Prompt: Using the provided list of required skills for mastery of {topic}, pleas
 Please return your results in the following YAML format:
 
 ```yaml
-- courseName: 'An Intriguing Course Name'
+- courseName: "An Intriguing Course Name"
   chapters:
-    - name: 'An Interesting Chapter Name'
+    - name: "An Interesting Chapter Name"
       pages:
-        - 'Chapter Introduction Page'
-        - 'First Page of Chapter'
-        - 'Second Page of Chapter'
-        - 'Third Page of Chapter, and so on'
-    - name: 'Another Interesting Chapter Name'
+        - "Chapter Introduction Page"
+        - "First Page of Chapter"
+        - "Second Page of Chapter"
+        - "Third Page of Chapter, and so on"
+    - name: "Another Interesting Chapter Name"
       pages:
-        - 'Chapter Introduction Page'
-        - 'First Page of Chapter'
-        - 'Second Page of Chapter'
-        - 'Third Page of Chapter, and so on'
+        - "Chapter Introduction Page"
+        - "First Page of Chapter"
+        - "Second Page of Chapter"
+        - "Third Page of Chapter, and so on"
 
 # More courses...
 ```
