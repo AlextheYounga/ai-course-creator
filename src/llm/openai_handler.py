@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import logging
 import yaml
 import re
+from .token_counter import count_tokens_using_encoding
 
 
 
@@ -32,21 +33,10 @@ class OpenAiHandler:
         self.retry_count = 0
 
 
-    def get_tokens(self, messages):
-        prompt = ""
-        for message in messages:
-            prompt += message['content']
-
-        characters = len(prompt)
-        tokens = characters / 4
-
-        return tokens
-
-
     def send_prompt(self, name: str, messages: list[dict], options: dict = {}) -> OpenAI:
         quiet = options.get('quiet', False)
         model = options.get('model', self.model)
-        tokens = self.get_tokens(messages)
+        tokens = count_tokens_using_encoding(messages)
 
         properties = {
             **options,
