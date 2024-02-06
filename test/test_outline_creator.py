@@ -16,7 +16,6 @@ def _setup_test():
         shutil.rmtree(f"{OUTPUT_PATH}/{slug}")
 
 
-
 _setup_test()
 
 

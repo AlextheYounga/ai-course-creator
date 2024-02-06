@@ -11,7 +11,6 @@ import progressbar
 class CourseCreator:
     def __init__(self, client: OpenAI, topic_name: str):
         self.topic = Topic.first_or_create(DB, name=topic_name)
-        self.outline = self.topic.get_latest_outline()
         self.client = client
         self.pages = []
 
@@ -59,6 +58,7 @@ class CourseCreator:
 
 
     def generate_course(self, course: Course):
+        outline = self.topic.get_latest_outline()
         session_name = f"Course Generation - {course.name}"
 
         page_creator = PageMaterialCreator(self.topic.id, self.client(session_name))
@@ -68,7 +68,7 @@ class CourseCreator:
         pages = DB.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
-            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.outline_id == outline.id,
             OutlineEntity.entity_type == 'Page',
             Page.course_slug == course.slug
         ).all()
@@ -87,6 +87,7 @@ class CourseCreator:
 
 
     def generate_chapter(self, chapter: Chapter):
+        outline = self.topic.get_latest_outline()
         session_name = f"Chapter Generation - {chapter.name}"
 
         page_creator = PageMaterialCreator(self.topic.id, self.client(session_name))
@@ -95,7 +96,7 @@ class CourseCreator:
         pages = DB.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
-            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.outline_id == outline.id,
             OutlineEntity.entity_type == 'Page',
             Page.course_slug == chapter.course_slug,
             Page.chapter_slug == chapter.slug
@@ -115,6 +116,7 @@ class CourseCreator:
 
 
     def generate_chapter_challenge(self, chapter: Chapter):
+        outline = self.topic.get_latest_outline()
         session_name = f"Chapter Generation - {chapter.name}"
 
         challenge_creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
@@ -122,7 +124,7 @@ class CourseCreator:
         pages = DB.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
-            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.outline_id == outline.id,
             OutlineEntity.entity_type == 'Page',
             Page.course_slug == chapter.course_slug,
             Page.chapter_slug == chapter.slug,
@@ -140,10 +142,12 @@ class CourseCreator:
 
 
     def generate_course_challenges(self, course: Course):
+        outline = self.topic.get_latest_outline()
+
         pages = DB.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
-            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.outline_id == outline.id,
             OutlineEntity.entity_type == 'Page',
             Page.type == 'challenge',
             Page.course_slug == course.slug
@@ -169,7 +173,8 @@ class CourseCreator:
 
 
     def generate_entity_page_material(self, record: Course | Chapter | Page):
-        page_entities = Outline.get_entities_by_type(DB, self.outline.id, 'Page')
+        outline = self.topic.get_latest_outline()
+        page_entities = Outline.get_entities_by_type(DB, outline.id, 'Page')
         record_type = type(record).__name__
 
         page_creator = PageMaterialCreator(
