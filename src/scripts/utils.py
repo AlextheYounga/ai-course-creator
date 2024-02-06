@@ -6,7 +6,6 @@ import shutil
 from datetime import datetime
 from src.utils.strings import slugify
 from src.utils.files import zip_folder
-
 import yaml
 
 

@@ -3,6 +3,7 @@ from ..utils import *
 from db.db import DB, Topic
 from .select_outline import select_outline
 from .select_topic import select_topic
+from ..draft_translation import draft_translation
 
 
 def run_dump_outline_content(topic: Topic):
@@ -18,20 +19,23 @@ def select_util():
                           'Save Chat',
                           'Clear Logs',
                           'Dump Content From Existing Outline',
+                          'Run Draft Translations'
                       ]),
     ]
 
     choice = inquirer.prompt(choices)
     answer = choice['utils']
     if answer == 'Clear Logs':
-        clear_logs()
+        return clear_logs()
     elif answer == 'Save Chat':
-        save_chat()
+        return save_chat()
     elif answer == 'Dump Content From Existing Outline':
         topic_name = select_topic()
         topic = DB.query(Topic).filter_by(name=topic_name).first()
         outline = select_outline(topic)
-        run_dump_outline_content(topic, outline)
+        return run_dump_outline_content(topic, outline)
+    elif answer == 'Run Draft Translations':
+        return draft_translation()
     else:
         "You did not select a utility command. Exiting..."
 

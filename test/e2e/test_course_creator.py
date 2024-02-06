@@ -1,7 +1,7 @@
 import shutil
 import os
-from .mocks.openai_mock_service import OpenAIMockService
-from .mocks.db import *
+from ..mocks.openai_mock_service import OpenAIMockService
+from ..mocks.db import *
 from src.utils.files import unzip_folder
 from src.creator.course_creator import CourseCreator
 
@@ -16,18 +16,6 @@ def _setup_test():
     # Reset output directory
     if (os.path.exists(f"{OUTPUT_PATH}")):
         shutil.rmtree(f"{OUTPUT_PATH}")
-
-
-
-# def test_generate_topic_courses():
-#     _setup_test()
-
-#     topic = 'Ruby on Rails'
-#     creator = CourseCreator(OpenAIMockService, topic)
-#     creator.generate_topic_courses()
-
-#     courses = Course.all(DB)
-#     assert len(courses) > 1
 
 
 def test_generate_course_material():

@@ -39,7 +39,7 @@ class ContentParser:
         return interactive
 
 
-    def build_node(self, content_type: str, node):
+    def build_node(self, content_type: str, node: Interactive | list[BeautifulSoup]):
         if content_type == "interactive":
             return {
                 "id": node.id,
@@ -48,13 +48,14 @@ class ContentParser:
                 "content": node.content['content'],
                 "question": node.content['question'],
                 "answer": node.content['answer'],
-
             }
+
         if content_type == "html":
             # Have to do it this way because building a bs4 class incrementally does not work as expected
             html_elements = BeautifulSoup("".join([str(element) for element in node]), 'html.parser')
             return {
                 "content": str(html_elements),
+                "type": "html",
                 "nodeType": content_type
             }
 
@@ -82,6 +83,6 @@ class ContentParser:
                 DB.add(self.page)
                 DB.commit()
             except Exception as e:
-                print(e + "Error parsing page content")
+                print(e, "Error parsing page content")
 
         return self.page
