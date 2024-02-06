@@ -1,4 +1,4 @@
-Prompt: Can you list as many skills as possible that someone would need to go from a total beginner to total mastery on the topic of {topic}?
+Prompt: Can you list as many skills as possible that someone would need to go from a total beginner to total mastery on the topic of {topic}? Make the list as comprehensive as possible.
 
 Please return your results in the following YAML format:
 

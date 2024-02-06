@@ -1,4 +1,4 @@
-Our courses will have certain answerable components which will quiz the user. Questions should be sufficiently difficult that person may need to spend 30 seconds to a minute thinking about it. Please use one of the following component types at random: 
+Our courses will have certain answerable components which will quiz the user. Questions should be challenging but not impossible. Questions should test the user's comprehension of the page material well. Most importantly, multiple choice questions should never, under any circumstances, have more than one correct answer. One answer should be correct, and the other three should be incorrect. Do not ever create a multiple choice question with more than one correct answer. Please use one of the following component types at random: 
 
 - Code Editor/Code Executor
 - Multiple Choice
@@ -40,6 +40,7 @@ While creating page material, please cleverly insert an answerable component som
         <option>False</option>
     </select>
 </div>
+
 
 >NOTE: The correct choice should contain an id="correct-answer"
 >NOTE: The content of the code editor/code executor should be something that could successfully be run through a code executor API that does not require any third party libraries or resources. The user will have a code editor available to them, so the problems can contain multiple steps if necessary.
