@@ -1,5 +1,4 @@
 from db.db import DB, Page, Interactive, Question, Answer
-import json
 import markdown
 from bs4 import BeautifulSoup
 
@@ -52,6 +51,7 @@ class ContentParser:
 
             }
         if content_type == "html":
+            # Have to do it this way because building a bs4 class incrementally does not work as expected
             html_elements = BeautifulSoup("".join([str(element) for element in node]), 'html.parser')
             return {
                 "content": str(html_elements),
@@ -62,26 +62,26 @@ class ContentParser:
     def parse_nodes(self):
         nodes = []
         if self.page.content:
-            html = markdown.markdown(self.page.content, extensions=['fenced_code'])
-            soup = BeautifulSoup(html, 'html.parser')
-            html_node = []
+            try:
+                html = markdown.markdown(self.page.content, extensions=['fenced_code'])
+                soup = BeautifulSoup(html, 'html.parser')
+                html_node = []
 
-            for element in soup.contents:
-                if type(element).__name__ == 'Tag' and element.attrs.get('id', False) and 'answerable' in element.attrs['id']:
-                    interactive = self.parse_interactive(element)
-                    nodes.append(self.build_node("html", html_node))
-                    nodes.append(self.build_node("interactive", interactive))
-                    html_node = []
-                    continue
+                for element in soup.contents:
+                    if type(element).__name__ == 'Tag' and element.attrs.get('id', False) and 'answerable' in element.attrs['id']:
+                        interactive = self.parse_interactive(element)
+                        nodes.append(self.build_node("html", html_node))
+                        nodes.append(self.build_node("interactive", interactive))
+                        html_node = []
+                        continue
 
-                html_node.append(element)
+                    html_node.append(element)
+                nodes.append(self.build_node("html", html_node))
 
-            nodes.append(self.build_node("html", html_node))
-            print(json.dumps(nodes, indent=4))
-
-
-            self.page.nodes = nodes
-            DB.add(self.page)
-            DB.commit()
+                self.page.nodes = nodes
+                DB.add(self.page)
+                DB.commit()
+            except Exception as e:
+                print(e + "Error parsing page content")
 
         return self.page

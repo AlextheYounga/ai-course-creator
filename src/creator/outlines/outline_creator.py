@@ -15,12 +15,9 @@ class OutlineCreator:
             topic_id: int,
             client: OpenAI,
     ):
-        output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
-
         self.topic = DB.get(Topic, topic_id)
         self.ai_client = client
-        self.output_path = output_directory
-        self.outline_file = f"{output_directory}/{self.topic.slug}/master-outline.yaml"
+        self.outline_file = Outline.default_outline_file_path(self.topic)
 
 
     def create(self):

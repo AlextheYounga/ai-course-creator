@@ -11,7 +11,7 @@ def select_hierarchy():
 
     select_level = [
         inquirer.List('level',
-                      message="Select hierarchy level.",
+                      message="Select hierarchy level",
                       choices=levels),
     ]
 

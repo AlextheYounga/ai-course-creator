@@ -1,46 +1,48 @@
 from .select_hierarchy import select_hierarchy
 from .select_content_function import select_content_function
-from .generate_functions import *
+from .select_content_item import select_content_item_from_hierachy
+from src.llm.openai_handler import OpenAiHandler
+from src.creator.course_creator import CourseCreator
 from db.db import Topic
 
 
 def select_generate_content(topic: Topic):
+    creator = CourseCreator(OpenAiHandler, topic.name)
+
     content_function_mapping = {
         'Topic': {
-            'All': generate_topic_courses,
-            'Page Material': generate_topic_page_material,
-            'Practice Skill Challenges': generate_topic_challenges,
-            'Final Skill Challenges': generate_topic_fsc,
+            'All': creator.generate_topic_courses,
+            'Page Material': creator.create_topic_page_material,
+            'Practice Skill Challenges': creator.create_topic_practice_skill_challenges,
+            'Final Skill Challenges': creator.create_topic_final_skill_challenges,
         },
         'Course': {
-            'All': generate_course,
-            'Page Material': dynamic_generate_material,
-            'Practice Skill Challenges': dynamic_generate_material,
-            'Final Skill Challenges': generate_course_fsc,
+            'All': creator.generate_course,
+            'Page Material': creator.generate_entity_page_material,
+            'Practice Skill Challenges': creator.generate_course_challenges,
+            'Final Skill Challenges': creator.generate_course_final_skill_challenge,
         },
         'Chapter': {
-            'All': generate_chapter,
-            'Page Material': dynamic_generate_material,
-            'Practice Skill Challenges': dynamic_generate_material,
+            'All': creator.generate_chapter,
+            'Page Material': creator.generate_entity_page_material,
+            'Practice Skill Challenges': creator.generate_chapter_challenge,
         },
-        'Page': generate_page,
+        'Page': creator.generate_page_material,
     }
 
-    content_type_mapping = {
-        'All': None,
-        'Page Material': 'page',
-        'Practice Skill Challenges': 'challenge',
-        'Final Skill Challenges': 'final-skill-challenge',
-    }
-
+    # Prompt user for hierarchy
     hierarchy = select_hierarchy()
-    content_type = select_content_function(hierarchy)
-    subroutine_function = content_function_mapping[hierarchy][content_type]
 
-    data = {
-        'topic': topic,
-        'hierarchy': hierarchy,
-        'contentType': content_type_mapping[content_type],
-    }
+    if hierarchy == 'Page':
+        subroutine_function = content_function_mapping[hierarchy]
+    else:
+        # Select sub function for hierarchy
+        content_type = select_content_function(hierarchy)
+        subroutine_function = content_function_mapping[hierarchy][content_type]
 
-    return subroutine_function(data)
+    if hierarchy == 'Topic':
+        return subroutine_function()
+
+    # Select db record to run sub function on
+    record = select_content_item_from_hierachy(topic, hierarchy)
+    return subroutine_function(record)

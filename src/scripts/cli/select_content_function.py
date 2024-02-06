@@ -27,7 +27,7 @@ def select_content_function(hierarchy: str):
 
     select_content_type = [
         inquirer.List('contentType',
-                      message="Select hierarchy to generate material.",
+                      message="Select hierarchy to generate material",
                       choices=content_types),
     ]
 

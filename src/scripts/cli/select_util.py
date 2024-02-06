@@ -13,7 +13,7 @@ def run_dump_outline_content(topic: Topic):
 def select_util():
     choices = [
         inquirer.List('utils',
-                      message="Select utility command.",
+                      message="Select utility command",
                       choices=[
                           'Save Chat',
                           'Clear Logs',

@@ -1,5 +1,5 @@
 import os
-from db.db import DB, Topic, Outline, Course, Chapter, Page
+from db.db import DB, Topic, Outline, OutlineEntity, Course, Chapter, Page
 from openai import OpenAI
 from src.creator.outlines.outline_creator import OutlineCreator
 from src.creator.challenges.practice_skill_challenge_creator import PracticeSkillChallengeCreator
@@ -11,6 +11,7 @@ import progressbar
 class CourseCreator:
     def __init__(self, client: OpenAI, topic_name: str):
         self.topic = Topic.first_or_create(DB, name=topic_name)
+        self.outline = self.topic.get_latest_outline()
         self.client = client
         self.pages = []
 
@@ -57,24 +58,18 @@ class CourseCreator:
         self.create_topic_final_skill_challenges()
 
 
-    def generate_course_final_skill_challenge(self, course: Course):
-        session_name = f"Course Final Skill Challenge Generation - {self.topic.name}"
-
-        creator = FinalSkillChallengeCreator(self.topic.id, self.client(session_name))
-        pages = creator.generate_final_skill_challenge(course)
-
-        return pages
-
-
-    def generate_course_material(self, course: Course):
+    def generate_course(self, course: Course):
         session_name = f"Course Generation - {course.name}"
 
         page_creator = PageMaterialCreator(self.topic.id, self.client(session_name))
         challenge_creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
         fsc_creator = FinalSkillChallengeCreator(self.topic.id, self.client(session_name))
 
-        pages = DB.query(Page).filter(
-            Page.topic_id == self.topic.id,
+        pages = DB.query(Page).join(
+            OutlineEntity, OutlineEntity.entity_id == Page.id
+        ).filter(
+            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.entity_type == 'Page',
             Page.course_slug == course.slug
         ).all()
 
@@ -91,14 +86,17 @@ class CourseCreator:
         fsc_creator.generate_final_skill_challenge(course)
 
 
-    def generate_chapter_material(self, chapter: Chapter):
+    def generate_chapter(self, chapter: Chapter):
         session_name = f"Chapter Generation - {chapter.name}"
 
         page_creator = PageMaterialCreator(self.topic.id, self.client(session_name))
         challenge_creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
 
-        pages = DB.query(Page).filter(
-            Page.topic_id == self.topic.id,
+        pages = DB.query(Page).join(
+            OutlineEntity, OutlineEntity.entity_id == Page.id
+        ).filter(
+            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.entity_type == 'Page',
             Page.course_slug == chapter.course_slug,
             Page.chapter_slug == chapter.slug
         ).all()
@@ -113,55 +111,109 @@ class CourseCreator:
                 page = challenge_creator.generate_practice_skill_challenge(page)
                 generated_pages.append(page)
 
+        return generated_pages
 
-    def dynamic_generate_page_material(self, content_type: str, record: Course | Chapter | Page):
-        outline = self.topic.get_latest_outline()
-        page_entities = Outline.get_entities_by_type(DB, outline.id, 'Page')
 
-        creator_function_call = None
-        if content_type == 'challenge':
-            session_name = f"{type(record).__name__} Skill Challenge Generation - {record.name}"
-            creator = PageMaterialCreator(self.topic.id, self.client(session_name))
-            creator_function_call = creator.generate_page_material
-        else:
-            session_name = f"{type(record).__name__} Page Generation - {record.name}"
-            creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
-            creator_function_call = creator.generate_practice_skill_challenge
+    def generate_chapter_challenge(self, chapter: Chapter):
+        session_name = f"Chapter Generation - {chapter.name}"
+
+        challenge_creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
+
+        pages = DB.query(Page).join(
+            OutlineEntity, OutlineEntity.entity_id == Page.id
+        ).filter(
+            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.entity_type == 'Page',
+            Page.course_slug == chapter.course_slug,
+            Page.chapter_slug == chapter.slug,
+            Page.type == 'challenge'
+        ).all()
 
         generated_pages = []
 
-        # Generate all pages for course
-        if isinstance(record, Course):
-            course_pages = [
-                page for page in page_entities
-                if page.course_slug == record.slug and page.type == content_type
-            ]
-
-            with progressbar.ProgressBar(max_value=len(course_pages), prefix='Generating: ', redirect_stdout=True) as bar:
-                for page in course_pages:
-                    bar.increment()
-                    if Page.check_for_existing_page_material(page): continue
-                    page = creator_function_call(page)
-                    generated_pages.append(page)
-
-        # Generate all pages for chapter
-        elif isinstance(record, Chapter):
-            chapter_pages = [
-                page for page in page_entities
-                if page.course_slug == record.slug and page.slug == record.slug and page.type == content_type
-            ]
-
-            with progressbar.ProgressBar(max_value=len(chapter_pages), prefix='Generating: ', redirect_stdout=True) as bar:
-                for page in chapter_pages:
-                    bar.increment()
-                    if Page.check_for_existing_page_material(page): continue
-                    page = creator_function_call(page)
-                    generated_pages.append(page)
-
-        # Generate page
-        elif isinstance(record, Page):
-            if page.type == content_type:
-                if Page.check_for_existing_page_material(page): return
-                return creator_function_call(page)
+        for page in pages:
+            page = challenge_creator.generate_practice_skill_challenge(page)
+            generated_pages.append(page)
 
         return generated_pages
+
+
+
+    def generate_course_challenges(self, course: Course):
+        pages = DB.query(Page).join(
+            OutlineEntity, OutlineEntity.entity_id == Page.id
+        ).filter(
+            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.entity_type == 'Page',
+            Page.type == 'challenge',
+            Page.course_slug == course.slug
+        ).all()
+
+        session_name = f"Course Practice Challenge Generation - {self.topic.name}"
+        creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
+        generated_pages = []
+        for page in pages:
+            generated_page = creator.generate_practice_skill_challenge(page)
+            generated_pages.append(generated_page)
+
+        return generated_pages
+
+
+    def generate_course_final_skill_challenge(self, course: Course):
+        session_name = f"Course Final Skill Challenge Generation - {self.topic.name}"
+
+        creator = FinalSkillChallengeCreator(self.topic.id, self.client(session_name))
+        pages = creator.generate_final_skill_challenge(course)
+
+        return pages
+
+
+    def generate_entity_page_material(self, record: Course | Chapter | Page):
+        page_entities = Outline.get_entities_by_type(DB, self.outline.id, 'Page')
+        record_type = type(record).__name__
+
+        page_creator = PageMaterialCreator(
+            self.topic.id,
+            self.client(f"Page Generation - {record.name}")
+        )
+
+        pages_to_generate = []
+        generated_pages = []
+
+        # Generate all pages for course
+        if record_type == 'Page' and record.type == 'page':
+            if Page.check_for_existing_page_material(page): return
+            return page_creator.generate_page_material(page)
+
+        elif record_type == 'Course':
+            pages_to_generate = [
+                page for page in page_entities
+                if page.course_slug == record.slug and page.type == 'page'
+            ]
+
+        elif record_type == 'Chapter':
+            pages_to_generate = [
+                page for page in page_entities
+                if page.course_slug == record.slug and page.slug == record.slug and page.type == 'page'
+            ]
+
+        with progressbar.ProgressBar(max_value=len(pages_to_generate), prefix='Generating pages: ', redirect_stdout=True) as bar:
+            for page in pages_to_generate:
+                bar.increment()
+                if Page.check_for_existing_page_material(page): continue
+                page = page_creator.generate_page_material(page)
+                generated_pages.append(page)
+
+        return generated_pages
+
+
+    def generate_page_material(self, page: Page):
+        page_creator = PageMaterialCreator(self.topic.id, self.client(f"Page Generation - {page.name}"))
+        challenge_creator = PracticeSkillChallengeCreator(self.topic.id, self.client(f"Skill Challenge Generation - {page.name}"))
+
+        creators = {
+            'page': page_creator.generate_page_material,
+            'challenge': challenge_creator.generate_practice_skill_challenge
+        }
+        if Page.check_for_existing_page_material(page): return
+        return creators[page.type](page)

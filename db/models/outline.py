@@ -1,4 +1,6 @@
+import os
 from .base import Base
+from .topic import Topic
 from .chapter import Chapter
 from .course import Course
 from .page import Page
@@ -21,6 +23,7 @@ class Outline(Base):
     hash = mapped_column(String, unique=True)
     skills = mapped_column(JSON)
     master_outline = mapped_column(JSON)
+    file_path = mapped_column(String)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
@@ -48,7 +51,12 @@ class Outline(Base):
 
 
     @classmethod
-    def get_or_create_from_file(self, session: Session, topic_id: int, outline_file: str):
+    def get_or_create_from_file(self, session: Session, topic_id: int, outline_file: str | None = None):
+        # outline_file: str
+        if not outline_file:
+            topic = session.get(Topic, topic_id)
+            outline_file = self.default_outline_file_path(topic)
+
         outline_data = open(outline_file).read()
         outline_hash = self.hash_outline(outline_data)
         outline = session.query(self).filter(self.hash == outline_hash).first()
@@ -64,6 +72,7 @@ class Outline(Base):
         new_outline = self.instantiate(session, topic_id)
         new_outline.master_outline = read_yaml_file(outline_file)  # Add changed outline to record
         new_outline.hash = self.hash_outline(new_outline.master_outline)
+        new_outline.file_path = outline_file
 
         if last_outline:
             new_outline.skills = last_outline.skills
@@ -140,7 +149,7 @@ class Outline(Base):
 
 
     @classmethod
-    def process_outline(self, session: Session, topic_id: int, outline_file: str):
+    def process_outline(self, session: Session, topic_id: int, outline_file: str | None = None):
         outline = self.get_or_create_from_file(session, topic_id, outline_file)
         self.create_outline_entities(session, outline.id)
 
@@ -213,3 +222,11 @@ class Outline(Base):
                 OutlineEntity.entity_type == 'Page'
             ).all()
         }
+
+    @staticmethod
+    def default_outline_file_path(topic: Topic):
+        output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
+        output_path = f"{output_directory}/{topic.slug}"
+        default_file_path = f"{output_path}/master-outline.yaml"
+
+        return default_file_path
