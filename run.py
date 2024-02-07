@@ -2,6 +2,7 @@ import inquirer
 from termcolor import colored
 from src.scripts.cli.select_subroutine import select_subroutine
 from src.scripts.cli.select_util import select_util
+from src.scripts.cli.select_script import select_script
 from src.scripts.initialize import initialize_project
 from server import run_server
 
@@ -13,6 +14,7 @@ def main():
                           message="Select command category",
                           choices=[
                               'Start Course Creator',
+                              'Scripts',
                               'Utilities',
                               'Initialize Project',
                               'Run App Server'
@@ -24,6 +26,8 @@ def main():
 
         if answer == 'Start Course Creator':
             return select_subroutine()
+        elif answer == 'Scripts':
+            return select_script()
         elif answer == 'Utilities':
             return select_util()
         elif answer == 'Initialize Project':

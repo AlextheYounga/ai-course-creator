@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from src.creator.helpers import get_prompt
 from src.creator.pages.page_summarizer import PageSummarizer
-from src.creator.content_parser import ContentParser
 from db.db import DB, Topic, Page, Outline
 import yaml
 import progressbar
@@ -43,10 +42,6 @@ class PageMaterialCreator:
         # Summarize Page
         summarizer = PageSummarizer(page, self.ai_client)
         summarizer.summarize()
-
-        # Parse nodes from page material
-        parser = ContentParser(page)
-        page = parser.parse_nodes()
 
         # Write to file
         page.dump_page()

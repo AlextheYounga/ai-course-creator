@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from termcolor import colored
 from src.creator.helpers import get_prompt
-from src.creator.content_parser import ContentParser
 from db.db import DB, Topic, Page, Outline
 import progressbar
 
@@ -38,10 +37,6 @@ class PracticeSkillChallengeCreator:
         # Save to Database
         DB.add(page)
         DB.commit()
-
-        # Parse nodes from page material
-        parser = ContentParser(page)
-        page = parser.parse_nodes()
 
         # Write to file
         page.dump_page()
