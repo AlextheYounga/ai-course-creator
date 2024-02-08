@@ -58,7 +58,7 @@ class CourseCreator:
 
 
     def generate_course(self, course: Course):
-        outline = self.topic.get_latest_outline()
+        outline = Outline.get_or_create_from_file(DB, self.topic.id)
         session_name = f"Course Generation - {course.name}"
 
         page_creator = PageMaterialCreator(self.topic.id, self.client(session_name))
@@ -87,7 +87,7 @@ class CourseCreator:
 
 
     def generate_chapter(self, chapter: Chapter):
-        outline = self.topic.get_latest_outline()
+        outline = Outline.get_or_create_from_file(DB, self.topic.id)
         session_name = f"Chapter Generation - {chapter.name}"
 
         page_creator = PageMaterialCreator(self.topic.id, self.client(session_name))
@@ -116,7 +116,7 @@ class CourseCreator:
 
 
     def generate_chapter_challenge(self, chapter: Chapter):
-        outline = self.topic.get_latest_outline()
+        outline = Outline.get_or_create_from_file(DB, self.topic.id)
         session_name = f"Chapter Generation - {chapter.name}"
 
         challenge_creator = PracticeSkillChallengeCreator(self.topic.id, self.client(session_name))
@@ -142,7 +142,7 @@ class CourseCreator:
 
 
     def generate_course_challenges(self, course: Course):
-        outline = self.topic.get_latest_outline()
+        outline = Outline.get_or_create_from_file(DB, self.topic.id)
 
         pages = DB.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
@@ -173,7 +173,7 @@ class CourseCreator:
 
 
     def generate_entity_page_material(self, record: Course | Chapter | Page):
-        outline = self.topic.get_latest_outline()
+        outline = Outline.get_or_create_from_file(DB, self.topic.id)
         page_entities = Outline.get_entities_by_type(DB, outline.id, 'Page')
         record_type = type(record).__name__
 

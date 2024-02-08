@@ -2,13 +2,13 @@ from src.llm.openai_handler import OpenAiHandler
 from src.creator.challenges.practice_skill_challenge_creator import PracticeSkillChallengeCreator
 from src.creator.challenges.final_skill_challenge_creator import FinalSkillChallengeCreator
 from src.creator.pages.page_material_creator import PageMaterialCreator
-from db.db import DB, Topic, Course, Chapter, Page
+from db.db import DB, Topic, Outline, Course, Chapter, Page
 
 
 class Regenerator:
     def __init__(self, topic: Topic):
         self.topic = topic
-        self.outline = topic.get_latest_outline()
+        self.outline = Outline.get_or_create_from_file(DB, self.topic.id)
 
 
     def regenerate_course(self, course: Course):

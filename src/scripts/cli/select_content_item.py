@@ -21,7 +21,7 @@ def select_content_item(items: list, item_type: str):
 
 
 def select_content_item_from_hierachy(topic: Topic, hierarchy: str):
-    outline = topic.get_latest_outline()
+    outline = Outline.get_or_create_from_file(DB, topic.id)
     entities = Outline.get_entities(DB, outline.id)
 
     # The default is the topic level, so no need to select pages for topic.
