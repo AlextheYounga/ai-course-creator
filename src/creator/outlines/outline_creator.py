@@ -17,17 +17,9 @@ class OutlineCreator:
     ):
         self.topic = DB.get(Topic, topic_id)
         self.ai_client = client
-        self.outline_file = Outline.default_outline_file_path(self.topic)
 
 
     def create(self):
-        existing_outline = os.path.exists(self.outline_file)
-
-        if (existing_outline):
-            outline_record = Outline.get_or_create_from_file(DB, self.topic.id, self.outline_file)
-            return outline_record.id
-
-
         # Create new outline
         outline = Outline.instantiate(DB, self.topic.id)
         DB.add(outline)
@@ -37,19 +29,17 @@ class OutlineCreator:
         self.generate_skills(outline.id)
 
         # Generate Master Outline
-        master_outline = self.generate_master_outline(outline.id)
+        outline = self.generate_master_outline(outline.id)
 
         # Process Outline
         print(colored("\nProcessing Outline...", "yellow"))
-        Outline.process_outline(DB, self.topic.id, self.outline_file)
+        Outline.process_outline(DB, self.topic.id, outline.file_path)
         print(colored("Outline generation complete.\n", "green"))
 
         # Print course
-        course_list = [f" - {course['course']['courseName']}" for course in master_outline]
+        course_list = [f" - {course['course']['courseName']}" for course in outline.master_outline]
         print(colored("\nCourse list: ", "green"))
         print(colored("\n".join(course_list) + "\n", "green"))
-
-
 
         return outline.id
 

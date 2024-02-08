@@ -16,8 +16,6 @@ def select_subroutine():
     topic_name = select_topic()
     topic = Topic.first_or_create(DB, name=topic_name)
 
-    Outline.process_outline(DB, topic.id)
-
     base_subroutines = {
         'Generate Outline': generate_outline,
         'Generate Content': select_generate_content,

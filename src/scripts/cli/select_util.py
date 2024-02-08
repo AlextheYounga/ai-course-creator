@@ -6,9 +6,11 @@ from .select_topic import select_topic
 from ..draft_translation import draft_translation
 
 
-def run_dump_outline_content(topic: Topic):
-    outline = topic.get_latest_outline()
-    return dump_outline_content(outline)
+def run_dump_outline_content():
+    topic_name = select_topic()
+    topic = DB.query(Topic).filter_by(name=topic_name).first()
+    outline = select_outline(topic)
+    return dump_outline_content(topic, outline)
 
 
 def select_util():
@@ -16,9 +18,9 @@ def select_util():
         inquirer.List('utils',
                       message="Select utility command",
                       choices=[
+                          'Dump Content From Existing Outline',
                           'Save Chat',
                           'Clear Logs',
-                          'Dump Content From Existing Outline',
                           'Run Draft Translations'
                       ]),
     ]
@@ -30,10 +32,7 @@ def select_util():
     elif answer == 'Save Chat':
         return save_chat()
     elif answer == 'Dump Content From Existing Outline':
-        topic_name = select_topic()
-        topic = DB.query(Topic).filter_by(name=topic_name).first()
-        outline = select_outline(topic)
-        return run_dump_outline_content(topic, outline)
+        return run_dump_outline_content()
     elif answer == 'Run Draft Translations':
         return draft_translation()
     else:

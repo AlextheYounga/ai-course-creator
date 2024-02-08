@@ -14,8 +14,8 @@ def main():
                           message="Select command category",
                           choices=[
                               'Start Course Creator',
-                              'Scripts',
                               'Utilities',
+                              'Scripts',
                               'Initialize Project',
                               'Run App Server'
                           ]),
@@ -26,10 +26,10 @@ def main():
 
         if answer == 'Start Course Creator':
             return select_subroutine()
-        elif answer == 'Scripts':
-            return select_script()
         elif answer == 'Utilities':
             return select_util()
+        elif answer == 'Scripts':
+            return select_script()
         elif answer == 'Initialize Project':
             return initialize_project()
         elif answer == 'Run App Server':

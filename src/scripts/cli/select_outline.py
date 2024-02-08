@@ -16,7 +16,7 @@ def select_outline(topic: Topic):
         sys.exit()
 
     outline_mapping = [
-        {outline.name: outline.id}
+        {'name': outline.name, 'id': outline.id}
         for outline in outline_records
     ]
 
@@ -34,9 +34,13 @@ def select_outline(topic: Topic):
     if user_prompt != None:
         answer = user_prompt['outlineSelect']
 
-        outline_id = outline_mapping[answer]
+        selected_outline = [
+            obj for obj in outline_mapping
+            if obj['name'] == answer
+        ][0]
+
         for record in outline_records:
-            if record.id == outline_id:
+            if record.id == selected_outline['id']:
                 return record
 
         raise Exception("You did not select an outline. Exiting...")

@@ -74,10 +74,16 @@ class MasterOutlineGenerator:
 
         # Save to database
         self.outline.master_outline = master_outline
-        self.outline.hash = Outline.hash_outline(master_outline)
+        outline_hash = Outline.hash_outline(master_outline)
 
-        DB.add(self.outline)
-        DB.commit()
+        # Check for existing outline based on hash
+        existing_outline = DB.query(Outline).filter(Outline.hash == outline_hash).first()
+        if existing_outline:
+            print(colored("Identical outline found. Using existing outline.", "yellow"))
+            self.outline = existing_outline
+        else:
+            DB.add(self.outline)
+            DB.commit()
 
         # Save to YAML file
         os.makedirs(self.output_path, exist_ok=True)
@@ -91,7 +97,7 @@ class MasterOutlineGenerator:
 
         print(colored("Done.", "green"))
 
-        return master_outline
+        return self.outline
 
 
     # Private Methods

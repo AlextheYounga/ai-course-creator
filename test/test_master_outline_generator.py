@@ -57,6 +57,6 @@ def test_generate_master_outline():
     client = OpenAIMockService("Test")
     generator = MasterOutlineGenerator(outline_id, client)
 
-    master_outline = generator.generate()
+    outline = generator.generate()
 
-    assert len(master_outline) == 7
+    assert len(outline.master_outline) == 7
