@@ -63,3 +63,7 @@ def dump_outline_content(topic: Topic, outline: Outline):
     with open(f"{output_path}/{outline.name}/outline.yaml", 'w') as outline_file:
         outline_file.write(yaml.dump(outline.master_outline, sort_keys=False))
         outline_file.close()
+
+    with open(f"{output_path}/master-outline.yaml", 'w') as outline_file:
+        outline_file.write(yaml.dump(outline.master_outline, sort_keys=False))
+        outline_file.close()
