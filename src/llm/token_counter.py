@@ -10,13 +10,12 @@ def _messages_to_single_string(messages):
     return prompt
 
 
-def count_tokens_using_encoding(messages: list) -> int:
+def count_tokens_using_encoding(model: str, messages: list) -> int:
     """
     This implementation is, although accurate, extremely slow.
     """
     import tiktoken
 
-    model = os.environ.get("MODEL") or 'gpt-3.5-turbo-1106'
     encoding = None
     content = _messages_to_single_string(messages)
 
@@ -29,7 +28,7 @@ def count_tokens_using_encoding(messages: list) -> int:
     return num_tokens
 
 
-def count_tokens_using_encoding(messages: list):
+def count_token_estimate(messages: list):
     """
     This approach is a simple, *fast estimation of the number of tokens in a prompt.    
     """

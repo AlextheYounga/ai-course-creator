@@ -28,7 +28,7 @@ class OpenAIMockService(OpenAiHandler):
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             level=logging.INFO
         )
-        self.logger = logging.getLogger(f"{self.model} {session_name}")
+        self.logger = logging.getLogger(f"Test {session_name}")
         self.client = MagicMock()
         self.response = response
         self.optimize_outline_calls = 0
@@ -36,7 +36,7 @@ class OpenAIMockService(OpenAiHandler):
     def send_prompt(self, name: str, messages: list[dict], options: dict = {}):
         self.yaml_expected = options.get('yamlExpected', False)
 
-        tokens = count_tokens_using_encoding(messages)
+        tokens = count_tokens_using_encoding('gpt-3.5-turbo-0301', messages)
         for message in messages:
             if message['role'] == 'user':
                 prompt = message['content']

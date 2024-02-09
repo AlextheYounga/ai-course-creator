@@ -1,0 +1,85 @@
+# ChatGPT Completion API Configuration
+# This file outlines the parameters that can be used to configure the ChatGPT API completions.
+# Users can edit this file to adjust API responses according to their needs.
+
+
+# These prompts settings take priority, but if not set, the global settings are used.
+prompts:
+  skills:
+    temperature: 1
+
+  master-outline:
+    temperature: 1
+
+  page-material:
+    temperature: 1
+
+  summarize-page:
+    model: gpt-3.5-turbo-0301 # Fastest, dumbest model
+    max_tokens: 100
+    temperature: 1
+
+  practice-skill-challenge:
+    temperature: 1
+
+  final-skill-challenge:
+    temperature: 1
+
+global: 
+  # The ID of the model to use for generating responses.
+  model: "gpt-3.5-turbo-1106" # string, required
+  # Other models used:
+  # gpt-3.5-turbo-0301 => Fastest, dumbest model
+  # gpt-4-1106-preview => Slowest, smartest model
+
+  # Adjusts the likelihood of the model repeating the same words or phrases.
+  frequency_penalty: 0 # number, optional, defaults to 0, range: -2.0 to 2.0
+
+  # Modifies the likelihood of specified tokens appearing in the completion.
+  logit_bias: null
+    # map, optional, defaults to null
+    # Example: {token_id: bias_value}, where bias_value ranges from -100 to 100
+
+  # Whether to return log probabilities of the output tokens.
+  logprobs: false # boolean, optional, defaults to false
+
+  # Specifies the number of most likely tokens to return at each token position, with associated log probabilities.
+  top_logprobs: # integer, optional, range: 0 to 5, requires logprobs to be true
+
+  # The maximum number of tokens that can be generated in the completion.
+  max_tokens: # integer, optional
+
+  # The number of chat completion choices to generate for each input.
+  n: 1 # integer, optional, defaults to 1
+
+  # Adjusts the likelihood of the model discussing new topics.
+  presence_penalty: 0 # number, optional, defaults to 0, range: -2.0 to 2.0
+
+  # Specifies the format that the model must output.
+  response_format:  # 'text' | 'json_object', optional, enables JSON mode
+
+  # If specified, attempts to sample deterministically for repeated requests.
+  seed: # integer, optional, Beta feature
+
+  # Sequences where the API will stop generating further tokens.
+  stop: null # string/array, optional, defaults to null
+
+  # Partial message deltas will be sent if set, similar to ChatGPT streaming.
+  stream: false # boolean, optional, defaults to false
+
+  # Sampling temperature, affects randomness of output.
+  temperature: 1 # number, optional, defaults to 1, range: 0 to 2
+
+  # Nucleus sampling, considers tokens with top_p probability mass.
+  top_p: 1 # number, optional, defaults to 1, range: 0 to 1
+
+  # List of tools the model may call, currently supports functions.
+  tools:  # array, optional
+
+  # Controls which function is called by the model, if any.
+  # Only allowed when tools are specified
+  tool_choice: # string/object, optional, defaults to "none" or "auto"
+
+  # Deprecated parameters.
+  # function_call: null # Deprecated, use tool_choice instead.
+  # functions: null # Deprecated, use tools instead.

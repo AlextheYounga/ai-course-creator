@@ -9,6 +9,7 @@ import markdown
 from bs4 import BeautifulSoup
 import logging
 import yaml
+from src.utils.files import read_yaml_file
 import re
 from .token_counter import count_tokens_using_encoding
 
@@ -28,21 +29,16 @@ class OpenAiHandler:
 
         # Initialize OpenAI
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        self.model = os.environ.get("MODEL") or 'gpt-3.5-turbo-1106'
         self.logger = logging.getLogger(f"{session_name}")
+        self.params = read_yaml_file('params.yaml')
         self.retry_count = 0
 
 
     def send_prompt(self, name: str, messages: list[dict], options: dict = {}) -> OpenAI:
+        prompt_params = self._process_prompt_params(name)
         quiet = options.get('quiet', False)
-        model = options.get('model', self.model)
-        tokens = count_tokens_using_encoding(messages)
-
-        properties = {
-            **options,
-            'maxTokens': options.get('maxTokens', None),
-            'temperature': options.get('temperature', None),
-        }
+        model = prompt_params['model']
+        tokens = count_tokens_using_encoding(model, messages)
 
         if not quiet:
             for message in messages:
@@ -52,18 +48,21 @@ class OpenAiHandler:
                     break
 
 
+        properties = {
+            **options,
+            **prompt_params,
+        }
+
         self.logger.info(f"SEND: {model} - {json.dumps(messages)}")
         prompt_id = self.save_prompt(name, messages, tokens, properties)
 
         completion = None
         try:
-            # Send to ChatGPT
             completion = self.client.chat.completions.create(
-                model=model,
                 messages=messages,
-                max_tokens=properties['maxTokens'],
-                temperature=properties['temperature'],
+                **prompt_params
             )
+
         except Exception as e:
             print(colored(f"Unknown error from OpenAI: {e}", "red"))
             return None
@@ -78,19 +77,20 @@ class OpenAiHandler:
         return response_validated
 
 
-    def save_prompt(self, name: str, messages: list[dict], tokens: int, options: dict) -> int:
+    def save_prompt(self, name: str, messages: list[dict], tokens: int, properties: dict) -> int:
         content = ""
         for message in messages:
             content += message['content'] + "\n\n"
 
         prompt = Prompt(
             action=name,
-            model=options.get('model', self.model),
+            model=properties['model'],
             content=content,
             payload=messages,
             estimated_tokens=tokens,
-            properties=options,
+            properties=properties,
         )
+
         DB.add(prompt)
         DB.commit()
 
@@ -201,3 +201,19 @@ class OpenAiHandler:
                 corrected_value = value.replace(':', ' -')
                 content = content.replace(value, corrected_value)
         return yaml.safe_load(content)
+
+
+    def _process_prompt_params(self, name: str):
+        prompt_params = self.params['prompts'].get(name, {})
+        global_params = self.params['global']
+
+        params = {
+            **global_params,
+            **prompt_params,
+        }
+
+        for key in list(params.keys()):
+            if params[key] is None:
+                del params[key]
+
+        return params

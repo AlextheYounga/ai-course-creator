@@ -18,15 +18,9 @@ class PageSummarizer():
 
 
     def summarize(self):
-        model = 'gpt-3.5-turbo-0301'  # Fastest model
-
         messages = self.build_summarize_page_prompt()
 
-        options = {
-            'model': model,
-            'maxTokens': 100,
-            'quiet': True,
-        }
+        options = {'quiet': True}
 
         # Send to ChatGPT
         print(colored(f"Sending summarize-page prompt for {self.page.name}", "cyan"))
