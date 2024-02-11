@@ -21,3 +21,19 @@ class Response(Base):
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
     prompt = relationship("Prompt", back_populates="responses")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "prompt_id": self.prompt_id,
+            "role": self.role,
+            "model": self.model,
+            "completion_tokens": self.completion_tokens,
+            "prompt_tokens": self.prompt_tokens,
+            "total_tokens": self.total_tokens,
+            "content": self.content,
+            "payload": self.payload,
+            "properties": self.properties,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }

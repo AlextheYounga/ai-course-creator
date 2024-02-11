@@ -1,8 +1,9 @@
 # flask --app app.server.app run --port 5001
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_cors import CORS
 from .controllers.outline_controller import OutlineController
+from .controllers.log_controller import LogController
 from .controllers.ping_controller import PingController
 from .controllers.page_controller import PageController
 
@@ -26,17 +27,32 @@ def index():
 
 
 # API Routes
-@app.route('/api/ping', methods=['GET'])
-def ping_pong():
-    # sanity check route
-    return PingController.ping_pong()
-
-
 @app.route('/api/course-material', methods=['GET'])
 def get_course_material():
     return OutlineController.get_all_course_material()
 
 
+@app.route('/api/outlines', methods=['GET'])
+def get_outlines():
+    return OutlineController.get_all()
+
+
+@app.route('/api/prompts/<id>', methods=['GET'])
+def get_log(id: int):
+    return LogController.get(id)
+
+
+@app.route('/api/prompts', methods=['GET'])
+def get_logs():
+    return LogController.get_all()
+
+
 @app.route('/api/page/<id>', methods=['GET'])
 def get_page(id: int):
     return PageController.get_page_html(id)
+
+
+@app.route('/api/ping', methods=['GET'])
+def ping_pong():
+    # sanity check route
+    return PingController.ping_pong()

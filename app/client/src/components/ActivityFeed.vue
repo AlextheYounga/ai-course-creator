@@ -3,7 +3,7 @@
     <aside class="bg-black/10 lg:fixed lg:bottom-0 lg:right-0 lg:top-0 lg:w-96 lg:overflow-y-auto lg:border-l lg:border-white/5">
         <header class="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
             <h2 class="text-base font-semibold leading-7 text-white">Activity feed</h2>
-            <!-- <a href="#" class="text-sm font-semibold leading-6 text-indigo-400">View all</a> -->
+            <!-- router-link to="#" class="text-sm font-semibold leading-6 text-indigo-400">View all</router-link> -->
         </header>
         <ul role="list" class="divide-y divide-white/5">
             <li v-for="line in logs" :key="line" class="px-4">

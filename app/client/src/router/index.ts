@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView from '@/views/DashboardView.vue'
 import PageView from '@/views/PageView.vue'
 import Ping from '@/components/Ping.vue'
+import PromptIndexView from '@/views/PromptIndexView.vue'
+import PromptView from '@/views/PromptView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +17,16 @@ const router = createRouter({
       path: '/page/:id',
       name: 'page',
       component: PageView
+    },
+    {
+      path: '/prompts',
+      name: 'prompts',
+      component: PromptIndexView
+    },
+    {
+      path: '/prompts/:id',
+      name: 'prompt',
+      component: PromptView
     },
     {
       path: '/ping',

@@ -36,6 +36,20 @@ class Outline(Base):
     )
 
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "topic_id": self.topic_id,
+            "name": self.name,
+            "hash": self.hash,
+            "skills": self.skills,
+            "master_outline": self.master_outline,
+            "file_path": self.file_path,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+
     @classmethod
     def instantiate(self, session: Session, topic_id: int):
         existing_outline_count = session.query(self).filter(self.topic_id == topic_id).count()

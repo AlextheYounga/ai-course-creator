@@ -145,21 +145,38 @@
 </template>
   
 <script lang="ts">
-import { ref} from 'vue'
+import { ref } from 'vue'
 import flaskApi from '@/router/api'
 import Tree from 'primevue/tree';
 import 'primeicons/primeicons.css'
-import {
-    Dialog,
-    DialogPanel,
-    TransitionChild,
-    TransitionRoot,
-} from '@headlessui/vue'
-import {
-    ServerIcon,
-    XMarkIcon,
-    FolderIcon,
-} from '@heroicons/vue/24/outline'
+import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import { ServerIcon, XMarkIcon, FolderIcon } from '@heroicons/vue/24/outline';
+import type { Topic, Course, Chapter, Page, Outline } from '@/types/ModelTypes';
+
+type TopicOutlineEntities = Topic & {
+    children: CourseWithRelations[]
+}
+
+type CourseWithRelations = Course & {
+    children: ChapterWithPages[]
+}
+
+type ChapterWithPages = Chapter & {
+    children: Page[]
+}
+
+type NavigationItem = {
+    name: string
+    href: string
+    icon: any
+    current: boolean
+}[]
+
+type CommandItem = {
+    id: number,
+    name: string
+    method: Function
+}[]
 
 export default {
     name: 'DashboardView',
@@ -178,10 +195,11 @@ export default {
         const nodes: any = ref([]);
         const expandedKeys: any = ref({});
         const selectedKey = ref(undefined);
-        const navigation = [
-            { name: 'Logs', href: '#', icon: ServerIcon, current: true },
+
+        const navigation: NavigationItem = [
+            { name: 'Prompt Logs', href: '/prompts', icon: ServerIcon, current: true },
         ]
-        const commands = [
+        const commands: CommandItem = [
             { id: 1, name: 'Run Course Generator', method: this.runCourseGenerator },
         ]
 
@@ -196,15 +214,16 @@ export default {
         }
     },
     methods: {
-        translateToTreeLibrary(data: any) {
+        // Tree methods
+        translateToTreeLibrary(data: TopicOutlineEntities[]) {
             if (!data || data?.length === 0) {
                 return []
             }
 
-            return data.map((topic: any) => {
-                const topicChildren = topic.children.map((course: any) => {
-                    const courseChildren = course.children.map((chapter: any) => {
-                        const chapterChildren = chapter.children.map((page: any) => {
+            return data.map((topic: TopicOutlineEntities) => {
+                const topicChildren = topic.children.map((course: CourseWithRelations) => {
+                    const courseChildren = course.children.map((chapter: ChapterWithPages) => {
+                        const chapterChildren = chapter.children.map((page: Page) => {
                             return {
                                 name: page.slug,
                                 key: `lesson-${page.id}`,
@@ -242,16 +261,7 @@ export default {
                 }
             })
         },
-        expandAll() {
-            for (let node of this.nodes) {
-                this.expandNode(node);
-            }
 
-            this.expandedKeys = { ...this.expandedKeys };
-        },
-        collapseAll() {
-            this.expandedKeys = {};
-        },
         expandNode(node: any) {
             if (node.children && node.children.length) {
                 this.expandedKeys[node.key] = true;
@@ -262,6 +272,19 @@ export default {
             }
         },
 
+        expandAll() {
+            for (let node of this.nodes) {
+                this.expandNode(node);
+            }
+
+            this.expandedKeys = { ...this.expandedKeys };
+        },
+
+        collapseAll() {
+            this.expandedKeys = {};
+        },
+
+        // Server methods
         async runCourseGenerator() {
             await flaskApi.post('/generate-courses', {})
             alert("Course Creator started!")
@@ -275,8 +298,9 @@ export default {
             setInterval(this.getCourseMaterial, 5000);
         }
     },
+
     async mounted() {
-        const material = await this.getCourseMaterial()
+        const material = await this.getCourseMaterial() as TopicOutlineEntities[]
         this.nodes = this.translateToTreeLibrary(material)
     }
 }

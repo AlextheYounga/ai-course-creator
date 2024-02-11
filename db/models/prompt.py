@@ -22,3 +22,16 @@ class Prompt(Base):
         back_populates="prompt",
         cascade="all, delete-orphan"
     )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "model": self.model,
+            "action": self.action,
+            "estimated_tokens": self.estimated_tokens,
+            "content": self.content,
+            "payload": self.payload,
+            "properties": self.properties,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
