@@ -63,7 +63,7 @@ type LogLine = {
 }
 
 export default {
-  name: 'PromptIndexView',
+  name: 'PromptsIndex',
 
   components: {
     Breadcrumbs,

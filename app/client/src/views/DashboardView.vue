@@ -151,7 +151,7 @@ import Tree from 'primevue/tree';
 import 'primeicons/primeicons.css'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ServerIcon, XMarkIcon, FolderIcon } from '@heroicons/vue/24/outline';
-import type { Topic, Course, Chapter, Page, Outline } from '@/types/ModelTypes';
+import type { Topic, Course, Chapter, Page } from '@/types/ModelTypes';
 
 type TopicOutlineEntities = Topic & {
     children: CourseWithRelations[]
