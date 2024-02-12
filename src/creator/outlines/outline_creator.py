@@ -1,10 +1,10 @@
-import os
 from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
 from db.db import DB, Topic, Outline
 from .skill_generator import SkillGenerator
-from .master_outline_generator import MasterOutlineGenerator
+from .outline_chunk_generator import OutlineChunkGenerator
+from .master_outline_compiler import MasterOutlineCompiler
 
 load_dotenv()
 
@@ -28,8 +28,11 @@ class OutlineCreator:
         # Generate Skills
         self.generate_skills(outline.id)
 
+        # Generate Outline Chunks
+        outline = self.generate_outline_chunks(outline.id)
+
         # Generate Master Outline
-        outline = self.generate_master_outline(outline.id)
+        outline = self.compile_master_outline(outline.id)
 
         # Process Outline
         print(colored("\nProcessing Outline...", "yellow"))
@@ -49,6 +52,11 @@ class OutlineCreator:
         return skill_generator.generate()
 
 
-    def generate_master_outline(self, outline_id):
-        generator = MasterOutlineGenerator(outline_id, self.ai_client)
-        return generator.generate()
+    def generate_outline_chunks(self, outline_id):
+        generator = OutlineChunkGenerator(outline_id, self.ai_client)
+        return generator.generate_chunks()
+
+
+    def compile_master_outline(self, outline_id):
+        compiler = MasterOutlineCompiler(outline_id, self.ai_client)
+        return compiler.compile()

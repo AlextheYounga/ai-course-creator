@@ -1,4 +1,4 @@
-The following is a list of required skills for mastery of {topic}. Please study these skills, and we will use them to create course material when prompted. 
+We are creating an outline for a series of courses. The following yaml section is a list of required skills for mastery of {topic}. 
 
 Skills:
 ```yaml

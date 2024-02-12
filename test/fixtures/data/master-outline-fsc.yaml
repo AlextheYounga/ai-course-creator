@@ -14,6 +14,12 @@
       - Understanding the Model-View-Controller (MVC) Design Pattern
       - Installation and Setup of Ruby on Rails and Its Dependencies
       - Practice Skill Challenge
+    - name: Final Skill Challenge
+      pages:
+      - Final Skill Challenge Page 1
+      - Final Skill Challenge Page 2
+      - Final Skill Challenge Page 3
+      - Final Skill Challenge Page 4
 - course:
     courseName: Working with Databases in Rails
     chapters:
@@ -33,6 +39,12 @@
       - Managing Database Indexes
       - Utilizing Database Transactions
       - Practice Skill Challenge
+    - name: Final Skill Challenge
+      pages:
+      - Final Skill Challenge Page 1
+      - Final Skill Challenge Page 2
+      - Final Skill Challenge Page 3
+      - Final Skill Challenge Page 4
 - course:
     courseName: Managing Controllers and Views
     chapters:
@@ -50,6 +62,12 @@
       - Utilizing Partials and View Helpers
       - Customizing Layouts for User Experience
       - Practice Skill Challenge
+    - name: Final Skill Challenge
+      pages:
+      - Final Skill Challenge Page 1
+      - Final Skill Challenge Page 2
+      - Final Skill Challenge Page 3
+      - Final Skill Challenge Page 4
 - course:
     courseName: User Authentication and Authorization in Rails
     chapters:
@@ -67,6 +85,12 @@
       - Implementing Access Control Lists (ACL)
       - Fine-Grained Authorization Strategies
       - Practice Skill Challenge
+    - name: Final Skill Challenge
+      pages:
+      - Final Skill Challenge Page 1
+      - Final Skill Challenge Page 2
+      - Final Skill Challenge Page 3
+      - Final Skill Challenge Page 4
 - course:
     courseName: Testing and Debugging Rails Applications
     chapters:
@@ -90,6 +114,12 @@
       - Utilizing Logging for Troubleshooting
       - Implementing Effective Error Handling Techniques
       - Practice Skill Challenge
+    - name: Final Skill Challenge
+      pages:
+      - Final Skill Challenge Page 1
+      - Final Skill Challenge Page 2
+      - Final Skill Challenge Page 3
+      - Final Skill Challenge Page 4
 - course:
     courseName: Working with APIs and Integrations in Rails
     chapters:
@@ -104,6 +134,12 @@
       - Building and Exposing APIs with Rails
       - Integrating Third-party Services and Libraries
       - Practice Skill Challenge
+    - name: Final Skill Challenge
+      pages:
+      - Final Skill Challenge Page 1
+      - Final Skill Challenge Page 2
+      - Final Skill Challenge Page 3
+      - Final Skill Challenge Page 4
 - course:
     courseName: Deploying and Scaling Rails Applications
     chapters:
@@ -121,3 +157,9 @@
       - Load Balancing for Scaling
       - Scaling Rails Applications for High Traffic
       - Practice Skill Challenge
+    - name: Final Skill Challenge
+      pages:
+      - Final Skill Challenge Page 1
+      - Final Skill Challenge Page 2
+      - Final Skill Challenge Page 3
+      - Final Skill Challenge Page 4

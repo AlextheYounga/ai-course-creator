@@ -31,7 +31,7 @@ class OpenAIMockService(OpenAiHandler):
         self.logger = logging.getLogger(f"Test {session_name}")
         self.client = MagicMock()
         self.response = response
-        self.optimize_outline_calls = 0
+        self.chunk_outline_calls = 0
 
     def send_prompt(self, name: str, messages: list[dict], options: dict = {}):
         self.yaml_expected = options.get('yamlExpected', False)
@@ -47,6 +47,11 @@ class OpenAIMockService(OpenAiHandler):
         if not response:
             if name == 'skills':
                 response = EXPECTED_SKILLS_RESPONSE
+
+            if name == 'outline-chunk':
+                call = self.chunk_outline_calls + 1
+                self.chunk_outline_calls = call
+                response = open(f"test/fixtures/responses/outline-chunks/outline-chunk-{call}.md").read()
 
             if name == 'master-outline':
                 response = EXPECTED_MASTER_OUTLINE_RESPONSE

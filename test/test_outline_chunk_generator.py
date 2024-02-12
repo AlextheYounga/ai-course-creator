@@ -1,7 +1,7 @@
 import os
 import shutil
 from src.utils.files import read_yaml_file
-from src.creator.outlines.master_outline_generator import MasterOutlineGenerator
+from src.creator.outlines.outline_chunk_generator import OutlineChunkGenerator
 from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 
@@ -33,30 +33,10 @@ def _setup_test():
     return outline.id
 
 
-def test_build_master_outline_prompt():
+def test_generate_outline_chunks():
     outline_id = _setup_test()
 
     client = OpenAIMockService("Test")
-    generator = MasterOutlineGenerator(outline_id, client)
+    generator = OutlineChunkGenerator(outline_id, client)
 
-    prompt = generator.build_master_outline_prompt()
-
-    assert len(prompt) == 2
-
-    system_prompt = prompt[0]['content']
-    user_prompt = prompt[1]['content']
-
-    for key in REPLACE_KEYS:
-        assert key not in user_prompt
-        assert key not in system_prompt
-
-
-def test_generate_master_outline():
-    outline_id = _setup_test()
-
-    client = OpenAIMockService("Test")
-    generator = MasterOutlineGenerator(outline_id, client)
-
-    outline = generator.generate()
-
-    assert len(outline.master_outline) == 7
+    outline = generator.generate_chunks()
