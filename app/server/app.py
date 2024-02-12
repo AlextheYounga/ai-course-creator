@@ -26,7 +26,7 @@ def index():
     return render_template('index.html')
 
 
-# API Routes
+# API GET Routes
 @app.route('/api/course-material', methods=['GET'])
 def get_course_material():
     return OutlineController.get_all_course_material()
@@ -56,3 +56,10 @@ def get_page(id: int):
 def ping_pong():
     # sanity check route
     return PingController.ping_pong()
+
+# API POST Routes
+
+
+@app.route('/api/generate', methods=['POST'])
+def creator_generate():
+    data = request.form
