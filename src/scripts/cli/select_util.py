@@ -4,6 +4,7 @@ from db.db import DB, Topic
 from .select_outline import select_outline
 from .select_topic import select_topic
 from ..draft_translation import draft_translation
+from ..run_migrations import run_db_migrations
 
 
 def run_dump_outline_content():
@@ -19,6 +20,7 @@ def select_util():
                       message="Select utility command",
                       choices=[
                           'Dump Content From Existing Outline',
+                          'Run DB Migrations',
                           'Save Chat',
                           'Clear Logs',
                           'Run Draft Translations'
@@ -27,12 +29,14 @@ def select_util():
 
     choice = inquirer.prompt(choices)
     answer = choice['utils']
-    if answer == 'Clear Logs':
-        return clear_logs()
+    if answer == 'Dump Content From Existing Outline':
+        return run_dump_outline_content()
+    elif answer == 'Run DB Migrations':
+        return run_db_migrations()
     elif answer == 'Save Chat':
         return save_chat()
-    elif answer == 'Dump Content From Existing Outline':
-        return run_dump_outline_content()
+    elif answer == 'Clear Logs':
+        return clear_logs()
     elif answer == 'Run Draft Translations':
         return draft_translation()
     else:

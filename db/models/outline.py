@@ -22,6 +22,7 @@ class Outline(Base):
     name = mapped_column(String)
     hash = mapped_column(String, unique=True)
     skills = mapped_column(JSON)
+    outline_chunks = mapped_column(JSON)
     master_outline = mapped_column(JSON)
     file_path = mapped_column(String)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -43,6 +44,7 @@ class Outline(Base):
             "name": self.name,
             "hash": self.hash,
             "skills": self.skills,
+            "outline_chunks": self.outline_chunks,
             "master_outline": self.master_outline,
             "file_path": self.file_path,
             "created_at": self.created_at,
