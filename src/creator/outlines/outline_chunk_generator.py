@@ -3,7 +3,7 @@ from termcolor import colored
 from dotenv import load_dotenv
 from openai import OpenAI
 from src.creator.helpers import get_prompt
-from src.utils.chunks import chunks
+from src.utils.chunks import chunks_list
 from db.db import DB, Outline
 import yaml
 import progressbar
@@ -82,10 +82,9 @@ class OutlineChunkGenerator:
         if skills == None:
             raise Exception("Skills must be generated before generating outlines.")
 
-        skill_chunks = chunks(skills, 2)
-        chunk_count = round(len(skills) / 2)
+        skill_chunks = chunks_list(skills, 2)
 
-        with progressbar.ProgressBar(max_value=chunk_count, prefix='Generating outline chunk: ', redirect_stdout=True).start() as bar:
+        with progressbar.ProgressBar(max_value=len(skill_chunks), prefix='Generating outline chunk: ', redirect_stdout=True).start() as bar:
             for chunk in skill_chunks:
                 self.generate_chunk(chunk)
                 bar.increment()

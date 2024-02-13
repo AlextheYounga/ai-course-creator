@@ -40,6 +40,10 @@ def chunks(lst, n):
         yield lst[i:i + n]
 
 
+def chunks_list(lst, n):
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+
+
 def object_chunks(data, chunk_size):
     it = iter(data)
     for i in range(0, len(data), chunk_size):
