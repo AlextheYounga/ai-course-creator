@@ -1,185 +1,171 @@
 [
     {
-        "course": {
-            "courseName": "Introduction to Web Development",
-            "chapters": [
-                {
-                    "name": "Understanding Basic Programming Concepts",
-                    "pages": [
-                        "Chapter Introduction Page",
-                        "What Are Variables and Why Are They Important?",
-                        "Exploring Loops and Their Application in Programming",
-                        "Understanding Conditional Statements in Programming"
-                    ]
-                },
-                {
-                    "name": "Getting Started with Ruby on Rails",
-                    "pages": [
-                        "Chapter Introduction Page",
-                        "Understanding the Model-View-Controller (MVC) Design Pattern",
-                        "Installation and Setup of Ruby on Rails and Its Dependencies"
-                    ]
-                }
-            ]
-        }
+        "courseName": "Introduction to Web Development",
+        "chapters": [
+            {
+                "name": "Understanding Basic Programming Concepts",
+                "pages": [
+                    "Chapter Introduction Page",
+                    "What Are Variables and Why Are They Important?",
+                    "Exploring Loops and Their Application in Programming",
+                    "Understanding Conditional Statements in Programming"
+                ]
+            },
+            {
+                "name": "Getting Started with Ruby on Rails",
+                "pages": [
+                    "Chapter Introduction Page",
+                    "Understanding the Model-View-Controller (MVC) Design Pattern",
+                    "Installation and Setup of Ruby on Rails and Its Dependencies"
+                ]
+            }
+        ]
     },
     {
-        "course": {
-            "courseName": "Working with Databases in Rails",
-            "chapters": [
-                {
-                    "name": "Understanding Database Models",
-                    "pages": [
-                        "What are Database Models?",
-                        "Defining Database Models in Rails",
-                        "Using ActiveRecord for Database Interactions"
-                    ]
-                },
-                {
-                    "name": "Database Migrations and Relationships",
-                    "pages": [
-                        "Understanding Database Migrations",
-                        "Implementing Database Relationships"
-                    ]
-                },
-                {
-                    "name": "Advanced Database Concepts (Optional)",
-                    "pages": [
-                        "Managing Database Indexes",
-                        "Utilizing Database Transactions"
-                    ]
-                }
-            ]
-        }
+        "courseName": "Working with Databases in Rails",
+        "chapters": [
+            {
+                "name": "Understanding Database Models",
+                "pages": [
+                    "What are Database Models?",
+                    "Defining Database Models in Rails",
+                    "Using ActiveRecord for Database Interactions"
+                ]
+            },
+            {
+                "name": "Database Migrations and Relationships",
+                "pages": [
+                    "Understanding Database Migrations",
+                    "Implementing Database Relationships"
+                ]
+            },
+            {
+                "name": "Advanced Database Concepts (Optional)",
+                "pages": [
+                    "Managing Database Indexes",
+                    "Utilizing Database Transactions"
+                ]
+            }
+        ]
     },
     {
-        "course": {
-            "courseName": "Managing Controllers and Views",
-            "chapters": [
-                {
-                    "name": "Understanding Controllers and Views",
-                    "pages": [
-                        "Introduction to Controllers and Views",
-                        "What Are Controllers and Their Role in Rails?",
-                        "Creating and Managing Controllers",
-                        "Understanding Routing and RESTful Conventions in Rails"
-                    ]
-                },
-                {
-                    "name": "Implementing Views and Layouts",
-                    "pages": [
-                        "Introduction to Views and Layouts",
-                        "Implementing Views for User Interface",
-                        "Utilizing Partials and View Helpers",
-                        "Customizing Layouts for User Experience"
-                    ]
-                }
-            ]
-        }
+        "courseName": "Managing Controllers and Views",
+        "chapters": [
+            {
+                "name": "Understanding Controllers and Views",
+                "pages": [
+                    "Introduction to Controllers and Views",
+                    "What Are Controllers and Their Role in Rails?",
+                    "Creating and Managing Controllers",
+                    "Understanding Routing and RESTful Conventions in Rails"
+                ]
+            },
+            {
+                "name": "Implementing Views and Layouts",
+                "pages": [
+                    "Introduction to Views and Layouts",
+                    "Implementing Views for User Interface",
+                    "Utilizing Partials and View Helpers",
+                    "Customizing Layouts for User Experience"
+                ]
+            }
+        ]
     },
     {
-        "course": {
-            "courseName": "User Authentication and Authorization in Rails",
-            "chapters": [
-                {
-                    "name": "Implementing User Authentication",
-                    "pages": [
-                        "Understanding User Authentication",
-                        "Introduction to Devise Gem",
-                        "Setting up Devise for User Authentication",
-                        "Customizing Devise Configuration"
-                    ]
-                },
-                {
-                    "name": "Managing User Authorization",
-                    "pages": [
-                        "Introduction to User Authorization",
-                        "Role-Based Access Control (RBAC) in Rails",
-                        "Implementing Access Control Lists (ACL)",
-                        "Fine-Grained Authorization Strategies"
-                    ]
-                }
-            ]
-        }
+        "courseName": "User Authentication and Authorization in Rails",
+        "chapters": [
+            {
+                "name": "Implementing User Authentication",
+                "pages": [
+                    "Understanding User Authentication",
+                    "Introduction to Devise Gem",
+                    "Setting up Devise for User Authentication",
+                    "Customizing Devise Configuration"
+                ]
+            },
+            {
+                "name": "Managing User Authorization",
+                "pages": [
+                    "Introduction to User Authorization",
+                    "Role-Based Access Control (RBAC) in Rails",
+                    "Implementing Access Control Lists (ACL)",
+                    "Fine-Grained Authorization Strategies"
+                ]
+            }
+        ]
     },
     {
-        "course": {
-            "courseName": "Testing and Debugging Rails Applications",
-            "chapters": [
-                {
-                    "name": "Understanding Testing and Test-Driven Development",
-                    "pages": [
-                        "Welcome to Testing and Debugging in Rails Applications",
-                        "Understanding Test-Driven Development (TDD) in Rails",
-                        "Benefits of TDD and Its Impact on Application Design"
-                    ]
-                },
-                {
-                    "name": "Writing and Running Tests with RSpec",
-                    "pages": [
-                        "Introduction to RSpec and Testing Frameworks",
-                        "Setting Up RSpec for Rails Applications",
-                        "Writing and Running Unit Tests with RSpec",
-                        "Writing and Running Integration Tests with RSpec"
-                    ]
-                },
-                {
-                    "name": "Debugging and Error Handling",
-                    "pages": [
-                        "Introduction to Debugging Rails Applications",
-                        "Using Byebug or Pry for Debugging",
-                        "Utilizing Logging for Troubleshooting",
-                        "Implementing Effective Error Handling Techniques"
-                    ]
-                }
-            ]
-        }
+        "courseName": "Testing and Debugging Rails Applications",
+        "chapters": [
+            {
+                "name": "Understanding Testing and Test-Driven Development",
+                "pages": [
+                    "Welcome to Testing and Debugging in Rails Applications",
+                    "Understanding Test-Driven Development (TDD) in Rails",
+                    "Benefits of TDD and Its Impact on Application Design"
+                ]
+            },
+            {
+                "name": "Writing and Running Tests with RSpec",
+                "pages": [
+                    "Introduction to RSpec and Testing Frameworks",
+                    "Setting Up RSpec for Rails Applications",
+                    "Writing and Running Unit Tests with RSpec",
+                    "Writing and Running Integration Tests with RSpec"
+                ]
+            },
+            {
+                "name": "Debugging and Error Handling",
+                "pages": [
+                    "Introduction to Debugging Rails Applications",
+                    "Using Byebug or Pry for Debugging",
+                    "Utilizing Logging for Troubleshooting",
+                    "Implementing Effective Error Handling Techniques"
+                ]
+            }
+        ]
     },
     {
-        "course": {
-            "courseName": "Working with APIs and Integrations in Rails",
-            "chapters": [
-                {
-                    "name": "Consuming External APIs",
-                    "pages": [
-                        "Understanding External APIs",
-                        "Consuming External APIs in Rails",
-                        "Implementing API Authentication and Error Handling"
-                    ]
-                },
-                {
-                    "name": "Building and Exposing APIs",
-                    "pages": [
-                        "Building and Exposing APIs with Rails",
-                        "Integrating Third-party Services and Libraries"
-                    ]
-                }
-            ]
-        }
+        "courseName": "Working with APIs and Integrations in Rails",
+        "chapters": [
+            {
+                "name": "Consuming External APIs",
+                "pages": [
+                    "Understanding External APIs",
+                    "Consuming External APIs in Rails",
+                    "Implementing API Authentication and Error Handling"
+                ]
+            },
+            {
+                "name": "Building and Exposing APIs",
+                "pages": [
+                    "Building and Exposing APIs with Rails",
+                    "Integrating Third-party Services and Libraries"
+                ]
+            }
+        ]
     },
     {
-        "course": {
-            "courseName": "Deploying and Scaling Rails Applications",
-            "chapters": [
-                {
-                    "name": "Deploying to Production Servers",
-                    "pages": [
-                        "Understanding Production Deployment",
-                        "Configuring Production Environment",
-                        "Setting Up Nginx and Puma",
-                        "Deploying Rails Application to Production Server"
-                    ]
-                },
-                {
-                    "name": "Optimizing Performance and Scaling",
-                    "pages": [
-                        "Performance Optimization Strategies",
-                        "Implementing Caching in Rails",
-                        "Load Balancing for Scaling",
-                        "Scaling Rails Applications for High Traffic"
-                    ]
-                }
-            ]
-        }
+        "courseName": "Deploying and Scaling Rails Applications",
+        "chapters": [
+            {
+                "name": "Deploying to Production Servers",
+                "pages": [
+                    "Understanding Production Deployment",
+                    "Configuring Production Environment",
+                    "Setting Up Nginx and Puma",
+                    "Deploying Rails Application to Production Server"
+                ]
+            },
+            {
+                "name": "Optimizing Performance and Scaling",
+                "pages": [
+                    "Performance Optimization Strategies",
+                    "Implementing Caching in Rails",
+                    "Load Balancing for Scaling",
+                    "Scaling Rails Applications for High Traffic"
+                ]
+            }
+        ]
     }
 ]

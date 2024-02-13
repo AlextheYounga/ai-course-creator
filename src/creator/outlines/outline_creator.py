@@ -58,5 +58,5 @@ class OutlineCreator:
 
 
     def compile_master_outline(self, outline_id):
-        compiler = MasterOutlineCompiler(outline_id, self.ai_client)
+        compiler = MasterOutlineCompiler(outline_id)
         return compiler.compile()

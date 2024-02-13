@@ -2,7 +2,6 @@ import os
 import shutil
 from src.utils.files import read_yaml_file, read_json_file
 from src.creator.outlines.master_outline_compiler import MasterOutlineCompiler
-from .mocks.openai_mock_service import OpenAIMockService
 from .mocks.db import *
 
 
@@ -38,8 +37,8 @@ def _setup_test():
 def test_generate_master_outline():
     outline_id = _setup_test()
 
-    client = OpenAIMockService("Test")
-    compiler = MasterOutlineCompiler(outline_id, client)
+    compiler = MasterOutlineCompiler(outline_id)
     outline = compiler.compile()
 
     assert outline.hash == Outline.hash_outline(EXPECTED_MASTER_OUTLINE)
+    assert len(outline.outline_chunks) == 7

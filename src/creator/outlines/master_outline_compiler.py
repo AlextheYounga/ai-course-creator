@@ -11,10 +11,9 @@ load_dotenv()
 
 
 class MasterOutlineCompiler:
-    def __init__(self, outline_id: int, client: OpenAI):
+    def __init__(self, outline_id: int):
         output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 
-        self.ai_client = client
         self.outline = DB.get(Outline, outline_id)
         self.topic = self.outline.topic
         self.output_path = f"{output_directory}/{self.topic.slug}"  # master outline sits at topic level
@@ -25,10 +24,9 @@ class MasterOutlineCompiler:
         master_outline = []
         outline_chunks = self.outline.outline_chunks
 
-        for chunk in outline_chunks:
-            for course in chunk.values():
-                course = self._add_challenges_to_chapters(course)
-                master_outline.append(course)
+        for course in outline_chunks:
+            course = self._add_challenges_to_chapters(course)
+            master_outline.append(course)
 
         return master_outline
 
@@ -68,11 +66,5 @@ class MasterOutlineCompiler:
         # Add Practice Skill Challenges
         for index, _ in enumerate(course['chapters']):
             course['chapters'][index]['pages'].append('Practice Skill Challenge')
-
-        # Add Final Skill Challenge
-        # chapters_list.append({
-        #     'name': 'Final Skill Challenge',
-        #     'pages': [f"Final Skill Challenge Page {i}" for i in range(1, 5)]
-        # })
 
         return {'course': course}

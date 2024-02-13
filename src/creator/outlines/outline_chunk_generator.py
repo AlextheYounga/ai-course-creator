@@ -6,6 +6,7 @@ from src.creator.helpers import get_prompt
 from src.utils.chunks import chunks
 from db.db import DB, Outline
 import yaml
+import progressbar
 
 
 load_dotenv()
@@ -36,14 +37,9 @@ class OutlineChunkGenerator:
                 ("{chunks}", yaml.dump(self.outline.outline_chunks)),
             ])
 
-        system_tuning_prompt = skills_system_prompt + outline_chunks_prompt
-
+        system_tuning_prompt = "\n".join([skills_system_prompt, outline_chunks_prompt])
+        combined_system_prompt = "\n".join([general_system_prompt, system_tuning_prompt])
         user_prompt = get_prompt('user/outlines/outline-chunk', [("{topic}", self.topic.name)])
-
-        combined_system_prompt = "\n".join([
-            general_system_prompt,
-            system_tuning_prompt,
-        ])
 
         return [
             {"role": "system", "content": combined_system_prompt},
@@ -87,11 +83,10 @@ class OutlineChunkGenerator:
             raise Exception("Skills must be generated before generating outlines.")
 
         skill_chunks = chunks(skills, 2)
-        # chunk_count = int(len(skills) / 2)
+        chunk_count = round(len(skills) / 2)
 
-        # with progressbar.ProgressBar(max_value=chunk_count, prefix='Generating outline chunk: ', redirect_stdout=True) as bar:
-        for chunk in skill_chunks:
-            # bar.increment()
-            self.generate_chunk(chunk)
+        with progressbar.ProgressBar(max_value=chunk_count, prefix='Generating outline chunk: ', redirect_stdout=True) as bar:
+            for chunk in skill_chunks:
+                self.generate_chunk(chunk)
 
         return self.outline
