@@ -28,7 +28,6 @@ class Page(Base):
     nodes = mapped_column(JSON)
     position = mapped_column(Integer, nullable=False)
     position_in_course = mapped_column(Integer, nullable=False)
-    position_in_series = mapped_column(Integer, nullable=False)
     generated = mapped_column(Boolean, default=False)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
@@ -121,14 +120,13 @@ class Page(Base):
         page.chapter_slug = chapter_slug
         page.slug = page_slug
         page.path = f"{output_directory}/{topic.slug}/{outline_name}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md"
-        page.generated = os.path.exists(page.path)
         page.content = data.get('content', (open(page.path).read() if page.generated else None))
-        page.hash = self.hash_page(page.content) if page.generated else None
+        page.generated = os.path.exists(page.path) or page.content != None
+        page.hash = self.hash_page(page.content) if page.content else None
         page.permalink = f"/page/{topic.slug}/{course_slug}/{chapter_slug}/{page_slug}"
         page.link = page.permalink if page.generated else '#'
         page.position = data['position']
         page.position_in_course = data['positionInCourse']
-        page.position_in_series = data['positionInSeries']
         page.type = self.get_page_type(name, chapter_slug)
 
         return page
@@ -153,12 +151,12 @@ class Page(Base):
 
 
     @classmethod
-    def check_for_existing_page_material(self, page) -> bool:
+    def check_for_existing_page_material(self, session: Session, page) -> bool:
         existing_content = page.content != None
         file_exists = os.path.exists(page.path)
 
         if file_exists and not existing_content:
-            return self.handle_existing_page_material(page)
+            return self.handle_existing_page_material(session, page)
 
         return existing_content
 

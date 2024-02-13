@@ -57,7 +57,7 @@ class Chapter(Base):
         chapter.slug = chapter_slug
         chapter.course_slug = data['courseSlug']
         chapter.position = data['position']
-        chapter.outline = data['outline']
+        chapter.outline = data.get('outline', None)
         chapter.content_type = 'lesson' if data['name'] != 'Final Skill Challenge' else 'final-skill-challenge'
 
         return chapter

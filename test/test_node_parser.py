@@ -18,7 +18,6 @@ def _setup_test():
             'chapterSlug': "test-chapter",
             'position': 0,
             'positionInCourse': 0,
-            'positionInSeries': 0,
             'content': PAGE_CONTENT,
         })
     return page_record

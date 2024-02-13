@@ -202,6 +202,7 @@ import {
     DocumentTextIcon,
     BookOpenIcon,
     LightBulbIcon,
+    ListBulletIcon
 } from '@heroicons/vue/24/outline';
 import { EllipsisHorizontalIcon } from '@heroicons/vue/20/solid'
 import type { Topic, Course, Chapter, Page } from '@/types/ModelTypes';
@@ -249,6 +250,7 @@ export default {
         DocumentTextIcon,
         BookOpenIcon,
         LightBulbIcon,
+        ListBulletIcon,
         EllipsisHorizontalIcon
     },
     data() {
@@ -258,7 +260,7 @@ export default {
         const selectedKey = ref(undefined);
 
         const navigation: NavigationItem = [
-            { name: 'Topics', href: '/topics', icon: LightBulbIcon },
+            { name: 'Outlines', href: '#', icon: ListBulletIcon },
             { name: 'Prompt Logs', href: '/prompts', icon: ServerIcon },
         ]
         // const commands: CommandItem = [
@@ -361,7 +363,7 @@ export default {
         },
 
         async getCourseMaterial() {
-            const material = await flaskApi.get('/course-material') as TopicOutlineEntities[]
+            const material = await flaskApi.get('/master-outline-course-material') as TopicOutlineEntities[]
             this.nodes = this.translateToTreeLibrary(material)
         },
 

@@ -34,9 +34,9 @@ def get_all_topics():
     return TopicController.get_all()
 
 
-@app.route('/api/course-material', methods=['GET'])
-def get_course_material():
-    return OutlineController.get_all_course_material()
+@app.route('/api/master-outline-course-material', methods=['GET'])
+def get_all_master_outline_material():
+    return OutlineController.get_all_topics_master_outline_material()
 
 
 @app.route('/api/outlines', methods=['GET'])

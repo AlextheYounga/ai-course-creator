@@ -4,7 +4,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from termcolor import colored
 from src.creator.helpers import get_prompt
-from db.db import DB, Topic, Course, Page, Outline
+from db.db import DB, Topic, Course, Chapter, Page, Outline
 from src.utils.chunks import chunks
 import re
 import markdown
@@ -131,15 +131,9 @@ class FinalSkillChallengeCreator:
             Page.topic_id == self.topic.id,
             Page.course_slug == course.slug,
             Page.type == 'final-skill-challenge'
-        ).all()
+        ).count()
 
-        content_generated = [page.content != None for page in fsc_pages]
-
-        if (False not in content_generated):
-            Page.dump_pages(fsc_pages)  # Write to file
-            return True
-
-        return False
+        return fsc_pages > 0
 
 
     def _check_course_incomplete(self, pages: list[Page]):
@@ -150,37 +144,74 @@ class FinalSkillChallengeCreator:
     def _handle_allocate_page_material_to_multiple_pages(self, course: Course, material: str):
         # Parse response for answerables
         answerables = self._handle_split_page_material(material)
-        fsc_chapter = course.skill_challenge_chapter
-        fsc_pages = DB.query(Page).filter(Page.topic_id == self.topic.id, Page.chapter_slug == fsc_chapter).all()
+        fsc_chapter_slug = course.skill_challenge_chapter
 
         generated_pages = []
-        for index, page in enumerate(fsc_pages):
-            if index >= len(answerables): break
-
-            page_material = answerables[index]
-            page = self._update_fsc_page_record(page, page_material)
+        for index, page_material in enumerate(answerables):
+            page = self._create_fsc_page_record(course, fsc_chapter_slug, index, page_material)
             generated_pages.append(page)
 
         return generated_pages
 
 
-    def _update_fsc_page_record(self, page: Page, page_material: str):
-        # Update page record
-        page.content = page_material
-        page.hash = Page.hash_page(page_material)
-        page.link = page.permalink
+    def _create_fsc_page_record(self, course: Course, fsc_chapter_slug: str, page_index: int, page_material: str):
+        page_count = DB.query(Page).filter(
+            Page.topic_id == self.topic.id,
+            Page.course_slug == course.slug,
+        ).count()
+
+        chapter = DB.query(Chapter).filter(
+            Chapter.topic_id == self.topic.id,
+            Chapter.course_slug == course.slug,
+            Chapter.slug == fsc_chapter_slug
+        ).first()
+
+        if not chapter:
+            self._create_fsc_chapter(course, fsc_chapter_slug)
+
+        page_name = f"Final Skill Challenge Page {page_index + 1}"
+        page = Page.first_or_create(
+            DB,
+            self.topic,
+            {
+                'name': page_name,
+                'outlineName': self.outline.name,
+                'courseSlug': course.slug,
+                'chapterSlug': fsc_chapter_slug,
+                'position': page_index,
+                'positionInCourse': page_count + 1,
+                'content': page_material
+            })
+
         page.generated = True
 
         # Save to Database
         DB.add(page)
         DB.commit()
-        DB.refresh(page)
 
         # Write to file
         page.dump_page()
 
         return page
 
+
+    def _create_fsc_chapter(self, course: Course, fsc_chapter_slug: str):
+        chapter_count = DB.query(Chapter).filter(
+            Chapter.topic_id == self.topic.id,
+            Chapter.course_slug == course.slug,
+        ).count()
+
+        chapter = Chapter.first_or_create(
+            DB,
+            self.topic,
+            {
+                'name': fsc_chapter_slug,
+                'courseSlug': course.slug,
+                'position': chapter_count + 1,
+            })
+
+        DB.add(chapter)
+        DB.commit()
 
 
     def _handle_split_page_material(self, material: str) -> list:
@@ -189,7 +220,9 @@ class FinalSkillChallengeCreator:
         soup = BeautifulSoup(html, 'html.parser')
 
         answerables = soup.findAll("div", {"id": re.compile('answerable-*')})
-        answerable_chunks = chunks(answerables, 4)
+        question_count = len(answerables)
+        optimal_divisor = self._find_optimal_divisor(question_count)
+        answerable_chunks = chunks(answerables, optimal_divisor)
 
         answerables_for_pages = []
         for chunk in answerable_chunks:
@@ -198,3 +231,16 @@ class FinalSkillChallengeCreator:
             answerables_for_pages.append(rejoined_answerables)
 
         return answerables_for_pages
+
+
+    def _find_optimal_divisor(self, question_count: int):
+        # Find the optimal divisor for the number of questions
+        optimal_divisor = 0
+        for i in range(4, 9):
+            if question_count % i == 0:
+                optimal_divisor = i
+
+        if optimal_divisor == 0:
+            optimal_divisor = 5
+
+        return optimal_divisor

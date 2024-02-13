@@ -187,7 +187,7 @@ class CourseCreator:
 
         # Generate all pages for course
         if record_type == 'Page' and record.type == 'page':
-            if Page.check_for_existing_page_material(page): return
+            if Page.check_for_existing_page_material(DB, page): return
             return page_creator.generate_page_material(page)
 
         elif record_type == 'Course':
@@ -204,7 +204,7 @@ class CourseCreator:
 
         with progressbar.ProgressBar(max_value=len(pages_to_generate), prefix='Generating pages: ', redirect_stdout=True).start() as bar:
             for page in pages_to_generate:
-                if Page.check_for_existing_page_material(page): continue
+                if Page.check_for_existing_page_material(DB, page): continue
                 page = page_creator.generate_page_material(page)
                 generated_pages.append(page)
 
@@ -221,5 +221,5 @@ class CourseCreator:
             'page': page_creator.generate_page_material,
             'challenge': challenge_creator.generate_practice_skill_challenge
         }
-        if Page.check_for_existing_page_material(page): return
+        if Page.check_for_existing_page_material(DB, page): return
         return creators[page.type](page)

@@ -27,9 +27,7 @@ def _setup_test():
     topic_record = Topic.first_or_create(DB, "Ruby on Rails")
 
     # Import outline
-    Outline.get_or_create_from_file(DB, topic_record.id, MASTER_OUTLINE)
-
-
+    Outline.get_or_create_from_file(DB, topic_record.id)
 
 
 def test_build_datasets():
