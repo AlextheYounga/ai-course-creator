@@ -258,17 +258,17 @@ export default {
         const selectedKey = ref(undefined);
 
         const navigation: NavigationItem = [
+            { name: 'Topics', href: '/topics', icon: LightBulbIcon },
             { name: 'Prompt Logs', href: '/prompts', icon: ServerIcon },
         ]
-        const commands: CommandItem = [
-            { id: 1, name: 'Run Course Generator', method: this.runCourseGenerator },
-        ]
+        // const commands: CommandItem = [
+        //     { id: 1, name: 'Run Course Generator', method: this.runCourseGenerator },
+        // ]
 
         return {
             profileImg,
             nodes,
             navigation,
-            commands,
             expandedKeys,
             selectedKey,
             sidebarOpen: ref(false),

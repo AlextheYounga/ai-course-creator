@@ -7,6 +7,7 @@ from .controllers.log_controller import LogController
 from .controllers.ping_controller import PingController
 from .controllers.page_controller import PageController
 from .controllers.creator_controller import CreatorController
+from .controllers.topic_controller import TopicController
 
 
 
@@ -28,13 +29,18 @@ def index():
 
 
 # API GET Routes
+@app.route('/api/topics', methods=['GET'])
+def get_all_topics():
+    return TopicController.get_all()
+
+
 @app.route('/api/course-material', methods=['GET'])
 def get_course_material():
     return OutlineController.get_all_course_material()
 
 
 @app.route('/api/outlines', methods=['GET'])
-def get_outlines():
+def get_all_outlines():
     return OutlineController.get_all()
 
 
@@ -44,7 +50,7 @@ def get_log(id: int):
 
 
 @app.route('/api/prompts', methods=['GET'])
-def get_logs():
+def get_all_logs():
     return LogController.get_all()
 
 

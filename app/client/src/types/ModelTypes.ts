@@ -2,6 +2,7 @@ export type Topic = {
     id: Number;
     name: String;
     slug: String;
+    outline_count?: Number;
     created_at?: Date | String;
     updated_at?: Date | String;
 }
