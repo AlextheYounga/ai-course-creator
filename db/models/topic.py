@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 class Topic(Base):
     __tablename__ = "topic"
     id = mapped_column(Integer, primary_key=True)
+    master_outline_id = mapped_column(Integer, nullable=True)
     name = mapped_column(String, nullable=False)
     slug = mapped_column(String, nullable=False)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())

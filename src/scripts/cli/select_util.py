@@ -22,8 +22,7 @@ def select_util():
                           'Dump Content From Existing Outline',
                           'Run DB Migrations',
                           'Save Chat',
-                          'Clear Logs',
-                          'Run Draft Translations'
+                          'Clear Logs'
                       ]),
     ]
 

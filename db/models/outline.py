@@ -147,7 +147,6 @@ class Outline(Base):
                             'chapterSlug': chapter_record.slug,
                             'position': page_index,
                             'positionInCourse': page_position_in_course,
-                            'positionInSeries': len(pages),
                         })
                     session.add(page_record)
                     page_position_in_course += 1
