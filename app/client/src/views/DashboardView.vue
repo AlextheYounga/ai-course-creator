@@ -131,7 +131,7 @@
                                                 leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
                                                 <MenuItems class="absolute z-50 mt-0.5 bg-white origin-top-right rounded-md py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                                                     <MenuItem v-slot="{ active }">
-                                                    <button href="#" :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-xs leading-6 text-gray-900 text-nowrap']">Generate {{ slotProps.node?.data?.entity_type }}</button>
+                                                    <button @click="generateFromNode(slotProps.node)" :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-xs leading-6 text-gray-900 text-nowrap']">Generate {{ slotProps.node?.data?.entity_type }}</button>
                                                     </MenuItem>
                                                 </MenuItems>
                                             </transition>
@@ -161,7 +161,7 @@
                                                 leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
                                                 <MenuItems class="absolute z-50 mt-0.5 bg-white origin-top-right rounded-md py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                                                     <MenuItem v-slot="{ active }">
-                                                    <button href="#" :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-xs leading-6 text-gray-900 text-nowrap']">Generate {{ slotProps.node?.data?.entity_type }}</button>
+                                                    <button @click="generateFromNode(slotProps.node)" :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-xs leading-6 text-gray-900 text-nowrap']">Generate {{ slotProps.node?.data?.entity_type }}</button>
                                                     </MenuItem>
                                                 </MenuItems>
                                             </transition>
@@ -365,9 +365,9 @@ export default {
             this.nodes = this.translateToTreeLibrary(material)
         },
 
-        async generateFromHierarchy(node: any) {
-            const material = await flaskApi.get('/course-material') as TopicOutlineEntities[]
-            this.nodes = this.translateToTreeLibrary(material)
+        async generateFromNode(node: any) {
+            await flaskApi.post('/generate', node.data)
+            alert('Course generation started')
         },
 
         startPolling() {
