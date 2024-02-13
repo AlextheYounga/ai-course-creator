@@ -202,12 +202,13 @@ class CourseCreator:
                 if page.course_slug == record.slug and page.slug == record.slug and page.type == 'page'
             ]
 
-        with progressbar.ProgressBar(max_value=len(pages_to_generate), prefix='Generating pages: ', redirect_stdout=True) as bar:
+        with progressbar.ProgressBar(max_value=len(pages_to_generate), prefix='Generating pages: ', redirect_stdout=True).start() as bar:
             for page in pages_to_generate:
-                bar.increment()
                 if Page.check_for_existing_page_material(page): continue
                 page = page_creator.generate_page_material(page)
                 generated_pages.append(page)
+
+                bar.increment()
 
         return generated_pages
 

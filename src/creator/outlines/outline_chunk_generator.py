@@ -48,7 +48,7 @@ class OutlineChunkGenerator:
 
 
     def generate_chunk(self, skills_chunk: dict) -> dict:
-        print(colored(f"Generating {self.topic.name} master outline...", "yellow"))
+        print(colored(f"Generating {self.topic.name} outline chunk...", "yellow"))
 
         messages = self.build_outline_chunk_prompt(skills_chunk)
 
@@ -85,8 +85,9 @@ class OutlineChunkGenerator:
         skill_chunks = chunks(skills, 2)
         chunk_count = round(len(skills) / 2)
 
-        with progressbar.ProgressBar(max_value=chunk_count, prefix='Generating outline chunk: ', redirect_stdout=True) as bar:
+        with progressbar.ProgressBar(max_value=chunk_count, prefix='Generating outline chunk: ', redirect_stdout=True).start() as bar:
             for chunk in skill_chunks:
                 self.generate_chunk(chunk)
+                bar.increment()
 
         return self.outline

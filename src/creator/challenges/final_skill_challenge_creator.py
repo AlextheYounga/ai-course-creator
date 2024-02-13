@@ -43,10 +43,8 @@ class FinalSkillChallengeCreator:
         courses = outline_records['courses']
         courses_count = len(courses)
 
-        with progressbar.ProgressBar(max_value=courses_count, prefix='Generating final skill challenges: ', redirect_stdout=True) as bar:
+        with progressbar.ProgressBar(max_value=courses_count, prefix='Generating final skill challenges: ', redirect_stdout=True).start() as bar:
             for course in courses:
-                bar.increment()
-
                 existing = self._check_for_existing_page_material(course)
                 if (existing):
                     print(colored(f"Skipping existing '{course.name}' final skill challenge material...", "yellow"))
@@ -59,6 +57,8 @@ class FinalSkillChallengeCreator:
 
                 pages = self.generate_final_skill_challenge(course)
                 generated_pages += pages
+
+                bar.increment()
 
         return generated_pages
 

@@ -57,11 +57,9 @@ class PageMaterialCreator:
 
         total_count = len(pages)
 
-        with progressbar.ProgressBar(max_value=total_count, prefix='Generating pages: ', redirect_stdout=True) as bar:
+        with progressbar.ProgressBar(max_value=total_count, prefix='Generating pages: ', redirect_stdout=True).start() as bar:
             # Loop through outline pages
             for page in pages:
-                bar.increment()
-
                 existing = Page.check_for_existing_page_material(page)
                 if (existing):
                     print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
@@ -71,6 +69,8 @@ class PageMaterialCreator:
                 # Generate page material
                 updated_page_record = self.generate_page_material(page)
                 updated_pages.append(updated_page_record)
+
+                bar.increment()
 
         return updated_pages
 
@@ -170,7 +170,7 @@ class PageMaterialCreator:
 
         regenerated_pages = []
 
-        with progressbar.ProgressBar(max_value=len(lesson_pages), prefix='Regenerating pages: ', redirect_stdout=True) as bar:
+        with progressbar.ProgressBar(max_value=len(lesson_pages), prefix='Regenerating pages: ', redirect_stdout=True).start() as bar:
             for page in lesson_pages:
                 page.generated = False
                 DB.add(page)
@@ -178,6 +178,6 @@ class PageMaterialCreator:
                 regenerated = page_creator.generate_page_material(page)
                 regenerated_pages.append(regenerated)
 
-            bar.increment()
+                bar.increment()
 
         return regenerated_pages

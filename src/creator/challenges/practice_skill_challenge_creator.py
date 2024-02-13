@@ -50,11 +50,9 @@ class PracticeSkillChallengeCreator:
         challenge_pages = [page for page in page_entities if page.type == 'challenge']
         total_count = len(challenge_pages)
 
-        with progressbar.ProgressBar(max_value=total_count, prefix='Generating practice challenges: ', redirect_stdout=True) as bar:
+        with progressbar.ProgressBar(max_value=total_count, prefix='Generating practice challenges: ', redirect_stdout=True).start() as bar:
             # Loop through outline pages
             for page in challenge_pages:
-                bar.increment()
-
                 existing = Page.check_for_existing_page_material(page)
                 if (existing):
                     print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
@@ -69,6 +67,7 @@ class PracticeSkillChallengeCreator:
 
                 updated_page_record = self.generate_practice_skill_challenge(page)
                 updated_pages.append(updated_page_record)
+                bar.increment()
 
         return updated_pages
 
@@ -130,7 +129,7 @@ class PracticeSkillChallengeCreator:
 
         regenerated_pages = []
 
-        with progressbar.ProgressBar(max_value=len(challenge_pages), prefix='Regenerating challenges: ', redirect_stdout=True) as bar:
+        with progressbar.ProgressBar(max_value=len(challenge_pages), prefix='Regenerating challenges: ', redirect_stdout=True).start() as bar:
             for page in challenge_pages:
                 page.generated = False
                 DB.add(page)
@@ -138,7 +137,7 @@ class PracticeSkillChallengeCreator:
                 regenerated = challenge_creator.generate_practice_skill_challenge(page)
                 regenerated_pages.append(regenerated)
 
-            bar.increment()
+                bar.increment()
 
         return regenerated_pages
 
