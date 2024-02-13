@@ -3,6 +3,7 @@
         <div class="py-4">
             <Breadcrumbs />
         </div>
+        
         <div class="px-4 sm:px-0 my-12">
             <h1 class="text-3xl font-semibold leading-7 text-white">Prompt & Response Details</h1>
         </div>
@@ -43,9 +44,8 @@
     </div>
 </template>
   
-<script lang="ts">
+<script>
 import flaskApi from '@/router/api'
-import type { Prompt, Response } from '@/types/ModelTypes'
 import {
     Dialog,
     DialogPanel,
@@ -61,14 +61,9 @@ import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 
-type LogLine = {
-    prompt: Prompt
-    response: Response
-}
 
 export default {
     name: 'PromptView',
-
     components: {
         Dialog,
         DialogPanel,
@@ -84,7 +79,7 @@ export default {
         Breadcrumbs
     },
     data() {
-        const log: any = undefined;
+        const log = undefined;
         const logItems = ['prompt', 'response']
         const tabs = [
             { name: 'Prompt', href: '#prompt', current: true },
@@ -101,11 +96,11 @@ export default {
         getTabSelected() {
             return this.tabs.find(tab => tab.current)
         },
-        getJsonField(jsonField: any) {
+        getJsonField(jsonField) {
             return JSON.stringify(jsonField, null, 4).trim()
         },
-        selectTab(tab: any) {
-            this.tabs.forEach((t: any) => {
+        selectTab(tab) {
+            this.tabs.forEach((t) => {
                 if (t.name === tab.name) {
                     t.current = true
                 } else {
@@ -123,8 +118,8 @@ export default {
     },
 
     async mounted() {
-        const promptId = (this.$route.params.id as string)
-        const log = await flaskApi.get(`/prompts/${promptId}`) as LogLine
+        const promptId = (this.$route.params.id)
+        const log = await flaskApi.get(`/prompts/${promptId}`)
         this.log = log
     }
 }

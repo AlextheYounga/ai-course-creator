@@ -4,7 +4,7 @@
     </div>
 </template>
   
-<script lang="ts">
+<script>
 import flaskApi from '@/router/api'
 
 export default {

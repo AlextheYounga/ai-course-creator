@@ -14,7 +14,7 @@
 </template>
 
 
-<script lang="ts">
+<script>
 import { ref } from 'vue'
 import flaskApi from '@/router/api'
 
@@ -22,15 +22,15 @@ export default {
     name: 'DashboardView',
 
     data() {
-        const logs: any = [];
+        const logs = [];
         return {
             logs,
             sidebarOpen: ref(false),
         }
     },
     methods: {
-        logColor(line: string) {
-            let color: string = '';
+        logColor(line) {
+            let color = '';
             if (line.includes('RESPONSE')) {
                 return 'text-green-500'
             }
@@ -39,7 +39,7 @@ export default {
             }
             return color
         },
-        displayLogText(line: string) {
+        displayLogText(line) {
             if (line.includes('RESPONSE')) {
                 return 'RESPONSE: ' + line
             }

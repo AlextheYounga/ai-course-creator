@@ -9,13 +9,13 @@
     </div>
 </template>
   
-<script lang="ts">
+<script>
 import flaskApi from '@/router/api'
 
 export default {
     name: 'PageView',
     data() {
-        const pageHtml: string = "";
+        const pageHtml = "";
 
         return {
             pageHtml: pageHtml,
@@ -23,7 +23,7 @@ export default {
     },
 
     async beforeCreate() {
-        const pageId = (this.$route.params.id as string)
+        const pageId = (this.$route.params.id)
         const pageContent = await flaskApi.get(`/page/${pageId}`)
 
         this.pageHtml = pageContent

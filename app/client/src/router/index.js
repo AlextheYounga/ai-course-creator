@@ -4,6 +4,8 @@ import PageView from '@/views/PageView.vue'
 import Ping from '@/components/Ping.vue'
 import PromptsIndex from '@/views/Prompts/PromptsIndex.vue'
 import PromptView from '@/views/Prompts/PromptView.vue'
+import OutlinesIndex from '@/views/Outlines/OutlinesIndex.vue'
+import OutlineView from '@/views/Outlines/OutlineView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +30,17 @@ const router = createRouter({
       name: 'prompt',
       component: PromptView
     },
+    {
+      path: '/outlines',
+      name: 'outlines',
+      component: OutlinesIndex
+    },
+    {
+      path: '/outlines/:id',
+      name: 'outline',
+      component: OutlineView
+    },
+  
     {
       path: '/ping',
       name: 'ping',

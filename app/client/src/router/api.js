@@ -3,7 +3,7 @@ import axios from 'axios';
 const host = 'http://localhost:5001/api';
 
 const flaskApi = {
-    get(path: string) {
+    get(path) {
         const url = host + path
         return axios.get(url)
             .then((res) => {
@@ -13,7 +13,17 @@ const flaskApi = {
                 console.error(error);
             });
     },
-    post(path: string, data: any = {}) {
+    put(path) {
+        const url = host + path
+        return axios.put(url)
+            .then((res) => {
+                return res.data
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    },
+    post(path, data = {}) {
         const url = host + path
 
         return axios.post(url, data)

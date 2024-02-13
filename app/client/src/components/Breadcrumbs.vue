@@ -24,7 +24,7 @@
 </template>
   
 
-<script lang="ts">
+<script>
 import { ChevronRightIcon, HomeIcon } from '@heroicons/vue/20/solid'
 import { capitalize } from '@/assets/helpers'
 
@@ -34,7 +34,7 @@ export default {
     ChevronRightIcon
   },
   data() {
-    const pages: any = undefined
+    const pages = undefined
 
     return {
       pages
@@ -43,11 +43,11 @@ export default {
   methods: {
     buildBreadcrumbs() {
       const route = this.$route
-      const pathSlugs = route.path.split('/').filter((slug: string) => slug !== '')
+      const pathSlugs = route.path.split('/').filter((slug) => slug !== '')
 
       if (pathSlugs.length === 1) {
         return [{
-          name: capitalize(route.name as string),
+          name: capitalize(route.name),
           href: route.path,
           current: true
         }]

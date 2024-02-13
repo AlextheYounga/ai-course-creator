@@ -31,7 +31,7 @@
           </div>
         </div>
         <div class="rounded-full flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset">{{ line.response.total_tokens }} tokens</div>
-        <div class="rounded-full flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset">temperature: {{ (line.prompt.properties as any)?.temperature ?? 1 }}</div>
+        <div class="rounded-full flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset">temperature: {{ line.prompt.properties?.temperature ?? 1 }}</div>
         <ChevronRightIcon class="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
       </li>
     </ul>
@@ -39,9 +39,8 @@
 </template>
 
 
-<script lang="ts">
+<script>
 import flaskApi from '@/router/api'
-import type { Prompt, Response } from '@/types/ModelTypes'
 import {
   Dialog,
   DialogPanel,
@@ -56,11 +55,6 @@ import {
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
-
-type LogLine = {
-  prompt: Prompt
-  response: Response
-}
 
 export default {
   name: 'PromptsIndex',
@@ -82,8 +76,8 @@ export default {
 
   data() {
     const open = false
-    const logs: LogLine[] = [];
-    const selectedLog: any = null;
+    const logs = [];
+    const selectedLog = null;
 
     return {
       selectedLog,
@@ -93,14 +87,14 @@ export default {
   },
 
   methods: {
-    selectLine(line: { prompt: Prompt, response: Response }) {
+    selectLine(line) {
       this.selectedLog = line
       this.open = true
     },
   },
 
   async mounted() {
-    const logs = await flaskApi.get('/prompts') as LogLine[]
+    const logs = await flaskApi.get('/prompts')
     this.logs = logs
   }
 }
