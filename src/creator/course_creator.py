@@ -51,7 +51,6 @@ class CourseCreator:
 
 
     def generate_topic_courses(self):
-        self.create_outline()
         self.create_topic_page_material()
         self.create_topic_practice_skill_challenges()
         self.create_topic_final_skill_challenges()
