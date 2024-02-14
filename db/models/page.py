@@ -88,7 +88,6 @@ class Page(Base):
             "nodes": self.nodes,
             "position": self.position,
             "position_in_course": self.position_in_course,
-            "position_in_series": self.position_in_series,
             "generated": self.generated,
             "created_at": self.created_at,
             "updated_at": self.updated_at,

@@ -44,6 +44,7 @@ class Topic(Base):
     def to_dict(self):
         return {
             "id": self.id,
+            "master_outline_id": self.master_outline_id,
             "name": self.name,
             "slug": self.slug,
             "created_at": self.created_at,

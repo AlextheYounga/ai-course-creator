@@ -28,7 +28,6 @@ def index():
     return render_template('index.html')
 
 
-# API GET Routes
 @app.route('/api/topics', methods=['GET'])
 def get_all_topics():
     return TopicController.get_all()
@@ -39,9 +38,33 @@ def get_all_master_outline_material():
     return OutlineController.get_all_topics_master_outline_material()
 
 
+@app.route('/api/generate', methods=['POST'])
+def creator_generate():
+    data = request.json
+    CreatorController.generate_entities(data)
+    return 'Success', 200
+
+
 @app.route('/api/outlines', methods=['GET'])
 def get_all_outlines():
     return OutlineController.get_all()
+
+
+@app.route('/api/outlines', methods=['POST'])
+def create_outline():
+    data = request.json
+    return OutlineController.create(data)
+
+
+@app.route('/api/outlines/<id>', methods=['GET'])
+def get_outline(id: int):
+    return OutlineController.get(id)
+
+
+@app.route('/api/outlines/<id>/set-master', methods=['PUT'])
+def set_master_outline(id: int):
+    OutlineController.set_master(id)
+    return 'Success', 200
 
 
 @app.route('/api/prompts/<id>', methods=['GET'])
@@ -63,12 +86,3 @@ def get_page(id: int):
 def ping_pong():
     # sanity check route
     return PingController.ping_pong()
-
-# API POST Routes
-
-
-@app.route('/api/generate', methods=['POST'])
-def creator_generate():
-    data = request.json
-    CreatorController.generate_entities(data)
-    return 'Success', 200

@@ -32,10 +32,10 @@
 
                             <!-- Outline Nodes -->
                             <template #outline="slotProps">
-                                <div class="flex items-center overflow-y-visible">
+                                <div class="flex items-center">
                                     <component :is="slotProps.node?.data?.icon" class="h-6 w-6 shrink-0 pl-1" aria-hidden="true" />
                                     <p class="p-1">{{ slotProps.node.label }}</p>
-                                    <Menu as="div" class="relative ml-auto">
+                                    <Menu as="div">
                                         <MenuButton class="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
                                             <span class="sr-only">Open options</span>
                                             <EllipsisHorizontalIcon class="h-5 w-5" aria-hidden="true" />
@@ -49,7 +49,7 @@
                                                 </button>
                                                 </MenuItem>
                                                 <MenuItem v-slot="{ active }">
-                                                <button @click="setMasterOutline(slotProps.node)" :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-xs leading-6 text-gray-900 text-nowrap']">
+                                                <button @click="setMasterOutline(slotProps.node)" :class="[active ? 'bg-gray-50' : '', 'px-3 py-1 text-xs leading-6 text-gray-900 text-nowrap']">
                                                     Set as Master Outline
                                                 </button>
                                                 </MenuItem>
@@ -224,6 +224,7 @@ export default {
                     key: `topic-${topic.id}`,
                     label: topic.name,
                     children: topicChildren,
+                    open: true,
                     data: {
                         id: topic.id,
                         entityType: 'Topic',

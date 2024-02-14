@@ -1,5 +1,6 @@
 import inquirer
 from ..utils import *
+from src.creator.helpers import dump_outline_content
 from db.db import DB, Topic
 from .select_outline import select_outline
 from .select_topic import select_topic

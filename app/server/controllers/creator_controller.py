@@ -6,21 +6,21 @@ from src.llm.openai_handler import OpenAiHandler
 class CreatorController:
     @staticmethod
     def generate_entities(payload: dict):
-        entity_type = payload['entity_type']
+        entityType = payload['entityType']
         topic_id = payload.get('topic_id', payload.get('id'))
         topic = DB.get(Topic, topic_id)
 
-        if topic and entity_type:
+        if topic and entityType:
             creator = CourseCreator(OpenAiHandler, topic.name)
 
-            if entity_type == 'Topic':
+            if entityType == 'Topic':
                 creator.generate_topic_courses()
-            elif entity_type == 'Course':
+            elif entityType == 'Course':
                 course = DB.get(Course, payload['id'])
                 creator.generate_course(course)
-            elif entity_type == 'Chapter':
+            elif entityType == 'Chapter':
                 chapter = DB.get(Chapter, payload['id'])
                 creator.generate_chapter(chapter)
-            elif entity_type == 'Page':
+            elif entityType == 'Page':
                 page = DB.get(Page, payload['id'])
                 creator.generate_page_material(page)

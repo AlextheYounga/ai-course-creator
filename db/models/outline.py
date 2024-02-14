@@ -68,7 +68,8 @@ class Outline(Base):
 
     @classmethod
     def get_or_create_from_file(self, session: Session, topic_id: int, outline_file: str | None = None):
-        # outline_file: str
+        topic = session.get(Topic, topic_id)
+
         if not outline_file:
             topic = session.get(Topic, topic_id)
             outline_file = self.default_outline_file_path(topic)
@@ -90,10 +91,13 @@ class Outline(Base):
         new_outline.hash = self.hash_outline(new_outline.master_outline)
         new_outline.file_path = outline_file
 
+        topic.master_outline_id = new_outline.id
+
         if last_outline:
             new_outline.skills = last_outline.skills
 
         print(colored("Detected new outline. Processing...", "yellow"))
+        session.add(topic)
         session.add(new_outline)
         session.commit()
         print(colored(f"New outline created {new_outline.name}\n", "green"))
