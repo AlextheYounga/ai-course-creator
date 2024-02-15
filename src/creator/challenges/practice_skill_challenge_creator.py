@@ -35,7 +35,6 @@ class PracticeSkillChallengeCreator:
         page.generated = True
 
         # Save to Database
-        DB.add(page)
         DB.commit()
 
         # Write to file
@@ -132,7 +131,6 @@ class PracticeSkillChallengeCreator:
         with progressbar.ProgressBar(max_value=len(challenge_pages), prefix='Regenerating challenges: ', redirect_stdout=True).start() as bar:
             for page in challenge_pages:
                 page.generated = False
-                DB.add(page)
 
                 regenerated = challenge_creator.generate_practice_skill_challenge(page)
                 regenerated_pages.append(regenerated)

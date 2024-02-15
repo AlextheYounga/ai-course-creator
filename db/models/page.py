@@ -142,7 +142,6 @@ class Page(Base):
             page.link = page.permalink
             page.hash = hash
 
-            session.add(page)
             session.commit()
 
             return True

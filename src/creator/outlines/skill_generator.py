@@ -38,7 +38,6 @@ class SkillGenerator:
 
         # Save to database
         self.outline.skills = validated_response['dict']
-        DB.add(self.outline)
         DB.commit()
 
         write_yaml_file(f"{self.output_path}/skills.yaml", validated_response['yaml'])

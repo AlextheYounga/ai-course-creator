@@ -46,7 +46,6 @@ class MasterOutlineCompiler:
             self.outline = existing_outline
         else:
             self.outline.hash = outline_hash
-            DB.add(self.outline)
             DB.commit()
 
         # Save to YAML file

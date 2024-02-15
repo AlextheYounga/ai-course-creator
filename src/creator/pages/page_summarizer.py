@@ -28,7 +28,6 @@ class PageSummarizer():
         summary = completion['content']
 
         self.page.summary = summary
-        DB.add(self.page)
         DB.commit()
 
         return self.page

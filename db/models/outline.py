@@ -97,7 +97,6 @@ class Outline(Base):
             new_outline.skills = last_outline.skills
 
         print(colored("Detected new outline. Processing...", "yellow"))
-        session.add(topic)
         session.add(new_outline)
         session.commit()
         print(colored(f"New outline created {new_outline.name}\n", "green"))
@@ -173,6 +172,11 @@ class Outline(Base):
         self.create_outline_entities(session, outline.id)
 
         return outline
+
+
+    @staticmethod
+    def get_master_outline(session: Session, topic: Topic):
+        return session.query(Outline).filter(Outline.id == topic.master_outline_id).first()
 
 
     @staticmethod

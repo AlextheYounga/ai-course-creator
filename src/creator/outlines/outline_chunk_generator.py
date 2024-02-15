@@ -62,7 +62,6 @@ class OutlineChunkGenerator:
 
         # Save to database
         self.outline.outline_chunks = existing_outline_chunks
-        DB.add(self.outline)
         DB.commit()
 
         # Save to YAML file
