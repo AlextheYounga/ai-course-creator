@@ -6,32 +6,32 @@
 # These prompts settings take priority, but if not set, the global settings are used.
 prompts:
   skills:
-    temperature: 1
+    temperature: .7
 
   master-outline:
-    temperature: 1
+    temperature: .1
 
   page-material:
-    temperature: 1
+    temperature: .7
 
   summarize-page:
     model: gpt-3.5-turbo-0301 # Fastest, dumbest model
     max_tokens: 100
-    temperature: 1
+    temperature: .7
 
   practice-skill-challenge:
-    temperature: 1
+    temperature: .7
 
   final-skill-challenge:
-    temperature: 1
+    temperature: .7
 
 global: 
   # The ID of the model to use for generating responses.
-  model: "gpt-3.5-turbo-1106" # string, required
+  model: "gpt-4-0125-preview" # string, required
   # Other models used:
   # gpt-3.5-turbo-0301 => Fastest, dumbest model
   # gpt-3.5-turbo-1106 => Midwit model
-  # gpt-4-1106-preview => Slowest, smartest model
+  # gpt-4-0125-preview => Slowest, smartest model
 
   # Adjusts the likelihood of the model repeating the same words or phrases.
   frequency_penalty: 0 # number, optional, defaults to 0, range: -2.0 to 2.0
