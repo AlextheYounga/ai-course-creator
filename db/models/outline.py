@@ -67,6 +67,23 @@ class Outline(Base):
 
 
     @classmethod
+    def get_master_outline(self, session: Session, topic: Topic):
+        if topic.master_outline_id:
+            master_outline_record = session.query(self).filter(self.id == topic.master_outline_id).first()
+
+            if master_outline_record: return master_outline_record
+
+        print(colored(f"Master outline not set for topic {topic.name}", "red"))
+
+        last_outline = session.query(self).order_by(self.id.desc()).first()
+        topic.master_outline_id = last_outline.id
+        session.commit()
+
+        print(colored(f"Defaulting to last outline. ID:{last_outline.id}", "red"))
+        return last_outline
+
+
+    @classmethod
     def create_outline_entities(self, session: Session, outline_id: int):
         outline = session.get(self, outline_id)
         topic = outline.topic

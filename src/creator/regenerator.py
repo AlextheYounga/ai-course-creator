@@ -8,7 +8,7 @@ from db.db import DB, Topic, Outline, Course, Chapter, Page
 class Regenerator:
     def __init__(self, topic: Topic):
         self.topic = topic
-        self.outline = DB.get(Outline, topic.master_outline_id)
+        self.outline = Outline.get_master_outline(DB, topic)
 
 
     def regenerate_course(self, course: Course):

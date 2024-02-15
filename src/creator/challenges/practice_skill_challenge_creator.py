@@ -14,7 +14,7 @@ class PracticeSkillChallengeCreator:
     def __init__(self, topic_id: int, client: OpenAI):
         self.topic = DB.get(Topic, topic_id)
         self.ai_client = client
-        self.outline = DB.get(Outline, self.topic.master_outline_id)
+        self.outline = Outline.get_master_outline(DB, self.topic)
 
 
     # Main

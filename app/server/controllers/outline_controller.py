@@ -101,7 +101,7 @@ class OutlineController:
         topics = DB.query(Topic).all()
 
         for topic in topics:
-            outline = DB.get(Outline, topic.master_outline_id)
+            outline = Outline.get_master_outline(DB, topic)
 
             tree = {**topic.to_dict(), 'children': []}
 
