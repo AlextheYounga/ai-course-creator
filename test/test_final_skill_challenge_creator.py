@@ -27,14 +27,14 @@ def _setup_test():
     topic_record = Topic.first_or_create(DB, "Ruby on Rails")
 
     # Import outline
-    Outline.get_or_create_from_file(DB, topic_record.id)
+    Outline.import_outline(DB, topic_record.id, MASTER_OUTLINE)
 
 
 def test_build_datasets():
     _setup_test()
 
     master_outline = read_yaml_file(MASTER_OUTLINE)
-    topic_record = Topic.first_or_create(DB, "Ruby on Rails")
+    topic_record = DB.query(Topic).filter(Topic.name == "Ruby on Rails").first()
 
     client = OpenAIMockService("Test")
     creator = FinalSkillChallengeCreator(topic_record.id, client)
@@ -49,7 +49,7 @@ def test_build_prompt():
     _setup_test()
 
     master_outline = read_yaml_file(MASTER_OUTLINE)
-    topic_record = Topic.first_or_create(DB, "Ruby on Rails")
+    topic_record = DB.query(Topic).filter(Topic.name == "Ruby on Rails").first()
 
     client = OpenAIMockService("Test")
     creator = FinalSkillChallengeCreator(topic_record.id, client)

@@ -59,14 +59,14 @@ class Topic(Base):
 
     @classmethod
     def first_or_create(self, session: Session, name: str):
-        topic_record = session.query(Topic).filter(Topic.name == name).first()
+        topic_record = session.query(self).filter(self.name == name).first()
+        if topic_record: return topic_record
 
-        if not topic_record:
-            topic_slug = Topic.make_slug(name)
-            topic_record = Topic(name=name, slug=topic_slug)
+        topic_slug = self.make_slug(name)
+        new_topic_record = self(name=name, slug=topic_slug)
 
-            # Save topic to database
-            session.add(topic_record)
-            session.commit()
+        # Save topic to database
+        session.add(new_topic_record)
+        session.commit()
 
-        return topic_record
+        return new_topic_record

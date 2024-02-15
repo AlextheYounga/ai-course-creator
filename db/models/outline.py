@@ -5,7 +5,7 @@ from .chapter import Chapter
 from .course import Course
 from .page import Page
 from .outline_entity import OutlineEntity
-from sqlalchemy.sql import func, text
+from sqlalchemy.sql import func
 from termcolor import colored
 from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
@@ -62,44 +62,6 @@ class Outline(Base):
             topic_id=topic_id,
             name=outline_name
         )
-
-        return new_outline
-
-
-    @classmethod
-    def get_or_create_from_file(self, session: Session, topic_id: int, outline_file: str | None = None):
-        topic = session.get(Topic, topic_id)
-
-        if not outline_file:
-            topic = session.get(Topic, topic_id)
-            outline_file = self.default_outline_file_path(topic)
-
-        outline_data = open(outline_file).read()
-        outline_hash = self.hash_outline(outline_data)
-        outline = session.query(self).filter(self.hash == outline_hash).first()
-        if outline: return outline
-
-        # Create new outline record
-        last_outline = session.query(self).filter(
-            Outline.topic_id == topic_id
-        ).order_by(
-            Outline.id.desc()
-        ).first()
-
-        new_outline = self.instantiate(session, topic_id)
-        new_outline.master_outline = read_yaml_file(outline_file)  # Add changed outline to record
-        new_outline.hash = self.hash_outline(new_outline.master_outline)
-        new_outline.file_path = outline_file
-
-        topic.master_outline_id = new_outline.id
-
-        if last_outline:
-            new_outline.skills = last_outline.skills
-
-        print(colored("Detected new outline. Processing...", "yellow"))
-        session.add(new_outline)
-        session.commit()
-        print(colored(f"New outline created {new_outline.name}\n", "green"))
 
         return new_outline
 
@@ -167,16 +129,34 @@ class Outline(Base):
 
 
     @classmethod
-    def process_outline(self, session: Session, topic_id: int, outline_file: str | None = None):
-        outline = self.get_or_create_from_file(session, topic_id, outline_file)
-        self.create_outline_entities(session, outline.id)
+    def import_outline(self, session: Session, topic_id: int, outline_file: str):
+        topic = session.get(Topic, topic_id)
 
-        return outline
+        outline_data = open(outline_file).read()
+        outline_hash = self.hash_outline(outline_data)
+        outline = session.query(self).filter(self.hash == outline_hash).first()
 
+        if outline:
+            print(colored(f"Outline already exists with hash {outline_hash}", "red"))
 
-    @staticmethod
-    def get_master_outline(session: Session, topic: Topic):
-        return session.query(Outline).filter(Outline.id == topic.master_outline_id).first()
+        # Create new outline record
+        new_outline = self.instantiate(session, topic_id)
+        new_outline.master_outline = read_yaml_file(outline_file)  # Add changed outline to record
+        new_outline.hash = self.hash_outline(new_outline.master_outline)
+        new_outline.file_path = outline_file
+
+        session.add(new_outline)
+        session.commit()
+        print(colored(f"New outline created {new_outline.name}\n", "green"))
+
+        topic.master_outline_id = new_outline.id
+        session.commit()
+        print(colored(f"New master outline set {new_outline.id}\n", "green"))
+
+        # Create outline entities
+        self.create_outline_entities(session, new_outline.id)
+
+        return new_outline
 
 
     @staticmethod

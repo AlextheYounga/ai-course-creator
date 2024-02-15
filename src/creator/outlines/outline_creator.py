@@ -36,7 +36,7 @@ class OutlineCreator:
 
         # Process Outline
         print(colored("\nProcessing Outline...", "yellow"))
-        Outline.process_outline(DB, self.topic.id, outline.file_path)
+        Outline.create_outline_entities(DB, outline.id)
         print(colored("Outline generation complete.\n", "green"))
 
         # Print course

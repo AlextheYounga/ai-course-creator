@@ -26,7 +26,7 @@ def test_generate_course_material():
     topic = Topic.first_or_create(DB, "Ruby on Rails")
 
     # Import outline
-    Outline.process_outline(DB, topic.id)
+    Outline.import_outline(DB, topic.id, MASTER_OUTLINE)
 
     course = DB.query(Course).first()
 
@@ -42,7 +42,7 @@ def test_generate_chapter_material():
     topic = Topic.first_or_create(DB, "Ruby on Rails")
 
     # Import outline
-    Outline.process_outline(DB, topic.id)
+    Outline.import_outline(DB, topic.id, MASTER_OUTLINE)
 
     chapter = DB.query(Chapter).first()
 
@@ -58,7 +58,7 @@ def test_generate_course_final_skill_challenge():
     topic = Topic.first_or_create(DB, "Ruby on Rails")
 
     # Import outline
-    Outline.process_outline(DB, topic.id)
+    Outline.import_outline(DB, topic.id, MASTER_OUTLINE)
 
     course = DB.query(Course).first()
 
@@ -74,7 +74,7 @@ def test_dynamic_generate_page_material_generate_course():
     topic = Topic.first_or_create(DB, "Ruby on Rails")
 
     # Import outline
-    Outline.process_outline(DB, topic.id)
+    Outline.import_outline(DB, topic.id, MASTER_OUTLINE)
 
     course = DB.query(Course).first()
 

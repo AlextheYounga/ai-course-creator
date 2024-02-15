@@ -20,7 +20,7 @@ class FinalSkillChallengeCreator:
     def __init__(self, topic_id: int, client: OpenAI):
         self.topic = DB.get(Topic, topic_id)
         self.ai_client = client
-        self.outline = Outline.process_outline(DB, self.topic.id)
+        self.outline = DB.get(Outline, self.topic.master_outline_id)
 
 
     # Main
@@ -52,11 +52,13 @@ class FinalSkillChallengeCreator:
                 existing = self._check_for_existing_page_material(course)
                 if (existing):
                     print(colored(f"Skipping existing '{course.name}' final skill challenge material...", "yellow"))
+                    bar.increment()
                     continue
 
                 course_incomplete = self._check_course_incomplete(outline_records['pages'])
                 if course_incomplete:
                     print(colored(f"Skipping incomplete course '{course.name}'...", "yellow"))
+                    bar.increment()
                     continue
 
                 pages = self.generate_final_skill_challenge(course)
@@ -259,7 +261,6 @@ class FinalSkillChallengeCreator:
 
 
     def _add_final_skill_challenge_to_outline(self, course: Course, chapter: Chapter, generated_pages: list[Page]):
-        print(course)
         chapter_object = {
             "name": chapter.name,
             "pages": [page.name for page in generated_pages]

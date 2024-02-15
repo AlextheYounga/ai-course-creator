@@ -16,7 +16,8 @@ class PageMaterialCreator:
     def __init__(self, topic_id: int, client: OpenAI):
         self.topic = DB.get(Topic, topic_id)
         self.ai_client = client
-        self.outline = Outline.process_outline(DB, self.topic.id)
+        print(self.topic.master_outline_id)
+        self.outline = DB.get(Outline, self.topic.master_outline_id)
 
 
     # Main

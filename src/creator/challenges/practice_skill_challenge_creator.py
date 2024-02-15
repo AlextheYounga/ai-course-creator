@@ -14,7 +14,7 @@ class PracticeSkillChallengeCreator:
     def __init__(self, topic_id: int, client: OpenAI):
         self.topic = DB.get(Topic, topic_id)
         self.ai_client = client
-        self.outline = Outline.process_outline(DB, self.topic.id)
+        self.outline = DB.get(Outline, self.topic.master_outline_id)
 
 
     # Main
@@ -56,12 +56,14 @@ class PracticeSkillChallengeCreator:
                 if (existing):
                     print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
                     page.dump_page()  # Write to file
+                    bar.increment()
                     continue
 
 
                 chapter_incomplete = self._check_chapter_incomplete(page_entities, page)
                 if chapter_incomplete:
                     print(colored(f"Skipping incomplete chapter {page.chapter_slug}...", "yellow"))
+                    bar.increment()
                     continue
 
                 updated_page_record = self.generate_practice_skill_challenge(page)

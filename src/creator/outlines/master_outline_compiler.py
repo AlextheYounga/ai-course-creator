@@ -48,6 +48,10 @@ class MasterOutlineCompiler:
             self.outline.hash = outline_hash
             DB.commit()
 
+        # Set as Topic Master Outline
+        self.topic.master_outline_id = self.outline.id
+        DB.commit()
+
         # Save to YAML file
         os.makedirs(self.output_path, exist_ok=True)
         with open(f"{self.output_path}/master-outline.yaml", 'w') as yaml_file:

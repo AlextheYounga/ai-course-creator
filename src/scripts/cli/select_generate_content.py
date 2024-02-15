@@ -7,8 +7,6 @@ from db.db import DB, Topic, Outline
 
 
 def select_generate_content(topic: Topic):
-    Outline.process_outline(DB, topic.id)
-
     creator = CourseCreator(OpenAiHandler, topic.name)
 
     content_function_mapping = {

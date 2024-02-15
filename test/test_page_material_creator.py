@@ -22,7 +22,10 @@ def _setup_test():
     shutil.copy(MASTER_OUTLINE, f"{OUTPUT_PATH}/{slug}/master-outline.yaml")
 
     # Instantiate db records
-    Topic.first_or_create(DB, "Ruby on Rails")
+    topic = Topic.first_or_create(DB, "Ruby on Rails")
+
+    # Import outline
+    Outline.import_outline(DB, topic.id, MASTER_OUTLINE)
 
 
 def test_create_page_material():
