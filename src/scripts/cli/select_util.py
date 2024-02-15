@@ -22,6 +22,7 @@ def select_util():
                       choices=[
                           'Dump Content From Existing Outline',
                           'Run DB Migrations',
+                          'Backup Database',
                           'Save Chat',
                           'Clear Logs'
                       ]),
@@ -33,6 +34,8 @@ def select_util():
         return run_dump_outline_content()
     elif answer == 'Run DB Migrations':
         return run_db_migrations()
+    elif answer == 'Backup Database':
+        return backup_database()
     elif answer == 'Save Chat':
         return save_chat()
     elif answer == 'Clear Logs':

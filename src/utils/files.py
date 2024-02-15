@@ -77,6 +77,11 @@ def write_yaml_file(path, data):
             file.write(data)
 
 
+def zip_file(file_path, output_file):
+    with zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        zipf.write(file_path, os.path.basename(file_path))
+
+
 def zip_folder(folder_path, output_file):
     with zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
         len_dir_path = len(folder_path)
@@ -89,6 +94,7 @@ def zip_folder(folder_path, output_file):
 def unzip_folder(zip_file, output_path):
     with zipfile.ZipFile(zip_file, 'r') as zip_ref:
         zip_ref.extractall(output_path)
+
 
 def scan_directory(directory):
     all_files = []
