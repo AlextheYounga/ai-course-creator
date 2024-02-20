@@ -114,12 +114,19 @@ class Page(Base):
         if not page:
             page = self(topic_id=topic.id)
 
+        def get_page_content():
+            if page.content: return page.content
+            if os.path.exists(page.path): return open(page.path).read()
+            return data.get('content', None)
+
         page.name = name
         page.course_slug = course_slug
         page.chapter_slug = chapter_slug
         page.slug = page_slug
         page.path = f"{output_directory}/{topic.slug}/{outline_name}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md"
-        page.content = data.get('content', (open(page.path).read() if page.generated else None))
+        page.content = get_page_content()
+        page.summary = page.summary or data.get('summary', None)
+        page.nodes = page.nodes or data.get('nodes', None)
         page.generated = os.path.exists(page.path) or page.content != None
         page.hash = self.hash_page(page.content) if page.content else None
         page.permalink = f"/page/{topic.slug}/{course_slug}/{chapter_slug}/{page_slug}"

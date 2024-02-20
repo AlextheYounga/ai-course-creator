@@ -33,6 +33,8 @@ class OutlineController:
         DB.add(outline)
         DB.commit()
 
+        Outline.create_outline_entities(DB, outline.id)
+
         return 'Success', 201
 
 

@@ -81,8 +81,9 @@ class CourseCreator:
             if page.type == 'challenge':
                 page = challenge_creator.generate_practice_skill_challenge(page)
                 generated_pages.append(page)
-
-        fsc_creator.generate_final_skill_challenge(course)
+            if page.type == 'final-skill-challenge':
+                page = fsc_creator.generate_final_skill_challenge(page)
+                generated_pages.append(page)
 
 
     def generate_chapter(self, chapter: Chapter):
@@ -163,12 +164,23 @@ class CourseCreator:
 
 
     def generate_course_final_skill_challenge(self, course: Course):
+        outline = Outline.get_master_outline(DB, self.topic)
         session_name = f"Course Final Skill Challenge Generation - {self.topic.name}"
 
         creator = FinalSkillChallengeCreator(self.topic.id, self.client(session_name))
-        pages = creator.generate_final_skill_challenge(course)
 
-        return pages
+        page = DB.query(Page).join(
+            OutlineEntity, OutlineEntity.entity_id == Page.id
+        ).filter(
+            OutlineEntity.outline_id == outline.id,
+            OutlineEntity.entity_type == 'Page',
+            Page.course_slug == course.slug,
+            Page.type == 'final-skill-challenge'
+        ).first()
+
+        fsc_page = creator.generate_final_skill_challenge(page)
+
+        return fsc_page
 
 
     def generate_entity_page_material(self, record: Course | Chapter | Page):

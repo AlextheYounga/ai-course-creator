@@ -70,4 +70,11 @@ class MasterOutlineCompiler:
         for index, _ in enumerate(course['chapters']):
             course['chapters'][index]['pages'].append('Practice Skill Challenge')
 
+        # Add Final Skill Challenge
+        fsc_chapter = {
+            "name": "Final Skill Challenge",
+            "pages": ["Final Skill Challenge"]
+        }
+        course['chapters'].append(fsc_chapter)
+
         return {'course': course}

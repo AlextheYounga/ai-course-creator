@@ -26,43 +26,51 @@ class FinalSkillChallengeCreator:
     # Main
 
 
-    def generate_final_skill_challenge(self, course: Course):
-        messages = self.build_skill_challenge_prompt(course.slug)
+    def generate_final_skill_challenge(self, page: Page):
+        messages = self.build_skill_challenge_prompt(page.course_slug)
 
         # Send to ChatGPT
         validated_response = self.ai_client.send_prompt('final-skill-challenge', messages, options={})
         material = validated_response['content']
 
-        chapter, generated_pages = self._handle_allocate_page_material_to_multiple_pages(course, material)
+        # Update page record
+        page.content = material
+        page.hash = Page.hash_page(material)
+        page.link = page.permalink
+        page.generated = True
 
-        # Add to master outline
-        self._add_final_skill_challenge_to_outline(course, chapter, generated_pages)
+        # Save to Database
+        DB.commit()
 
-        return generated_pages
+        # Write to file
+        page.dump_page()
+
+        return page
 
 
     def create_from_outline(self):
         generated_pages = []
-        outline_records = Outline.get_entities(DB, self.outline.id)
-        courses = outline_records['courses']
-        courses_count = len(courses)
+        entities = Outline.get_entities(DB, self.outline.id)
+        fsc_pages = [page for page in entities['pages'] if page.type == 'final-skill-challenge']
+        total_count = len(fsc_pages)
 
-        with progressbar.ProgressBar(max_value=courses_count, prefix='Generating final skill challenges: ', redirect_stdout=True).start() as bar:
-            for course in courses:
-                existing = self._check_for_existing_page_material(course)
+        with progressbar.ProgressBar(max_value=total_count, prefix='Generating final skill challenges: ', redirect_stdout=True).start() as bar:
+            for page in fsc_pages:
+                existing = Page.check_for_existing_page_material(DB, page)
                 if (existing):
-                    print(colored(f"Skipping existing '{course.name}' final skill challenge material...", "yellow"))
+                    print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
+                    page.dump_page()  # Write to file
                     bar.increment()
                     continue
 
-                course_incomplete = self._check_course_incomplete(outline_records['pages'])
+                course_incomplete = self._check_course_incomplete(page.course_slug, entities['pages'])
                 if course_incomplete:
-                    print(colored(f"Skipping incomplete course '{course.name}'...", "yellow"))
+                    print(colored(f"Skipping incomplete course '{page.course_slug}'...", "yellow"))
                     bar.increment()
                     continue
 
-                pages = self.generate_final_skill_challenge(course)
-                generated_pages += pages
+                page = self.generate_final_skill_challenge(page)
+                generated_pages.append(page)
 
                 bar.increment()
 
@@ -132,152 +140,6 @@ class FinalSkillChallengeCreator:
     # Private Methods
 
 
-    def _check_for_existing_page_material(self, course: Course):
-        fsc_pages = DB.query(Page).filter(
-            Page.topic_id == self.topic.id,
-            Page.course_slug == course.slug,
-            Page.type == 'final-skill-challenge'
-        ).count()
-
-        return fsc_pages > 0
-
-
-    def _check_course_incomplete(self, pages: list[Page]):
-        pages_generated = [page.generated for page in pages if page.type == 'page']
+    def _check_course_incomplete(self, course_slug: str, pages: list[Page]):
+        pages_generated = [page.generated for page in pages if page.type == 'page' and page.course_slug == course_slug]
         return False in pages_generated
-
-
-    def _handle_allocate_page_material_to_multiple_pages(self, course: Course, material: str):
-        # Parse response for answerables
-        answerables = self._handle_split_page_material(material)
-        fsc_chapter_slug = course.skill_challenge_chapter
-        chapter = self._create_fsc_chapter(course, fsc_chapter_slug)
-
-        generated_pages = []
-        for index, page_material in enumerate(answerables):
-            page = self._create_fsc_page_record(course, chapter, index, page_material)
-            generated_pages.append(page)
-
-        return chapter, generated_pages
-
-
-    def _handle_split_page_material(self, material: str) -> list:
-        # Split 20 questions into chunks of 4 questions per page
-        html = markdown.markdown(material, extensions=['fenced_code'])
-        soup = BeautifulSoup(html, 'html.parser')
-
-        answerables = soup.findAll("div", {"id": re.compile('answerable-*')})
-        question_count = len(answerables)
-        optimal_divisor = self._find_optimal_divisor(question_count)
-        answerable_chunks = chunks(answerables, optimal_divisor)
-
-        answerables_for_pages = []
-        for chunk in answerable_chunks:
-            text_chunks = [str(item) for item in chunk]
-            rejoined_answerables = ("\n\n").join(text_chunks)
-            answerables_for_pages.append(rejoined_answerables)
-
-        return answerables_for_pages
-
-
-    def _find_optimal_divisor(self, question_count: int):
-        # Find the optimal divisor for the number of questions
-        optimal_divisor = 0
-        for i in range(4, 9):
-            if question_count % i == 0:
-                optimal_divisor = i
-
-        if optimal_divisor == 0:
-            optimal_divisor = 5
-
-        return optimal_divisor
-
-
-    def _create_fsc_page_record(self, course: Course, chapter: Chapter, page_index: int, page_material: str):
-        page_count = DB.query(Page).filter(
-            Page.topic_id == self.topic.id,
-            Page.course_slug == course.slug,
-        ).count()
-
-        page_name = f"Final Skill Challenge Page {page_index + 1}"
-        page = Page.first_or_create(
-            DB,
-            self.topic,
-            {
-                'name': page_name,
-                'outlineName': self.outline.name,
-                'courseSlug': course.slug,
-                'chapterSlug': chapter.slug,
-                'position': page_index,
-                'positionInCourse': page_count + 1,
-                'content': page_material
-            })
-
-        page.generated = True
-
-        # Save to Database
-        DB.add(page)
-        DB.commit()
-
-        # Add to Outline
-        OutlineEntity.first_or_create(DB, self.outline.id, page)
-
-        # Write to file
-        page.dump_page()
-
-        return page
-
-
-    def _create_fsc_chapter(self, course: Course, fsc_chapter_slug: str):
-        existing_chapter_record = DB.query(Chapter).filter(
-            Chapter.topic_id == self.topic.id,
-            Chapter.course_slug == course.slug,
-            Chapter.slug == fsc_chapter_slug
-        ).first()
-
-        if existing_chapter_record: return existing_chapter_record
-
-        chapter_count = DB.query(Chapter).filter(
-            Chapter.topic_id == self.topic.id,
-            Chapter.course_slug == course.slug,
-        ).count()
-
-        chapter = Chapter.first_or_create(
-            DB,
-            self.topic,
-            {
-                'name': "Final Skill Challenge",
-                'courseSlug': course.slug,
-                'position': chapter_count + 1,
-            })
-
-        DB.add(chapter)
-        DB.commit()
-
-        # Add to Outline
-        OutlineEntity.first_or_create(DB, self.outline.id, chapter)
-
-        return chapter
-
-
-    def _add_final_skill_challenge_to_outline(self, course: Course, chapter: Chapter, generated_pages: list[Page]):
-        chapter_object = {
-            "name": chapter.name,
-            "pages": [page.name for page in generated_pages]
-        }
-
-        master_outline = self.outline.master_outline
-        for index, outline_course in enumerate(master_outline):
-            # Add to master outline object
-            if outline_course['course']['courseName'] == course.name:
-                master_outline[index]['course']['chapters'].append(chapter_object)
-                break
-
-        self.outline.master_outline = master_outline
-        self.outline.hash = Outline.hash_outline(master_outline)
-
-        # Have to do this to update the JSON field (SQLAlchemy JSON fields are immutable by default)
-        flag_modified(self.outline, "master_outline")
-
-        DB.add(self.outline)
-        DB.commit()

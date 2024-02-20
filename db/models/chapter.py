@@ -26,6 +26,17 @@ class Chapter(Base):
     def make_slug(name, course_slug):
         return slugify(name) if name != 'Final Skill Challenge' else f"final-skill-challenge-{course_slug}"
 
+
+    def get_content_type(slug):
+        if 'final-skill-challenge' in slug:
+            return 'final-skill-challenge'
+
+        if 'challenge' in slug:
+            return 'challenge'
+
+        return 'lesson'
+
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -58,6 +69,6 @@ class Chapter(Base):
         chapter.course_slug = data['courseSlug']
         chapter.position = data['position']
         chapter.outline = data.get('outline', None)
-        chapter.content_type = 'lesson' if 'final-skill-challenge' not in chapter_slug else 'final-skill-challenge'
+        chapter.content_type = self.get_content_type(chapter_slug)
 
         return chapter
