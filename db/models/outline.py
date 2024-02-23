@@ -69,7 +69,10 @@ class Outline(Base):
     @classmethod
     def get_master_outline(self, session: Session, topic: Topic):
         if topic.master_outline_id:
-            master_outline_record = session.query(self).filter(self.id == topic.master_outline_id).first()
+            master_outline_record = session.query(self).filter(
+                self.topic_id == topic.id,
+                self.id == topic.master_outline_id
+            ).first()
 
             if master_outline_record: return master_outline_record
 
