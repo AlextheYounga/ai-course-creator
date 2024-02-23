@@ -1,5 +1,5 @@
 from .mocks.db import *
-from src.mapping.node_parser import NodeParser
+from src.mapping.functions.build_nodes_from_page_content import build_nodes_from_page_content
 
 PAGE_CONTENT = open('test/fixtures/responses/page.md').read()
 
@@ -25,7 +25,7 @@ def _setup_test():
 
 def test_parse_content():
     page_record = _setup_test()
-    page = NodeParser.parse_nodes(page_record)
+    page = build_nodes_from_page_content(page_record)
 
     assert page.nodes != None
     assert len(page.nodes) == 3

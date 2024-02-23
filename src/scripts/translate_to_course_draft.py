@@ -1,6 +1,5 @@
 import os
 from ..mapping.map_courses_to_course_drafts import map_courses_to_course_drafts
-from .parse_content_nodes import parse_nodes_from_all_pages
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db.models.course_draft import *
@@ -21,8 +20,6 @@ def translate_to_course_draft(db_path: str = f"sqlite:///{DB_PATH}"):
     # Reset output directory
     if (os.path.exists(DB_PATH)):
         os.remove(DB_PATH)
-
-    parse_nodes_from_all_pages()
 
     print("\n")
 
