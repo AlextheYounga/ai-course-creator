@@ -4,7 +4,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from termcolor import colored
 from src.creator.helpers import get_prompt
-from db.db import DB, Topic, Course, Chapter, Page, Outline, OutlineEntity
+from db.db import DB, Topic, Course, Page, Outline, OutlineEntity
 from sqlalchemy.orm.attributes import flag_modified
 from src.utils.chunks import chunks
 import re
@@ -85,11 +85,14 @@ class FinalSkillChallengeCreator:
         course_pages_content = "The following is all the content from this course:\n\n"
 
         # Fetch all chapter pages
-        page_entities = Outline.get_entities_by_type(DB, self.outline.id, 'Page')
-        pages = [
-            page for page in page_entities
-            if page.type == 'page' and page.course_slug == course_slug
-        ]
+        pages = DB.query(Page).join(
+            OutlineEntity, OutlineEntity.entity_id == Page.id
+        ).filter(
+            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.entity_type == "Page",
+            Page.course_slug == course_slug,
+            Page.type == 'page'
+        ).all()
 
         for page in pages:
             course_pages_content += f"{page.content}\n\n"

@@ -70,12 +70,9 @@ class OpenAIMockService(OpenAiHandler):
                 response = material
 
             if name == 'final-skill-challenge':
-                html = markdown.markdown(EXPECTED_FINAL_SKILL_CHALLENGE_RESPONSE, extensions=['fenced_code'])
-                soup = BeautifulSoup(html, 'html.parser')
-                for div in soup.find_all('div'):
-                    hash = random.getrandbits(128)
-                    div.append(str(hash))
-                response = str(soup)
+                hash = random.getrandbits(128)
+                material = str(hash) + "\n" + EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE
+                response = material
 
         self.client.completion.choices[0].message.content = response
         completion = self.client.completion
