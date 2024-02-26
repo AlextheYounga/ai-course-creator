@@ -56,12 +56,7 @@ class FinalSkillChallengeCreator:
 
         with progressbar.ProgressBar(max_value=total_count, prefix='Generating final skill challenges: ', redirect_stdout=True).start() as bar:
             for page in fsc_pages:
-                existing = Page.check_for_existing_page_material(DB, page)
-                if (existing):
-                    print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
-                    page.dump_page()  # Write to file
-                    bar.increment()
-                    continue
+                page = Page.check_for_existing_page_material(DB, page)
 
                 course_incomplete = self._check_course_incomplete(page.course_slug, entities['pages'])
                 if course_incomplete:
@@ -122,25 +117,6 @@ class FinalSkillChallengeCreator:
         user_payload = [{"role": "user", "content": user_prompt}]
 
         return system_payload + user_payload
-
-
-
-    # Class Methods
-
-
-    @classmethod
-    def regenerate(self, client: OpenAI, topic: Topic, course: Course):
-        DB.query(Page).filter(
-            Page.topic_id == course.topic_id,
-            Page.course_slug == course.slug,
-            Page.type == 'final-skill-challenge',
-            Page.active == True,
-        ).delete()
-
-        DB.commit()
-
-        challenge_creator = self(topic.id, client)
-        return challenge_creator.generate_final_skill_challenge(course)
 
 
     # Private Methods

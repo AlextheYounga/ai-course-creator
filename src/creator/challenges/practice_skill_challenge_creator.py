@@ -52,13 +52,7 @@ class PracticeSkillChallengeCreator:
         with progressbar.ProgressBar(max_value=total_count, prefix='Generating practice challenges: ', redirect_stdout=True).start() as bar:
             # Loop through outline pages
             for page in challenge_pages:
-                existing = Page.check_for_existing_page_material(DB, page)
-                if (existing):
-                    print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
-                    page.dump_page()  # Write to file
-                    bar.increment()
-                    continue
-
+                page = Page.check_for_existing_page_material(DB, page)
 
                 chapter_incomplete = self._check_chapter_incomplete(page_entities, page)
                 if chapter_incomplete:

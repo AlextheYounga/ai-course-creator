@@ -48,6 +48,7 @@ class Outline(Base):
             "outline_chunks": self.outline_chunks,
             "master_outline": self.master_outline,
             "file_path": self.file_path,
+            "properties": self.properties,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }

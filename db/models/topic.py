@@ -49,6 +49,7 @@ class Topic(Base):
             "master_outline_id": self.master_outline_id,
             "name": self.name,
             "slug": self.slug,
+            "properties": self.properties,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }

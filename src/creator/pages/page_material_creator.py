@@ -61,11 +61,7 @@ class PageMaterialCreator:
         with progressbar.ProgressBar(max_value=total_count, prefix='Generating pages: ', redirect_stdout=True).start() as bar:
             # Loop through outline pages
             for page in pages:
-                existing = Page.check_for_existing_page_material(DB, page)
-                if (existing):
-                    print(colored(f"Skipping existing '{page.name}' page material...", "yellow"))
-                    page.dump_page()  # Write to file
-                    continue
+                page = Page.check_for_existing_page_material(DB, page)
 
                 # Generate page material
                 updated_page_record = self.generate_page_material(page)

@@ -91,6 +91,8 @@ class Page(Base):
             "position": self.position,
             "position_in_course": self.position_in_course,
             "generated": self.generated,
+            "properties": self.properties,
+            "active": self.active,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
@@ -141,31 +143,37 @@ class Page(Base):
 
 
     @classmethod
-    def handle_existing_page_material(self, session: Session, page):
-        material = open(page.path, 'r').read()
-        hash = self.hash_page(material)
+    def check_for_existing_page_material(self, session: Session, page):
+        if page.content == None: return page
 
-        if page.hash != hash:
-            page.content = material
-            page.generated = True
-            page.link = page.permalink
-            page.hash = hash
+        # Soft deleting existing page
+        page.active = False
 
-            session.commit()
+        print(colored(f"Found existing page material. Soft deleting existing page and regenerating content", "yellow"))
 
-            return True
-        return False
+        new_page = self(
+            topic_id=page.topic_id,
+            course_slug=page.course_slug,
+            chapter_slug=page.chapter_slug,
+            name=page.name,
+            slug=page.slug,
+            path=page.path,
+            content=None,
+            summary=None,
+            nodes=None,
+            generated=False,
+            hash=None,
+            permalink=page.permalink,
+            link='#',
+            position=page.position,
+            position_in_course=page.position_in_course,
+            type=page.type,
+            properties=page.properties
+        )
 
+        session.add(new_page)
 
-    @classmethod
-    def check_for_existing_page_material(self, session: Session, page) -> bool:
-        existing_content = page.content != None
-        file_exists = os.path.exists(page.path)
-
-        if file_exists and not existing_content:
-            return self.handle_existing_page_material(session, page)
-
-        return existing_content
+        return new_page
 
 
     @staticmethod
