@@ -91,7 +91,8 @@ class FinalSkillChallengeCreator:
             OutlineEntity.outline_id == self.outline.id,
             OutlineEntity.entity_type == "Page",
             Page.course_slug == course_slug,
-            Page.type == 'page'
+            Page.type == 'page',
+            Page.active == True,
         ).all()
 
         for page in pages:
@@ -132,7 +133,8 @@ class FinalSkillChallengeCreator:
         DB.query(Page).filter(
             Page.topic_id == course.topic_id,
             Page.course_slug == course.slug,
-            Page.type == 'final-skill-challenge'
+            Page.type == 'final-skill-challenge',
+            Page.active == True,
         ).delete()
 
         DB.commit()

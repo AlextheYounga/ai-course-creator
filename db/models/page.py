@@ -29,6 +29,8 @@ class Page(Base):
     position = mapped_column(Integer, nullable=False)
     position_in_course = mapped_column(Integer, nullable=False)
     generated = mapped_column(Boolean, default=False)
+    properties = mapped_column(JSON)
+    active = mapped_column(Boolean, default=True)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 

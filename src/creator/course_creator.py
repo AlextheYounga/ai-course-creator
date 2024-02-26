@@ -90,7 +90,8 @@ class CourseCreator:
         ).filter(
             OutlineEntity.outline_id == outline.id,
             OutlineEntity.entity_type == 'Page',
-            Page.course_slug == course.slug
+            Page.course_slug == course.slug,
+            Page.active == True,
         ).all()
 
         generated_pages = []
@@ -120,7 +121,8 @@ class CourseCreator:
             OutlineEntity.outline_id == outline.id,
             OutlineEntity.entity_type == 'Page',
             Page.course_slug == chapter.course_slug,
-            Page.chapter_slug == chapter.slug
+            Page.chapter_slug == chapter.slug,
+            Page.active == True,
         ).all()
 
         generated_pages = []
@@ -149,7 +151,8 @@ class CourseCreator:
             OutlineEntity.entity_type == 'Page',
             Page.course_slug == chapter.course_slug,
             Page.chapter_slug == chapter.slug,
-            Page.type == 'challenge'
+            Page.type == 'challenge',
+            Page.active == True,
         ).all()
 
         generated_pages = []
@@ -171,7 +174,8 @@ class CourseCreator:
             OutlineEntity.outline_id == outline.id,
             OutlineEntity.entity_type == 'Page',
             Page.type == 'challenge',
-            Page.course_slug == course.slug
+            Page.course_slug == course.slug,
+            Page.active == True,
         ).all()
 
         session_name = f"Course Practice Challenge Generation - {self.topic.name}"
@@ -196,7 +200,8 @@ class CourseCreator:
             OutlineEntity.outline_id == outline.id,
             OutlineEntity.entity_type == 'Page',
             Page.course_slug == course.slug,
-            Page.type == 'final-skill-challenge'
+            Page.type == 'final-skill-challenge',
+            Page.active == True,
         ).first()
 
         fsc_page = creator.generate_final_skill_challenge(page)

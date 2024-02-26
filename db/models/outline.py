@@ -216,7 +216,8 @@ class Outline(Base):
                 OutlineEntity, OutlineEntity.entity_id == Page.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
-                OutlineEntity.entity_type == type
+                OutlineEntity.entity_type == type,
+                Page.active == True,
             ).all()
         else:
             return None
@@ -243,7 +244,8 @@ class Outline(Base):
                 OutlineEntity, OutlineEntity.entity_id == Page.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
-                OutlineEntity.entity_type == 'Page'
+                OutlineEntity.entity_type == 'Page',
+                Page.active == True,
             ).all()
         }
 

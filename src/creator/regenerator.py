@@ -17,6 +17,7 @@ class Regenerator:
         pages = DB.query(Page).filter(
             Topic.id == course.topic_id,
             Page.course_slug == course.slug,
+            Page.active == True,
         ).all()
 
         if len(pages) == 0:
@@ -42,7 +43,8 @@ class Regenerator:
         pages = DB.query(Page).filter(
             Topic.id == chapter.topic_id,
             Page.course_slug == chapter.course_slug,
-            Page.chapter_slug == chapter.slug
+            Page.chapter_slug == chapter.slug,
+            Page.active == True,
         ).all()
 
         if len(pages) == 0:
