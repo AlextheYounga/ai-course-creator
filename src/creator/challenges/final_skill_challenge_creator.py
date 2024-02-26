@@ -101,11 +101,12 @@ class FinalSkillChallengeCreator:
 
 
     def build_skill_challenge_prompt(self, course_slug: str):
+        topic_language = self.topic.properties.get("language", self.topic.slug)
+
         # Combine all page content into a single string
         all_pages_content = self.prepare_course_content_prompt(course_slug)
-
         general_system_prompt = get_prompt(self.topic, 'system/general', [("{topic}", self.topic.name)])
-        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', None)
+        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', [("{topicLanguage}"), topic_language])
 
         combined_system_prompt = "\n".join([
             general_system_prompt,

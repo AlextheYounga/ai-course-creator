@@ -120,11 +120,13 @@ class PageMaterialCreator:
 
 
     def build_page_material_prompt(self, page_name: str):
+        topic_language = self.topic.properties.get("language", self.topic.slug)
+
         # Combine multiple system prompts into one
         general_system_prompt = get_prompt(self.topic, 'system/general', [("{topic}", self.topic.name)])
 
         # Inform model on how we want to format interactives
-        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', None)
+        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', [("{topicLanguage}"), topic_language])
 
         # Inform model on our outline
         outline_formatted = self.format_outline_for_prompt()
