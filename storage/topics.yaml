@@ -1,0 +1,12 @@
+topics:
+  Ruby on Rails:
+    prompts: programming
+    language: ruby
+
+  Javascript:
+    prompts: programming
+    language: javascript
+
+  Python:
+    prompts: programming
+    language: python

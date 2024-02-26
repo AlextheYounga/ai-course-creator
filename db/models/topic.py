@@ -1,6 +1,7 @@
 from .base import Base
+from src.utils.files import read_yaml_file
 from sqlalchemy.sql import func
-from sqlalchemy import Integer, String, DateTime
+from sqlalchemy import Integer, String, DateTime, JSON
 from sqlalchemy.orm import mapped_column, relationship
 from src.utils.strings import slugify
 from sqlalchemy.orm import Session
@@ -13,6 +14,7 @@ class Topic(Base):
     master_outline_id = mapped_column(Integer, nullable=True)
     name = mapped_column(String, nullable=False)
     slug = mapped_column(String, nullable=False)
+    properties = mapped_column(JSON)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
@@ -58,12 +60,26 @@ class Topic(Base):
 
 
     @classmethod
+    def get_topic_properties_from_file(self, name: str):
+        topics_data = read_yaml_file("storage/topics.yaml")
+        topic = topics_data['topics'][name]
+        if topic: return topic
+        return {}
+
+
+    @classmethod
     def first_or_create(self, session: Session, name: str):
         topic_record = session.query(self).filter(self.name == name).first()
         if topic_record: return topic_record
 
         topic_slug = self.make_slug(name)
-        new_topic_record = self(name=name, slug=topic_slug)
+        properties = self.get_topic_properties_from_file(name)
+
+        new_topic_record = self(
+            name=name,
+            slug=topic_slug,
+            properties=properties
+        )
 
         # Save topic to database
         session.add(new_topic_record)

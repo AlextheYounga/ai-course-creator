@@ -25,6 +25,7 @@ class Outline(Base):
     outline_chunks = mapped_column(JSON)
     master_outline = mapped_column(JSON)
     file_path = mapped_column(String)
+    properties = mapped_column(JSON)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 

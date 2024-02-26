@@ -12,6 +12,7 @@ While creating page material, please cleverly insert an answerable component som
 ## Code Editor/Code Executor
 <div id="answerable-code-editor">
     <p id="question">Write a program that calculates 2 + 2</p>
+    <pre class="language-{topicLanguage}"><code>// Write a program that calculates 2 + 2</code></pre>
     <p id="correct-answer">4</p>
 </div>
 

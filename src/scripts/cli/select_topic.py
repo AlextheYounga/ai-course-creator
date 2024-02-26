@@ -1,9 +1,10 @@
-from src.utils.files import read_json_file
+from src.utils.files import read_yaml_file
 import inquirer
 
 
 def select_topic():
-    topic_choices = read_json_file("storage/topics.json")
+    topics = read_yaml_file("storage/topics.yaml")
+    topic_choices = list(topics['topics'].keys())
 
     choices = [
         inquirer.List('topic',
