@@ -98,8 +98,8 @@ class PracticeSkillChallengeCreator:
         # Combine all page content into a single string
         all_pages_content = self.prepare_chapter_content_prompt(course_slug, chapter_slug)
 
-        general_system_prompt = get_prompt('system/general', [("{topic}", self.topic.name)])
-        interactives_system_prompt = get_prompt('system/tune-interactives', None)
+        general_system_prompt = get_prompt(self.topic, 'system/general', [("{topic}", self.topic.name)])
+        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', None)
 
         combined_system_prompt = "\n".join([
             general_system_prompt,
@@ -107,7 +107,7 @@ class PracticeSkillChallengeCreator:
             all_pages_content
         ])
 
-        user_prompt = get_prompt('user/challenges/practice-skill-challenge', None)
+        user_prompt = get_prompt(self.topic, 'user/challenges/practice-skill-challenge', None)
 
         # Build message payload
         system_payload = [{"role": "system", "content": combined_system_prompt}]

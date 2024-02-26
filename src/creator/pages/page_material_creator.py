@@ -121,14 +121,14 @@ class PageMaterialCreator:
 
     def build_page_material_prompt(self, page_name: str):
         # Combine multiple system prompts into one
-        general_system_prompt = get_prompt('system/general', [("{topic}", self.topic.name)])
+        general_system_prompt = get_prompt(self.topic, 'system/general', [("{topic}", self.topic.name)])
 
         # Inform model on how we want to format interactives
-        interactives_system_prompt = get_prompt('system/tune-interactives', None)
+        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', None)
 
         # Inform model on our outline
         outline_formatted = self.format_outline_for_prompt()
-        material_system_prompt = get_prompt('system/pages/tune-outline', [
+        material_system_prompt = get_prompt(self.topic, 'system/pages/tune-outline', [
             ("{topic}", self.topic.name),
             ("{outline}", yaml.dump(outline_formatted, sort_keys=False)),
         ])
@@ -136,10 +136,10 @@ class PageMaterialCreator:
         # Get prior page summaries
         summaries = self.collect_prior_page_summaries()
 
-        prior_page_material_prompt = get_prompt(
-            'system/pages/tune-page-summaries',
-            [("{summaries}", summaries)]
-        )
+        prior_page_material_prompt = get_prompt(self.topic,
+                                                'system/pages/tune-page-summaries',
+                                                [("{summaries}", summaries)]
+                                                )
 
         combined_system_prompt = "\n---\n".join([
             general_system_prompt,
@@ -148,7 +148,7 @@ class PageMaterialCreator:
             prior_page_material_prompt
         ])
 
-        user_prompt = get_prompt('user/pages/page-material', [("{page_name}", page_name)])
+        user_prompt = get_prompt(self.topic, 'user/pages/page-material', [("{page_name}", page_name)])
 
         # Build message payload
         return [

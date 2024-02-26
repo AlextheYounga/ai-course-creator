@@ -37,7 +37,9 @@ class PageSummarizer():
 
 
     def build_summarize_page_prompt(self):
-        summarize_prompt = get_prompt('user/pages/summarize', [("{content}", self.page.content)])
+        topic = self.page.topic
+        summarize_prompt = get_prompt(topic, 'user/pages/summarize', [("{content}", self.page.content)])
+
         return [
             {"role": "user", "content": summarize_prompt},
         ]
