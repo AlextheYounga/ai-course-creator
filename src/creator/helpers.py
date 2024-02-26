@@ -6,7 +6,7 @@ import yaml
 
 
 def get_prompt(topic: Topic, filename: str, replace: Optional[list[tuple]]) -> str:
-    prompt_collection = topic.properties.get("prompt_collection", 'default')
+    prompt_collection = topic.properties.get("prompts", 'default')
     prompt = open(f"storage/prompts/{prompt_collection}/{filename}.md", "r").read()
 
     if (replace != None):
