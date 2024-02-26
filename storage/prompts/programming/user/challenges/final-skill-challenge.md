@@ -1,0 +1,1 @@
+Prompt: Create a "Final Skill Challenge" page that includes at least 20 questions and no more than 50 questions, and that at least 5 of the final questions are very challenging but within the bounds of what was taught in the course.
