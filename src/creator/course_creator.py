@@ -1,4 +1,4 @@
-from src.utils.files import read_yaml_file
+from .helpers import scan_topics_file
 from db.db import DB, Topic, Outline, OutlineEntity, Course, Chapter, Page
 from openai import OpenAI
 from src.creator.outlines.outline_creator import OutlineCreator
@@ -14,27 +14,9 @@ class CourseCreator:
         self.client = client
         self.pages = []
 
-    def scan_topics_file(self):
-        topics_file = read_yaml_file("storage/topics.yaml")
-
-        for name, properties in topics_file['topics'].items():
-            existing_topic_record = DB.query(Topic).filter(Topic.name == name).first()
-
-            if existing_topic_record:
-                existing_topic_record.properties = properties
-                DB.commit()
-            else:
-                topic_record = Topic(
-                    name=name,
-                    slug=Topic.make_slug(name),
-                    properties=properties
-                )
-                DB.add(topic_record)
-                DB.commit()
-
 
     def create_outline(self):
-        self.scan_topics_file()
+        scan_topics_file()
 
         session_name = f"Topic Outline Generation - {self.topic.name}"
         creator = OutlineCreator(self.topic.id, self.client(session_name))
@@ -71,7 +53,7 @@ class CourseCreator:
 
 
     def generate_topic_courses(self):
-        self.scan_topics_file()
+        scan_topics_file()
         self.create_topic_page_material()
         self.create_topic_practice_skill_challenges()
         self.create_topic_final_skill_challenges()

@@ -1,8 +1,11 @@
 from src.utils.files import read_yaml_file
+from src.creator.helpers import scan_topics_file
 import inquirer
 
 
 def select_topic():
+    scan_topics_file()
+
     topics = read_yaml_file("storage/topics.yaml")
     topic_choices = list(topics['topics'].keys())
 

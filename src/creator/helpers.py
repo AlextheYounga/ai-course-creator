@@ -1,5 +1,6 @@
 from typing import Optional
 from db.db import DB, Topic, Outline
+from src.utils.files import read_yaml_file
 import os
 import yaml
 
@@ -13,6 +14,25 @@ def get_prompt(topic: Topic, filename: str, replace: Optional[list[tuple]]) -> s
             prompt = prompt.replace(item[0], item[1])
 
     return prompt
+
+
+def scan_topics_file():
+    topics_file = read_yaml_file("storage/topics.yaml")
+
+    for name, properties in topics_file['topics'].items():
+        existing_topic_record = DB.query(Topic).filter(Topic.name == name).first()
+
+        if existing_topic_record:
+            existing_topic_record.properties = properties
+            DB.commit()
+        else:
+            topic_record = Topic(
+                name=name,
+                slug=Topic.make_slug(name),
+                properties=properties
+            )
+            DB.add(topic_record)
+            DB.commit()
 
 
 def dump_outline_content(topic: Topic, outline: Outline):
