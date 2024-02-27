@@ -4,12 +4,9 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from termcolor import colored
 from src.creator.helpers import get_prompt
-from db.db import DB, Topic, Course, Page, Outline, OutlineEntity
+from db.db import DB, Topic, Page, Outline, OutlineEntity
 from sqlalchemy.orm.attributes import flag_modified
 from src.utils.chunks import chunks
-import re
-import markdown
-from bs4 import BeautifulSoup
 import progressbar
 
 
