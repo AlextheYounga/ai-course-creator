@@ -4,18 +4,6 @@ import os
 import yaml
 
 
-def get_prompt(topic: Topic, filename: str, args: dict = {}) -> str:
-    prompt_collection = topic.properties.get("prompts", 'default')
-    prompt = open(f"storage/prompts/{prompt_collection}/{filename}.md", "r").read()
-
-    if (args != None):
-        for key, value in args.items():
-            replace_key = f"{{{key}}}"
-            prompt = prompt.replace(replace_key, value)
-
-    return prompt
-
-
 def scan_topics_file():
     topics_file = read_yaml_file("storage/topics.yaml")
 

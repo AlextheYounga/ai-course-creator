@@ -1,4 +1,4 @@
-from ...utils.helpers import get_prompt
+from ...utils.prompts import get_prompt
 from db.db import DB, Page, Outline, OutlineEntity
 
 

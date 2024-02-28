@@ -16,7 +16,7 @@ class Response(Base):
     completion_tokens = mapped_column(Integer)
     prompt_tokens = mapped_column(Integer)
     total_tokens = mapped_column(Integer)
-    content = mapped_column(Text, nullable=False)
+    content = mapped_column(Text)
     payload = mapped_column(JSON)
     properties = mapped_column(JSON)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
