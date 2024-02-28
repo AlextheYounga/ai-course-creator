@@ -79,14 +79,14 @@ class OutlineController:
 
                     chapter_records = [
                         chapter for chapter in outline_entities['chapters']
-                        if chapter.course_slug == course.slug
+                        if chapter.course_id == course.id
                     ]
 
                     # Loop through chapters
                     for chapter in chapter_records:
                         page_records = [
                             page for page in outline_entities['pages']
-                            if (page.course_slug == course.slug and page.chapter_slug == chapter.slug)
+                            if (page.course_id == course.id and page.chapter_id == chapter.id)
                         ]
 
                         # Add chapter pages to chapter
@@ -121,14 +121,14 @@ class OutlineController:
 
                     chapter_records = [
                         chapter for chapter in outline_entities['chapters']
-                        if chapter.course_slug == course.slug
+                        if chapter.course_id == course.id
                     ]
 
                     # Loop through chapters
                     for chapter in chapter_records:
                         page_records = [
                             page for page in outline_entities['pages']
-                            if (page.course_slug == course.slug and page.chapter_slug == chapter.slug)
+                            if (page.course_id == course.id and page.chapter_id == chapter.id)
                         ]
 
                         # Add chapter pages to chapter

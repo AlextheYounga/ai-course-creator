@@ -54,6 +54,6 @@ class GenerateCourse:
         ).filter(
             OutlineEntity.outline_id == self.outline.id,
             OutlineEntity.entity_type == 'Page',
-            Page.course_slug == self.course.slug,
+            Page.course_id == self.course.id,
             Page.active == True,
         ).all()

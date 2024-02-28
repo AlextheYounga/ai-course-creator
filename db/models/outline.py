@@ -124,6 +124,7 @@ class Outline(Base):
                     topic,
                     {
                         'name': chapter['name'],
+                        'courseId': course_record.id,
                         'courseSlug': course_record.slug,
                         'position': chapter_index,
                         'outline': yaml.dump(chapter, sort_keys=False),
@@ -138,6 +139,8 @@ class Outline(Base):
                         {
                             'name': page,
                             'outlineName': outline.name,
+                            'courseId': course_record.id,
+                            'chapterId': chapter_record.id,
                             'courseSlug': course_record.slug,
                             'chapterSlug': chapter_record.slug,
                             'position': page_index,

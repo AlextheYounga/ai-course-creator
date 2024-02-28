@@ -43,7 +43,7 @@ class BuildFinalSkillChallengePromptHandler:
         ).filter(
             OutlineEntity.outline_id == self.outline.id,
             OutlineEntity.entity_type == "Page",
-            Page.course_slug == self.page.course_slug,
+            Page.course_id == self.page.course_id,
             Page.type == 'page',
             Page.active == True,
         ).all()

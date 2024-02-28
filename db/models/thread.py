@@ -1,6 +1,6 @@
 from .base import Base
 from sqlalchemy.sql import func
-from sqlalchemy import ForeignKey, Boolean, Integer, String, DateTime, Text, JSON
+from sqlalchemy import Boolean, Integer, String, DateTime, JSON
 from sqlalchemy.orm import mapped_column, relationship
 
 

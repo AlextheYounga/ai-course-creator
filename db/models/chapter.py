@@ -12,7 +12,7 @@ class Chapter(Base):
     __tablename__ = "chapter"
     id = mapped_column(Integer, primary_key=True)
     topic_id = mapped_column(ForeignKey("topic.id"))
-    course_slug = mapped_column(String, nullable=False)
+    course_id = mapped_column(Integer, nullable=False, index=True)
     name = mapped_column(String, nullable=False)
     slug = mapped_column(String, nullable=False)
     outline = mapped_column(JSON)
@@ -41,7 +41,7 @@ class Chapter(Base):
         return {
             "id": self.id,
             "topic_id": self.topic_id,
-            "course_slug": self.course_slug,
+            "course_id": self.course_id,
             "name": self.name,
             "slug": self.slug,
             "outline": self.outline,
@@ -66,7 +66,7 @@ class Chapter(Base):
 
         chapter.name = data['name']
         chapter.slug = chapter_slug
-        chapter.course_slug = data['courseSlug']
+        chapter.course_id = data['courseId']
         chapter.position = data['position']
         chapter.outline = data.get('outline', None)
         chapter.content_type = self.get_content_type(chapter_slug)

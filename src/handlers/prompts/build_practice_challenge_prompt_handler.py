@@ -41,8 +41,8 @@ class BuildPracticeChallengePromptHandler:
         ).filter(
             OutlineEntity.outline_id == self.outline.id,
             OutlineEntity.entity_type == "Page",
-            Page.course_slug == self.page.course_slug,
-            Page.chapter_slug == self.page.chapter_slug,
+            Page.course_id == self.page.course_id,
+            Page.chapter_id == self.page.chapter_id,
             Page.type == 'page',
             Page.active == True,
         ).all()

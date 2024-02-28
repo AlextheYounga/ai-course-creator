@@ -25,7 +25,7 @@ class GenerateFinalSkillChallengePageHandler:
 
                 course_incomplete = self._check_course_incomplete(page)
                 if course_incomplete:
-                    print(colored(f"Skipping incomplete course '{page.course_slug}'...", "yellow"))
+                    print(colored(f"Skipping incomplete course ID: '{page.course_id}'...", "yellow"))
                     bar.increment()
                     continue
 
@@ -81,20 +81,13 @@ class GenerateFinalSkillChallengePageHandler:
         return generated_pages
 
 
-    # Prompts
-
-
-
-
-
-
     def _check_course_incomplete(self, page: Page):
         course_pages = DB.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
             OutlineEntity.outline_id == self.outline.id,
             OutlineEntity.entity_type == "Page",
-            Page.course_slug == page.course_slug,
+            Page.course_id == page.course_id,
             Page.type == 'page',
             Page.active == True,
         ).all()

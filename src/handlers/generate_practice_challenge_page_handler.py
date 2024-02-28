@@ -71,8 +71,8 @@ class GeneratePracticeChallengePageHandler:
         ).filter(
             OutlineEntity.outline_id == self.outline.id,
             OutlineEntity.entity_type == "Page",
-            Page.course_slug == page.course_slug,
-            Page.chapter_slug == page.chapter_slug,
+            Page.course_id == page.course_id,
+            Page.chapter_id == page.chapter_id,
             Page.type == 'page',
             Page.active == True,
         ).all()

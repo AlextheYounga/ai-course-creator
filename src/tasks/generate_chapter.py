@@ -44,7 +44,7 @@ class GenerateChapter:
         ).filter(
             OutlineEntity.outline_id == self.outline.id,
             OutlineEntity.entity_type == 'Page',
-            Page.course_slug == self.chapter.course_slug,
-            Page.chapter_slug == self.chapter.slug,
+            Page.course_id == self.chapter.course_id,
+            Page.chapter_id == self.chapter.id,
             Page.active == True,
         ).all()

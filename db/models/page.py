@@ -14,8 +14,8 @@ class Page(Base):
     __tablename__ = "page"
     id = mapped_column(Integer, primary_key=True)
     topic_id = mapped_column(ForeignKey("topic.id"))
-    course_slug = mapped_column(String, nullable=False)
-    chapter_slug = mapped_column(String, nullable=False)
+    course_id = mapped_column(Integer, nullable=False, index=True)
+    chapter_id = mapped_column(Integer, nullable=False, index=True)
     name = mapped_column(String, nullable=False)
     slug = mapped_column(String, nullable=False)
     permalink = mapped_column(String)
@@ -76,8 +76,8 @@ class Page(Base):
         return {
             "id": self.id,
             "topic_id": self.topic_id,
-            "course_slug": self.course_slug,
-            "chapter_slug": self.chapter_slug,
+            "course_id": self.course_id,
+            "chapter_id": self.chapter_id,
             "name": self.name,
             "slug": self.slug,
             "permalink": self.permalink,
@@ -101,6 +101,8 @@ class Page(Base):
     @classmethod
     def first_or_create(self, session: Session, topic: Topic, data: dict):
         name = data['name']
+        course_id = data['courseId']
+        chapter_id = data['chapterId']
         course_slug = data['courseSlug']
         chapter_slug = data['chapterSlug']
         outline_name = data['outlineName']
@@ -110,8 +112,8 @@ class Page(Base):
 
         page = session.query(self).filter(
             self.topic_id == topic.id,
-            self.course_slug == course_slug,
-            self.chapter_slug == chapter_slug,
+            self.course_id == course_id,
+            self.chapter_id == chapter_id,
             self.slug == page_slug
         ).first()
 
@@ -124,8 +126,8 @@ class Page(Base):
             return data.get('content', None)
 
         page.name = name
-        page.course_slug = course_slug
-        page.chapter_slug = chapter_slug
+        page.course_id = course_id
+        page.chapter_id = chapter_id
         page.slug = page_slug
         page.path = f"{output_directory}/{topic.slug}/{outline_name}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md"
         page.content = get_page_content()
@@ -153,8 +155,8 @@ class Page(Base):
 
         new_page = self(
             topic_id=page.topic_id,
-            course_slug=page.course_slug,
-            chapter_slug=page.chapter_slug,
+            course_id=page.course_id,
+            chapter_id=page.chapter_id,
             name=page.name,
             slug=page.slug,
             path=page.path,
