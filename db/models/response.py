@@ -8,7 +8,9 @@ from sqlalchemy.orm import mapped_column, relationship
 class Response(Base):
     __tablename__ = "response"
     id = mapped_column(Integer, primary_key=True)
+    thread_id = mapped_column(ForeignKey("thread.id"))
     prompt_id = mapped_column(ForeignKey("prompt.id"))
+    outline_id = mapped_column(Integer, nullable=False, index=True)
     role = mapped_column(String, nullable=False)
     model = mapped_column(String, nullable=False)
     completion_tokens = mapped_column(Integer)
@@ -21,6 +23,7 @@ class Response(Base):
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
     prompt = relationship("Prompt", back_populates="responses")
+    thread = relationship("Thread", back_populates="responses")
 
     def to_dict(self):
         return {

@@ -1,6 +1,6 @@
 from .base import Base
 from sqlalchemy.sql import func
-from sqlalchemy import Integer, String, DateTime, Text, JSON
+from sqlalchemy import ForeignKey, Integer, String, DateTime, Text, JSON
 from sqlalchemy.orm import mapped_column, relationship
 
 
@@ -8,6 +8,8 @@ from sqlalchemy.orm import mapped_column, relationship
 class Prompt(Base):
     __tablename__ = "prompt"
     id = mapped_column(Integer, primary_key=True)
+    thread_id = mapped_column(Integer, ForeignKey("thread.id"))
+    outline_id = mapped_column(Integer, nullable=False, index=True)
     model = mapped_column(String, nullable=False)
     action = mapped_column(String)
     estimated_tokens = mapped_column(Integer)
@@ -22,6 +24,8 @@ class Prompt(Base):
         back_populates="prompt",
         cascade="all, delete-orphan"
     )
+
+    thread = relationship("Thread", back_populates="prompts")
 
     def to_dict(self):
         return {

@@ -11,7 +11,7 @@ class OutlineEntity(Base):
     __tablename__ = "outline_entity"
     id = mapped_column(Integer, primary_key=True)
     outline_id = mapped_column(ForeignKey("outline.id"))
-    entity_id = mapped_column(Integer, nullable=False)
+    entity_id = mapped_column(Integer, nullable=False, index=True)
     entity_type = mapped_column(String, nullable=False)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
