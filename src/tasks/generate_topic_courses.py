@@ -4,7 +4,7 @@ from openai import OpenAI
 from .generate_course import GenerateCourse
 
 
-class GenerateTopicSeries:
+class GenerateTopicCourses:
     def __init__(self, topic_id: int, llm: OpenAI):
         self.topic = DB.get(Topic, topic_id)
         self.llm_handler = llm
