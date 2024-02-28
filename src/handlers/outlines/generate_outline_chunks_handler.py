@@ -9,12 +9,11 @@ import progressbar
 
 
 class GenerateOutlineChunksHandler:
-    def __init__(self, outline_id: int, client: OpenAI):
-        output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
-
-        self.ai_client = client
+    def __init__(self, outline_id: int, llm: OpenAI):
+        self.llm_handler = llm
         self.outline = DB.get(Outline, outline_id)
         self.topic = self.outline.topic
+        output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
         self.output_path = f"{output_directory}/{self.topic.slug}"  # master outline sits at topic level
         self.series_path = f"{output_directory}/{self.topic.slug}/{self.outline.name}"
 
@@ -37,11 +36,11 @@ class GenerateOutlineChunksHandler:
     def _generate_chunk(self, skills_chunk: dict) -> dict:
         print(colored(f"Generating {self.topic.name} outline chunk...", "yellow"))
 
-        messages = self._build_outline_chunk_prompt(skills_chunk)
+        messages = self._build_outline_chunk_simple_prompt(skills_chunk)
 
         # Send to ChatGPT
         options = {'yamlExpected': True}
-        validated_response = self.ai_client.send_prompt('outline-chunk', messages, options)
+        validated_response = self.llm_handler.send_prompt('outline-chunk', messages, options)
 
         existing_outline_chunks = self.outline.outline_chunks or []
         outline_chunk = validated_response['dict']
@@ -63,7 +62,7 @@ class GenerateOutlineChunksHandler:
         return self.outline
 
 
-    def _build_outline_chunk_prompt(self, skills_chunk: dict) -> list[dict]:
+    def _build_outline_chunk_simple_prompt(self, skills_chunk: dict) -> list[dict]:
         # Build message payload
         general_system_prompt = get_prompt(self.topic, 'system/general', [("{topic}", self.topic.name)])
         skills_system_prompt = get_prompt(self.topic, 'system/outlines/tune-skills', [
