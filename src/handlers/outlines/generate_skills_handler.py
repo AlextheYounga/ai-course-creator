@@ -2,7 +2,7 @@ from db.db import DB, Outline
 import os
 from termcolor import colored
 from openai import OpenAI
-from src.creator.helpers import get_prompt
+from helpers import get_prompt
 from src.utils.files import write_yaml_file
 
 
@@ -36,8 +36,8 @@ class GenerateSkillsHandler:
 
     def _build_skills_simple_prompt(self) -> list[dict]:
         # Build message payload
-        system_prompt = get_prompt(self.topic, 'system/general', [("{topic}", self.topic.name)])
-        user_prompt = get_prompt(self.topic, 'user/outlines/topic-skills', [("{topic}", self.topic.name)])
+        system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
+        user_prompt = get_prompt(self.topic, 'user/outlines/topic-skills', {'topic': self.topic.name})
 
         return [
             {"role": "system", "content": system_prompt},

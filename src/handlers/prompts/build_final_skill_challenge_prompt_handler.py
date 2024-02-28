@@ -1,5 +1,5 @@
 
-from src.creator.helpers import get_prompt
+from ...helpers import get_prompt
 from db.db import DB, Page, Outline, OutlineEntity
 import yaml
 
@@ -15,8 +15,8 @@ class BuildFinalSkillChallengePromptHandler:
 
         # Combine all page content into a single string
         all_pages_content = self._prepare_course_content_prompt()
-        general_system_prompt = get_prompt(self.topic, 'system/general', [("{topic}", self.topic.name)])
-        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', [("{topicLanguage}"), topic_language])
+        general_system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
+        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', {'topicLanguage': topic_language})
 
         combined_system_prompt = "\n".join([
             general_system_prompt,
@@ -24,7 +24,7 @@ class BuildFinalSkillChallengePromptHandler:
             all_pages_content
         ])
 
-        user_prompt = get_prompt(self.topic, 'user/challenges/final-skill-challenge', None)
+        user_prompt = get_prompt(self.topic, 'user/challenges/final-skill-challenge')
 
         # Build message payload
         system_payload = [{"role": "system", "content": combined_system_prompt}]

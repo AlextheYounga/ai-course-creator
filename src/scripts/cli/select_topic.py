@@ -1,5 +1,5 @@
 from src.utils.files import read_yaml_file
-from src.creator.helpers import scan_topics_file
+from helpers import scan_topics_file
 import inquirer
 
 

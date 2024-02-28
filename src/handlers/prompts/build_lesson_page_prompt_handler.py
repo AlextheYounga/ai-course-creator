@@ -1,4 +1,4 @@
-from src.creator.helpers import get_prompt
+from helpers import get_prompt
 from db.db import DB, Page, Outline, OutlineEntity
 import yaml
 
@@ -14,26 +14,24 @@ class BuildLessonPagePromptHandler:
         topic_language = self.topic.properties.get("language", self.topic.slug)
 
         # Combine multiple system prompts into one
-        general_system_prompt = get_prompt(self.topic, 'system/general', [("{topic}", self.topic.name)])
+        general_system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
 
         # Inform model on how we want to format interactives
-        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', [("{topicLanguage}"), topic_language])
+        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', {'topicLanguage': topic_language})
 
         # Inform model on our outline
         pruned_outline = self._prune_challenges_from_outline()
-        material_system_prompt = get_prompt(self.topic, 'system/pages/tune-outline', [
-            ("{topic}", self.topic.name),
-            ("{outline}", yaml.dump(pruned_outline, sort_keys=False)),
-        ])
+        material_system_prompt = get_prompt(self.topic, 'system/pages/tune-outline', {
+            'topic': self.topic.name,
+            'outline': yaml.dump(pruned_outline, sort_keys=False)
+        })
 
         # Get prior page summaries
         summaries = self._collect_prior_page_summaries()
 
-        prior_page_material_prompt = get_prompt(
-            self.topic,
-            'system/pages/tune-page-summaries',
-            [("{summaries}", summaries)]
-        )
+        prior_page_material_prompt = get_prompt(self.topic, 'system/pages/tune-page-summaries', {
+            'summaries': summaries
+        })
 
         combined_system_prompt = "\n---\n".join([
             general_system_prompt,
@@ -42,7 +40,7 @@ class BuildLessonPagePromptHandler:
             prior_page_material_prompt
         ])
 
-        user_prompt = get_prompt(self.topic, 'user/pages/page-material', [("{page_name}", self.page.name)])
+        user_prompt = get_prompt(self.topic, 'user/pages/page-material', {'page_name': self.page.name})
 
         # Build message payload
         return [

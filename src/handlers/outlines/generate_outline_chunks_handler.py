@@ -2,7 +2,7 @@ import os
 from db.db import DB, Outline
 from termcolor import colored
 from openai import OpenAI
-from src.creator.helpers import get_prompt
+from helpers import get_prompt
 from src.utils.chunks import chunks_list
 import yaml
 import progressbar
@@ -64,21 +64,21 @@ class GenerateOutlineChunksHandler:
 
     def _build_outline_chunk_simple_prompt(self, skills_chunk: dict) -> list[dict]:
         # Build message payload
-        general_system_prompt = get_prompt(self.topic, 'system/general', [("{topic}", self.topic.name)])
-        skills_system_prompt = get_prompt(self.topic, 'system/outlines/tune-skills', [
-            ("{topic}", self.topic.name),
-            ("{skills}", yaml.dump(skills_chunk))
-        ])
+        general_system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
+        skills_system_prompt = get_prompt(self.topic, 'system/outlines/tune-skills', {
+            'topic': self.topic.name,
+            'skills': yaml.dump(skills_chunk)
+        })
 
         outline_chunks_prompt = ''
         if self.outline.outline_chunks:
-            outline_chunks_prompt = get_prompt(self.topic, 'system/outlines/tune-outline-chunks', [
-                ("{chunks}", yaml.dump(self.outline.outline_chunks)),
-            ])
+            outline_chunks_prompt = get_prompt(self.topic, 'system/outlines/tune-outline-chunks', {
+                'chunks': yaml.dump(self.outline.outline_chunks)
+            })
 
         system_tuning_prompt = "\n".join([skills_system_prompt, outline_chunks_prompt])
         combined_system_prompt = "\n".join([general_system_prompt, system_tuning_prompt])
-        user_prompt = get_prompt(self.topic, 'user/outlines/outline-chunk', [("{topic}", self.topic.name)])
+        user_prompt = get_prompt(self.topic, 'user/outlines/outline-chunk', {'topic': self.topic.name})
 
         return [
             {"role": "system", "content": combined_system_prompt},

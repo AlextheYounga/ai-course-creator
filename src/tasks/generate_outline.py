@@ -7,34 +7,21 @@ from src.handlers.outlines.compile_master_outline_handler import CompileMasterOu
 
 
 class GenerateOutline:
-    def __init__(
-        self,
-            topic_id: int,
-            client: OpenAI,
-    ):
+    def __init__(self, topic_id: int, llm: OpenAI):
         self.topic = DB.get(Topic, topic_id)
-        self.ai_client = client
+        self.llm_handler = llm
 
 
     def run(self):
-        # Create new outline
-        outline = Outline.instantiate(DB, self.topic.id)
-        DB.add(outline)
-        DB.commit()
+        outline = self._instantiate_outline()
 
-        # Generate Skills
         self._generate_skills(outline.id)
 
-        # Generate Outline Chunks
         outline = self._generate_outline_chunks(outline.id)
 
-        # Generate Master Outline
         outline = self._compile_master_outline(outline.id)
 
-        # Process Outline
-        print(colored("\nProcessing Outline...", "yellow"))
-        Outline.create_outline_entities(DB, outline.id)
-        print(colored("Outline generation complete.\n", "green"))
+        self._process_outline(outline)
 
         # Print course
         course_list = [f" - {course['course']['courseName']}" for course in outline.master_outline]
@@ -43,17 +30,30 @@ class GenerateOutline:
 
         return outline.id
 
+    def _instantiate_outline(self):
+        # Create new outline
+        outline = Outline.instantiate(DB, self.topic.id)
+        DB.add(outline)
+        DB.commit()
+
+        return outline
 
     def _generate_skills(self, outline_id):
-        handler = GenerateSkillsHandler(outline_id, self.ai_client)
+        handler = GenerateSkillsHandler(outline_id, self.llm_handler)
         return handler.handle()
 
 
     def _generate_outline_chunks(self, outline_id):
-        handler = GenerateOutlineChunksHandler(outline_id, self.ai_client)
+        handler = GenerateOutlineChunksHandler(outline_id, self.llm_handler)
         return handler.handle()
 
 
     def _compile_master_outline(self, outline_id):
         handler = CompileMasterOutlineHandler(outline_id)
         return handler.handle()
+
+
+    def _process_outline(self, outline: Outline):
+        print(colored("\nProcessing Outline...", "yellow"))
+        Outline.create_outline_entities(DB, outline.id)
+        print(colored("Outline generation complete.\n", "green"))
