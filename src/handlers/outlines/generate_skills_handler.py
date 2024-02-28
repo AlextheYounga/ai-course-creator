@@ -6,6 +6,7 @@ from helpers import get_prompt
 from src.utils.files import write_yaml_file
 
 
+
 class GenerateSkillsHandler:
     def __init__(self, outline_id: int, llm: OpenAI):
         self.llm_handler = llm
@@ -25,7 +26,7 @@ class GenerateSkillsHandler:
         validated_response = self.llm_handler.send_prompt('skills', messages, options)
 
         # Save to database
-        self.outline.skills = validated_response['dict']
+        self.outline.update_properties(DB, {'skills': validated_response['dict']})
         DB.commit()
 
         write_yaml_file(f"{self.output_path}/skills.yaml", validated_response['yaml'])

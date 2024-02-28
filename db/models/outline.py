@@ -11,6 +11,7 @@ from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
 from src.utils.files import read_yaml_file
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 from src.utils.strings import string_hash
 import yaml
 
@@ -21,8 +22,6 @@ class Outline(Base):
     topic_id = mapped_column(ForeignKey("topic.id"))
     name = mapped_column(String)
     hash = mapped_column(String, unique=True)
-    skills = mapped_column(JSON)
-    outline_chunks = mapped_column(JSON)
     master_outline = mapped_column(JSON)
     file_path = mapped_column(String)
     properties = mapped_column(JSON)
@@ -44,14 +43,23 @@ class Outline(Base):
             "topic_id": self.topic_id,
             "name": self.name,
             "hash": self.hash,
-            "skills": self.skills,
-            "outline_chunks": self.outline_chunks,
             "master_outline": self.master_outline,
             "file_path": self.file_path,
             "properties": self.properties,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+
+    def update_properties(self, session: Session, data: dict):
+        # Save to database
+        properties = {**self.properties, **data}
+        self.properties = properties
+
+        flag_modified(self, "properties")  # Needed to update the JSON column
+        session.add(self)
+
+        return self
 
 
     @classmethod

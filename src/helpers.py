@@ -52,7 +52,8 @@ def dump_outline_content(topic: Topic, outline: Outline):
     os.makedirs(f"{output_path}/{outline.name}", exist_ok=True)
 
     with open(f"{output_path}/{outline.name}/skills.yaml", 'w') as skills_file:
-        skills_file.write(yaml.dump(outline.skills, sort_keys=False))
+        skills = outline.properties.get('skills', {})
+        skills_file.write(yaml.dump(skills, sort_keys=False))
         skills_file.close()
 
     with open(f"{output_path}/{outline.name}/outline.yaml", 'w') as outline_file:

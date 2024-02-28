@@ -48,7 +48,7 @@ class CompileMasterOutlineHandler:
 
     def _compile_master_outline_from_chunks(self) -> dict:
         master_outline = []
-        outline_chunks = self.outline.outline_chunks
+        outline_chunks = self.outline.properties['outline_chunks']
 
         for course in outline_chunks:
             course = self._add_challenges_to_chapters(course)

@@ -24,8 +24,13 @@ class OutlineController:
         topic_id = data['topic_id']
         topic = DB.get(Topic, topic_id)
 
+        properties = {
+            **outline.get('properties', {}),
+            'skills': data.get('skills', {})
+        }
+
         outline = Outline.instantiate(DB, topic_id)
-        outline.skills = data.get('skills', None)
+        outline.properties = properties
         outline.master_outline = master_outline
         outline.hash = outline_hash
         outline.file_path = Outline.default_outline_file_path(topic)

@@ -19,9 +19,10 @@ class GenerateOutlineChunksHandler:
 
 
     def handle(self):
-        skills = self.outline.skills
+        skills = self.outline.properties['skills']
+
         if skills == None:
-            raise Exception("Skills must be generated before generating outlines.")
+            raise Exception("Skills are required to generate outlines.")
 
         skill_chunks = chunks_list(skills, 2)
 
@@ -42,12 +43,12 @@ class GenerateOutlineChunksHandler:
         options = {'yamlExpected': True}
         validated_response = self.llm_handler.send_prompt('outline-chunk', messages, options)
 
-        existing_outline_chunks = self.outline.outline_chunks or []
+        existing_outline_chunks = self.outline.properties.get('outline_chunks', [])
         outline_chunk = validated_response['dict']
-        existing_outline_chunks = existing_outline_chunks + outline_chunk
+        updated_outline_chunks = existing_outline_chunks + outline_chunk
 
         # Save to database
-        self.outline.outline_chunks = existing_outline_chunks
+        self.outline.update_properties(DB, {'outline_chunks': updated_outline_chunks})
         DB.commit()
 
         # Save to YAML file
@@ -71,9 +72,9 @@ class GenerateOutlineChunksHandler:
         })
 
         outline_chunks_prompt = ''
-        if self.outline.outline_chunks:
+        if self.outline.properties.get('outline_chunks', False):
             outline_chunks_prompt = get_prompt(self.topic, 'system/outlines/tune-outline-chunks', {
-                'chunks': yaml.dump(self.outline.outline_chunks)
+                'chunks': yaml.dump(self.outline.properties['outline_chunks'])
             })
 
         system_tuning_prompt = "\n".join([skills_system_prompt, outline_chunks_prompt])
