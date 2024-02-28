@@ -2,3 +2,4 @@ logs/*.log
 outlines/*.yaml
 data/backups/**
 !data/backups/.gitkeep
+topics.yaml
