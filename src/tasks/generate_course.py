@@ -28,7 +28,7 @@ class GenerateCourse:
 
 
     def _generate_course_lesson_pages(self, pages: list[Page]):
-        lesson_pages = [page for page in pages if page.type == 'page']
+        lesson_pages = [page for page in pages if page.type == 'lesson']
         llm_instance = self.llm_handler(f"Course Page Generation - {self.course.name}")
         handler = GenerateLessonPageHandler(self.topic.id, llm_instance, lesson_pages)
         return handler.handle()

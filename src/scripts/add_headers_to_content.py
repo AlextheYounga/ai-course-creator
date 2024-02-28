@@ -4,7 +4,7 @@ from termcolor import colored
 
 
 def add_headers_to_all_pages():
-    pages = DB.query(Page).filter(Page.type == 'page').all()
+    pages = DB.query(Page).filter(Page.type == 'lesson').all()
 
     for page in pages:
         content = page.content

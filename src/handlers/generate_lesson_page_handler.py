@@ -10,7 +10,7 @@ class GenerateLessonPageHandler:
     def __init__(self, topic_id: int, llm: OpenAI, pages: list[Page]):
         self.topic = DB.get(Topic, topic_id)
         self.llm_hander = llm
-        self.pages = [page for page in pages if page.type == 'page']
+        self.pages = [page for page in pages if page.type == 'lesson']
         self.outline = Outline.get_master_outline(DB, self.topic)
 
 

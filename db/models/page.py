@@ -60,7 +60,7 @@ class Page(Base):
         if ('Challenge' in name):
             return 'challenge'
 
-        return 'page'
+        return 'lesson'
 
 
     def dump_page(self):

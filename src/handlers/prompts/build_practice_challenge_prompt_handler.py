@@ -43,7 +43,7 @@ class BuildPracticeChallengePromptHandler:
             OutlineEntity.entity_type == "Page",
             Page.course_id == self.page.course_id,
             Page.chapter_id == self.page.chapter_id,
-            Page.type == 'page',
+            Page.type == 'lesson',
             Page.active == True,
         ).all()
 

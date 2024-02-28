@@ -14,7 +14,7 @@ class GeneratePage:
 
     def run(self):
         handlers = {
-            'page': GenerateLessonPageHandler,
+            'lesson': GenerateLessonPageHandler,
             'challenge': GeneratePracticeChallengePageHandler,
             'final-skill-challenge': GenerateFinalSkillChallengePageHandler
         }

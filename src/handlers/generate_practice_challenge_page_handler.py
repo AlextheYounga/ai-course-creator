@@ -73,7 +73,7 @@ class GeneratePracticeChallengePageHandler:
             OutlineEntity.entity_type == "Page",
             Page.course_id == page.course_id,
             Page.chapter_id == page.chapter_id,
-            Page.type == 'page',
+            Page.type == 'lesson',
             Page.active == True,
         ).all()
 

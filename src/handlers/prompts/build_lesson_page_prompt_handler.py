@@ -58,7 +58,7 @@ class BuildLessonPagePromptHandler:
         ).filter(
             OutlineEntity.outline_id == self.outline.id,
             OutlineEntity.entity_type == "Page",
-            Page.type == 'page',
+            Page.type == 'lesson',
             Page.active == True,
         ).all()
 
