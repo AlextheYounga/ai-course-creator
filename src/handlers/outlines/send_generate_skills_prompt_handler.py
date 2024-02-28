@@ -1,30 +1,30 @@
 from db.db import DB, Outline, Thread, Prompt, Response
-from .parse_generate_skills_response_handler import ParseGenerateSkillsResponseHandler
+from ...llm.get_llm_client import get_llm_client
 from ...utils.log_handler import LOG_HANDLER
 from termcolor import colored
-from openai import OpenAI
 from openai.types.completion import Completion
 import json
 
 
 
 class SendGenerateSkillsPromptHandler:
-    def __init__(self, thread_id: int, outline_id: int, prompt_id: int, llm: OpenAI):
+    def __init__(self, thread_id: int, outline_id: int, prompt_id: int):
         self.thread = DB.get(Thread, thread_id)
         self.outline = DB.get(Outline, outline_id)
         self.prompt = DB.get(Prompt, prompt_id)
-        self.llm_handler = llm()
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER.getLogger(self.__name__.__name__)
+        self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
 
 
-    def handle(self) -> dict:
+    def handle(self):
         print(colored(f"\nGenerating {self.topic.name} skills...", "yellow"))
 
         messages = self.prompt.payload
 
         # Send to ChatGPT
-        completion = self.llm_handler.send_prompt('generate-skills', messages)
+        llm_client = get_llm_client()
+        completion = llm_client.send_prompt('generate-skills', messages)
+
         if completion == None:
             raise Exception("LLM completion failed. There is likely more output in the logs.")
 

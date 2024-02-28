@@ -1,6 +1,7 @@
 from db.db import DB, Outline, Thread, Prompt
-from ...utils.prompts import get_prompt, process_prompt_params
+from ...llm.get_prompt import get_prompt
 from ...utils.log_handler import LOG_HANDLER
+from ...llm.get_llm_params import get_llm_params
 from ...llm.token_counter import count_tokens_using_encoding
 from termcolor import colored
 
@@ -11,12 +12,12 @@ class CreateGenerateSkillsPromptHandler:
         self.thread = DB.get(Thread, thread_id)
         self.outline = DB.get(Outline, outline_id)
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER.getLogger(self.__name__.__name__)
+        self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
 
 
-    def handle(self) -> dict:
+    def handle(self):
         print(colored(f"\nGenerating {self.topic.name} skills...", "yellow"))
-        llm_params = process_prompt_params('skills')
+        llm_params = get_llm_params('skills')
         model = llm_params['model']
 
         properties = {

@@ -1,6 +1,6 @@
 from db.db import DB, Outline, Thread, Response
 from ...utils.log_handler import LOG_HANDLER
-from .parse_yaml_from_response_handler import ParseYamlFromResponseHandler
+from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
 from termcolor import colored
 
 
@@ -13,10 +13,10 @@ class ParseGenerateSkillsResponseHandler:
         self.response = DB.get(Response, response_id)
         self.prompt = self.response.prompt
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER.getLogger(self.__name__.__name__)
+        self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
 
 
-    def handle(self) -> dict:
+    def handle(self):
         completion = self.response.payload
 
         if not completion['choices'][0]['message']['content']:

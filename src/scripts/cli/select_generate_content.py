@@ -1,13 +1,13 @@
 from .select_hierarchy import select_hierarchy
 from .select_content_function import select_content_function
 from .select_content_item import select_content_item_from_hierachy
-from src.llm.openai_handler import OpenAiHandler
+from services.openai_service import OpenAiService
 from src.creator.course_creator import CourseCreator
 from db.db import DB, Topic, Outline
 
 
 def select_generate_content(topic: Topic):
-    creator = CourseCreator(OpenAiHandler, topic.name)
+    creator = CourseCreator(OpenAiService, topic.name)
 
     content_function_mapping = {
         'Topic': {

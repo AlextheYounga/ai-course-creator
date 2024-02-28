@@ -63,20 +63,6 @@ class Outline(Base):
 
 
     @classmethod
-    def instantiate(self, session: Session, topic_id: int):
-        existing_outline_count = session.query(self).filter(self.topic_id == topic_id).count()
-        next_outline_number = str(existing_outline_count + 1)
-        outline_name = f"series-{next_outline_number}"
-
-        new_outline = self(
-            topic_id=topic_id,
-            name=outline_name
-        )
-
-        return new_outline
-
-
-    @classmethod
     def get_master_outline(self, session: Session, topic: Topic):
         if topic.master_outline_id:
             master_outline_record = session.query(self).filter(
@@ -260,11 +246,3 @@ class Outline(Base):
                 Page.active == True,
             ).all()
         }
-
-    @staticmethod
-    def default_outline_file_path(topic: Topic):
-        output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
-        output_path = f"{output_directory}/{topic.slug}"
-        default_file_path = f"{output_path}/master-outline.yaml"
-
-        return default_file_path

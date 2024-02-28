@@ -1,4 +1,3 @@
-from ..mocks.openai_mock_service import OpenAIMockService
 from ..mocks.db import *
 from src.tasks.generate_topic_courses import GenerateTopicCourses
 

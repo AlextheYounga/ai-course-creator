@@ -1,7 +1,8 @@
 from dotenv import load_dotenv
 from ..utils.log_handler import LOG_HANDLER
 from src.utils.files import read_yaml_file
-from .token_counter import count_tokens_using_encoding
+from ..llm.get_llm_params import get_llm_params
+from ..llm.token_counter import count_tokens_using_encoding
 import os
 from termcolor import colored
 from openai import OpenAI
@@ -10,7 +11,7 @@ from time import sleep
 load_dotenv()
 
 
-class OpenAiHandler:
+class OpenAiService:
     def __init__(self):
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
@@ -19,7 +20,7 @@ class OpenAiHandler:
 
 
     def send_prompt(self, event_name: str, messages: list[dict], options: dict = {}) -> OpenAI:
-        prompt_params = self._process_prompt_params(event_name)
+        prompt_params = get_llm_params(event_name)
         quiet = options.get('quiet', False)
         model = prompt_params['model']
         tokens = count_tokens_using_encoding(model, messages)
@@ -50,19 +51,3 @@ class OpenAiHandler:
             print(colored(f"Unknown error from OpenAI: {e}", "red"))
             self.logger.info(f"RESPONSE: {event_name} - {model} - status: {e}")
             return None
-
-
-    def _process_prompt_params(self, event_name: str):
-        prompt_params = self.params['prompts'].get(event_name, {})
-        global_params = self.params['global']
-
-        params = {
-            **global_params,
-            **prompt_params,
-        }
-
-        for key in list(params.keys()):
-            if params[key] is None:
-                del params[key]
-
-        return params

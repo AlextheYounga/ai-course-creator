@@ -1,6 +1,6 @@
 from db.db import DB, Topic, Course, Chapter, Page
 from src.creator.course_creator import CourseCreator
-from src.llm.openai_handler import OpenAiHandler
+from services.openai_service import OpenAiService
 
 
 class CreatorController:
@@ -11,7 +11,7 @@ class CreatorController:
         topic = DB.get(Topic, topic_id)
 
         if topic and entityType:
-            creator = CourseCreator(OpenAiHandler, topic.name)
+            creator = CourseCreator(OpenAiService, topic.name)
 
             if entityType == 'Topic':
                 creator.generate_topic_courses()

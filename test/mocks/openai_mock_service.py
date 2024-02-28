@@ -3,7 +3,7 @@ import random
 from typing import Optional
 from termcolor import colored
 from unittest.mock import MagicMock
-from src.llm.openai_handler import OpenAiHandler
+from services.openai_service import OpenAiService
 from src.llm.token_counter import count_tokens_using_encoding
 import markdown
 from bs4 import BeautifulSoup
@@ -19,7 +19,7 @@ EXPECTED_FINAL_SKILL_CHALLENGE_RESPONSE = open('test/fixtures/responses/final-sk
 LOG_PATH = "test/out/logs"
 
 
-class OpenAIMockService(OpenAiHandler):
+class OpenAiMockService(OpenAiService):
     def __init__(self, session_name: str, response: Optional[str] = None):
         super().__init__(session_name)
 

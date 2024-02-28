@@ -5,7 +5,7 @@ from termcolor import colored
 
 
 
-class SaveSkillsResponseToOutlineHandler:
+class CreateNewOutlineHandler:
     def __init__(self, thread_id: int, topic_id: int):
         self.thread = DB.get(Thread, thread_id)
         self.topic = DB.get(Topic, topic_id)

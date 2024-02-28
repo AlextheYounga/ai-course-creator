@@ -1,5 +1,5 @@
 
-from ...utils.prompts import get_prompt
+from ...llm.get_prompt import get_prompt
 from db.db import DB, Page, Outline, OutlineEntity
 
 

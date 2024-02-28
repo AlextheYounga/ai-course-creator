@@ -2,13 +2,13 @@ import inquirer
 from db.db import DB, Topic, Outline
 from .select_topic import select_topic
 from .select_generate_content import select_generate_content
-from src.llm.openai_handler import OpenAiHandler
+from services.openai_service import OpenAiService
 from src.creator.course_creator import CourseCreator
 
 
 
 def generate_outline(topic: Topic):
-    creator = CourseCreator(OpenAiHandler, topic.name)
+    creator = CourseCreator(OpenAiService, topic.name)
     return creator.create_outline()
 
 
