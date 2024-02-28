@@ -1,5 +1,4 @@
 import inquirer
-from db.db import DB, Topic, Outline
 from termcolor import colored
 import os
 import shutil

@@ -2,7 +2,7 @@ import os
 from db.db import DB, Outline
 from termcolor import colored
 from openai import OpenAI
-from helpers import get_prompt
+from ...utils.helpers import get_prompt
 from src.utils.chunks import chunks_list
 import yaml
 import progressbar

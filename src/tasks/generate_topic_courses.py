@@ -1,4 +1,4 @@
-from ..helpers import scan_topics_file
+from ..utils.helpers import scan_topics_file
 from db.db import DB, Topic, Outline
 from openai import OpenAI
 from .generate_course import GenerateCourse

@@ -1,4 +1,3 @@
-from typing import Optional
 from db.db import DB, Topic, Outline
 from src.utils.files import read_yaml_file
 import os

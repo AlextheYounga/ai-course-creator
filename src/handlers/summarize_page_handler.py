@@ -1,6 +1,6 @@
 from db.db import DB, Page
 from termcolor import colored
-from helpers import get_prompt
+from ..utils.helpers import get_prompt
 from openai import OpenAI
 
 

@@ -1,6 +1,6 @@
 import inquirer
-from ..utils import *
-from helpers import dump_outline_content
+from ..cli_utils import *
+from src.utils.helpers import dump_outline_content
 from db.db import DB, Topic
 from .select_outline import select_outline
 from .select_topic import select_topic

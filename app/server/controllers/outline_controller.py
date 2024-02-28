@@ -1,5 +1,5 @@
 from db.db import DB, Outline, Topic
-from helpers import dump_outline_content
+from src.utils.helpers import dump_outline_content
 from flask import jsonify
 
 
