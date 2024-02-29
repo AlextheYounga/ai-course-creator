@@ -11,7 +11,7 @@ class CompileOutlineChunksToMasterOutlineHandler:
 
         self.outline = DB.get(Outline, outline_id)
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER.getLogger(self.__class__.__name__)
+        self.logging = LOG_HANDLER(self.__class__.__name__)
         self.output_path = f"{output_directory}/{self.topic.slug}"  # master outline sits at topic level
         self.series_path = f"{output_directory}/{self.topic.slug}/{self.outline.name}"
 
@@ -26,7 +26,7 @@ class CompileOutlineChunksToMasterOutlineHandler:
         outline_hash = Outline.hash_outline(master_outline)
 
         # Check for existing outline hash
-        existing_outline = DB.query(Outline).filter(Outline.hash == hash).first()
+        existing_outline = DB.query(Outline).filter(Outline.hash == outline_hash).first()
         if existing_outline:
             print(colored("Identical outline found. Aborting.", "red"))
             return existing_outline

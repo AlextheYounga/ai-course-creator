@@ -12,7 +12,7 @@ class ParseYamlFromResponseHandler:
         self.thread_id = thread_id
         self.content = content
         self.yaml_content = ''
-        self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
+        self.logger = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self):

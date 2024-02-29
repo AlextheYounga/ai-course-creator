@@ -12,7 +12,7 @@ class GenerateOutline:
     def run(self):
         self.thread = StartNewThreadHandler('GenerateOutline').handle()
 
-        outline = InstantiateOutlineHandler(self.topic.id).handle()
+        outline = InstantiateOutlineHandler(self.thread.id, self.topic.id).handle()
 
         outline = self._generate_skills(outline)
 

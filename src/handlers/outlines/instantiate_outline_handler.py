@@ -9,7 +9,7 @@ class InstantiateOutlineHandler:
     def __init__(self, thread_id: int, topic_id: int):
         self.thread = DB.get(Thread, thread_id)
         self.topic = DB.get(Topic, topic_id)
-        self.logging = LOG_HANDLER.getLogger(self.__class__.__name__)
+        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Outline:
@@ -24,6 +24,9 @@ class InstantiateOutlineHandler:
             name=outline_name,
             file_path=self._default_outline_file_path(),
         )
+
+        DB.add(new_outline)
+        DB.commit()
 
         return new_outline
 

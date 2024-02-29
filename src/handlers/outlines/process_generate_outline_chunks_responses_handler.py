@@ -13,7 +13,7 @@ class ProcessGenerateOutlineChunksResponsesHandler:
         self.outline = DB.get(Outline, outline_id)
         self.responses = DB.query(Response).filter(Response.id.in_(response_ids)).all()
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
+        self.logger = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Outline:
@@ -46,8 +46,8 @@ class ProcessGenerateOutlineChunksResponsesHandler:
 
     def _save_chunk_to_outline(self, chunk_obj: dict):
         outline_properties = self.outline.properties
-        existing_outline_chunks = outline_properties.get('outlineChunks', {})
-        updated_outline_chunks = {**existing_outline_chunks, **chunk_obj}
+        existing_outline_chunks = outline_properties.get('outlineChunks', [])
+        updated_outline_chunks = existing_outline_chunks + chunk_obj
 
         properties = {
             **outline_properties,

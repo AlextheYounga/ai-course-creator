@@ -12,10 +12,10 @@ load_dotenv()
 
 
 class OpenAiService:
-    def __init__(self):
+    def __init__(self, params_file: str = 'params.yaml'):
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
-        self.params = read_yaml_file('params.yaml')
+        self.logger = LOG_HANDLER(self.__class__.__name__)
+        self.params = read_yaml_file(params_file)
         self.retry_count = 0
 
 

@@ -1,0 +1,25 @@
+{
+    "id": "chatcmpl-8sGWB9sJPlqkQ4BSQees3E9T9Sj7F",
+    "choices": [
+        {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+                "content": "Welcome to the fascinating world of JavaScript, where the journey of a thousand lines of code begins with a single variable...",
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": null
+            }
+        }
+    ],
+    "created": 1707943899,
+    "model": "gpt-4-0125-preview",
+    "object": "chat.completion",
+    "system_fingerprint": "fp_f084bcfc79",
+    "usage": {
+        "completion_tokens": 611,
+        "prompt_tokens": 4410,
+        "total_tokens": 5021
+    }
+}

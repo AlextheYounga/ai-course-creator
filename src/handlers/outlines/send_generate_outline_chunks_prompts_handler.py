@@ -14,7 +14,7 @@ class SendGenerateOutlineChunksPromptsHandler:
         self.outline = DB.get(Outline, outline_id)
         self.prompts = DB.query(Prompt).filter(Prompt.id.in_(prompt_ids)).all()
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
+        self.logger = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> list[int]:
@@ -28,23 +28,25 @@ class SendGenerateOutlineChunksPromptsHandler:
             for i, prompt in enumerate(self.prompts):
                 messages = prompt.payload
 
-                completion = llm_client.send_prompt('generate-outline-chunks', messages)
+                completion = llm_client.send_prompt('GenerateOutlineChunks', messages)
                 if completion == None:
                     raise Exception("LLM completion failed. There is likely more output in the logs.")
 
-                response = self._save_response_payload_to_db(completion)
+                response = self._save_response_payload_to_db(prompt, completion)
                 response_ids.append(response.id)
                 bar.update(i)
 
         return response_ids
 
 
-    def _save_response_payload_to_db(self, completion: Completion):
+    def _save_response_payload_to_db(self, prompt: Prompt, completion: Completion):
         # We only save the payload for now, we will process this later.
         response = Response(
-            prompt_id=self.prompt.id,
+            thread_id=self.thread.id,
+            outline_id=self.outline.id,
+            prompt_id=prompt.id,
             role=completion.choices[0].message.role,
-            payload=json.loads(completion.model_dump_json()),
+            payload=completion.model_dump_json(),
         )
         DB.add(response)
         DB.commit()

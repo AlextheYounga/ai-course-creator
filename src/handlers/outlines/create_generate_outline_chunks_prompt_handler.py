@@ -12,7 +12,7 @@ class CreateGenerateOutlineChunksPromptHandler:
         self.thread = DB.get(Thread, thread_id)
         self.outline = DB.get(Outline, outline_id)
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
+        self.logger = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self):
@@ -72,7 +72,7 @@ class CreateGenerateOutlineChunksPromptHandler:
             thread_id=self.thread.id,
             outline_id=self.outline.id,
             action=event_name,
-            model=properties['model'],
+            model=properties['params']['model'],
             content=content,
             payload=messages,
             estimated_tokens=tokens,

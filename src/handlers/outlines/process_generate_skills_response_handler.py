@@ -14,7 +14,7 @@ class ProcessGenerateSkillsResponseHandler:
         self.response = DB.get(Response, response_id)
         self.prompt = self.response.prompt
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
+        self.logger = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Outline:

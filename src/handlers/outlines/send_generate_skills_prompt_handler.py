@@ -13,7 +13,7 @@ class SendGenerateSkillsPromptHandler:
         self.outline = DB.get(Outline, outline_id)
         self.prompt = DB.get(Prompt, prompt_id)
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
+        self.logger = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Response:
@@ -36,10 +36,13 @@ class SendGenerateSkillsPromptHandler:
     def _save_response_payload_to_db(self, completion: Completion):
         # We only save the payload for now, we will process this later.
         response = Response(
+            thread_id=self.thread.id,
+            outline_id=self.outline.id,
             prompt_id=self.prompt.id,
             role=completion.choices[0].message.role,
-            payload=json.loads(completion.model_dump_json()),
+            payload=completion.model_dump_json(),
         )
+
         DB.add(response)
         DB.commit()
 
