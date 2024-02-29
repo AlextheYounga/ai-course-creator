@@ -19,6 +19,9 @@ class GenerateOutline:
 
         outline = CompileOutlineChunksToMasterOutlineHandler(outline.id).handle()
 
+        self.thread.status = 'completed'
+        DB.commit()
+
         return outline
 
 
