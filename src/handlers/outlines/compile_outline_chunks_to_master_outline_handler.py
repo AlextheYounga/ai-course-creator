@@ -11,11 +11,12 @@ class CompileOutlineChunksToMasterOutlineHandler:
 
         self.outline = DB.get(Outline, outline_id)
         self.topic = self.outline.topic
+        self.logging = LOG_HANDLER.getLogger(self.__class__.__name__)
         self.output_path = f"{output_directory}/{self.topic.slug}"  # master outline sits at topic level
         self.series_path = f"{output_directory}/{self.topic.slug}/{self.outline.name}"
 
 
-    def handle(self):
+    def handle(self) -> Outline:
         if not self.outline.properties.get('outlineChunks', False):
             raise Exception("OutlineChunks not found in outline properties.")
 

@@ -16,7 +16,7 @@ class ProcessGenerateOutlineChunksResponsesHandler:
         self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
 
 
-    def handle(self):
+    def handle(self) -> Outline:
         for response in self.responses:
             completion = response.payload
 

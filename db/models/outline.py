@@ -11,7 +11,6 @@ from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
 from src.utils.files import read_yaml_file
 from sqlalchemy.orm import Session
-from sqlalchemy.orm.attributes import flag_modified
 from src.utils.strings import string_hash
 import yaml
 

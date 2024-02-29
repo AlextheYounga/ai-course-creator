@@ -17,7 +17,7 @@ class ProcessGenerateSkillsResponseHandler:
         self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
 
 
-    def handle(self):
+    def handle(self) -> Outline:
         completion = self.response.payload
 
         if not completion['choices'][0]['message']['content']:

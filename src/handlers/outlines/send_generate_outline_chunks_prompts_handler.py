@@ -8,7 +8,7 @@ import json
 
 
 
-class SendGenerateSkillsPromptHandler:
+class SendGenerateOutlineChunksPromptsHandler:
     def __init__(self, thread_id: int, outline_id: int, prompt_ids: list[int]):
         self.thread = DB.get(Thread, thread_id)
         self.outline = DB.get(Outline, outline_id)
@@ -17,7 +17,7 @@ class SendGenerateSkillsPromptHandler:
         self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
 
 
-    def handle(self):
+    def handle(self) -> list[int]:
         print(colored(f"\nGenerating {self.topic.name} outline_chunks...", "yellow"))
 
         response_ids = []

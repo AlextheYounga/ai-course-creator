@@ -1,6 +1,6 @@
 from db.db import DB, Outline, Thread, Prompt
-from ...llm.get_prompt import get_prompt
 from ...utils.log_handler import LOG_HANDLER
+from ...llm.get_prompt import get_prompt
 from ...llm.get_llm_params import get_llm_params
 from ...llm.token_counter import count_tokens_using_encoding
 
@@ -14,7 +14,7 @@ class CreateGenerateSkillsPromptHandler:
         self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
 
 
-    def handle(self):
+    def handle(self) -> Prompt:
         llm_params = get_llm_params('skills')
         model = llm_params['model']
 

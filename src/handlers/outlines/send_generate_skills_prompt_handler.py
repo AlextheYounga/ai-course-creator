@@ -16,7 +16,7 @@ class SendGenerateSkillsPromptHandler:
         self.logger = LOG_HANDLER.getLogger(self.__class__.__name__)
 
 
-    def handle(self):
+    def handle(self) -> Response:
         print(colored(f"\nGenerating {self.topic.name} skills...", "yellow"))
 
         messages = self.prompt.payload

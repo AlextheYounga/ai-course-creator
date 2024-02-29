@@ -8,7 +8,7 @@ class StartNewThreadHandler:
         self.thread_name = thread_name
 
 
-    def handle(self) -> dict:
+    def handle(self) -> Thread:
         print(colored(f"\nGenerating new thread {self.thread_name}...", "yellow"))
 
         pid = os.getpid()

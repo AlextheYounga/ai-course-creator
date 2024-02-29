@@ -1,6 +1,6 @@
 from db.db import DB, Outline, Thread, Prompt
-from ...llm.get_prompt import get_prompt
 from ...utils.log_handler import LOG_HANDLER
+from ...llm.get_prompt import get_prompt
 from ...utils.chunks import chunks_list
 from ...llm.get_llm_params import get_llm_params
 from ...llm.token_counter import count_tokens_using_encoding
