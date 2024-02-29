@@ -1,4 +1,4 @@
-from db.db import DB, Outline, Thread, Prompt
+from db.db import DB, Outline, Prompt
 from ...utils.log_handler import LOG_HANDLER
 from ...llm.get_prompt import get_prompt
 from ...llm.get_llm_params import get_llm_params
@@ -8,13 +8,15 @@ from ...llm.token_counter import count_tokens_using_encoding
 
 class CreateGenerateSkillsPromptHandler:
     def __init__(self, thread_id: int, outline_id: int):
-        self.thread = DB.get(Thread, thread_id)
+        self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER(self.__class__.__name__)
+        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Prompt:
+        self.__log_event()
+
         llm_params = get_llm_params('skills')
         model = llm_params['model']
 
@@ -47,7 +49,7 @@ class CreateGenerateSkillsPromptHandler:
         }
 
         prompt = Prompt(
-            thread_id=self.thread.id,
+            thread_id=self.thread_id,
             outline_id=self.outline.id,
             action=event_name,
             model=properties['params']['model'],
@@ -61,3 +63,7 @@ class CreateGenerateSkillsPromptHandler:
         DB.commit()
 
         return prompt
+
+
+    def __log_event(self):
+        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

@@ -7,12 +7,14 @@ from termcolor import colored
 
 class InstantiateOutlineHandler:
     def __init__(self, thread_id: int, topic_id: int):
-        self.thread = DB.get(Thread, thread_id)
+        self.thread_id = thread_id
         self.topic = DB.get(Topic, topic_id)
         self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Outline:
+        self.__log_event()
+
         existing_outline_count = DB.query(Outline).filter(Outline.topic_id == self.topic.id).count()
         next_outline_number = str(existing_outline_count + 1)
         outline_name = f"series-{next_outline_number}"
@@ -43,3 +45,6 @@ class InstantiateOutlineHandler:
         default_file_path = f"{output_path}/master-outline.yaml"
 
         return default_file_path
+
+    def __log_event(self):
+        self.logging.info(f"Thread: {self.thread_id}")

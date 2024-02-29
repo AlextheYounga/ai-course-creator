@@ -9,15 +9,17 @@ from sqlalchemy.orm.attributes import flag_modified
 
 class ProcessGenerateSkillsResponseHandler:
     def __init__(self, thread_id: int, outline_id: int, response_id: int):
-        self.thread = DB.get(Thread, thread_id)
+        self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)
         self.response = DB.get(Response, response_id)
         self.prompt = self.response.prompt
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER(self.__class__.__name__)
+        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Outline:
+        self.__log_event()
+
         completion = self.response.payload
 
         if not completion['choices'][0]['message']['content']:
@@ -30,7 +32,7 @@ class ProcessGenerateSkillsResponseHandler:
             print(colored("Shit response; retrying...", "red"))
             # Retry
 
-        yaml_handler = ParseYamlFromResponseHandler(self.thread.id, content)
+        yaml_handler = ParseYamlFromResponseHandler(self.thread_id, content)
         yaml_data = yaml_handler.handle()
         skills_obj = yaml_data['dict']
 
@@ -74,3 +76,7 @@ class ProcessGenerateSkillsResponseHandler:
 
         DB.add(self.outline)
         DB.commit()
+
+
+    def __log_event(self):
+        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

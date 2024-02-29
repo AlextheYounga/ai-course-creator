@@ -17,10 +17,11 @@ class GenerateOutline:
 
         outline = self._generate_outline_chunks(outline)
 
-        outline = CompileOutlineChunksToMasterOutlineHandler(outline.id).handle()
+        outline = CompileOutlineChunksToMasterOutlineHandler(self.thread.id, outline.id).handle()
 
-        self.thread.status = 'completed'
-        DB.commit()
+        CreateOutlineEntitiesFromOutlineHandler(self.thread.id, outline.id).handle()
+
+        self.thread.set_complete(DB)
 
         return outline
 

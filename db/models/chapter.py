@@ -15,7 +15,6 @@ class Chapter(Base):
     course_id = mapped_column(Integer, nullable=False, index=True)
     name = mapped_column(String, nullable=False)
     slug = mapped_column(String, nullable=False)
-    outline = mapped_column(JSON)
     content_type = mapped_column(String)
     position = mapped_column(Integer, nullable=False)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -44,31 +43,8 @@ class Chapter(Base):
             "course_id": self.course_id,
             "name": self.name,
             "slug": self.slug,
-            "outline": self.outline,
             "content_type": self.content_type,
             "position": self.position,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
-
-
-    @classmethod
-    def first_or_create(self, session: Session, topic: Topic, data: dict):
-        chapter_slug = self.make_slug(data['name'], data['courseSlug'])
-
-        chapter = session.query(self).filter(
-            self.topic_id == topic.id,
-            self.slug == chapter_slug
-        ).first()
-
-        if not chapter:
-            chapter = self(topic_id=topic.id)
-
-        chapter.name = data['name']
-        chapter.slug = chapter_slug
-        chapter.course_id = data['courseId']
-        chapter.position = data['position']
-        chapter.outline = data.get('outline', None)
-        chapter.content_type = self.get_content_type(chapter_slug)
-
-        return chapter

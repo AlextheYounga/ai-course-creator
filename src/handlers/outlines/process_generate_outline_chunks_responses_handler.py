@@ -1,4 +1,4 @@
-from db.db import DB, Outline, Thread, Response
+from db.db import DB, Outline, Response
 from ...utils.log_handler import LOG_HANDLER
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
 from termcolor import colored
@@ -9,14 +9,16 @@ from sqlalchemy.orm.attributes import flag_modified
 
 class ProcessGenerateOutlineChunksResponsesHandler:
     def __init__(self, thread_id: int, outline_id: int, response_ids: list[int]):
-        self.thread = DB.get(Thread, thread_id)
+        self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)
         self.responses = DB.query(Response).filter(Response.id.in_(response_ids)).all()
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER(self.__class__.__name__)
+        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Outline:
+        self.__log_event()
+
         for response in self.responses:
             completion = response.payload
 
@@ -30,7 +32,7 @@ class ProcessGenerateOutlineChunksResponsesHandler:
                 print(colored("Shit response; retrying...", "red"))
                 # Retry
 
-            yaml_handler = ParseYamlFromResponseHandler(self.thread.id, content)
+            yaml_handler = ParseYamlFromResponseHandler(self.thread_id, content)
             yaml_data = yaml_handler.handle()
             chunk_obj = yaml_data['dict']
 
@@ -80,3 +82,7 @@ class ProcessGenerateOutlineChunksResponsesHandler:
         DB.commit()
 
         return response
+
+
+    def __log_event(self):
+        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

@@ -99,52 +99,6 @@ class Page(Base):
 
 
     @classmethod
-    def first_or_create(self, session: Session, topic: Topic, data: dict):
-        name = data['name']
-        course_id = data['courseId']
-        chapter_id = data['chapterId']
-        course_slug = data['courseSlug']
-        chapter_slug = data['chapterSlug']
-        outline_name = data['outlineName']
-        output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
-
-        page_slug = self.make_slug(name, course_slug, chapter_slug)
-
-        page = session.query(self).filter(
-            self.topic_id == topic.id,
-            self.course_id == course_id,
-            self.chapter_id == chapter_id,
-            self.slug == page_slug
-        ).first()
-
-        if not page:
-            page = self(topic_id=topic.id)
-
-        def get_page_content():
-            if page.content: return page.content
-            if os.path.exists(page.path): return open(page.path).read()
-            return data.get('content', None)
-
-        page.name = name
-        page.course_id = course_id
-        page.chapter_id = chapter_id
-        page.slug = page_slug
-        page.path = f"{output_directory}/{topic.slug}/{outline_name}/content/{course_slug}/{chapter_slug}/page-{page_slug}.md"
-        page.content = get_page_content()
-        page.summary = page.summary or data.get('summary', None)
-        page.nodes = page.nodes or data.get('nodes', None)
-        page.generated = os.path.exists(page.path) or page.content != None
-        page.hash = self.hash_page(page.content) if page.content else None
-        page.permalink = f"/page/{topic.slug}/{course_slug}/{chapter_slug}/{page_slug}"
-        page.link = page.permalink if page.generated else '#'
-        page.position = data['position']
-        page.position_in_course = data['positionInCourse']
-        page.type = self.get_page_type(name, chapter_slug)
-
-        return page
-
-
-    @classmethod
     def check_for_existing_page_material(self, session: Session, page):
         if page.content == None: return page
 

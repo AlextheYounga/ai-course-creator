@@ -9,14 +9,16 @@ import json
 
 class SendGenerateSkillsPromptHandler:
     def __init__(self, thread_id: int, outline_id: int, prompt_id: int):
-        self.thread = DB.get(Thread, thread_id)
+        self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)
         self.prompt = DB.get(Prompt, prompt_id)
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER(self.__class__.__name__)
+        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Response:
+        self.__log_event()
+
         print(colored(f"\nGenerating {self.topic.name} skills...", "yellow"))
 
         messages = self.prompt.payload
@@ -36,7 +38,7 @@ class SendGenerateSkillsPromptHandler:
     def _save_response_payload_to_db(self, completion: Completion):
         # We only save the payload for now, we will process this later.
         response = Response(
-            thread_id=self.thread.id,
+            thread_id=self.thread_id,
             outline_id=self.outline.id,
             prompt_id=self.prompt.id,
             role=completion.choices[0].message.role,
@@ -47,3 +49,6 @@ class SendGenerateSkillsPromptHandler:
         DB.commit()
 
         return response
+
+    def __log_event(self):
+        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

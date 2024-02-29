@@ -1,4 +1,4 @@
-from db.db import DB, Outline, Thread, Prompt
+from db.db import DB, Outline, Prompt
 from ...utils.log_handler import LOG_HANDLER
 from ...llm.get_prompt import get_prompt
 from ...utils.chunks import chunks_list
@@ -9,13 +9,15 @@ import yaml
 
 class CreateGenerateOutlineChunksPromptHandler:
     def __init__(self, thread_id: int, outline_id: int):
-        self.thread = DB.get(Thread, thread_id)
+        self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER(self.__class__.__name__)
+        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self):
+        self.__log_event()
+
         llm_params = get_llm_params('skills')
         model = llm_params['model']
 
@@ -69,7 +71,7 @@ class CreateGenerateOutlineChunksPromptHandler:
         }
 
         prompt = Prompt(
-            thread_id=self.thread.id,
+            thread_id=self.thread_id,
             outline_id=self.outline.id,
             action=event_name,
             model=properties['params']['model'],
@@ -83,3 +85,6 @@ class CreateGenerateOutlineChunksPromptHandler:
         DB.commit()
 
         return prompt
+
+    def __log_event(self):
+        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

@@ -1,6 +1,7 @@
 from .base import Base
 from sqlalchemy.sql import func
-from sqlalchemy import Boolean, Integer, String, DateTime, JSON
+from sqlalchemy import Integer, String, DateTime, JSON
+from sqlalchemy.orm import Session
 from sqlalchemy.orm import mapped_column, relationship
 
 
@@ -29,3 +30,10 @@ class Thread(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+
+    def set_complete(self, session: Session):
+        self.status = "completed"
+        session.commit()
+
+        return self

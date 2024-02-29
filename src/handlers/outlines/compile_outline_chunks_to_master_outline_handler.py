@@ -6,9 +6,10 @@ from termcolor import colored
 
 
 class CompileOutlineChunksToMasterOutlineHandler:
-    def __init__(self, outline_id: int):
+    def __init__(self, thread_id: int, outline_id: int):
         output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 
+        self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)
         self.topic = self.outline.topic
         self.logging = LOG_HANDLER(self.__class__.__name__)
@@ -17,6 +18,8 @@ class CompileOutlineChunksToMasterOutlineHandler:
 
 
     def handle(self) -> Outline:
+        self.__log_event()
+
         if not self.outline.properties.get('outlineChunks', False):
             raise Exception("OutlineChunks not found in outline properties.")
 
@@ -75,3 +78,7 @@ class CompileOutlineChunksToMasterOutlineHandler:
         os.makedirs(self.output_path, exist_ok=True)
         with open(f"{self.output_path}/master-outline.yaml", 'w') as yaml_file:
             yaml.dump(self.outline.master_outline, yaml_file, sort_keys=False)
+
+
+    def __log_event(self):
+        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

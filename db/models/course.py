@@ -14,7 +14,6 @@ class Course(Base):
     name = mapped_column(String, nullable=False)
     slug = mapped_column(String, nullable=False)
     level = mapped_column(Integer, nullable=False)
-    outline = mapped_column(JSON)
     meta = mapped_column(JSON)
     skill_challenge_chapter = mapped_column(String)
     skill_challenge_total_questions = mapped_column(Integer)
@@ -36,7 +35,6 @@ class Course(Base):
             "name": self.name,
             "slug": self.slug,
             "level": self.level,
-            "outline": self.outline,
             "meta": self.meta,
             "skill_challenge_chapter": self.skill_challenge_chapter,
             "skill_challenge_total_questions": self.skill_challenge_total_questions,
@@ -44,24 +42,3 @@ class Course(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
-
-
-    @classmethod
-    def first_or_create(self, session: Session, topic: Topic, data: dict):
-        course_slug = self.make_slug(data['name'])
-
-        course = session.query(self).filter(
-            self.topic_id == topic.id,
-            self.slug == course_slug
-        ).first()
-
-        if not course:
-            course = self(topic_id=topic.id)
-
-        course.name = data['name']
-        course.slug = course_slug
-        course.level = data['position']
-        course.outline = data['outline']
-        course.skill_challenge_chapter = f"final-skill-challenge-{course_slug}"
-
-        return course

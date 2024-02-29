@@ -10,14 +10,16 @@ import json
 
 class SendGenerateOutlineChunksPromptsHandler:
     def __init__(self, thread_id: int, outline_id: int, prompt_ids: list[int]):
-        self.thread = DB.get(Thread, thread_id)
+        self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)
         self.prompts = DB.query(Prompt).filter(Prompt.id.in_(prompt_ids)).all()
         self.topic = self.outline.topic
-        self.logger = LOG_HANDLER(self.__class__.__name__)
+        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> list[int]:
+        self.__log_event()
+
         print(colored(f"\nGenerating {self.topic.name} outline_chunks...", "yellow"))
 
         response_ids = []
@@ -42,7 +44,7 @@ class SendGenerateOutlineChunksPromptsHandler:
     def _save_response_payload_to_db(self, prompt: Prompt, completion: Completion):
         # We only save the payload for now, we will process this later.
         response = Response(
-            thread_id=self.thread.id,
+            thread_id=self.thread_id,
             outline_id=self.outline.id,
             prompt_id=prompt.id,
             role=completion.choices[0].message.role,
@@ -52,3 +54,6 @@ class SendGenerateOutlineChunksPromptsHandler:
         DB.commit()
 
         return response
+
+    def __log_event(self):
+        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")
