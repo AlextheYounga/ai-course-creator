@@ -23,7 +23,7 @@ class SendGenerateSkillsPromptHandler:
 
         # Send to ChatGPT
         llm_client = get_llm_client()
-        completion = llm_client.send_prompt('generate-skills', messages)
+        completion = llm_client.send_prompt('GenerateSkills', messages)
 
         if completion == None:
             raise Exception("LLM completion failed. There is likely more output in the logs.")
@@ -34,6 +34,7 @@ class SendGenerateSkillsPromptHandler:
 
 
     def _save_response_payload_to_db(self, completion: Completion):
+        # We only save the payload for now, we will process this later.
         response = Response(
             prompt_id=self.prompt.id,
             role=completion.choices[0].message.role,

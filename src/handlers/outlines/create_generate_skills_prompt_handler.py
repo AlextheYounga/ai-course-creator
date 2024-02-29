@@ -3,7 +3,6 @@ from ...llm.get_prompt import get_prompt
 from ...utils.log_handler import LOG_HANDLER
 from ...llm.get_llm_params import get_llm_params
 from ...llm.token_counter import count_tokens_using_encoding
-from termcolor import colored
 
 
 
@@ -16,18 +15,13 @@ class CreateGenerateSkillsPromptHandler:
 
 
     def handle(self):
-        print(colored(f"\nGenerating {self.topic.name} skills...", "yellow"))
         llm_params = get_llm_params('skills')
         model = llm_params['model']
-
-        properties = {
-            'params': llm_params,
-        }
 
         messages = self._build_skills_prompt()
         tokens = count_tokens_using_encoding(model, messages)
 
-        prompt = self._save_prompt('generate-skills', messages, tokens, properties)
+        prompt = self._save_prompt('GenerateSkills', messages, tokens, llm_params)
 
         return prompt
 
@@ -42,12 +36,19 @@ class CreateGenerateSkillsPromptHandler:
             {"role": "user", "content": user_prompt}
         ]
 
-    def _save_prompt(self, event_name: str, messages: list[dict], tokens: int, properties: dict) -> int:
+
+    def _save_prompt(self, event_name: str, messages: list[dict], tokens: int, params: dict) -> int:
         content = ""
         for message in messages:
             content += message['content'] + "\n\n"
 
+        properties = {
+            'params': params,
+        }
+
         prompt = Prompt(
+            thread_id=self.thread.id,
+            outline_id=self.outline.id,
             action=event_name,
             model=properties['model'],
             content=content,

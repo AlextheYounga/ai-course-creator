@@ -51,17 +51,6 @@ class Outline(Base):
         }
 
 
-    def update_properties(self, session: Session, data: dict):
-        # Save to database
-        properties = {**self.properties, **data}
-        self.properties = properties
-
-        flag_modified(self, "properties")  # Needed to update the JSON column
-        session.add(self)
-
-        return self
-
-
     @classmethod
     def get_master_outline(self, session: Session, topic: Topic):
         if topic.master_outline_id:

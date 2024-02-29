@@ -2,11 +2,12 @@ from db.db import DB, Outline, Thread, Response
 from ...utils.log_handler import LOG_HANDLER
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
 from termcolor import colored
+from sqlalchemy.orm.attributes import flag_modified
 
 
 
 
-class ParseGenerateSkillsResponseHandler:
+class ProcessGenerateSkillsResponseHandler:
     def __init__(self, thread_id: int, outline_id: int, response_id: int):
         self.thread = DB.get(Thread, thread_id)
         self.outline = DB.get(Outline, outline_id)
@@ -31,17 +32,19 @@ class ParseGenerateSkillsResponseHandler:
 
         yaml_handler = ParseYamlFromResponseHandler(self.thread.id, content)
         yaml_data = yaml_handler.handle()
+        skills_obj = yaml_data['dict']
 
         if yaml_data['error']:
             print(colored(f"Failed to parse YAML content; maximum retries exceeded. Aborting...", "red"))
             # Retry
 
-        self._save_parsed_response_to_db(completion, yaml_data)
+        self._update_response_record(completion, yaml_data)
+        self._save_skills_to_outline(skills_obj)
 
-        return self.response
+        return self.outline
 
 
-    def _save_parsed_response_to_db(self, completion: dict, yaml_data: dict):
+    def _update_response_record(self, completion: dict, yaml_data: dict):
         properties = {
             'params': self.prompt.properties,
             'yaml': yaml_data
@@ -56,4 +59,17 @@ class ParseGenerateSkillsResponseHandler:
 
         DB.commit()
 
-        return self.response
+
+    def _save_skills_to_outline(self, skills_obj: dict):
+        outline_properties = self.outline.properties or {}
+
+        properties = {
+            **outline_properties,
+            'skills': skills_obj
+        }
+
+        self.outline.properties = properties
+        flag_modified(self.outline, "properties")
+
+        DB.add(self.outline)
+        DB.commit()
