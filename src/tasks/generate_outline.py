@@ -1,5 +1,4 @@
 from db.db import DB, Topic, Outline
-from termcolor import colored
 from src.handlers.start_new_thread_handler import StartNewThreadHandler
 from src.handlers.outlines import *
 

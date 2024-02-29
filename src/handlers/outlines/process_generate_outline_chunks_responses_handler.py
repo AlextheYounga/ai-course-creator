@@ -65,7 +65,7 @@ class ProcessGenerateOutlineChunksResponsesHandler:
         prompt = response.prompt
 
         properties = {
-            'params': prompt.properties,
+            'params': prompt.properties['params'],
             'yaml': yaml_data
         }
 
@@ -73,6 +73,7 @@ class ProcessGenerateOutlineChunksResponsesHandler:
         response.model = completion['model']
         response.prompt_tokens = completion['usage']['prompt_tokens']
         response.total_tokens = completion['usage']['total_tokens']
+        response.completion_tokens = completion['usage']['completion_tokens']
         response.content = completion['choices'][0]['message']['content']
         response.properties = properties
 

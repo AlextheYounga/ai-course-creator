@@ -46,13 +46,14 @@ class ProcessGenerateSkillsResponseHandler:
 
     def _update_response_record(self, completion: dict, yaml_data: dict):
         properties = {
-            'params': self.prompt.properties,
+            'params': self.prompt.properties['params'],
             'yaml': yaml_data
         }
 
         self.response.role = completion['choices'][0]['message']['role']
         self.response.model = completion['model']
         self.response.prompt_tokens = completion['usage']['prompt_tokens']
+        self.response.completion_tokens = completion['usage']['completion_tokens']
         self.response.total_tokens = completion['usage']['total_tokens']
         self.response.content = completion['choices'][0]['message']['content']
         self.response.properties = properties
