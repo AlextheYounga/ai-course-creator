@@ -1,5 +1,6 @@
 from db.db import DB, Outline, Prompt
-from ...utils.log_handler import LOG_HANDLER
+from src.events.event_manager import EVENT_MANAGER
+from src.events.events import GenerateSkillsPromptCreated
 from ...llm.get_prompt import get_prompt
 from ...llm.get_llm_params import get_llm_params
 from ...llm.token_counter import count_tokens_using_encoding
@@ -11,12 +12,10 @@ class CreateGenerateSkillsPromptHandler:
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
-    def handle(self) -> Prompt:
-        self.__log_event()
 
+    def handle(self) -> GenerateSkillsPromptCreated:
         llm_params = get_llm_params('skills')
         model = llm_params['model']
 
@@ -25,7 +24,12 @@ class CreateGenerateSkillsPromptHandler:
 
         prompt = self._save_prompt(messages, tokens, llm_params)
 
-        return prompt
+        return self.__trigger_completion_event({
+            'threadId': self.thread_id,
+            'outlineId': self.outline.id,
+            'topicId': self.topic.id,
+            'promptId': prompt.id,
+        })
 
 
     def _build_skills_prompt(self) -> list[dict]:
@@ -65,5 +69,5 @@ class CreateGenerateSkillsPromptHandler:
         return prompt
 
 
-    def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")
+    def __trigger_completion_event(self, data: dict):
+        EVENT_MANAGER.trigger(GenerateSkillsPromptCreated(data))

@@ -1,5 +1,4 @@
 from db.db import DB, Outline, Response, Page
-from ...utils.log_handler import LOG_HANDLER
 from ..validate_llm_response_handler import ValidateLLMResponseHandler
 from .create_summarize_page_prompt_handler import CreateSummarizePagePromptHandler
 from .send_generate_page_summary_to_llm_handler import SendGeneratePageSummaryToLLMHandler
@@ -15,12 +14,9 @@ class ProcessLessonPageResponseHandler:
         self.page = DB.get(Page, data['pageId'])
         self.prompt = self.response.prompt
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Outline:
-        self.__log_event()
-
         completion = self.response.payload
 
         validated_response = ValidateLLMResponseHandler(
@@ -59,7 +55,3 @@ class ProcessLessonPageResponseHandler:
 
         # Save to Database
         DB.commit()
-
-
-    def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

@@ -1,5 +1,7 @@
-import os
 from db.db import DB, Thread
+from src.events.event_manager import EVENT_MANAGER
+from src.events.events import NewThreadCreated
+import os
 
 
 class CreateNewThreadHandler:
@@ -7,7 +9,7 @@ class CreateNewThreadHandler:
         self.event_name = data['eventName']
 
 
-    def handle(self) -> Thread:
+    def handle(self) -> NewThreadCreated:
         pid = os.getpid()
 
         thread = Thread(
@@ -18,4 +20,7 @@ class CreateNewThreadHandler:
         DB.add(thread)
         DB.commit()
 
-        return thread
+        return self.__trigger_completion_event({'threadId': thread.id})
+
+    def __trigger_completion_event(self, data: dict):
+        EVENT_MANAGER.trigger(NewThreadCreated(data))

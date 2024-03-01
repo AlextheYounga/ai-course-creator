@@ -1,6 +1,4 @@
 from db.db import DB, Outline
-from ...events.events import Event
-from ...utils.log_handler import LOG_HANDLER
 import os
 import yaml
 from termcolor import colored
@@ -13,14 +11,11 @@ class CompileOutlineChunksToMasterOutlineHandler:
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
         self.output_path = f"{output_directory}/{self.topic.slug}"  # master outline sits at topic level
         self.series_path = f"{output_directory}/{self.topic.slug}/{self.outline.name}"
 
 
     def handle(self) -> Outline:
-        self.__log_event()
-
         if not self.outline.properties.get('outlineChunks', False):
             raise Exception("OutlineChunks not found in outline properties.")
 
@@ -79,7 +74,3 @@ class CompileOutlineChunksToMasterOutlineHandler:
         os.makedirs(self.output_path, exist_ok=True)
         with open(f"{self.output_path}/master-outline.yaml", 'w') as yaml_file:
             yaml.dump(self.outline.master_outline, yaml_file, sort_keys=False)
-
-
-    def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

@@ -1,5 +1,4 @@
 from db.db import DB, Outline, Response
-from ...utils.log_handler import LOG_HANDLER
 from ..validate_llm_response_handler import ValidateLLMResponseHandler
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
 from .send_generate_skills_prompt_to_llm_handler import SendGenerateSkillsPromptToLLMHandler
@@ -15,28 +14,25 @@ class ProcessGenerateSkillsResponseHandler:
         self.response = DB.get(Response, data['responseId'])
         self.prompt = self.response.prompt
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
+
 
 
     def handle(self) -> Outline:
-        self.__log_event()
-
-        completion = self.response.payload
-
-        validated_response = ValidateLLMResponseHandler(
-            self.thread_id,
-            self.outline.id,
-            self.response.id
-        ).handle()
+        validated_response = ValidateLLMResponseHandler({
+            'threadId': self.thread_id,
+            'outlineId': self.outline.id,
+            'responseId': self.response.id
+        }).handle()
 
         if not validated_response:
             return False
             # Retry
 
-        content = completion['choices'][0]['message']['content']
+        yaml_data = ParseYamlFromResponseHandler({
+            'threadId': self.thread_id,
+            'responseId': self.response.id
+        }).handle()
 
-        yaml_handler = ParseYamlFromResponseHandler(self.thread_id, content)
-        yaml_data = yaml_handler.handle()
         skills_obj = yaml_data['dict']
 
         if yaml_data['error']:
@@ -61,7 +57,3 @@ class ProcessGenerateSkillsResponseHandler:
 
         DB.add(self.outline)
         DB.commit()
-
-
-    def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

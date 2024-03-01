@@ -1,5 +1,4 @@
 from db.db import DB, Page, Outline, Prompt, Response
-from ...utils.log_handler import LOG_HANDLER
 from ...llm.get_llm_client import get_llm_client
 from .create_lesson_page_prompt_handler import CreateLessonPagePromptHandler
 from openai.types.completion import Completion
@@ -11,11 +10,9 @@ class SendGeneratePageSummaryToLLMHandler():
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
+
 
     def handle(self):
-        self.__log_event()
-
         # Build prompt
         prompt_handler = CreateLessonPagePromptHandler(self.thread_id, self.outline, self.page)
         prompt = prompt_handler.handle()
@@ -58,7 +55,3 @@ class SendGeneratePageSummaryToLLMHandler():
         DB.commit()
 
         return response
-
-
-    def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id} - Page: {self.page.id}")

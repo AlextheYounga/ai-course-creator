@@ -1,5 +1,4 @@
 from db.db import DB, Outline, OutlineEntity, Course, Chapter, Page
-from ...utils.log_handler import LOG_HANDLER
 import os
 
 
@@ -8,12 +7,8 @@ class CreateOutlineEntitiesFromOutlineHandler:
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
-
 
     def handle(self) -> list[Page]:
-        self.__log_event()
-
         pages = []
         master_outline = self.outline.master_outline
 
@@ -130,7 +125,3 @@ class CreateOutlineEntitiesFromOutlineHandler:
         page.type = Page.get_page_type(name, chapter.slug)
 
         return page
-
-
-    def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

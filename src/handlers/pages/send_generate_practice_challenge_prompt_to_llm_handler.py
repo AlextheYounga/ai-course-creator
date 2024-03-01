@@ -1,5 +1,4 @@
 from db.db import DB, Page, Outline, OutlineEntity, Prompt, Response
-from ...utils.log_handler import LOG_HANDLER
 from ...llm.get_llm_client import get_llm_client
 from .create_practice_skill_challenge_prompt_handler import CreatePracticeSkillChallengePromptHandler
 from openai.types.completion import Completion
@@ -13,12 +12,10 @@ class SendGeneratePracticeChallengePromptToLLMHandler:
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
+
 
 
     def handle(self):
-        self.__log_event()
-
         # Check if chapter is incomplete
         if self._check_chapter_incomplete(self.page):
             print(colored("Chapter is incomplete, skipping LLM prompt generation", "yellow"))
@@ -42,13 +39,22 @@ class SendGeneratePracticeChallengePromptToLLMHandler:
 
 
     def _save_response_payload_to_db(self, prompt: Prompt, completion: Completion):
-        # We only save the payload for now, we will process this later.
+        properties = {
+            'params': prompt.properties['params'],
+        }
+
         response = Response(
             thread_id=self.thread_id,
             outline_id=self.outline.id,
             prompt_id=prompt.id,
             role=completion.choices[0].message.role,
             payload=completion.model_dump_json(),
+            model=completion.model,
+            prompt_tokens=completion.usage.prompt_tokens,
+            completion_tokens=completion.usage.completion_tokens,
+            total_tokens=completion.usage.total_tokens,
+            content=completion.choices[0].message.content,
+            properties=properties
         )
 
         DB.add(response)
@@ -69,7 +75,3 @@ class SendGeneratePracticeChallengePromptToLLMHandler:
         ).all()
 
         return True in [page.content == None for page in chapter_pages]
-
-
-    def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id} - Page: {self.page.id}")

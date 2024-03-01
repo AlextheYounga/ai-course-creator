@@ -28,3 +28,8 @@ class NewOutlineInstantiated(Event):
 class GenerateSkillsPromptCreated(Event):
     def __init__(self, data):
         self.data = data
+
+
+class GenerateSkillsPromptSentToLLM(Event):
+    def __init__(self, data):
+        self.data = data

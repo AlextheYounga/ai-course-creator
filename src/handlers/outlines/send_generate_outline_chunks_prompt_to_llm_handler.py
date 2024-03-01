@@ -1,6 +1,5 @@
 from db.db import DB, Outline, Thread, Prompt, Response
 from ...llm.get_llm_client import get_llm_client
-from ...utils.log_handler import LOG_HANDLER
 from termcolor import colored
 from openai.types.completion import Completion
 import progressbar
@@ -13,12 +12,10 @@ class SendGenerateOutlineChunksPromptsToLLMHandler:
         self.outline = DB.get(Outline, data['outlineId'])
         self.prompts = DB.query(Prompt).filter(Prompt.id.in_(data['promptIds'])).all()
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
+
 
 
     def handle(self) -> list[int]:
-        self.__log_event()
-
         print(colored(f"\nGenerating {self.topic.name} outline_chunks...", "yellow"))
 
         response_ids = []
@@ -33,26 +30,32 @@ class SendGenerateOutlineChunksPromptsToLLMHandler:
                 if completion == None:
                     raise Exception("LLM completion failed. There is likely more output in the logs.")
 
-                response = self._save_response_payload_to_db(prompt, completion)
+                response = self._save_response_to_db(prompt, completion)
                 response_ids.append(response.id)
                 bar.update(i)
 
         return response_ids
 
 
-    def _save_response_payload_to_db(self, prompt: Prompt, completion: Completion):
-        # We only save the payload for now, we will process this later.
+    def _save_response_to_db(self, prompt: Prompt, completion: Completion):
+        properties = {
+            'params': prompt.properties['params'],
+        }
+
         response = Response(
             thread_id=self.thread_id,
             outline_id=self.outline.id,
             prompt_id=prompt.id,
             role=completion.choices[0].message.role,
             payload=completion.model_dump_json(),
+            model=completion.model,
+            prompt_tokens=completion.usage.prompt_tokens,
+            completion_tokens=completion.usage.completion_tokens,
+            total_tokens=completion.usage.total_tokens,
+            content=completion.choices[0].message.content,
+            properties=properties
         )
         DB.add(response)
         DB.commit()
 
         return response
-
-    def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")

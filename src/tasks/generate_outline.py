@@ -17,6 +17,7 @@ class GenerateOutline:
         event_manager.subscribe([NewThreadCreated], InstantiateOutlineHandler)
         event_manager.subscribe([NewOutlineInstantiated], CreateGenerateSkillsPromptHandler)
         event_manager.subscribe([GenerateSkillsPromptCreated], SendGenerateSkillsPromptToLLMHandler)
+        event_manager.subscribe([GenerateSkillsPromptSentToLLM], ProcessGenerateSkillsResponseHandler)
 
 
     # def run(self):

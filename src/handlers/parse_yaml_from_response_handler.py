@@ -1,5 +1,4 @@
 from db.db import DB, Response
-from ..utils.log_handler import LOG_HANDLER
 from termcolor import colored
 import markdown
 import yaml
@@ -13,7 +12,6 @@ class ParseYamlFromResponseHandler:
         self.thread_id = data['threadId']
         self.response = DB.get(Response, data['responseId'])
         self.yaml_content = ''
-        self.logger = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self):

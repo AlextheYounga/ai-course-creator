@@ -2,7 +2,6 @@ from db.db import DB, Outline, OutlineEntity, Prompt, Page
 from ...llm.get_prompt import get_prompt
 from ...llm.get_llm_params import get_llm_params
 from ...llm.token_counter import count_tokens_using_encoding
-from ...utils.log_handler import LOG_HANDLER
 import yaml
 
 
@@ -12,12 +11,10 @@ class CreateLessonPagePromptHandler:
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
+
 
 
     def handle(self) -> Prompt:
-        self.__log_event()
-
         llm_params = get_llm_params('skills')
         model = llm_params['model']
 
@@ -137,7 +134,3 @@ class CreateLessonPagePromptHandler:
         DB.commit()
 
         return prompt
-
-
-    def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id} - Page: {self.page.id}")

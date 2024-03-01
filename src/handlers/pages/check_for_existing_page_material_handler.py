@@ -1,5 +1,4 @@
 from db.db import DB, Outline, Page
-from ...utils.log_handler import LOG_HANDLER
 from termcolor import colored
 
 
@@ -9,12 +8,10 @@ class CheckForExistingPageMaterialHandler:
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
+
 
 
     def handle(self) -> Page:
-        self.__log_event()
-
         if self.page.content == None: return self.page
 
         # If here, then the page content exists and we need to handle it.
@@ -61,7 +58,3 @@ class CheckForExistingPageMaterialHandler:
         self.page.active = False
         DB.add(self.page)
         DB.commit()
-
-
-    def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id} - Page: {self.page.id}")
