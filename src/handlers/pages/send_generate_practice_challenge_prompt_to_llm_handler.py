@@ -7,7 +7,7 @@ from termcolor import colored
 
 
 
-class SendGenerateLessonPagePromptToLLMHandler:
+class SendGeneratePracticeChallengePromptToLLMHandler:
     def __init__(self, thread_id: int, outline_id: int, page_id: int):
         self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)

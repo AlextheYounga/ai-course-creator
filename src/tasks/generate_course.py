@@ -1,51 +1,31 @@
-from openai import OpenAI
 from db.db import DB, Topic, Course, Outline, OutlineEntity, Page
-from src.handlers.generate_lesson_page_handler import GenerateLessonPageHandler
-from src.handlers.generate_practice_challenge_page_handler import GeneratePracticeChallengePageHandler
-from src.handlers.generate_final_challenge_page_handler import GenerateFinalSkillChallengePageHandler
+from handlers.create_new_thread_handler import StartNewThreadHandler
+from src.handlers.pages import *
+import progressbar
 
 
 class GenerateCourse:
-    def __init__(self, topic_id: int, llm: OpenAI, course: Course):
+    def __init__(self, topic_id: int, course_id: int):
         self.topic = DB.get(Topic, topic_id)
-        self.llm_handler = llm
-        self.course = course
+        self.course = DB.get(Course, course_id)
         self.outline = Outline.get_master_outline(DB, self.topic)
+        self.thread = None
+        self.pages = []
 
 
     def run(self):
-        course_pages = self._get_course_pages()
+        self.thread = StartNewThreadHandler(self.__class__.__name__).handle()
 
-        lesson_pages = self._generate_course_lesson_pages(course_pages)
-        challenge_pages = self._generate_course_challenges(course_pages)
-        final_challenge = self._generate_course_final_challenge(course_pages)
+        self.pages = self._get_course_pages()
 
-        return {
-            'lesson_pages': lesson_pages,
-            'challenge_pages': challenge_pages,
-            'final_challenge': final_challenge,
-        }
+    def _generate_lesson_pages(self):
+        generated_pages = []
+        pages = [page for page in self.pages if page.type == 'lesson']
 
-
-    def _generate_course_lesson_pages(self, pages: list[Page]):
-        lesson_pages = [page for page in pages if page.type == 'lesson']
-        llm_instance = self.llm_handler(f"Course Page Generation - {self.course.name}")
-        handler = GenerateLessonPageHandler(self.topic.id, llm_instance, lesson_pages)
-        return handler.handle()
-
-
-    def _generate_course_challenges(self, pages: list[Page]):
-        challenge_pages = [page for page in pages if page.type == 'challenge']
-        llm_instance = self.llm_handler(f"Course Challenge Generation - {self.course.name}")
-        handler = GeneratePracticeChallengePageHandler(self.topic.id, llm_instance, challenge_pages)
-        return handler.handle()
-
-
-    def _generate_course_final_challenge(self, pages: list[Page]):
-        final_challenge_pages = [page for page in pages if page.type == 'final-skill-challenge']
-        llm_instance = self.llm_handler(f"Course Final Challenge Generation - {self.course.name}")
-        handler = GenerateFinalSkillChallengePageHandler(self.topic.id, llm_instance, final_challenge_pages)
-        return handler.handle()
+        with progressbar.ProgressBar(max_value=len(pages), prefix='Generating lesson pages: ', redirect_stdout=True).start() as bar:
+            for page in pages:
+                prompt = CreateLessonPagePromptHandler(self.thread.id, self.outline.id, page.id).handle()
+                response = SendGenerateLessonPagePromptToLLMHandler(self.thread.id, self.outline.id, page.id).handle()
 
 
     def _get_course_pages(self):

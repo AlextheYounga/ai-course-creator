@@ -7,7 +7,7 @@ from .send_generate_page_summary_to_llm_handler import SendGeneratePageSummaryTo
 
 
 
-class ProcessGenerateLessonPageResponseHandler:
+class ProcessLessonPageResponseHandler:
     def __init__(self, thread_id: int, outline_id: int, response_id: int, page_id: int):
         self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)

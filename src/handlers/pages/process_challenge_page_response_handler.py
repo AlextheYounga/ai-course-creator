@@ -7,7 +7,7 @@ from sqlalchemy.orm.attributes import flag_modified
 
 
 
-class ProcessGenerateLessonPageResponseHandler:
+class ProcessChallengePageResponseHandler:
     def __init__(self, thread_id: int, outline_id: int, response_id: int, page_id: int):
         self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)

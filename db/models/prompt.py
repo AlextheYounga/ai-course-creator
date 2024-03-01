@@ -15,6 +15,7 @@ class Prompt(Base):
     estimated_tokens = mapped_column(Integer)
     content = mapped_column(Text, nullable=False)
     payload = mapped_column(JSON)
+    attempts = mapped_column(Integer, default=0)
     properties = mapped_column(JSON)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())

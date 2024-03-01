@@ -1,5 +1,5 @@
 from db.db import DB, Topic, Outline
-from src.handlers.start_new_thread_handler import StartNewThreadHandler
+from handlers.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.outlines import *
 
 
@@ -9,7 +9,7 @@ class GenerateOutline:
         self.thread = None
 
     def run(self):
-        self.thread = StartNewThreadHandler('GenerateOutline').handle()
+        self.thread = CreateNewThreadHandler(self.__class__.__name__).handle()
 
         outline = InstantiateOutlineHandler(self.thread.id, self.topic.id).handle()
 
