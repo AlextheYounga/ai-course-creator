@@ -1,13 +1,12 @@
-from db.db import DB, Outline, Thread, Prompt, Response
+from db.db import DB, Outline, Prompt, Response
 from ...llm.get_llm_client import get_llm_client
 from ...utils.log_handler import LOG_HANDLER
 from termcolor import colored
 from openai.types.completion import Completion
-import json
 
 
 
-class SendGenerateSkillsPromptHandler:
+class SendGenerateSkillsPromptToLLMHandler:
     def __init__(self, thread_id: int, outline_id: int, prompt_id: int):
         self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)

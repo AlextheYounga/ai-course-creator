@@ -1,15 +1,16 @@
-from db.db import DB, Outline, Prompt
-from ...utils.log_handler import LOG_HANDLER
+from db.db import DB, Outline, OutlineEntity, Prompt, Page
 from ...llm.get_prompt import get_prompt
 from ...llm.get_llm_params import get_llm_params
 from ...llm.token_counter import count_tokens_using_encoding
+from ...utils.log_handler import LOG_HANDLER
+import yaml
 
 
-
-class CreateGenerateSkillsPromptHandler:
-    def __init__(self, thread_id: int, outline_id: int):
+class CreateSummarizePagePromptHandler:
+    def __init__(self, thread_id: int, outline_id: int, page_id: int):
         self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)
+        self.page = DB.get(Page, page_id)
         self.topic = self.outline.topic
         self.logging = LOG_HANDLER(self.__class__.__name__)
 
@@ -20,7 +21,7 @@ class CreateGenerateSkillsPromptHandler:
         llm_params = get_llm_params('skills')
         model = llm_params['model']
 
-        messages = self._build_skills_prompt()
+        messages = self._build_summarize_page_prompt()
         tokens = count_tokens_using_encoding(model, messages)
 
         prompt = self._save_prompt(messages, tokens, llm_params)
@@ -28,21 +29,17 @@ class CreateGenerateSkillsPromptHandler:
         return prompt
 
 
-    def _build_skills_prompt(self) -> list[dict]:
-        # Build message payload
-        system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
-        user_prompt = get_prompt(self.topic, 'user/outlines/topic-skills', {'topic': self.topic.name})
+    def _build_summarize_page_prompt(self):
+        topic = self.page.topic
+        summarize_prompt = get_prompt(topic, 'user/pages/summarize', {'content': self.page.content})
 
         return [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
+            {"role": "user", "content": summarize_prompt},
         ]
 
 
     def _save_prompt(self, messages: list[dict], tokens: int, params: dict) -> Prompt:
-        content = ""
-        for message in messages:
-            content += message['content'] + "\n\n"
+        content = messages[0]['content']
 
         properties = {
             'params': params,
@@ -66,4 +63,4 @@ class CreateGenerateSkillsPromptHandler:
 
 
     def __log_event(self):
-        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id}")
+        self.logging.info(f"Thread: {self.thread_id} - Outline: {self.outline.id} - Page: {self.page.id}")

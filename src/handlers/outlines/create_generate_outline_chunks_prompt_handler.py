@@ -18,7 +18,7 @@ class CreateGenerateOutlineChunksPromptHandler:
     def handle(self):
         self.__log_event()
 
-        llm_params = get_llm_params('skills')
+        llm_params = get_llm_params('outline')
         model = llm_params['model']
 
         skills = self.outline.properties.get('skills', None)
@@ -32,7 +32,7 @@ class CreateGenerateOutlineChunksPromptHandler:
             messages = self._build_generate_outline_chunks_prompts(chunk)
             tokens = count_tokens_using_encoding(model, messages)
 
-            prompt = self._save_prompt('GenerateOutlineChunks', messages, tokens, llm_params)
+            prompt = self._save_prompt(messages, tokens, llm_params)
             prompt_ids.append(prompt.id)
 
         return prompt_ids
@@ -61,7 +61,7 @@ class CreateGenerateOutlineChunksPromptHandler:
         ]
 
 
-    def _save_prompt(self, event_name: str, messages: list[dict], tokens: int, params: dict) -> int:
+    def _save_prompt(self, messages: list[dict], tokens: int, params: dict) -> Prompt:
         content = ""
         for message in messages:
             content += message['content'] + "\n\n"
@@ -73,7 +73,7 @@ class CreateGenerateOutlineChunksPromptHandler:
         prompt = Prompt(
             thread_id=self.thread_id,
             outline_id=self.outline.id,
-            action=event_name,
+            action=self.__class__.__name__,
             model=properties['params']['model'],
             content=content,
             payload=messages,

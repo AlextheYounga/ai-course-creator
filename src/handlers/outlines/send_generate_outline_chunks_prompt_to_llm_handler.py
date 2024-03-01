@@ -4,11 +4,10 @@ from ...utils.log_handler import LOG_HANDLER
 from termcolor import colored
 from openai.types.completion import Completion
 import progressbar
-import json
 
 
 
-class SendGenerateOutlineChunksPromptsHandler:
+class SendGenerateOutlineChunksPromptsToLLMHandler:
     def __init__(self, thread_id: int, outline_id: int, prompt_ids: list[int]):
         self.thread_id = thread_id
         self.outline = DB.get(Outline, outline_id)

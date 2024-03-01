@@ -1,9 +1,9 @@
-from db.db import DB, Outline, Thread, Response
+from db.db import DB, Outline, Response
 from ...utils.log_handler import LOG_HANDLER
+from ..validate_llm_response_handler import ValidateLLMResponseHandler
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
 from termcolor import colored
 from sqlalchemy.orm.attributes import flag_modified
-
 
 
 
@@ -22,15 +22,17 @@ class ProcessGenerateSkillsResponseHandler:
 
         completion = self.response.payload
 
-        if not completion['choices'][0]['message']['content']:
-            print(colored("Malformed completion, unknown error. Aborting...", "red"))
+        validated_response = ValidateLLMResponseHandler(
+            self.thread_id,
+            self.outline.id,
+            self.response.id
+        ).handle()
+
+        if not validated_response:
+            return False
             # Retry
 
         content = completion['choices'][0]['message']['content']
-
-        if len(content) < 200:
-            print(colored("Shit response; retrying...", "red"))
-            # Retry
 
         yaml_handler = ParseYamlFromResponseHandler(self.thread_id, content)
         yaml_data = yaml_handler.handle()
@@ -40,27 +42,9 @@ class ProcessGenerateSkillsResponseHandler:
             print(colored(f"Failed to parse YAML content; maximum retries exceeded. Aborting...", "red"))
             # Retry
 
-        self._update_response_record(completion, yaml_data)
         self._save_skills_to_outline(skills_obj)
 
         return self.outline
-
-
-    def _update_response_record(self, completion: dict, yaml_data: dict):
-        properties = {
-            'params': self.prompt.properties['params'],
-            'yaml': yaml_data
-        }
-
-        self.response.role = completion['choices'][0]['message']['role']
-        self.response.model = completion['model']
-        self.response.prompt_tokens = completion['usage']['prompt_tokens']
-        self.response.completion_tokens = completion['usage']['completion_tokens']
-        self.response.total_tokens = completion['usage']['total_tokens']
-        self.response.content = completion['choices'][0]['message']['content']
-        self.response.properties = properties
-
-        DB.commit()
 
 
     def _save_skills_to_outline(self, skills_obj: dict):

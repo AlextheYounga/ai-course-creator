@@ -98,40 +98,6 @@ class Page(Base):
         }
 
 
-    @classmethod
-    def check_for_existing_page_material(self, session: Session, page):
-        if page.content == None: return page
-
-        # Soft deleting existing page
-        page.active = False
-
-        print(colored(f"Found existing page material. Soft deleting existing page and regenerating content", "yellow"))
-
-        new_page = self(
-            topic_id=page.topic_id,
-            course_id=page.course_id,
-            chapter_id=page.chapter_id,
-            name=page.name,
-            slug=page.slug,
-            path=page.path,
-            content=None,
-            summary=None,
-            nodes=None,
-            generated=False,
-            hash=None,
-            permalink=page.permalink,
-            link='#',
-            position=page.position,
-            position_in_course=page.position_in_course,
-            type=page.type,
-            properties=page.properties
-        )
-
-        session.add(new_page)
-
-        return new_page
-
-
     @staticmethod
     def dump_pages(pages: list):
         for page in pages:

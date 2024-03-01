@@ -1,9 +1,9 @@
 from db.db import DB, Outline, Response
 from ...utils.log_handler import LOG_HANDLER
+from ..validate_llm_response_handler import ValidateLLMResponseHandler
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
 from termcolor import colored
 from sqlalchemy.orm.attributes import flag_modified
-
 
 
 
@@ -22,15 +22,17 @@ class ProcessGenerateOutlineChunksResponsesHandler:
         for response in self.responses:
             completion = response.payload
 
-            if not completion['choices'][0]['message']['content']:
-                print(colored("Malformed completion, unknown error. Aborting...", "red"))
+            validated_response = ValidateLLMResponseHandler(
+                self.thread_id,
+                self.outline.id,
+                self.response.id
+            ).handle()
+
+            if not validated_response:
+                return False
                 # Retry
 
             content = completion['choices'][0]['message']['content']
-
-            if len(content) < 200:
-                print(colored("Shit response; retrying...", "red"))
-                # Retry
 
             yaml_handler = ParseYamlFromResponseHandler(self.thread_id, content)
             yaml_data = yaml_handler.handle()
@@ -41,7 +43,6 @@ class ProcessGenerateOutlineChunksResponsesHandler:
                 # Retry
 
             self._save_chunk_to_outline(chunk_obj)
-            response = self._update_response_record(response, completion, yaml_data)
 
         return self.outline
 
@@ -61,27 +62,6 @@ class ProcessGenerateOutlineChunksResponsesHandler:
 
         DB.add(self.outline)
         DB.commit()
-
-
-    def _update_response_record(self, response: Response, completion: dict, yaml_data: dict):
-        prompt = response.prompt
-
-        properties = {
-            'params': prompt.properties['params'],
-            'yaml': yaml_data
-        }
-
-        response.role = completion['choices'][0]['message']['role']
-        response.model = completion['model']
-        response.prompt_tokens = completion['usage']['prompt_tokens']
-        response.total_tokens = completion['usage']['total_tokens']
-        response.completion_tokens = completion['usage']['completion_tokens']
-        response.content = completion['choices'][0]['message']['content']
-        response.properties = properties
-
-        DB.commit()
-
-        return response
 
 
     def __log_event(self):
