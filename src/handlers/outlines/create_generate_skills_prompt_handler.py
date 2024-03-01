@@ -7,9 +7,9 @@ from ...llm.token_counter import count_tokens_using_encoding
 
 
 class CreateGenerateSkillsPromptHandler:
-    def __init__(self, thread_id: int, outline_id: int):
-        self.thread_id = thread_id
-        self.outline = DB.get(Outline, outline_id)
+    def __init__(self, data: dict):
+        self.thread_id = data['threadId']
+        self.outline = DB.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
         self.logging = LOG_HANDLER(self.__class__.__name__)
 

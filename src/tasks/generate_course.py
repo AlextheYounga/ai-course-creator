@@ -1,5 +1,5 @@
 from db.db import DB, Topic, Course, Outline, OutlineEntity, Page
-from handlers.create_new_thread_handler import StartNewThreadHandler
+from src.handlers.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.pages import *
 import progressbar
 
@@ -14,7 +14,7 @@ class GenerateCourse:
 
 
     def run(self):
-        self.thread = StartNewThreadHandler(self.__class__.__name__).handle()
+        self.thread = CreateNewThreadHandler(self.__class__.__name__).handle()
 
         self.pages = self._get_course_pages()
 

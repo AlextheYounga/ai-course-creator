@@ -1,3 +1,4 @@
+from db.db import DB, Response
 from ..utils.log_handler import LOG_HANDLER
 from termcolor import colored
 import markdown
@@ -8,16 +9,18 @@ from bs4 import BeautifulSoup
 
 
 class ParseYamlFromResponseHandler:
-    def __init__(self, thread_id: int, content: str):
-        self.thread_id = thread_id
-        self.content = content
+    def __init__(self, data: dict):
+        self.thread_id = data['threadId']
+        self.response = DB.get(Response, data['responseId'])
         self.yaml_content = ''
         self.logger = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self):
+        content = self.response.payload['choices'][0]['message']['content']
+
         try:
-            html = markdown.markdown(self.content, extensions=['fenced_code'])
+            html = markdown.markdown(content, extensions=['fenced_code'])
             soup = BeautifulSoup(html, 'html.parser')
             code_block = soup.find('code')
 

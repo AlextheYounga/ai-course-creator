@@ -2,16 +2,17 @@ from db.db import DB, Outline, Response
 from ...utils.log_handler import LOG_HANDLER
 from ..validate_llm_response_handler import ValidateLLMResponseHandler
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
+from .send_generate_skills_prompt_to_llm_handler import SendGenerateSkillsPromptToLLMHandler
 from termcolor import colored
 from sqlalchemy.orm.attributes import flag_modified
 
 
 
 class ProcessGenerateSkillsResponseHandler:
-    def __init__(self, thread_id: int, outline_id: int, response_id: int):
-        self.thread_id = thread_id
-        self.outline = DB.get(Outline, outline_id)
-        self.response = DB.get(Response, response_id)
+    def __init__(self, data: dict):
+        self.thread_id = data['threadId']
+        self.outline = DB.get(Outline, data['outlineId'])
+        self.response = DB.get(Response, data['responseId'])
         self.prompt = self.response.prompt
         self.topic = self.outline.topic
         self.logging = LOG_HANDLER(self.__class__.__name__)
@@ -40,7 +41,7 @@ class ProcessGenerateSkillsResponseHandler:
 
         if yaml_data['error']:
             print(colored(f"Failed to parse YAML content; maximum retries exceeded. Aborting...", "red"))
-            # Retry
+            SendGenerateSkillsPromptToLLMHandler(self.thread_id, self.outline.id, self.prompt.id).handle()
 
         self._save_skills_to_outline(skills_obj)
 

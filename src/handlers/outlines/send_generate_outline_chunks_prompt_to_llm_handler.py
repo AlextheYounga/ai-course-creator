@@ -8,10 +8,10 @@ import progressbar
 
 
 class SendGenerateOutlineChunksPromptsToLLMHandler:
-    def __init__(self, thread_id: int, outline_id: int, prompt_ids: list[int]):
-        self.thread_id = thread_id
-        self.outline = DB.get(Outline, outline_id)
-        self.prompts = DB.query(Prompt).filter(Prompt.id.in_(prompt_ids)).all()
+    def __init__(self, data: dict):
+        self.thread_id = data['threadId']
+        self.outline = DB.get(Outline, data['outlineId'])
+        self.prompts = DB.query(Prompt).filter(Prompt.id.in_(data['promptIds'])).all()
         self.topic = self.outline.topic
         self.logging = LOG_HANDLER(self.__class__.__name__)
 

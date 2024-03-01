@@ -8,10 +8,10 @@ from sqlalchemy.orm.attributes import flag_modified
 
 
 class ProcessGenerateOutlineChunksResponsesHandler:
-    def __init__(self, thread_id: int, outline_id: int, response_ids: list[int]):
-        self.thread_id = thread_id
-        self.outline = DB.get(Outline, outline_id)
-        self.responses = DB.query(Response).filter(Response.id.in_(response_ids)).all()
+    def __init__(self, data: dict):
+        self.thread_id = data['threadId']
+        self.outline = DB.get(Outline, data['outlineId'])
+        self.responses = DB.query(Response).filter(Response.id.in_(data['responseIds'])).all()
         self.topic = self.outline.topic
         self.logging = LOG_HANDLER(self.__class__.__name__)
 
@@ -25,7 +25,7 @@ class ProcessGenerateOutlineChunksResponsesHandler:
             validated_response = ValidateLLMResponseHandler(
                 self.thread_id,
                 self.outline.id,
-                self.response.id
+                response.id
             ).handle()
 
             if not validated_response:
@@ -34,7 +34,7 @@ class ProcessGenerateOutlineChunksResponsesHandler:
 
             content = completion['choices'][0]['message']['content']
 
-            yaml_handler = ParseYamlFromResponseHandler(self.thread_id, content)
+            yaml_handler = ParseYamlFromResponseHandler(self.thread_id, response.id)
             yaml_data = yaml_handler.handle()
             chunk_obj = yaml_data['dict']
 

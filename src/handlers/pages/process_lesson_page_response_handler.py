@@ -8,11 +8,11 @@ from .send_generate_page_summary_to_llm_handler import SendGeneratePageSummaryTo
 
 
 class ProcessLessonPageResponseHandler:
-    def __init__(self, thread_id: int, outline_id: int, response_id: int, page_id: int):
-        self.thread_id = thread_id
-        self.outline = DB.get(Outline, outline_id)
-        self.response = DB.get(Response, response_id)
-        self.page = DB.get(Page, page_id)
+    def __init__(self, data: dict):
+        self.thread_id = data['threadId']
+        self.outline = DB.get(Outline, data['outlineId'])
+        self.response = DB.get(Response, data['responseId'])
+        self.page = DB.get(Page, data['pageId'])
         self.prompt = self.response.prompt
         self.topic = self.outline.topic
         self.logging = LOG_HANDLER(self.__class__.__name__)

@@ -6,10 +6,10 @@ from ...llm.token_counter import count_tokens_using_encoding
 
 
 class CreatePracticeSkillChallengePromptHandler:
-    def __init__(self, thread_id: int, outline_id: int, page_id: int):
-        self.thread_id = thread_id
-        self.outline = DB.get(Outline, outline_id)
-        self.page = DB.get(Page, page_id)
+    def __init__(self, data: dict):
+        self.thread_id = data['threadId']
+        self.outline = DB.get(Outline, data['outlineId'])
+        self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
         self.logging = LOG_HANDLER(self.__class__.__name__)
 

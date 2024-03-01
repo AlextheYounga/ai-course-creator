@@ -3,8 +3,8 @@ from src.utils.files import read_yaml_file
 
 
 class ScanTopicsFileHandler:
-    def __init__(self, topics_file: str = "storage/topics.yaml"):
-        self.topics_file = topics_file
+    def __init__(self, data: dict = {}):
+        self.topics_file = data.get('topicsFile', "storage/topics.yaml")
 
     def handle(self) -> list[Topic]:
         topics = []

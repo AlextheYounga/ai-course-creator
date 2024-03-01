@@ -6,9 +6,9 @@ from termcolor import colored
 
 
 class InstantiateOutlineHandler:
-    def __init__(self, thread_id: int, topic_id: int):
-        self.thread_id = thread_id
-        self.topic = DB.get(Topic, topic_id)
+    def __init__(self, data: dict):
+        self.thread_id = data['threadId']
+        self.topic = DB.get(Topic, data['topicId'])
         self.logging = LOG_HANDLER(self.__class__.__name__)
 
 

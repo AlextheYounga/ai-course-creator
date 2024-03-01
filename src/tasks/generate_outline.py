@@ -1,6 +1,10 @@
 from db.db import DB, Topic, Outline
-from handlers.create_new_thread_handler import CreateNewThreadHandler
+from ..events.event_manager import EVENT_MANAGER
+from ..events.events import *
 from src.handlers.outlines import *
+from src.handlers.create_new_thread_handler import CreateNewThreadHandler
+
+event_manager = EventManager()
 
 
 class GenerateOutline:
@@ -8,35 +12,42 @@ class GenerateOutline:
         self.topic = DB.get(Topic, topic_id)
         self.thread = None
 
-    def run(self):
-        self.thread = CreateNewThreadHandler(self.__class__.__name__).handle()
-
-        outline = InstantiateOutlineHandler(self.thread.id, self.topic.id).handle()
-
-        outline = self._generate_skills(outline)
-
-        outline = self._generate_outline_chunks(outline)
-
-        outline = CompileOutlineChunksToMasterOutlineHandler(self.thread.id, outline.id).handle()
-
-        CreateOutlineEntitiesFromOutlineHandler(self.thread.id, outline.id).handle()
-
-        self.thread.set_complete(DB)
-
-        return outline
+    def run():
+        event_manager.subscribe([GenerateOutlineRequested], CreateNewThreadHandler)
+        event_manager.subscribe([NewThreadCreated], InstantiateOutlineHandler)
+        event_manager.subscribe([NewOutlineInstantiated], CreateGenerateSkillsPromptHandler)
+        event_manager.subscribe([GenerateSkillsPromptCreated], SendGenerateSkillsPromptToLLMHandler)
 
 
-    def _generate_skills(self, outline: Outline):
-        skills_prompt = CreateGenerateSkillsPromptHandler(self.thread.id, outline.id).handle()
-        skills_response = SendGenerateSkillsPromptToLLMHandler(self.thread.id, outline.id, skills_prompt.id).handle()
-        outline = ProcessGenerateSkillsResponseHandler(self.thread.id, outline.id, skills_response.id).handle()
+    # def run(self):
+    #     self.thread = CreateNewThreadHandler(self.__class__.__name__).handle()
 
-        return outline
+    #     outline = InstantiateOutlineHandler(self.thread.id, self.topic.id).handle()
+
+    #     outline = self._generate_skills(outline)
+
+    #     outline = self._generate_outline_chunks(outline)
+
+    #     outline = CompileOutlineChunksToMasterOutlineHandler(self.thread.id, outline.id).handle()
+
+    #     CreateOutlineEntitiesFromOutlineHandler(self.thread.id, outline.id).handle()
+
+    #     self.thread.set_complete(DB)
+
+    #     return outline
 
 
-    def _generate_outline_chunks(self, outline: Outline):
-        chunk_prompt_ids = CreateGenerateOutlineChunksPromptHandler(self.thread.id, outline.id).handle()
-        chunks_response_ids = SendGenerateOutlineChunksPromptsToLLMHandler(self.thread.id, outline.id, chunk_prompt_ids).handle()
-        outline = ProcessGenerateOutlineChunksResponsesHandler(self.thread.id, outline.id, chunks_response_ids).handle()
+    # def _generate_skills(self, outline: Outline):
+    #     skills_prompt = CreateGenerateSkillsPromptHandler(self.thread.id, outline.id).handle()
+    #     skills_response = SendGenerateSkillsPromptToLLMHandler(self.thread.id, outline.id, skills_prompt.id).handle()
+    #     outline = ProcessGenerateSkillsResponseHandler(self.thread.id, outline.id, skills_response.id).handle()
 
-        return outline
+    #     return outline
+
+
+    # def _generate_outline_chunks(self, outline: Outline):
+    #     chunk_prompt_ids = CreateGenerateOutlineChunksPromptHandler(self.thread.id, outline.id).handle()
+    #     chunks_response_ids = SendGenerateOutlineChunksPromptsToLLMHandler(self.thread.id, outline.id, chunk_prompt_ids).handle()
+    #     outline = ProcessGenerateOutlineChunksResponsesHandler(self.thread.id, outline.id, chunks_response_ids).handle()
+
+    #     return outline

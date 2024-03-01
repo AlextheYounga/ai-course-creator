@@ -3,8 +3,8 @@ from db.db import DB, Thread
 
 
 class CreateNewThreadHandler:
-    def __init__(self, event_name: str):
-        self.event_name = event_name
+    def __init__(self, data: dict):
+        self.event_name = data['eventName']
 
 
     def handle(self) -> Thread:

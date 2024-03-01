@@ -1,4 +1,5 @@
 from db.db import DB, Outline
+from ...events.events import Event
 from ...utils.log_handler import LOG_HANDLER
 import os
 import yaml
@@ -6,11 +7,11 @@ from termcolor import colored
 
 
 class CompileOutlineChunksToMasterOutlineHandler:
-    def __init__(self, thread_id: int, outline_id: int):
+    def __init__(self, data: dict):
         output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 
-        self.thread_id = thread_id
-        self.outline = DB.get(Outline, outline_id)
+        self.thread_id = data['threadId']
+        self.outline = DB.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
         self.logging = LOG_HANDLER(self.__class__.__name__)
         self.output_path = f"{output_directory}/{self.topic.slug}"  # master outline sits at topic level
