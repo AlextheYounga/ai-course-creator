@@ -9,23 +9,20 @@ class GenerateCourse:
         self.topic = DB.get(Topic, topic_id)
         self.course = DB.get(Course, course_id)
         self.outline = Outline.get_master_outline(DB, self.topic)
-        self.thread = None
-        self.pages = []
 
 
     def run(self):
-        self.thread = CreateNewThreadHandler(self.__class__.__name__).handle()
+        thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
+        pages = self._get_course_pages()
 
-        self.pages = self._get_course_pages()
+    # def _generate_lesson_pages(self):
+    #     generated_pages = []
+    #     pages = [page for page in self.pages if page.type == 'lesson']
 
-    def _generate_lesson_pages(self):
-        generated_pages = []
-        pages = [page for page in self.pages if page.type == 'lesson']
-
-        with progressbar.ProgressBar(max_value=len(pages), prefix='Generating lesson pages: ', redirect_stdout=True).start() as bar:
-            for page in pages:
-                prompt = CreateLessonPagePromptHandler(self.thread.id, self.outline.id, page.id).handle()
-                response = SendGenerateLessonPagePromptToLLMHandler(self.thread.id, self.outline.id, page.id).handle()
+    #     with progressbar.ProgressBar(max_value=len(pages), prefix='Generating lesson pages: ', redirect_stdout=True).start() as bar:
+    #         for page in pages:
+    #             prompt = CreateLessonPagePromptHandler(self.thread.id, self.outline.id, page.id).handle()
+    #             response = SendGenerateLessonPagePromptToLLMHandler(self.thread.id, self.outline.id, page.id).handle()
 
 
     def _get_course_pages(self):

@@ -1,6 +1,6 @@
 from db.db import DB, Outline, Thread, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import AllGenerateOutlineChunksPromptsSentToLLM
+from src.events.events import AllOutlineChunkResponsesProcessedSuccessfully, OutlineChunkResponseReceivedFromLLM
 from ...llm.get_llm_client import get_llm_client
 from termcolor import colored
 from openai.types.completion import Completion
@@ -8,7 +8,7 @@ import progressbar
 
 
 
-class SendGenerateOutlineChunksPromptsToLLMHandler:
+class SendAllOutlineChunkPromptsToLLMHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
@@ -31,16 +31,25 @@ class SendGenerateOutlineChunksPromptsToLLMHandler:
 
                 response = self._save_response_to_db(prompt, completion)
                 response_ids.append(response.id)
+
+                EVENT_MANAGER.trigger(OutlineChunkResponseReceivedFromLLM({
+                    'threadId': self.thread_id,
+                    'outlineId': self.outline.id,
+                    'topicId': self.topic.id,
+                    'promptId': prompt.id,
+                    'responseId': response.id,
+                }))
+
                 bar.update(i)
 
 
-        return self.__trigger_completion_event({
+        return EVENT_MANAGER.trigger(AllOutlineChunkResponsesProcessedSuccessfully({
             'threadId': self.thread_id,
             'outlineId': self.outline.id,
             'topicId': self.topic.id,
             'promptIds': [prompt.id for prompt in self.prompts],
             'responseIds': response_ids,
-        })
+        }))
 
 
     def _save_response_to_db(self, prompt: Prompt, completion: Completion):
@@ -65,6 +74,3 @@ class SendGenerateOutlineChunksPromptsToLLMHandler:
         DB.commit()
 
         return response
-
-    def __trigger_completion_event(self, data: dict):
-        EVENT_MANAGER.trigger(AllGenerateOutlineChunksPromptsSentToLLM(data))

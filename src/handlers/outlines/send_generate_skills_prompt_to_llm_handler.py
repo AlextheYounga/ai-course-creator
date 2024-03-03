@@ -1,6 +1,6 @@
 from db.db import DB, Outline, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import GenerateSkillsPromptSentToLLM
+from src.events.events import GenerateSkillsResponseReceivedFromLLM
 from ...llm.get_llm_client import get_llm_client
 from termcolor import colored
 from openai.types.completion import Completion
@@ -15,7 +15,7 @@ class SendGenerateSkillsPromptToLLMHandler:
         self.topic = self.outline.topic
 
 
-    def handle(self) -> GenerateSkillsPromptSentToLLM:
+    def handle(self) -> GenerateSkillsResponseReceivedFromLLM:
         print(colored(f"\nGenerating {self.topic.name} skills...", "yellow"))
 
         messages = self.prompt.payload
@@ -60,4 +60,4 @@ class SendGenerateSkillsPromptToLLMHandler:
         return response
 
     def __trigger_completion_event(self, data: dict):
-        EVENT_MANAGER.trigger(GenerateSkillsPromptSentToLLM(data))
+        EVENT_MANAGER.trigger(GenerateSkillsResponseReceivedFromLLM(data))

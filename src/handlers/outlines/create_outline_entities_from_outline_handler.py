@@ -11,7 +11,6 @@ class CreateOutlineEntitiesFromOutlineHandler:
         self.topic = self.outline.topic
 
     def handle(self) -> list[Page]:
-        pages = []
         master_outline = self.outline.master_outline
 
         for course_index, course in enumerate(master_outline):
@@ -42,7 +41,6 @@ class CreateOutlineEntitiesFromOutlineHandler:
 
                     # Saving to the database
                     DB.commit()
-                    pages.append(page_record)
 
                     # Create outline entities
                     OutlineEntity.first_or_create(DB, self.outline.id, page_record)
@@ -53,7 +51,6 @@ class CreateOutlineEntitiesFromOutlineHandler:
             'threadId': self.thread_id,
             'outlineId': self.outline.id,
             'topicId': self.topic.id,
-            'pageIds': [page.id for page in pages]
         })
 
 

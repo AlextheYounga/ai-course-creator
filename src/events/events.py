@@ -30,12 +30,12 @@ class GenerateSkillsPromptCreated(Event):
         self.data = data
 
 
-class GenerateSkillsPromptSentToLLM(Event):
+class GenerateSkillsResponseReceivedFromLLM(Event):
     def __init__(self, data):
         self.data = data
 
 
-class GenerateSkillsResponseProcessed(Event):
+class GenerateSkillsResponseProcessedSuccessfully(Event):
     def __init__(self, data):
         self.data = data
 
@@ -55,22 +55,27 @@ class AllGenerateOutlineChunksPromptsCreated(Event):
         self.data = data
 
 
-class AllGenerateOutlineChunksPromptsSentToLLM(Event):
+class OutlineChunkResponseReceivedFromLLM(Event):
     def __init__(self, data):
         self.data = data
 
 
-class InvalidOutlineChunkResponsesFromLLM(Event):
+class OutlineChunkResponseProcessedSuccessfully(Event):
     def __init__(self, data):
         self.data = data
 
 
-class FailedToParseYamlFromOutlineChunkResponses(Event):
+class InvalidOutlineChunkResponseFromLLM(Event):
     def __init__(self, data):
         self.data = data
 
 
-class AllOutlineChunkResponsesProcessed(Event):
+class FailedToParseYamlFromOutlineChunkResponse(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class AllOutlineChunkResponsesProcessedSuccessfully(Event):
     def __init__(self, data):
         self.data = data
 

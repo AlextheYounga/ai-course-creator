@@ -1,14 +1,13 @@
 from db.db import DB, Outline, Response
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import GenerateSkillsResponseProcessedSuccessfully, InvalidGenerateSkillsResponseFromLLM, FailedToParseYamlFromGenerateSkillsResponse
+from src.events.events import OutlineChunkResponseProcessedSuccessfully, InvalidOutlineChunkResponseFromLLM, FailedToParseYamlFromOutlineChunkResponse
 from ..validate_llm_response_handler import ValidateLLMResponseHandler
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
-from termcolor import colored
 from sqlalchemy.orm.attributes import flag_modified
 
 
 
-class ProcessGenerateSkillsResponseHandler:
+class ProcessOutlineChunkResponseHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
@@ -29,36 +28,40 @@ class ProcessGenerateSkillsResponseHandler:
         validated_response = ValidateLLMResponseHandler(self.event_payload).handle()
 
         if not validated_response:
-            if self.prompt.attempts <= 3:
+            if self.response.prompt.attempts <= 3:
                 raise Exception("Invalid response; maximum retries exceeded. Aborting...")
 
             # Retry
-            self.prompt.increment_attempts(DB)
-            return EVENT_MANAGER.trigger(InvalidGenerateSkillsResponseFromLLM(self.event_payload))
+            self.response.prompt.increment_attempts(DB)
+            return EVENT_MANAGER.trigger(InvalidOutlineChunkResponseFromLLM(self.event_payload))
 
-        yaml_data = ParseYamlFromResponseHandler(self.event_payload).handle()
-
-        skills_obj = yaml_data['dict']
+        yaml_handler = ParseYamlFromResponseHandler(self.event_payload)
+        yaml_data = yaml_handler.handle()
+        chunk_obj = yaml_data['dict']
 
         if yaml_data['error']:
-            if self.prompt.attempts <= 3:
+            if self.response.prompt.attempts <= 3:
                 raise Exception("Failed to parse YAML content; maximum retries exceeded. Aborting...")
 
             # Retry
-            self.prompt.increment_attempts(DB)
-            return EVENT_MANAGER.trigger(FailedToParseYamlFromGenerateSkillsResponse(self.event_payload))
+            self.response.prompt.increment_attempts(DB)
+            return EVENT_MANAGER.trigger(FailedToParseYamlFromOutlineChunkResponse(self.event_payload))
 
-        self._save_skills_to_outline(skills_obj)
+        self._save_chunk_to_outline(chunk_obj)
 
-        return self.__trigger_completion_event(self.event_payload)
+        return EVENT_MANAGER.trigger(
+            OutlineChunkResponseProcessedSuccessfully(self.event_payload)
+        )
 
 
-    def _save_skills_to_outline(self, skills_obj: dict):
-        outline_properties = self.outline.properties or {}
+    def _save_chunk_to_outline(self, chunk_obj: dict):
+        outline_properties = self.outline.properties
+        existing_outline_chunks = outline_properties.get('outlineChunks', [])
+        updated_outline_chunks = existing_outline_chunks + chunk_obj
 
         properties = {
             **outline_properties,
-            'skills': skills_obj
+            'outlineChunks': updated_outline_chunks
         }
 
         self.outline.properties = properties
@@ -66,7 +69,3 @@ class ProcessGenerateSkillsResponseHandler:
 
         DB.add(self.outline)
         DB.commit()
-
-
-    def __trigger_completion_event(self, data: dict):
-        EVENT_MANAGER.trigger(GenerateSkillsResponseProcessedSuccessfully(data))

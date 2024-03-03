@@ -8,7 +8,7 @@ from ...llm.token_counter import count_tokens_using_encoding
 import yaml
 
 
-class CreateGenerateOutlineChunksPromptHandler:
+class CreateAllOutlineChunkPromptsHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])

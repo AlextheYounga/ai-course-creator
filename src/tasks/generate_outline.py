@@ -13,9 +13,10 @@ EVENT_MANAGER.trigger(Event(data))
 class GenerateOutline:
     def __init__(self, topic_id: int):
         self.topic = DB.get(Topic, topic_id)
-        self.thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
 
     def run(self):
+        thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
+
         # Instantiate Outline
         EVENT_MANAGER.subscribe(
             [GenerateOutlineRequested],
@@ -37,32 +38,32 @@ class GenerateOutline:
 
         # Process Response
         EVENT_MANAGER.subscribe(
-            [GenerateSkillsPromptSentToLLM],
+            [GenerateSkillsResponseReceivedFromLLM],
             ProcessGenerateSkillsResponseHandler
         )
 
         # Generate Outline Chunks Prompts
         EVENT_MANAGER.subscribe(
-            [GenerateSkillsResponseProcessed],
-            CreateGenerateOutlineChunksPromptHandler
+            [GenerateSkillsResponseProcessedSuccessfully],
+            CreateAllOutlineChunkPromptsHandler
         )
 
-        # Send Generate Outline Chunks Prompts to LLM
+        # Send All Generate Outline Chunks Prompts to LLM
         EVENT_MANAGER.subscribe([
             AllGenerateOutlineChunksPromptsCreated,
-            InvalidOutlineChunkResponsesFromLLM,  # retry event
-            FailedToParseYamlFromOutlineChunkResponses  # retry event
-        ], SendGenerateOutlineChunksPromptsToLLMHandler)
+            InvalidOutlineChunkResponseFromLLM,  # retry event
+            FailedToParseYamlFromOutlineChunkResponse  # retry event
+        ], SendAllOutlineChunkPromptsToLLMHandler)
 
-        # Process Outline Chunks Responses
+        # Process Each Outline Chunk Response
         EVENT_MANAGER.subscribe(
-            [AllGenerateOutlineChunksPromptsSentToLLM],
-            ProcessGenerateOutlineChunksResponsesHandler
+            [OutlineChunkResponseReceivedFromLLM],
+            ProcessOutlineChunkResponseHandler
         )
 
         # Compile Outline Chunks to Master Outline
         EVENT_MANAGER.subscribe(
-            [AllOutlineChunkResponsesProcessed],
+            [AllOutlineChunkResponsesProcessedSuccessfully],
             CompileOutlineChunksToMasterOutlineHandler
         )
 
@@ -75,7 +76,7 @@ class GenerateOutline:
         # Trigger starting event
         EVENT_MANAGER.trigger(
             GenerateOutlineRequested({
-                'threadId': self.thread.id,
+                'threadId': thread.id,
                 'topicId': self.topic.id
             })
         )
