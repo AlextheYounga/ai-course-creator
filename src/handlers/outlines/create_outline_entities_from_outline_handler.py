@@ -47,11 +47,12 @@ class CreateOutlineEntitiesFromOutlineHandler:
                 OutlineEntity.first_or_create(DB, self.outline.id, chapter_record)
             OutlineEntity.first_or_create(DB, self.outline.id, course_record)
 
-        return self.__trigger_completion_event({
-            'threadId': self.thread_id,
-            'outlineId': self.outline.id,
-            'topicId': self.topic.id,
-        })
+        return EVENT_MANAGER.trigger(
+            OutlineEntitiesCreatedFromOutline({
+                'threadId': self.thread_id,
+                'outlineId': self.outline.id,
+                'topicId': self.topic.id,
+            }))
 
 
     def _get_first_or_create_course(self, name, position):
@@ -129,7 +130,3 @@ class CreateOutlineEntitiesFromOutlineHandler:
         page.type = Page.get_page_type(name, chapter.slug)
 
         return page
-
-
-    def __trigger_completion_event(self, data: dict):
-        EVENT_MANAGER.trigger(OutlineEntitiesCreatedFromOutline(data))

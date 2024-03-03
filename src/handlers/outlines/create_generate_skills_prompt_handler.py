@@ -23,12 +23,13 @@ class CreateGenerateSkillsPromptHandler:
 
         prompt = self._save_prompt(messages, tokens, llm_params)
 
-        return self.__trigger_completion_event({
-            'threadId': self.thread_id,
-            'outlineId': self.outline.id,
-            'topicId': self.topic.id,
-            'promptId': prompt.id,
-        })
+        return EVENT_MANAGER.trigger(
+            GenerateSkillsPromptCreated({
+                'threadId': self.thread_id,
+                'outlineId': self.outline.id,
+                'topicId': self.topic.id,
+                'promptId': prompt.id,
+            }))
 
 
     def _build_skills_prompt(self) -> list[dict]:
@@ -66,7 +67,3 @@ class CreateGenerateSkillsPromptHandler:
         DB.commit()
 
         return prompt
-
-
-    def __trigger_completion_event(self, data: dict):
-        EVENT_MANAGER.trigger(GenerateSkillsPromptCreated(data))

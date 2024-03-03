@@ -50,7 +50,9 @@ class ProcessGenerateSkillsResponseHandler:
 
         self._save_skills_to_outline(skills_obj)
 
-        return self.__trigger_completion_event(self.event_payload)
+        return EVENT_MANAGER.trigger(
+            GenerateSkillsResponseProcessedSuccessfully(self.event_payload)
+        )
 
 
     def _save_skills_to_outline(self, skills_obj: dict):
@@ -66,7 +68,3 @@ class ProcessGenerateSkillsResponseHandler:
 
         DB.add(self.outline)
         DB.commit()
-
-
-    def __trigger_completion_event(self, data: dict):
-        EVENT_MANAGER.trigger(GenerateSkillsResponseProcessedSuccessfully(data))

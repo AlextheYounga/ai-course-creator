@@ -26,13 +26,14 @@ class SendGenerateSkillsPromptToLLMHandler:
 
         response = self._save_response_to_db(completion)
 
-        return self.__trigger_completion_event({
-            'threadId': self.thread_id,
-            'outlineId': self.outline.id,
-            'topicId': self.topic.id,
-            'promptId': self.prompt.id,
-            'responseId': response.id,
-        })
+        return EVENT_MANAGER.trigger(
+            GenerateSkillsResponseReceivedFromLLM({
+                'threadId': self.thread_id,
+                'outlineId': self.outline.id,
+                'topicId': self.topic.id,
+                'promptId': self.prompt.id,
+                'responseId': response.id,
+            }))
 
 
     def _save_response_to_db(self, completion: Completion):
@@ -58,6 +59,3 @@ class SendGenerateSkillsPromptToLLMHandler:
         DB.commit()
 
         return response
-
-    def __trigger_completion_event(self, data: dict):
-        EVENT_MANAGER.trigger(GenerateSkillsResponseReceivedFromLLM(data))

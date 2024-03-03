@@ -42,11 +42,12 @@ class CompileOutlineChunksToMasterOutlineHandler:
 
         self._save_master_outline_to_yaml_file()
 
-        self.__trigger_completion_event({
-            'threadId': self.thread_id,
-            'outlineId': self.outline.id,
-            'topicId': self.topic.id,
-        })
+        return EVENT_MANAGER.trigger(
+            MasterOutlineCompiledFromOutlineChunks({
+                'threadId': self.thread_id,
+                'outlineId': self.outline.id,
+                'topicId': self.topic.id,
+            }))
 
 
     def _compile_master_outline_from_chunks(self) -> dict:
@@ -80,7 +81,3 @@ class CompileOutlineChunksToMasterOutlineHandler:
         os.makedirs(self.output_path, exist_ok=True)
         with open(f"{self.output_path}/master-outline.yaml", 'w') as yaml_file:
             yaml.dump(self.outline.master_outline, yaml_file, sort_keys=False)
-
-
-    def __trigger_completion_event(self, data: dict):
-        EVENT_MANAGER.trigger(MasterOutlineCompiledFromOutlineChunks(data))

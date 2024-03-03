@@ -26,11 +26,12 @@ class InstantiateOutlineHandler:
         DB.add(new_outline)
         DB.commit()
 
-        return self.__trigger_completion_event({
-            'threadId': self.thread_id,
-            'topicId': self.topic.id,
-            'outlineId': new_outline.id
-        })
+        return EVENT_MANAGER.trigger(
+            NewOutlineInstantiated({
+                'threadId': self.thread_id,
+                'topicId': self.topic.id,
+                'outlineId': new_outline.id
+            }))
 
 
     def _default_outline_file_path(self):
@@ -39,7 +40,3 @@ class InstantiateOutlineHandler:
         default_file_path = f"{output_path}/master-outline.yaml"
 
         return default_file_path
-
-
-    def __trigger_completion_event(self, data: dict):
-        EVENT_MANAGER.trigger(NewOutlineInstantiated(data))
