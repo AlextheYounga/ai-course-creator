@@ -19,17 +19,18 @@ class EventManager:
         if event_type in self.handlers:
             for handler in self.handlers[event_type]:
                 self.__log_event(event, handler)
-                handler(data=event.data)
+                handler(data=event.data).handle()
 
     def __log_event(self, event: Event, handler):
+        message = ""
         logging = LOG_HANDLER("EventManager")
 
         for key, value in event.data.items():
             message += f"{key}: {value} "
 
         event_name = event.__class__.__name__
-        handler_name = handler.__class__.__name__
-        message = f"Event -> Handler {event_name} -> {handler_name} | Data: {message}"
+        handler_name = handler.__name__
+        message = f"{event_name} -> {handler_name} | Data: {message}"
         logging.info(message)
         print(message)
 

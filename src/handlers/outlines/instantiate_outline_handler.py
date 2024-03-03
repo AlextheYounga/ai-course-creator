@@ -27,6 +27,7 @@ class InstantiateOutlineHandler:
         DB.commit()
 
         return self.__trigger_completion_event({
+            'threadId': self.thread_id,
             'topicId': self.topic.id,
             'outlineId': new_outline.id
         })

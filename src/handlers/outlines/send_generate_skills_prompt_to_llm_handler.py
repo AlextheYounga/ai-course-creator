@@ -1,7 +1,7 @@
 from db.db import DB, Outline, Prompt, Response
-from ...llm.get_llm_client import get_llm_client
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import GenerateSkillsPromptSentToLLM
+from ...llm.get_llm_client import get_llm_client
 from termcolor import colored
 from openai.types.completion import Completion
 
@@ -23,9 +23,6 @@ class SendGenerateSkillsPromptToLLMHandler:
         # Send to ChatGPT
         llm_client = get_llm_client()
         completion = llm_client.send_prompt('GenerateSkills', messages)
-
-        if completion == None:
-            raise Exception("LLM completion failed. There is likely more output in the logs.")
 
         response = self._save_response_to_db(completion)
 
@@ -61,8 +58,6 @@ class SendGenerateSkillsPromptToLLMHandler:
         DB.commit()
 
         return response
-
-
 
     def __trigger_completion_event(self, data: dict):
         EVENT_MANAGER.trigger(GenerateSkillsPromptSentToLLM(data))

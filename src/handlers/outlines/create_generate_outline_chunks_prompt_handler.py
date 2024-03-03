@@ -1,4 +1,6 @@
 from db.db import DB, Outline, Prompt
+from src.events.event_manager import EVENT_MANAGER
+from src.events.events import AllGenerateOutlineChunksPromptsCreated
 from ...llm.get_prompt import get_prompt
 from ...utils.chunks import chunks_list
 from ...llm.get_llm_params import get_llm_params
@@ -31,7 +33,12 @@ class CreateGenerateOutlineChunksPromptHandler:
             prompt = self._save_prompt(messages, tokens, llm_params)
             prompt_ids.append(prompt.id)
 
-        return prompt_ids
+        return self.__trigger_completion_event({
+            'threadId': self.thread_id,
+            'outlineId': self.outline.id,
+            'promptIds': prompt_ids,
+            'topicId': self.topic.id,
+        })
 
 
     def _build_generate_outline_chunks_prompts(self, skills_chunk: dict) -> list[dict]:
@@ -81,3 +88,7 @@ class CreateGenerateOutlineChunksPromptHandler:
         DB.commit()
 
         return prompt
+
+
+    def __trigger_completion_event(self, data: dict):
+        EVENT_MANAGER.trigger(AllGenerateOutlineChunksPromptsCreated(data))

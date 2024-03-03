@@ -2,6 +2,7 @@ from .base import Base
 from sqlalchemy.sql import func
 from sqlalchemy import ForeignKey, Integer, String, DateTime, Text, JSON
 from sqlalchemy.orm import mapped_column, relationship
+from sqlalchemy.orm import Session
 
 
 
@@ -40,3 +41,8 @@ class Prompt(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+
+    def increment_attempts(self, session: Session):
+        self.attempts += 1
+        session.commit()

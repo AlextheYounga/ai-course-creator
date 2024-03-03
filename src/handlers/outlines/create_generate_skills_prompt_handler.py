@@ -14,7 +14,6 @@ class CreateGenerateSkillsPromptHandler:
         self.topic = self.outline.topic
 
 
-
     def handle(self) -> GenerateSkillsPromptCreated:
         llm_params = get_llm_params('skills')
         model = llm_params['model']

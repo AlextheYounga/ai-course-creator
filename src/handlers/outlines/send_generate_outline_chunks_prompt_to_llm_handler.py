@@ -1,4 +1,6 @@
 from db.db import DB, Outline, Thread, Prompt, Response
+from src.events.event_manager import EVENT_MANAGER
+from src.events.events import AllGenerateOutlineChunksPromptsSentToLLM
 from ...llm.get_llm_client import get_llm_client
 from termcolor import colored
 from openai.types.completion import Completion
@@ -14,7 +16,6 @@ class SendGenerateOutlineChunksPromptsToLLMHandler:
         self.topic = self.outline.topic
 
 
-
     def handle(self) -> list[int]:
         print(colored(f"\nGenerating {self.topic.name} outline_chunks...", "yellow"))
 
@@ -27,14 +28,19 @@ class SendGenerateOutlineChunksPromptsToLLMHandler:
                 messages = prompt.payload
 
                 completion = llm_client.send_prompt('GenerateOutlineChunks', messages)
-                if completion == None:
-                    raise Exception("LLM completion failed. There is likely more output in the logs.")
 
                 response = self._save_response_to_db(prompt, completion)
                 response_ids.append(response.id)
                 bar.update(i)
 
-        return response_ids
+
+        return self.__trigger_completion_event({
+            'threadId': self.thread_id,
+            'outlineId': self.outline.id,
+            'topicId': self.topic.id,
+            'promptIds': [prompt.id for prompt in self.prompts],
+            'responseIds': response_ids,
+        })
 
 
     def _save_response_to_db(self, prompt: Prompt, completion: Completion):
@@ -59,3 +65,6 @@ class SendGenerateOutlineChunksPromptsToLLMHandler:
         DB.commit()
 
         return response
+
+    def __trigger_completion_event(self, data: dict):
+        EVENT_MANAGER.trigger(AllGenerateOutlineChunksPromptsSentToLLM(data))

@@ -1,8 +1,8 @@
 from openai import OpenAI
 from db.db import DB, Topic, Page
-from src.handlers.generate_lesson_page_handler import GenerateLessonPageHandler
-from src.handlers.generate_practice_challenge_page_handler import GeneratePracticeChallengePageHandler
-from src.handlers.generate_final_challenge_page_handler import GenerateFinalSkillChallengePageHandler
+# from src.handlers.generate_lesson_page_handler import GenerateLessonPageHandler
+# from src.handlers.generate_practice_challenge_page_handler import GeneratePracticeChallengePageHandler
+# from src.handlers.generate_final_challenge_page_handler import GenerateFinalSkillChallengePageHandler
 
 
 class GeneratePage:
