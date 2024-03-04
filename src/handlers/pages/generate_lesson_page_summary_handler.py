@@ -1,35 +1,42 @@
-from db.db import DB, Page, Outline, OutlineEntity, Prompt, Response
+from db.db import DB, Page, Outline, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import PracticeChallengePageResponseReceivedFromLLM, PracticeChallengeGenerationFailedDueToIncompleteChapter
+from src.events.events import LessonPageSummarizedSuccessfully, InvalidPageSummaryResponseFromLLM
 from ...llm.get_llm_client import get_llm_client
+from .create_summarize_page_prompt_handler import CreateSummarizePagePromptHandler
 from openai.types.completion import Completion
-from termcolor import colored
+
+"""
+This handler is the simplest LLM handler, as it requires no real validation. The request is sent, processed
+and saved from this single handler. 
+"""
 
 
-
-class SendGeneratePracticeChallengePromptToLLMHandler:
+class GenerateLessonPageSummaryHandler():
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
-        self.prompt = DB.get(Prompt, data['promptId'])
         self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
 
-
     def handle(self):
-        if self._check_if_chapter_incomplete(self.page):
-            print(colored("Course is incomplete, skipping LLM prompt generation", "yellow"))
-            return EVENT_MANAGER.trigger(
-                PracticeChallengeGenerationFailedDueToIncompleteChapter(self._event_payload())
-            )
+        # Build prompt
+        prompt_data = CreateSummarizePagePromptHandler(self._event_payload()).handle()
+        prompt = DB.get(Prompt, prompt_data['promptId'])
 
         llm_client = get_llm_client()
-        completion = llm_client.send_prompt(self.prompt)
+        completion = llm_client.send_prompt(prompt)
+
+        if completion == None:
+            return EVENT_MANAGER.trigger(
+                InvalidPageSummaryResponseFromLLM(self._event_payload(response))
+            )
 
         response = self._save_response_to_db(completion)
 
+        self._update_page_with_summary(response)
+
         return EVENT_MANAGER.trigger(
-            PracticeChallengePageResponseReceivedFromLLM(self._event_payload(response))
+            LessonPageSummarizedSuccessfully(self._event_payload(prompt, response))
         )
 
 
@@ -57,30 +64,22 @@ class SendGeneratePracticeChallengePromptToLLMHandler:
 
         return response
 
-    def _check_if_chapter_incomplete(self, page: Page):
-        chapter_pages = DB.query(Page).join(
-            OutlineEntity, OutlineEntity.entity_id == Page.id
-        ).filter(
-            OutlineEntity.outline_id == self.outline.id,
-            OutlineEntity.entity_type == "Page",
-            Page.course_id == page.course_id,
-            Page.chapter_id == page.chapter_id,
-            Page.type == 'lesson',
-            Page.active == True,
-        ).all()
 
-        return True in [page.content == None for page in chapter_pages]
+    def _update_page_with_summary(self, response: Response):
+        self.page.summary = response.content
+        DB.commit()
 
 
-    def _event_payload(self, response: Response | None = None):
+    def _event_payload(self, prompt: Prompt | None, response: Response | None = None):
         payload = {
             'threadId': self.thread_id,
             'outlineId': self.outline.id,
             'topicId': self.topic.id,
-            'promptId': self.prompt.id,
             'pageId': self.page.id,
         }
 
+        if prompt:
+            payload['promptId'] = prompt.id
         if response:
             payload['responseId'] = response.id
 

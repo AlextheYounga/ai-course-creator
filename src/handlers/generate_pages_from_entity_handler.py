@@ -1,7 +1,8 @@
-from db.db import DB, Outline, OutlineEntity, Course, Page
+from db.db import DB, Outline, OutlineEntity, Course, Chapter, Page
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import GenerateLessonPageRequested
-from openai.types.completion import Completion
+from src.events.events import *
+from src.handlers.pages import *
+
 import progressbar
 
 
@@ -9,34 +10,55 @@ class GeneratePagesFromEntityHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
-        self.entity_id = data['entityId']
-        self.entity_type = data['entityType']
+        self.outline_entity = DB.get(OutlineEntity, data['outlineEntityId'])
         self.topic = self.outline.topic
         self.pages = self._get_entity_pages()
 
 
-
-
     def handle(self):
-        pass
+        self._handle_generate_lesson_pages()
+        self._handle_generate_practice_challenge_pages()
+        self._handler_generate_fsc_pages()
 
 
-    def _handle_lesson_pages(self):
+    def _handle_generate_lesson_pages(self):
         lesson_pages = [page for page in self.pages if page.type == 'lesson']
         page_count = len(lesson_pages)
         if page_count == 0: return None
 
         with progressbar.ProgressBar(max_value=len(lesson_pages), prefix='Generating lesson pages: ', redirect_stdout=True).start() as bar:
             for page in enumerate(lesson_pages):
-                EVENT_MANAGER.trigger(
-                    GenerateLessonPageRequested(self._event_payload(page))
-                )
+                EVENT_MANAGER.trigger(GenerateLessonPageProcessStarted(self._event_payload(page)))
+                bar.increment()
+
+
+    def _handle_generate_practice_challenge_pages(self):
+        challenge_pages = [page for page in self.pages if page.type == 'challenge']
+        page_count = len(challenge_pages)
+        if page_count == 0: return None
+
+        with progressbar.ProgressBar(max_value=len(challenge_pages), prefix='Generating practice challenges: ', redirect_stdout=True).start() as bar:
+            for page in enumerate(challenge_pages):
+                EVENT_MANAGER.trigger(GeneratePracticeChallengePageProcessStarted(self._event_payload(page)))
+                bar.increment()
+
+
+    def _handler_generate_fsc_pages(self):
+        fsc_pages = [page for page in self.pages if page.type == 'final-skill-challenge']
+        page_count = len(fsc_pages)
+        if page_count == 0: return None
+
+        with progressbar.ProgressBar(max_value=len(fsc_pages), prefix='Generating final challenge pages: ', redirect_stdout=True).start() as bar:
+            for page in enumerate(fsc_pages):
+                EVENT_MANAGER.trigger(GenerateFinalSkillChallengePageProcessStarted(self._event_payload(page)))
+                bar.increment()
 
 
     def _get_entity_pages(self) -> list[Page]:
-        if self.entity_type == 'Page':
-            return DB.query(Page).filter(Page.id == self.entity_id).all()
+        if self.outline_entity.entity_type == 'Page':
+            return DB.query(Page).filter(Page.id == self.outline_entity.entity_id).all()
 
+        # Default, topic level
         query = DB.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
@@ -45,10 +67,18 @@ class GeneratePagesFromEntityHandler:
             Page.active == True,
         )
 
-        if self.entity_type == 'Course':
-            query = query.filter(Page.course_id == self.entity_id)
-        if self.entity_type == 'Chapter':
-            query = query.filter(Page.chapter_id == self.entity_id)
+        if self.outline_entity.entity_type == 'Course':
+            query = query.filter(
+                Page.course_id == self.outline_entity.entity_id,
+            )
+
+        if self.outline_entity.entity_type == 'Chapter':
+            chapter_record = DB.get(Chapter, self.outline_entity.entity_id)
+
+            query = query.filter(
+                Page.course_id == chapter_record.course_id,
+                Page.chapter_id == chapter_record.id,
+            )
 
         return query.all()
 

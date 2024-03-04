@@ -12,10 +12,11 @@ class CreateGenerateSkillsPromptHandler:
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
+        self.prompt_subject = 'skills'  # corresponds with key in params.yaml
 
 
     def handle(self) -> GenerateSkillsPromptCreated:
-        llm_params = get_llm_params('skills')
+        llm_params = get_llm_params(self.prompt_subject)
         model = llm_params['model']
 
         messages = self._build_skills_prompt()
@@ -55,7 +56,7 @@ class CreateGenerateSkillsPromptHandler:
         prompt = Prompt(
             thread_id=self.thread_id,
             outline_id=self.outline.id,
-            action=self.__class__.__name__,
+            subject=self.prompt_subject,
             model=properties['params']['model'],
             content=content,
             payload=messages,

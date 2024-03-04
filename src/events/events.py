@@ -10,16 +10,6 @@ class GenerateOutlineRequested(Event):
         self.data = data
 
 
-class NewThreadCreated(Event):
-    def __init__(self, data):
-        self.data = data
-
-
-class NewOutlineInstantiated(Event):
-    def __init__(self, data):
-        self.data = data
-
-
 class NewOutlineInstantiated(Event):
     def __init__(self, data):
         self.data = data
@@ -91,23 +81,97 @@ class OutlineEntitiesCreatedFromOutline(Event):
 
 
 # Pages
-
-class GenerateLessonPageRequested(Event):
-    def __init__(self, data):
-        self.data = data
-
-
-class GeneratePracticeChallengePageRequested(Event):
-    def __init__(self, data):
-        self.data = data
-
-
-class GenerateFinalSkillChallengePageRequested(Event):
-    def __init__(self, data):
-        self.data = data
-
-
 class GeneratePagesFromEntityRequested(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class CreatedNewLessonPageFromExistingContent(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class GenerateLessonPageProcessStarted(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class GeneratePracticeChallengePageProcessStarted(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class GenerateFinalSkillChallengePageProcessStarted(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class LessonPagePromptCreated(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class PracticeChallengePagePromptCreated(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class FinalSkillChallengePagePromptCreated(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class SummarizePagePromptCreated(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class LessonPageSummarizedSuccessfully(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class InvalidPageSummaryResponseFromLLM(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class InvalidChallengePageResponseFromLLM(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class ChallengePageResponseProcessedSuccessfully(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class InvalidLessonPageResponseFromLLM(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class LessonPageResponseProcessedSuccessfully(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class FinalChallengeGenerationFailedDueToIncompleteCourse(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class FinalSkillChallengePageResponseReceivedFromLLM(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class PracticeChallengePageResponseReceivedFromLLM(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class PracticeChallengeGenerationFailedDueToIncompleteChapter(Event):
     def __init__(self, data):
         self.data = data
 

@@ -1,7 +1,7 @@
 from db.db import DB, Outline, Response, Page
 from ..validate_llm_response_handler import ValidateLLMResponseHandler
-from .create_summarize_page_prompt_handler import CreateSummarizePagePromptHandler
-from .send_generate_page_summary_to_llm_handler import SendGeneratePageSummaryToLLMHandler
+from src.events.event_manager import EVENT_MANAGER
+from src.events.events import InvalidLessonPageResponseFromLLM, LessonPageResponseProcessedSuccessfully
 
 
 
@@ -14,33 +14,34 @@ class ProcessLessonPageResponseHandler:
         self.page = DB.get(Page, data['pageId'])
         self.prompt = self.response.prompt
         self.topic = self.outline.topic
+        self.event_payload = {
+            'threadId': self.thread_id,
+            'outlineId': self.outline.id,
+            'responseId': self.response.id,
+            'topicId': self.topic.id,
+            'promptId': self.prompt.id,
+            **data
+        }
 
 
     def handle(self) -> Outline:
         completion = self.response.payload
 
-        validated_response = ValidateLLMResponseHandler(
-            self.thread_id,
-            self.outline.id,
-            self.response.id
-        ).handle()
+        validated_response = ValidateLLMResponseHandler(self.event_payload).handle()
 
         if not validated_response:
-            return False
+            if self.prompt.attempts <= 3:
+                raise Exception("Invalid response; maximum retries exceeded. Aborting...")
+
             # Retry
+            self.prompt.increment_attempts(DB)
+            return EVENT_MANAGER.trigger(InvalidLessonPageResponseFromLLM(self.event_payload))
 
         self.page = self._save_content_to_page(completion)
 
-        self.generate_page_summary()
-
-        return self.outline
-
-
-    def generate_page_summary(self):
-        response = SendGeneratePageSummaryToLLMHandler(self.thread_id, self.outline.id, self.page.id).handle()
-
-        self.page.summary = response.content
-        DB.commit()
+        return EVENT_MANAGER.trigger(
+            LessonPageResponseProcessedSuccessfully(self.event_payload)
+        )
 
 
     def _save_content_to_page(self, completion: dict):

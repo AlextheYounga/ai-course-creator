@@ -20,9 +20,9 @@ class SendGenerateSkillsPromptToLLMHandler:
 
         messages = self.prompt.payload
 
-        # Send to ChatGPT
+
         llm_client = get_llm_client()
-        completion = llm_client.send_prompt('GenerateSkills', messages)
+        completion = llm_client.send_prompt(self.prompt)
 
         response = self._save_response_to_db(completion)
 

@@ -1,9 +1,7 @@
 from db.db import DB, Outline, Response, Page
 from ..validate_llm_response_handler import ValidateLLMResponseHandler
-from termcolor import colored
-from sqlalchemy.orm.attributes import flag_modified
-
-
+from src.events.event_manager import EVENT_MANAGER
+from src.events.events import InvalidChallengePageResponseFromLLM, ChallengePageResponseProcessedSuccessfully
 
 
 class ProcessChallengePageResponseHandler:
@@ -14,25 +12,33 @@ class ProcessChallengePageResponseHandler:
         self.page = DB.get(Page, data['pageId'])
         self.prompt = self.response.prompt
         self.topic = self.outline.topic
-
-
+        self.event_payload = {
+            'threadId': self.thread_id,
+            'outlineId': self.outline.id,
+            'responseId': self.response.id,
+            'topicId': self.topic.id,
+            'promptId': self.prompt.id,
+            **data
+        }
 
     def handle(self) -> Outline:
         completion = self.response.payload
 
-        validated_response = ValidateLLMResponseHandler(
-            self.thread_id,
-            self.outline.id,
-            self.response.id
-        ).handle()
+        validated_response = ValidateLLMResponseHandler(self.event_payload).handle()
 
         if not validated_response:
-            return False
+            if self.prompt.attempts <= 3:
+                raise Exception("Invalid response; maximum retries exceeded. Aborting...")
+
             # Retry
+            self.prompt.increment_attempts(DB)
+            return EVENT_MANAGER.trigger(InvalidChallengePageResponseFromLLM(self.event_payload))
 
         self.page = self._save_content_to_page(completion)
 
-        return self.outline
+        return EVENT_MANAGER.trigger(
+            ChallengePageResponseProcessedSuccessfully(self.event_payload)
+        )
 
 
     def _save_content_to_page(self, completion: dict):

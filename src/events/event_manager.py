@@ -1,6 +1,5 @@
 
 from .events import Event
-from termcolor import colored
 from ..utils.log_handler import LOG_HANDLER
 
 

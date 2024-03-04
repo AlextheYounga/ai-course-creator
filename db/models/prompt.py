@@ -12,7 +12,7 @@ class Prompt(Base):
     thread_id = mapped_column(Integer, ForeignKey("thread.id"))
     outline_id = mapped_column(Integer, nullable=False, index=True)
     model = mapped_column(String, nullable=False)
-    action = mapped_column(String)
+    subject = mapped_column(String)
     estimated_tokens = mapped_column(Integer)
     content = mapped_column(Text, nullable=False)
     payload = mapped_column(JSON)
@@ -33,7 +33,7 @@ class Prompt(Base):
         return {
             "id": self.id,
             "model": self.model,
-            "action": self.action,
+            "subject": self.subject,
             "estimated_tokens": self.estimated_tokens,
             "content": self.content,
             "payload": self.payload,

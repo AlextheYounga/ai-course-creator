@@ -1,5 +1,6 @@
 from db.db import DB, Outline, Page
 from termcolor import colored
+from ...utils.log_handler import LOG_HANDLER
 
 
 class CheckForExistingPageMaterialHandler:
@@ -8,7 +9,7 @@ class CheckForExistingPageMaterialHandler:
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
-
+        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Page:

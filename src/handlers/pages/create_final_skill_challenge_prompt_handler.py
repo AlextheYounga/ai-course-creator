@@ -1,7 +1,7 @@
 from db.db import DB, Outline, OutlineEntity, Prompt, Page
-from ...llm.get_prompt import get_prompt
-from ...llm.get_llm_params import get_llm_params
-from ...llm.token_counter import count_tokens_using_encoding
+from src.events.event_manager import EVENT_MANAGER
+from src.events.events import FinalSkillChallengePagePromptCreated
+from ...llm import *
 
 
 
@@ -11,11 +11,11 @@ class CreateFinalSkillChallengePromptHandler:
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
-
+        self.prompt_subject = 'final-skill-challenge'  # corresponds with key in params.yaml
 
 
     def handle(self) -> Prompt:
-        llm_params = get_llm_params('skills')
+        llm_params = get_llm_params(self.prompt_subject)
         model = llm_params['model']
 
         messages = self._build_final_skill_challenge_prompt()
@@ -23,7 +23,13 @@ class CreateFinalSkillChallengePromptHandler:
 
         prompt = self._save_prompt(messages, tokens, llm_params)
 
-        return prompt
+        return EVENT_MANAGER.trigger(
+            FinalSkillChallengePagePromptCreated({
+                'threadId': self.thread_id,
+                'outlineId': self.outline.id,
+                'topicId': self.topic.id,
+                'promptId': prompt.id,
+            }))
 
 
     def _build_final_skill_challenge_prompt(self):
@@ -82,7 +88,7 @@ class CreateFinalSkillChallengePromptHandler:
         prompt = Prompt(
             thread_id=self.thread_id,
             outline_id=self.outline.id,
-            action=self.__class__.__name__,
+            subject=self.prompt_subject,
             model=properties['params']['model'],
             content=content,
             payload=messages,

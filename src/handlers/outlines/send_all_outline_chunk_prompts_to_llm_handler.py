@@ -27,7 +27,7 @@ class SendAllOutlineChunkPromptsToLLMHandler:
             for i, prompt in enumerate(self.prompts):
                 messages = prompt.payload
 
-                completion = llm_client.send_prompt('GenerateOutlineChunks', messages)
+                completion = llm_client.send_prompt(prompt)
 
                 response = self._save_response_to_db(prompt, completion)
                 response_ids.append(response.id)

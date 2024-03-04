@@ -60,7 +60,6 @@ class GenerateOutline:
             handler=SendAllOutlineChunkPromptsToLLMHandler
         )
 
-
         # Process Each Outline Chunk Response
         EVENT_MANAGER.subscribe(
             events=[OutlineChunkResponseReceivedFromLLM],
