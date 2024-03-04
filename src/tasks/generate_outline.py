@@ -19,58 +19,64 @@ class GenerateOutline:
 
         # Instantiate Outline
         EVENT_MANAGER.subscribe(
-            [GenerateOutlineRequested],
-            InstantiateOutlineHandler
+            events=[GenerateOutlineRequested],
+            handler=InstantiateOutlineHandler
         )
 
         # Create Generate Skills Prompt
         EVENT_MANAGER.subscribe(
-            [NewOutlineInstantiated],
-            CreateGenerateSkillsPromptHandler
+            events=[NewOutlineInstantiated],
+            handler=CreateGenerateSkillsPromptHandler
         )
 
         # Send Generate Skills Prompt to LLM
-        EVENT_MANAGER.subscribe([
-            GenerateSkillsPromptCreated,
-            InvalidGenerateSkillsResponseFromLLM,  # retry event
-            FailedToParseYamlFromGenerateSkillsResponse  # retry event
-        ], SendGenerateSkillsPromptToLLMHandler)
+        EVENT_MANAGER.subscribe(
+            events=[
+                GenerateSkillsPromptCreated,
+                InvalidGenerateSkillsResponseFromLLM,  # retry event
+                FailedToParseYamlFromGenerateSkillsResponse  # retry event
+            ],
+            handler=SendGenerateSkillsPromptToLLMHandler)
 
         # Process Response
         EVENT_MANAGER.subscribe(
-            [GenerateSkillsResponseReceivedFromLLM],
-            ProcessGenerateSkillsResponseHandler
+            events=[GenerateSkillsResponseReceivedFromLLM],
+            handler=ProcessGenerateSkillsResponseHandler
         )
 
         # Generate Outline Chunks Prompts
         EVENT_MANAGER.subscribe(
-            [GenerateSkillsResponseProcessedSuccessfully],
-            CreateAllOutlineChunkPromptsHandler
+            events=[GenerateSkillsResponseProcessedSuccessfully],
+            handler=CreateAllOutlineChunkPromptsHandler
         )
 
         # Send All Generate Outline Chunks Prompts to LLM
-        EVENT_MANAGER.subscribe([
-            AllGenerateOutlineChunksPromptsCreated,
-            InvalidOutlineChunkResponseFromLLM,  # retry event
-            FailedToParseYamlFromOutlineChunkResponse  # retry event
-        ], SendAllOutlineChunkPromptsToLLMHandler)
+        EVENT_MANAGER.subscribe(
+            events=[
+                AllGenerateOutlineChunksPromptsCreated,
+                InvalidOutlineChunkResponseFromLLM,  # retry event
+                FailedToParseYamlFromOutlineChunkResponse  # retry event
+            ],
+            handler=SendAllOutlineChunkPromptsToLLMHandler
+        )
+
 
         # Process Each Outline Chunk Response
         EVENT_MANAGER.subscribe(
-            [OutlineChunkResponseReceivedFromLLM],
-            ProcessOutlineChunkResponseHandler
+            events=[OutlineChunkResponseReceivedFromLLM],
+            handler=ProcessOutlineChunkResponseHandler
         )
 
         # Compile Outline Chunks to Master Outline
         EVENT_MANAGER.subscribe(
-            [AllOutlineChunkResponsesProcessedSuccessfully],
-            CompileOutlineChunksToMasterOutlineHandler
+            events=[AllOutlineChunkResponsesProcessedSuccessfully],
+            handler=CompileOutlineChunksToMasterOutlineHandler
         )
 
         # Create Outline Entities from Outline
         EVENT_MANAGER.subscribe(
-            [MasterOutlineCompiledFromOutlineChunks],
-            CreateOutlineEntitiesFromOutlineHandler
+            events=[MasterOutlineCompiledFromOutlineChunks],
+            handler=CreateOutlineEntitiesFromOutlineHandler
         )
 
         # Trigger starting event

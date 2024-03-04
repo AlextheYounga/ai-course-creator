@@ -88,3 +88,30 @@ class MasterOutlineCompiledFromOutlineChunks(Event):
 class OutlineEntitiesCreatedFromOutline(Event):
     def __init__(self, data):
         self.data = data
+
+
+# Pages
+
+class GenerateLessonPageRequested(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class GeneratePracticeChallengePageRequested(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class GenerateFinalSkillChallengePageRequested(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class GeneratePagesFromEntityRequested(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class LessonPageResponseReceivedFromLLM(Event):
+    def __init__(self, data):
+        self.data = data

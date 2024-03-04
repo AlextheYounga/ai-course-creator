@@ -1,3 +1,4 @@
+import os
 from .base import Base
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, DateTime, JSON

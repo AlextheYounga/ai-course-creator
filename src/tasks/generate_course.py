@@ -15,22 +15,8 @@ class GenerateCourse:
         thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
         pages = self._get_course_pages()
 
-    # def _generate_lesson_pages(self):
-    #     generated_pages = []
-    #     pages = [page for page in self.pages if page.type == 'lesson']
-
-    #     with progressbar.ProgressBar(max_value=len(pages), prefix='Generating lesson pages: ', redirect_stdout=True).start() as bar:
-    #         for page in pages:
-    #             prompt = CreateLessonPagePromptHandler(self.thread.id, self.outline.id, page.id).handle()
-    #             response = SendGenerateLessonPagePromptToLLMHandler(self.thread.id, self.outline.id, page.id).handle()
-
-
-    def _get_course_pages(self):
-        return DB.query(Page).join(
-            OutlineEntity, OutlineEntity.entity_id == Page.id
-        ).filter(
-            OutlineEntity.outline_id == self.outline.id,
-            OutlineEntity.entity_type == 'Page',
-            Page.course_id == self.course.id,
-            Page.active == True,
-        ).all()
+        # Instantiate Outline
+        EVENT_MANAGER.subscribe(
+            [GenerateCourseRequested],
+            InstantiateOutlineHandler
+        )
