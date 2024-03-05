@@ -1,8 +1,7 @@
 import inquirer
 
 
-def select_content_function(hierarchy: str):
-
+def select_hierarchy_content_type(hierarchy: str):
     content_functions = {
         'Topic': [
             'All',

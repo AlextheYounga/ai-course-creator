@@ -7,6 +7,8 @@ from src.handlers.create_new_thread_handler import CreateNewThreadHandler
 """
 EVENT_MANAGER.subscribe([Event], Handler)
 EVENT_MANAGER.trigger(Event(data))
+
+See `docs/tasks/generate-outline-flow.md` for more information
 """
 
 

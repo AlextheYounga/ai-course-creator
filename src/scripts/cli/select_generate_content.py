@@ -1,48 +1,30 @@
 from .select_hierarchy import select_hierarchy
-from .select_content_function import select_content_function
-from .select_content_item import select_content_item_from_hierachy
-from services.openai_service import OpenAiService
-from src.creator.course_creator import CourseCreator
-from db.db import DB, Topic, Outline
+from .select_hierarchy_content_type import select_hierarchy_content_type
+from .select_outline_entity_record import select_outline_entity_record
+from src.tasks.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
+from src.tasks.generate_outline_pages import GenerateOutlinePages
+from db.db import Topic
 
 
 def select_generate_content(topic: Topic):
-    creator = CourseCreator(OpenAiService, topic.name)
-
-    content_function_mapping = {
-        'Topic': {
-            'All': creator.generate_topic_courses,
-            'Page Material': creator.create_topic_page_material,
-            'Practice Skill Challenges': creator.create_topic_practice_skill_challenges,
-            'Final Skill Challenges': creator.create_topic_final_skill_challenges,
-        },
-        'Course': {
-            'All': creator.generate_course,
-            'Page Material': creator.generate_entity_page_material,
-            'Practice Skill Challenges': creator.generate_course_challenges,
-            'Final Skill Challenges': creator.generate_course_final_skill_challenge,
-        },
-        'Chapter': {
-            'All': creator.generate_chapter,
-            'Page Material': creator.generate_entity_page_material,
-            'Practice Skill Challenges': creator.generate_chapter_challenge,
-        },
-        'Page': creator.generate_page_material,
+    type_mapping = {
+        'All': None,
+        'Page Material': 'lesson',
+        'Practice Skill Challenges': 'challenge',
+        'Final Skill Challenges': 'final-skill-challenge'
     }
 
     # Prompt user for hierarchy
     hierarchy = select_hierarchy()
 
-    if hierarchy == 'Page':
-        subroutine_function = content_function_mapping[hierarchy]
-    else:
-        # Select sub function for hierarchy
-        content_type = select_content_function(hierarchy)
-        subroutine_function = content_function_mapping[hierarchy][content_type]
+    # Prompt user for content type: (All, Page Material, Practice Skill Challenges, Final Skill Challenges)
+    content_type = select_hierarchy_content_type(hierarchy)
 
     if hierarchy == 'Topic':
-        return subroutine_function()
-
-    # Select db record to run sub function on
-    record = select_content_item_from_hierachy(topic, hierarchy)
-    return subroutine_function(record)
+        task = GenerateOutlinePages(topic.id, type_mapping[content_type])
+        return task.run()
+    else:
+        # Prompt user to select outline entity record from DB; types = Course, Chapter, Page
+        record = select_outline_entity_record(topic, hierarchy)
+        task = GeneratePagesFromOutlineEntity(topic.id, record.id, type_mapping[content_type])
+        return task.run()

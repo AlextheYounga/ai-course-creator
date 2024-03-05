@@ -6,23 +6,38 @@ from src.handlers.pages import *
 import progressbar
 
 
-class GeneratePagesFromOutlineEntityHandler:
+class GenerateMaterialFromOutlineHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
         self.outline_entity = DB.get(OutlineEntity, data['outlineEntityId'])
+        self.only_page_type = data.get('onlyPageType', False)   # lesson, challenge, final-skill-challenge
         self.topic = self.outline.topic
-        self.pages = self._get_entity_pages()
 
 
     def handle(self):
-        self._handle_generate_lesson_pages()
-        self._handle_generate_practice_challenge_pages()
-        self._handler_generate_fsc_pages()
+        outline_courses = self._get_outline_courses()
+        for course_entity in outline_courses:
+            course_pages = self._get_course_pages(course_entity.entity_id)
+
+            if self.only_page_type:
+                if self.only_page_type == 'lesson':
+                    self._handle_generate_lesson_pages(course_pages)
+                    continue
+                if self.only_page_type == 'challenge':
+                    self._handle_generate_practice_challenge_pages(course_pages)
+                    continue
+                if self.only_page_type == 'final-skill-challenge':
+                    self._handler_generate_fsc_pages(course_pages)
+                    continue
+
+            self._handle_generate_lesson_pages(course_pages)
+            self._handle_generate_practice_challenge_pages(course_pages)
+            self._handler_generate_fsc_pages(course_pages)
 
 
-    def _handle_generate_lesson_pages(self):
-        lesson_pages = [page for page in self.pages if page.type == 'lesson']
+    def _handle_generate_lesson_pages(self, pages: list[Page]):
+        lesson_pages = [page for page in pages if page.type == 'lesson']
         page_count = len(lesson_pages)
         if page_count == 0: return None
 
@@ -32,8 +47,8 @@ class GeneratePagesFromOutlineEntityHandler:
                 bar.increment()
 
 
-    def _handle_generate_practice_challenge_pages(self):
-        challenge_pages = [page for page in self.pages if page.type == 'challenge']
+    def _handle_generate_practice_challenge_pages(self, pages: list[Page]):
+        challenge_pages = [page for page in pages if page.type == 'challenge']
         page_count = len(challenge_pages)
         if page_count == 0: return None
 
@@ -43,8 +58,8 @@ class GeneratePagesFromOutlineEntityHandler:
                 bar.increment()
 
 
-    def _handler_generate_fsc_pages(self):
-        fsc_pages = [page for page in self.pages if page.type == 'final-skill-challenge']
+    def _handler_generate_fsc_pages(self, pages: list[Page]):
+        fsc_pages = [page for page in pages if page.type == 'final-skill-challenge']
         page_count = len(fsc_pages)
         if page_count == 0: return None
 
@@ -54,33 +69,22 @@ class GeneratePagesFromOutlineEntityHandler:
                 bar.increment()
 
 
-    def _get_entity_pages(self) -> list[Page]:
-        if self.outline_entity.entity_type == 'Page':
-            return DB.query(Page).filter(Page.id == self.outline_entity.entity_id).all()
+    def _get_outline_courses(self) -> list[OutlineEntity]:
+        return DB.query(OutlineEntity).filter(
+            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.entity_type == 'Course',
+        ).all()
 
-        # Default, topic level
-        query = DB.query(Page).join(
+
+    def _get_course_pages(self, course_id: int) -> list[Page]:
+        return DB.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
             OutlineEntity.outline_id == self.outline.id,
             OutlineEntity.entity_type == 'Page',
+            Page.course_id == course_id,
             Page.active == True,
-        )
-
-        if self.outline_entity.entity_type == 'Course':
-            query = query.filter(
-                Page.course_id == self.outline_entity.entity_id,
-            )
-
-        if self.outline_entity.entity_type == 'Chapter':
-            chapter_record = DB.get(Chapter, self.outline_entity.entity_id)
-
-            query = query.filter(
-                Page.course_id == chapter_record.course_id,
-                Page.chapter_id == chapter_record.id,
-            )
-
-        return query.all()
+        ).all()
 
 
     def _event_payload(self, page: Page):

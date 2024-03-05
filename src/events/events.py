@@ -10,6 +10,11 @@ class GenerateOutlineRequested(Event):
         self.data = data
 
 
+class GenerateOutlineMaterialRequested(Event):
+    def __init__(self, data):
+        self.data = data
+
+
 class NewOutlineInstantiated(Event):
     def __init__(self, data):
         self.data = data

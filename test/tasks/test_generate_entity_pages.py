@@ -1,5 +1,5 @@
 from ..mocks.db import *
-from src.tasks.generate_outline_entity_pages import GenerateOutlineEntityPages
+from tasks.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
 from src.handlers.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.handlers.outlines.create_new_outline_handler import CreateNewOutlineHandler
@@ -22,7 +22,7 @@ def test_generate_chapter_entity_pages():
 
     outline_entity = DB.query(OutlineEntity).filter(OutlineEntity.entity_type == 'Chapter').first()
 
-    task = GenerateOutlineEntityPages(topic_id=1, outline_entity_id=outline_entity.id)
+    task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id)
 
     task.run()
 
@@ -32,7 +32,7 @@ def test_generate_course_entity_pages():
 
     outline_entity = DB.query(OutlineEntity).filter(OutlineEntity.entity_type == 'Course').first()
 
-    task = GenerateOutlineEntityPages(topic_id=1, outline_entity_id=outline_entity.id)
+    task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id)
 
     task.run()
 
@@ -40,6 +40,6 @@ def test_generate_course_entity_pages():
 def test_generate_chapter_with_existing_entity_pages():
     outline_entity = DB.query(OutlineEntity).filter(OutlineEntity.entity_type == 'Chapter').first()
 
-    task = GenerateOutlineEntityPages(topic_id=1, outline_entity_id=outline_entity.id)
+    task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id)
 
     task.run()
