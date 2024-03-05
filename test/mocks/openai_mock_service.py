@@ -17,40 +17,42 @@ class OpenAiMockService:
         self.chunk_outline_calls = 0
         self.mock = MagicMock()
 
-    def send_prompt(self, event_name: str, messages: list[dict]):
+    def send_prompt(self, prompt):
+        subject = prompt.subject
+        messages = prompt.payload
         for message in messages:
             if message['role'] == 'user':
                 prompt = message['content']
-                print(colored(f"Sending {event_name} - prompt: {prompt[:100]}...", "cyan"))
+                print(colored(f"Sending {subject} - prompt: {prompt[:100]}...", "cyan"))
                 break
 
         response = self.response
         if not response:
-            if event_name == 'GenerateSkills':
+            if subject == 'skills':
                 response = EXPECTED_SKILLS_RESPONSE
 
-            if event_name == 'GenerateOutlineChunks':
+            if subject == 'outline':
                 call = self.chunk_outline_calls + 1
                 self.chunk_outline_calls = call
                 response = open(f"test/fixtures/responses/outline-chunks/outline-chunk-{call}.md").read()
 
-            if event_name == 'master-outline':
+            if subject == 'master-outline':
                 response = EXPECTED_MASTER_OUTLINE_RESPONSE
 
-            if event_name == 'page-material':
+            if subject == 'page-material':
                 hash = random.getrandbits(128)
                 material = str(hash) + "\n" + EXPECTED_PAGE_RESPONSE
                 response = material
 
-            if event_name == 'summarize-page':
+            if subject == 'summarize-page':
                 response = EXPECTED_PAGE_SUMMARY_RESPONSE
 
-            if event_name == 'practice-skill-challenge':
+            if subject == 'practice-skill-challenge':
                 hash = random.getrandbits(128)
                 material = str(hash) + "\n" + EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE
                 response = material
 
-            if event_name == 'final-skill-challenge':
+            if subject == 'final-skill-challenge':
                 hash = random.getrandbits(128)
                 material = str(hash) + "\n" + EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE
                 response = material

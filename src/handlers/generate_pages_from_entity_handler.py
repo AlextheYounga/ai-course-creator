@@ -27,7 +27,7 @@ class GeneratePagesFromEntityHandler:
         if page_count == 0: return None
 
         with progressbar.ProgressBar(max_value=len(lesson_pages), prefix='Generating lesson pages: ', redirect_stdout=True).start() as bar:
-            for page in enumerate(lesson_pages):
+            for page in lesson_pages:
                 EVENT_MANAGER.trigger(GenerateLessonPageProcessStarted(self._event_payload(page)))
                 bar.increment()
 
@@ -38,7 +38,7 @@ class GeneratePagesFromEntityHandler:
         if page_count == 0: return None
 
         with progressbar.ProgressBar(max_value=len(challenge_pages), prefix='Generating practice challenges: ', redirect_stdout=True).start() as bar:
-            for page in enumerate(challenge_pages):
+            for page in challenge_pages:
                 EVENT_MANAGER.trigger(GeneratePracticeChallengePageProcessStarted(self._event_payload(page)))
                 bar.increment()
 
@@ -49,7 +49,7 @@ class GeneratePagesFromEntityHandler:
         if page_count == 0: return None
 
         with progressbar.ProgressBar(max_value=len(fsc_pages), prefix='Generating final challenge pages: ', redirect_stdout=True).start() as bar:
-            for page in enumerate(fsc_pages):
+            for page in fsc_pages:
                 EVENT_MANAGER.trigger(GenerateFinalSkillChallengePageProcessStarted(self._event_payload(page)))
                 bar.increment()
 

@@ -1,6 +1,7 @@
 from db.db import DB, Outline, Page
+from src.events.event_manager import EVENT_MANAGER
 from termcolor import colored
-from ...utils.log_handler import LOG_HANDLER
+from src.events.events import *
 
 
 class CheckForExistingPageMaterialHandler:
@@ -9,18 +10,29 @@ class CheckForExistingPageMaterialHandler:
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
-        self.logging = LOG_HANDLER(self.__class__.__name__)
 
 
     def handle(self) -> Page:
-        if self.page.content == None: return self.page
+        if self.page.content == None:
+            if self.page.type == 'lesson':
+                return EVENT_MANAGER.trigger(NoExistingPageContentForLesson(self._event_payload(self.page)))
+            elif self.page.type == 'practice-challenge':
+                return EVENT_MANAGER.trigger(NoExistingPageContentForPracticeChallenge(self._event_payload(self.page)))
+            elif self.page.type == 'final-challenge':
+                return EVENT_MANAGER.trigger(NoExistingPageContentForFinalChallenge(self._event_payload(self.page)))
 
         # If here, then the page content exists and we need to handle it.
         self._soft_delete_existing_page()
 
         new_page = self._create_new_page_from_existing_page()
 
-        return new_page
+        if new_page.type == 'lesson':
+            return EVENT_MANAGER.trigger(NewLessonPageCreatedFromExistingPage(self._event_payload(self.page)))
+        elif new_page.type == 'practice-challenge':
+            return EVENT_MANAGER.trigger(NewPracticeChallengePageCreatedFromExistingPage(self._event_payload(self.page)))
+        elif new_page.type == 'final-challenge':
+            return EVENT_MANAGER.trigger(NewFinalChallengePageCreatedFromExistingPage(self._event_payload(self.page)))
+
 
 
     def _create_new_page_from_existing_page(self):
@@ -52,10 +64,18 @@ class CheckForExistingPageMaterialHandler:
 
 
     def _soft_delete_existing_page(self):
-        message = f"Thread: {self.thread_id} - Outline: {self.outline.id} - Page: {self.page.id} - Message: Soft deleting existing page."
-        self.logging.info(message)
-        print(colored(message, "yellow"))
-
         self.page.active = False
         DB.add(self.page)
         DB.commit()
+
+        return EVENT_MANAGER.trigger(
+            ExistingPageSoftDeletedForPageRegeneration(self._event_payload(self.page))
+        )
+
+    def _event_payload(self, page: Page):
+        return {
+            'threadId': self.thread_id,
+            'outlineId': self.outline.id,
+            'topicId': self.topic.id,
+            'pageId': page.id,
+        }

@@ -15,6 +15,11 @@ class NewOutlineInstantiated(Event):
         self.data = data
 
 
+class NewOutlineCreated(Event):
+    def __init__(self, data):
+        self.data = data
+
+
 class GenerateSkillsPromptCreated(Event):
     def __init__(self, data):
         self.data = data
@@ -81,12 +86,44 @@ class OutlineEntitiesCreatedFromOutline(Event):
 
 
 # Pages
+
+
 class GeneratePagesFromEntityRequested(Event):
     def __init__(self, data):
         self.data = data
 
 
-class CreatedNewLessonPageFromExistingContent(Event):
+class NoExistingPageContentForLesson(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class NoExistingPageContentForPracticeChallenge(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class NoExistingPageContentForFinalChallenge(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class NewLessonPageCreatedFromExistingPage(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class NewPracticeChallengePageCreatedFromExistingPage(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class NewFinalChallengePageCreatedFromExistingPage(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class ExistingPageSoftDeletedForPageRegeneration(Event):
     def __init__(self, data):
         self.data = data
 

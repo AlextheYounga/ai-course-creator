@@ -46,7 +46,7 @@ class ProcessLessonPageResponseHandler:
 
     def _save_content_to_page(self, completion: dict):
         material = completion['choices'][0]['message']['content']
-        content_hash = Page.hash_content(material)
+        content_hash = Page.hash_page(material)
 
         # Update page record
         self.page.content = material

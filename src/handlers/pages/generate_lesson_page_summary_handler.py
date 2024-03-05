@@ -20,18 +20,23 @@ class GenerateLessonPageSummaryHandler():
 
     def handle(self):
         # Build prompt
-        prompt_data = CreateSummarizePagePromptHandler(self._event_payload()).handle()
-        prompt = DB.get(Prompt, prompt_data['promptId'])
+        CreateSummarizePagePromptHandler(self._event_payload()).handle()
+
+        prompt = DB.query(Prompt).filter(
+            Prompt.subject == 'summarize-page'
+        ).order_by(
+            Prompt.id.desc()
+        ).first()
 
         llm_client = get_llm_client()
         completion = llm_client.send_prompt(prompt)
 
         if completion == None:
             return EVENT_MANAGER.trigger(
-                InvalidPageSummaryResponseFromLLM(self._event_payload(response))
+                InvalidPageSummaryResponseFromLLM(self._event_payload(prompt, response))
             )
 
-        response = self._save_response_to_db(completion)
+        response = self._save_response_to_db(prompt, completion)
 
         self._update_page_with_summary(response)
 
@@ -40,15 +45,15 @@ class GenerateLessonPageSummaryHandler():
         )
 
 
-    def _save_response_to_db(self, completion: Completion):
+    def _save_response_to_db(self, prompt: Prompt, completion: Completion):
         properties = {
-            'params': self.prompt.properties['params'],
+            'params': prompt.properties['params'],
         }
 
         response = Response(
             thread_id=self.thread_id,
             outline_id=self.outline.id,
-            prompt_id=self.prompt.id,
+            prompt_id=prompt.id,
             role=completion.choices[0].message.role,
             payload=completion.model_dump_json(),
             model=completion.model,
@@ -70,7 +75,7 @@ class GenerateLessonPageSummaryHandler():
         DB.commit()
 
 
-    def _event_payload(self, prompt: Prompt | None, response: Response | None = None):
+    def _event_payload(self, prompt: Prompt | None = None, response: Response | None = None):
         payload = {
             'threadId': self.thread_id,
             'outlineId': self.outline.id,

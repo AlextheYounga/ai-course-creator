@@ -18,6 +18,17 @@ class OutlineEntity(Base):
 
     outline = relationship("Outline", back_populates="entities")
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "outline_id": self.outline_id,
+            "entity_id": self.entity_id,
+            "entity_type": self.entity_type,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+
     @classmethod
     def first_or_create(self, session: Session, outline_id: int, entity):
         entity_record = session.query(self).filter(

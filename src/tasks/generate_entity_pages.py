@@ -9,23 +9,18 @@ from src.handlers.generate_pages_from_entity_handler import GeneratePagesFromEnt
 EVENT_MANAGER.subscribe([Event], Handler)
 EVENT_MANAGER.trigger(Event(data))
 
-GeneratePagesFromEntityRequested
-    GeneratePagesFromEntityHandler
-        GenerateLessonPageProcessStarted
-            CheckForExistingPageMaterialHandler
-                CreateLessonPagePromptHandler
+See `docs/tasks/generate-pages-flow.md` for more information
 """
 
 
-class GeneratePages:
+class GenerateEntityPages:
     def __init__(self, topic_id: int, outline_entity_id: int):
         self.topic = DB.get(Topic, topic_id)
         self.outline_entity = DB.get(OutlineEntity, outline_entity_id)
         self.outline = self.outline_entity.outline
+        self.thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
 
     def run(self):
-        thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
-
         EVENT_MANAGER.subscribe(
             events=[GeneratePagesFromEntityRequested],
             handler=GeneratePagesFromEntityHandler
@@ -41,34 +36,69 @@ class GeneratePages:
         )
 
         EVENT_MANAGER.subscribe(
-            events=[GeneratePracticeChallengePageProcessStarted],
-            handler=CreatePracticeSkillChallengePromptHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[GenerateFinalSkillChallengePageProcessStarted],
-            handler=CreateFinalSkillChallengePromptHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[],
+            events=[
+                NoExistingPageContentForLesson,
+                NewLessonPageCreatedFromExistingPage
+            ],
             handler=CreateLessonPagePromptHandler
         )
 
         EVENT_MANAGER.subscribe(
-            events=[GeneratePracticeChallengePageProcessStarted],
+            events=[
+                NoExistingPageContentForPracticeChallenge,
+                NewPracticeChallengePageCreatedFromExistingPage
+            ],
             handler=CreatePracticeSkillChallengePromptHandler
         )
 
         EVENT_MANAGER.subscribe(
-            events=[GenerateFinalSkillChallengePageProcessStarted],
+            events=[
+                NoExistingPageContentForFinalChallenge,
+                NewFinalChallengePageCreatedFromExistingPage
+            ],
             handler=CreateFinalSkillChallengePromptHandler
         )
+
+        EVENT_MANAGER.subscribe(
+            events=[LessonPagePromptCreated],
+            handler=SendGenerateLessonPagePromptToLLMHandler
+        )
+
+        EVENT_MANAGER.subscribe(
+            events=[PracticeChallengePagePromptCreated],
+            handler=SendGeneratePracticeChallengePromptToLLMHandler
+        )
+
+        EVENT_MANAGER.subscribe(
+            events=[FinalSkillChallengePagePromptCreated],
+            handler=SendGenerateFinalChallengePromptToLLMHandler
+        )
+
+        EVENT_MANAGER.subscribe(
+            events=[LessonPageResponseReceivedFromLLM],
+            handler=ProcessLessonPageResponseHandler
+        )
+
+        EVENT_MANAGER.subscribe(
+            events=[LessonPageResponseProcessedSuccessfully],
+            handler=GenerateLessonPageSummaryHandler
+        )
+
+        EVENT_MANAGER.subscribe(
+            events=[PracticeChallengePageResponseReceivedFromLLM],
+            handler=ProcessChallengePageResponseHandler
+        )
+
+        EVENT_MANAGER.subscribe(
+            events=[FinalSkillChallengePageResponseReceivedFromLLM],
+            handler=ProcessChallengePageResponseHandler
+        )
+
 
         # Trigger starting event
         EVENT_MANAGER.trigger(
             GeneratePagesFromEntityRequested({
-                'threadId': thread.id,
+                'threadId': self.thread.id,
                 'topicId': self.topic.id,
                 'outlineEntityId': self.outline_entity.id,
                 'outlineId': self.outline.id,

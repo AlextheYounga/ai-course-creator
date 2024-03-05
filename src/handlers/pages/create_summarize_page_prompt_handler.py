@@ -29,6 +29,7 @@ class CreateSummarizePagePromptHandler:
                 'outlineId': self.outline.id,
                 'topicId': self.topic.id,
                 'promptId': prompt.id,
+                'pageId': self.page.id,
             }))
 
 

@@ -8,7 +8,7 @@ prompts:
   skills:
     temperature: .7
 
-  master-outline:
+  outline:
     temperature: .1
 
   page-material:

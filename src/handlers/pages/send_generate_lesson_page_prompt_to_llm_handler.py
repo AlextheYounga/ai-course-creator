@@ -22,8 +22,14 @@ class SendGenerateLessonPagePromptToLLMHandler:
         response = self._save_response_to_db(completion)
 
         return EVENT_MANAGER.trigger(
-            LessonPageResponseReceivedFromLLM(self._event_payload(response))
-        )
+            LessonPageResponseReceivedFromLLM({
+                'threadId': self.thread_id,
+                'outlineId': self.outline.id,
+                'topicId': self.topic.id,
+                'promptId': self.prompt.id,
+                'responseId': response.id,
+                'pageId': self.page.id,
+            }))
 
 
     def _save_response_to_db(self, completion: Completion):

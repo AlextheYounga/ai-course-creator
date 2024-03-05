@@ -28,25 +28,34 @@ class OpenAiService:
             for message in messages:
                 if message['role'] == 'user':
                     prompt = message['content']
-                    print(colored(f"Sending {event_name} - tokens: {prompt.estimated_tokens} - prompt: {prompt[:100]}...", "cyan"))
+                    print(colored(f"Sending {prompt.subject} - tokens: {prompt.estimated_tokens} - prompt: {prompt[:100]}...", "cyan"))
                     break
 
 
         completion = None
         try:
-            self.logger.info(f"SEND: {event_name} - {model}")
+            self.logger.info(f"SEND: {prompt.subject} - {model}")
 
             completion = self.client.chat.completions.create(
                 messages=messages,
                 **prompt_params
             )
 
-            self.logger.info(f"RESPONSE: {event_name} - {model} - status: {completion['status']}")
+            self.logger.info(f"RESPONSE: {prompt.subject} - {model} - status: {completion['status']}")
 
-            sleep(1)  # Give OpenAI a break
+            self.__handle_exponential_backoff(prompt)
 
             return completion
+
         except Exception as e:
             print(colored(f"Unknown error from OpenAI: {e}", "red"))
-            self.logger.info(f"RESPONSE: {event_name} - {model} - status: {e}")
+            self.logger.info(f"RESPONSE: {prompt.subject} - {model} - status: {e}")
             return None
+
+    def __handle_exponential_backoff(self, prompt: Prompt):
+        sleep_time = 10 * prompt.attempts
+
+        if prompt.attempts == 0:
+            sleep_time = 1
+
+        sleep(sleep_time)
