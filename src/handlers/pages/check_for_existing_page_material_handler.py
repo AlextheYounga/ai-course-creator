@@ -58,8 +58,6 @@ class CheckForExistingPageMaterialHandler:
 
         if self.page.properties:
             new_page.properties = self.page.properties
-        if self.page.nodes:
-            new_page.nodes = self.page.nodes
 
         DB.add(new_page)
         DB.commit()

@@ -3,7 +3,6 @@ from src.events.event_manager import EVENT_MANAGER
 from src.events.events import GenerateSkillsResponseProcessedSuccessfully, InvalidGenerateSkillsResponseFromLLM, FailedToParseYamlFromGenerateSkillsResponse
 from ..validate_llm_response_handler import ValidateLLMResponseHandler
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
-from termcolor import colored
 from sqlalchemy.orm.attributes import flag_modified
 
 

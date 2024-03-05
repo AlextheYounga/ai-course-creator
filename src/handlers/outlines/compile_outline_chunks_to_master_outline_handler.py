@@ -21,10 +21,10 @@ class CompileOutlineChunksToMasterOutlineHandler:
         if not self.outline.properties.get('outlineChunks', False):
             raise Exception("OutlineChunks not found in outline properties.")
 
-        master_outline = self._compile_master_outline_from_chunks()
+        outline_data = self._compile_outline_data_from_chunks()
 
         # Hash outline
-        outline_hash = Outline.hash_outline(master_outline)
+        outline_hash = Outline.hash_outline(outline_data)
 
         # Check for existing outline hash
         existing_outline = DB.query(Outline).filter(Outline.hash == outline_hash).first()
@@ -33,7 +33,7 @@ class CompileOutlineChunksToMasterOutlineHandler:
             return existing_outline
 
         # Update outline
-        self.outline.master_outline = master_outline
+        self.outline.outline_data = outline_data
         self.outline.hash = outline_hash
 
         # Set as Topic Master Outline
@@ -50,15 +50,15 @@ class CompileOutlineChunksToMasterOutlineHandler:
             }))
 
 
-    def _compile_master_outline_from_chunks(self) -> dict:
-        master_outline = []
+    def _compile_outline_data_from_chunks(self) -> dict:
+        outline_data = []
         outline_chunks = self.outline.properties['outlineChunks']
 
         for course in outline_chunks:
             course = self._add_challenges_to_chapters(course)
-            master_outline.append(course)
+            outline_data.append(course)
 
-        return master_outline
+        return outline_data
 
 
     def _add_challenges_to_chapters(self, course: dict) -> list:
@@ -80,4 +80,4 @@ class CompileOutlineChunksToMasterOutlineHandler:
         # Save to YAML file
         os.makedirs(self.output_path, exist_ok=True)
         with open(f"{self.output_path}/master-outline.yaml", 'w') as yaml_file:
-            yaml.dump(self.outline.master_outline, yaml_file, sort_keys=False)
+            yaml.dump(self.outline.outline_data, yaml_file, sort_keys=False)

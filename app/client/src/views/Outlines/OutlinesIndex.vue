@@ -213,7 +213,7 @@ export default {
                             topic_id: topic.id,
                             id: outline.id,
                             entityType: 'Outline',
-                            outlineData: outline.master_outline,
+                            outlineData: outline.outline_data,
                             icon: ListBulletIcon,
                         },
                         type: 'outline'

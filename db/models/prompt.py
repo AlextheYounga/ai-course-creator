@@ -32,6 +32,8 @@ class Prompt(Base):
     def to_dict(self):
         return {
             "id": self.id,
+            "thread_id": self.thread_id,
+            "outline_id": self.outline_id,
             "model": self.model,
             "subject": self.subject,
             "estimated_tokens": self.estimated_tokens,

@@ -21,7 +21,7 @@ class Outline(Base):
     topic_id = mapped_column(ForeignKey("topic.id"))
     name = mapped_column(String)
     hash = mapped_column(String, unique=True)
-    master_outline = mapped_column(JSON)
+    outline_data = mapped_column(JSON)
     file_path = mapped_column(String)
     properties = mapped_column(JSON)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -42,7 +42,7 @@ class Outline(Base):
             "topic_id": self.topic_id,
             "name": self.name,
             "hash": self.hash,
-            "master_outline": self.master_outline,
+            "outline_data": self.outline_data,
             "file_path": self.file_path,
             "properties": self.properties,
             "created_at": self.created_at,
@@ -84,8 +84,8 @@ class Outline(Base):
 
         # Create new outline record
         new_outline = self.instantiate(session, topic_id)
-        new_outline.master_outline = read_yaml_file(outline_file)  # Add changed outline to record
-        new_outline.hash = self.hash_outline(new_outline.master_outline)
+        new_outline.outline_data = read_yaml_file(outline_file)  # Add changed outline to record
+        new_outline.hash = self.hash_outline(new_outline.outline_data)
         new_outline.file_path = outline_file
 
         session.add(new_outline)

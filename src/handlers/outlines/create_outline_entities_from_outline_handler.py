@@ -11,9 +11,9 @@ class CreateOutlineEntitiesFromOutlineHandler:
         self.topic = self.outline.topic
 
     def handle(self) -> list[Page]:
-        master_outline = self.outline.master_outline
+        outline_data = self.outline.outline_data
 
-        for course_index, course in enumerate(master_outline):
+        for course_index, course in enumerate(outline_data):
             page_position_in_course = 0
             course = course['course']
 
@@ -66,10 +66,14 @@ class CreateOutlineEntitiesFromOutlineHandler:
         if not course:
             course = Course(topic_id=self.topic.id)
 
+        properties = {
+            'skillChallengeChapter': f"final-skill-challenge-{course_slug}"
+        }
+
         course.name = name
         course.slug = course_slug
         course.level = position
-        course.skill_challenge_chapter = f"final-skill-challenge-{course_slug}"
+        course.properties = properties
 
         return course
 

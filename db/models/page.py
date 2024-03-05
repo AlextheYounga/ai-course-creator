@@ -25,7 +25,6 @@ class Page(Base):
     type = mapped_column(String)
     content = mapped_column(Text)
     summary = mapped_column(Text)
-    nodes = mapped_column(JSON)
     position = mapped_column(Integer, nullable=False)
     position_in_course = mapped_column(Integer, nullable=False)
     generated = mapped_column(Boolean, default=False)
@@ -87,7 +86,6 @@ class Page(Base):
             "type": self.type,
             "content": self.content,
             "summary": self.summary,
-            "nodes": self.nodes,
             "position": self.position,
             "position_in_course": self.position_in_course,
             "generated": self.generated,

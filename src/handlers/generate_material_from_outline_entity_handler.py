@@ -17,12 +17,12 @@ class GenerateMaterialFromOutlineEntityHandler:
 
 
     def handle(self):
-        if self.page_type:
-            if self.page_type == 'lesson':
+        if self.only_page_type:
+            if self.only_page_type == 'lesson':
                 return self._handle_generate_lesson_pages()
-            if self.page_type == 'challenge':
+            if self.only_page_type == 'challenge':
                 return self._handle_generate_practice_challenge_pages()
-            if self.page_type == 'final-skill-challenge':
+            if self.only_page_type == 'final-skill-challenge':
                 return self._handler_generate_fsc_pages()
 
         self._handle_generate_lesson_pages()

@@ -54,7 +54,7 @@ export default {
         async submit() {
             const data = {
                 ...this.outline,
-                master_outline: YAML.parse(this.outlineYaml)
+                outline_data: YAML.parse(this.outlineYaml)
             }
 
             await flaskApi.post(`/outlines`, data)
@@ -64,7 +64,7 @@ export default {
             const outlineId = (this.$route.params.id)
             const outline = await flaskApi.get(`/outlines/${outlineId}`)
             this.outline = outline
-            this.outlineYaml = YAML.stringify(outline?.master_outline, { indent: 4 }) ?? ''
+            this.outlineYaml = YAML.stringify(outline?.outline_data, { indent: 4 }) ?? ''
         },
     },
     computed: {
@@ -72,14 +72,14 @@ export default {
             return [
                 { id: 1, name: 'Outline ID', value: this.outline?.id },
                 { id: 2, name: 'Outline Name', value: this.outline?.name },
-                { id: 3, name: 'Course Count', value: this.outline?.master_outline?.length ?? 'NA' },
+                { id: 3, name: 'Course Count', value: this.outline?.outline_data?.length ?? 'NA' },
                 { id: 4, name: 'Created At', value: this.outline?.created_at },
             ]
         },
         showButton() {
             if (this.outlineYaml) {
                 const dataOutput = YAML.parse(this.outlineYaml)
-                return JSON.stringify(dataOutput) !== JSON.stringify(this.outline.master_outline)
+                return JSON.stringify(dataOutput) !== JSON.stringify(this.outline.outline_data)
             }
             return false;
         }

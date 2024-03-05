@@ -96,7 +96,7 @@ class CreateLessonPagePromptHandler:
     def _prune_challenges_from_outline(self):
         outline_formatted = []
 
-        for course in self.outline.master_outline:
+        for course in self.outline.outline_data:
             course_object = {
                 'course': {
                     'courseName': course['course']['courseName'],

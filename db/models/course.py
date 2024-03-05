@@ -15,8 +15,7 @@ class Course(Base):
     slug = mapped_column(String, nullable=False)
     level = mapped_column(Integer, nullable=False)
     meta = mapped_column(JSON)
-    skill_challenge_chapter = mapped_column(String)
-    skill_challenge_total_questions = mapped_column(Integer)
+    properties = mapped_column(JSON)
     generated = mapped_column(Boolean)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
@@ -36,8 +35,7 @@ class Course(Base):
             "slug": self.slug,
             "level": self.level,
             "meta": self.meta,
-            "skill_challenge_chapter": self.skill_challenge_chapter,
-            "skill_challenge_total_questions": self.skill_challenge_total_questions,
+            "properties": self.properties,
             "generated": self.generated,
             "created_at": self.created_at,
             "updated_at": self.updated_at,

@@ -28,7 +28,9 @@ class Response(Base):
     def to_dict(self):
         return {
             "id": self.id,
+            "thread_id": self.thread_id,
             "prompt_id": self.prompt_id,
+            "outline_id": self.outline_id,
             "role": self.role,
             "model": self.model,
             "completion_tokens": self.completion_tokens,

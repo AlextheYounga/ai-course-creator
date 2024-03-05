@@ -27,7 +27,7 @@ class CreateNewOutlineHandler:
             topic_id=self.topic.id,
             name=self._create_outline_name(),
             file_path=self._default_outline_file_path(),
-            master_outline=self.outline_data,
+            outline_data=self.outline_data,
             hash=outline_hash,
             properties={}
         )

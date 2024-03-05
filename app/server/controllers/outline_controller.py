@@ -11,8 +11,8 @@ class OutlineController:
 
     @staticmethod
     def create(data: dict):
-        master_outline = data['master_outline']
-        outline_hash = Outline.hash_outline(master_outline)
+        outline_data = data['outline_data']
+        outline_hash = Outline.hash_outline(outline_data)
 
         existing_outlines = DB.query(Outline).filter(
             Outline.hash == outline_hash
@@ -31,7 +31,7 @@ class OutlineController:
 
         outline = Outline.instantiate(DB, topic_id)
         outline.properties = properties
-        outline.master_outline = master_outline
+        outline.outline_data = outline_data
         outline.hash = outline_hash
         outline.file_path = Outline.default_outline_file_path(topic)
 
