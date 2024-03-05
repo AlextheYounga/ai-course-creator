@@ -3,7 +3,7 @@ from src.events.event_manager import EVENT_MANAGER
 from src.events.events import *
 from src.handlers.pages import *
 from src.handlers.create_new_thread_handler import CreateNewThreadHandler
-from src.handlers.generate_material_from_outline_entity_handler import GenerateMaterialFromOutlineEntityHandler
+from src.handlers.generate_material_from_outline_handler import GenerateMaterialFromOutlineHandler
 
 """
 Generates all pages from an outline. Can specify a single page type to generate.
@@ -23,7 +23,7 @@ class GenerateOutlinePages:
     def run(self):
         EVENT_MANAGER.subscribe(
             events=[GenerateOutlineMaterialRequested],
-            handler=GenerateMaterialFromOutlineEntityHandler
+            handler=GenerateMaterialFromOutlineHandler
         )
 
         EVENT_MANAGER.subscribe(

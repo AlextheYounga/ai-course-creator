@@ -6,7 +6,7 @@ from .controllers.outline_controller import OutlineController
 from .controllers.log_controller import LogController
 from .controllers.ping_controller import PingController
 from .controllers.page_controller import PageController
-from .controllers.creator_controller import CreatorController
+from .controllers.task_controller import TaskController
 from .controllers.topic_controller import TopicController
 
 
@@ -41,7 +41,7 @@ def get_all_master_outline_material():
 @app.route('/api/generate', methods=['POST'])
 def creator_generate():
     data = request.json
-    CreatorController.generate_entities(data)
+    TaskController.generate_entities(data)
     return 'Success', 200
 
 
