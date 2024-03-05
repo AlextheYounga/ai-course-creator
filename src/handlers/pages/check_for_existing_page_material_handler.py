@@ -1,7 +1,8 @@
 from db.db import DB, Outline, Page
 from src.events.event_manager import EVENT_MANAGER
-from termcolor import colored
-from src.events.events import *
+from src.events.events import NoExistingPageContentForLesson, NoExistingPageContentForPracticeChallenge, NoExistingPageContentForFinalChallenge
+from src.events.events import NewLessonPageCreatedFromExistingPage, NewPracticeChallengePageCreatedFromExistingPage, NewFinalChallengePageCreatedFromExistingPage
+from src.events.events import ExistingPageSoftDeletedForPageRegeneration
 
 
 class CheckForExistingPageMaterialHandler:
@@ -16,9 +17,9 @@ class CheckForExistingPageMaterialHandler:
         if self.page.content == None:
             if self.page.type == 'lesson':
                 return EVENT_MANAGER.trigger(NoExistingPageContentForLesson(self._event_payload(self.page)))
-            elif self.page.type == 'practice-challenge':
+            if self.page.type == 'challenge':
                 return EVENT_MANAGER.trigger(NoExistingPageContentForPracticeChallenge(self._event_payload(self.page)))
-            elif self.page.type == 'final-challenge':
+            if self.page.type == 'final-skill-challenge':
                 return EVENT_MANAGER.trigger(NoExistingPageContentForFinalChallenge(self._event_payload(self.page)))
 
         # If here, then the page content exists and we need to handle it.
@@ -27,11 +28,11 @@ class CheckForExistingPageMaterialHandler:
         new_page = self._create_new_page_from_existing_page()
 
         if new_page.type == 'lesson':
-            return EVENT_MANAGER.trigger(NewLessonPageCreatedFromExistingPage(self._event_payload(self.page)))
-        elif new_page.type == 'practice-challenge':
-            return EVENT_MANAGER.trigger(NewPracticeChallengePageCreatedFromExistingPage(self._event_payload(self.page)))
-        elif new_page.type == 'final-challenge':
-            return EVENT_MANAGER.trigger(NewFinalChallengePageCreatedFromExistingPage(self._event_payload(self.page)))
+            return EVENT_MANAGER.trigger(NewLessonPageCreatedFromExistingPage(self._event_payload(new_page)))
+        if new_page.type == 'challenge':
+            return EVENT_MANAGER.trigger(NewPracticeChallengePageCreatedFromExistingPage(self._event_payload(new_page)))
+        if new_page.type == 'final-skill-challenge':
+            return EVENT_MANAGER.trigger(NewFinalChallengePageCreatedFromExistingPage(self._event_payload(new_page)))
 
 
 
@@ -45,7 +46,6 @@ class CheckForExistingPageMaterialHandler:
             path=self.page.path,
             content=None,
             summary=None,
-            nodes=None,
             generated=False,
             hash=None,
             permalink=self.page.permalink,
@@ -54,8 +54,12 @@ class CheckForExistingPageMaterialHandler:
             position_in_course=self.page.position_in_course,
             type=self.page.type,
             active=True,
-            properties=self.page.properties,
         )
+
+        if self.page.properties:
+            new_page.properties = self.page.properties
+        if self.page.nodes:
+            new_page.nodes = self.page.nodes
 
         DB.add(new_page)
         DB.commit()

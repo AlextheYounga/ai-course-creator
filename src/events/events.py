@@ -88,7 +88,7 @@ class OutlineEntitiesCreatedFromOutline(Event):
 # Pages
 
 
-class GeneratePagesFromEntityRequested(Event):
+class GeneratePagesFromOutlineEntityRequested(Event):
     def __init__(self, data):
         self.data = data
 

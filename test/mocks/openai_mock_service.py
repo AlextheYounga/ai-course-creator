@@ -19,12 +19,7 @@ class OpenAiMockService:
 
     def send_prompt(self, prompt):
         subject = prompt.subject
-        messages = prompt.payload
-        for message in messages:
-            if message['role'] == 'user':
-                prompt = message['content']
-                print(colored(f"Sending {subject} - prompt: {prompt[:100]}...", "cyan"))
-                break
+        print(colored(f"Sending {subject} - prompt: {prompt.content[:100]}...", "cyan"))
 
         response = self.response
         if not response:

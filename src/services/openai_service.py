@@ -14,7 +14,6 @@ load_dotenv()
 class OpenAiService:
     def __init__(self, params_file: str = 'params.yaml'):
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        self.logger = LOG_HANDLER(self.__class__.__name__)
         self.params = read_yaml_file(params_file)
 
 
@@ -34,14 +33,14 @@ class OpenAiService:
 
         completion = None
         try:
-            self.logger.info(f"SEND: {prompt.subject} - {model}")
+            LOG_HANDLER.info(f"SEND: {prompt.subject} - {model}")
 
             completion = self.client.chat.completions.create(
                 messages=messages,
                 **prompt_params
             )
 
-            self.logger.info(f"RESPONSE: {prompt.subject} - {model} - status: {completion['status']}")
+            LOG_HANDLER.info(f"RESPONSE: {prompt.subject} - {model} - status: {completion['status']}")
 
             self.__handle_exponential_backoff(prompt)
 
@@ -49,7 +48,7 @@ class OpenAiService:
 
         except Exception as e:
             print(colored(f"Unknown error from OpenAI: {e}", "red"))
-            self.logger.info(f"RESPONSE: {prompt.subject} - {model} - status: {e}")
+            LOG_HANDLER.info(f"RESPONSE: {prompt.subject} - {model} - status: {e}")
             return None
 
     def __handle_exponential_backoff(self, prompt: Prompt):

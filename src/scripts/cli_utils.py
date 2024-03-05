@@ -26,7 +26,7 @@ def save_chat():
         filename = f"chat-{slugify(chat_name)}.zip"
 
     # Copying logs file to out folder
-    shutil.copy(f"{LOGS_PATH}/chat.log", "out/chat.log")
+    shutil.copy(f"{LOGS_PATH}/app.log", "out/app.log")
 
     zip_folder(OUTPUT_PATH, filename)
     os.rename(filename, f"storage/chat/{filename}")
@@ -50,6 +50,6 @@ def backup_database():
 
 
 def clear_logs():
-    if (os.path.exists(f"{LOGS_PATH}/chat.log")):
-        os.remove(f"{LOGS_PATH}/chat.log")
-    open(f"{LOGS_PATH}/chat.log", 'w').close()
+    if (os.path.exists(f"{LOGS_PATH}/app.log")):
+        os.remove(f"{LOGS_PATH}/app.log")
+    open(f"{LOGS_PATH}/app.log", 'w').close()

@@ -16,8 +16,8 @@ def _create_env_file():
 
 
 def _create_log_file():
-    if (not os.path.exists(f"{LOGS_PATH}/chat.log")):
-        open(f"{LOGS_PATH}/chat.log", 'w').close()
+    if (not os.path.exists(f"{LOGS_PATH}/app.log")):
+        open(f"{LOGS_PATH}/app.log", 'w').close()
         return True
     return False
 

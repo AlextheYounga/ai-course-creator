@@ -120,7 +120,6 @@ class CreateOutlineEntitiesFromOutlineHandler:
         page.path = f"{output_directory}/{self.topic.slug}/{self.outline.name}/content/{course.slug}/{chapter.slug}/page-{page_slug}.md"
         page.content = get_page_content()
         page.summary = page.summary
-        page.nodes = page.nodes
         page.generated = os.path.exists(page.path) or page.content != None
         page.hash = Page.hash_page(page.content) if page.content else None
         page.permalink = f"/page/{self.topic.slug}/{course.slug}/{chapter.slug}/{page_slug}"

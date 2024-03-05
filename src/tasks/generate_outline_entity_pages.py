@@ -3,7 +3,7 @@ from ..events.event_manager import EVENT_MANAGER
 from ..events.events import *
 from src.handlers.pages import *
 from src.handlers.create_new_thread_handler import CreateNewThreadHandler
-from src.handlers.generate_pages_from_entity_handler import GeneratePagesFromEntityHandler
+from src.handlers.generate_pages_from_entity_handler import GeneratePagesFromOutlineEntityHandler
 
 """
 EVENT_MANAGER.subscribe([Event], Handler)
@@ -13,7 +13,7 @@ See `docs/tasks/generate-pages-flow.md` for more information
 """
 
 
-class GenerateEntityPages:
+class GenerateOutlineEntityPages:
     def __init__(self, topic_id: int, outline_entity_id: int):
         self.topic = DB.get(Topic, topic_id)
         self.outline_entity = DB.get(OutlineEntity, outline_entity_id)
@@ -22,8 +22,8 @@ class GenerateEntityPages:
 
     def run(self):
         EVENT_MANAGER.subscribe(
-            events=[GeneratePagesFromEntityRequested],
-            handler=GeneratePagesFromEntityHandler
+            events=[GeneratePagesFromOutlineEntityRequested],
+            handler=GeneratePagesFromOutlineEntityHandler
         )
 
         EVENT_MANAGER.subscribe(
@@ -97,7 +97,7 @@ class GenerateEntityPages:
 
         # Trigger starting event
         EVENT_MANAGER.trigger(
-            GeneratePagesFromEntityRequested({
+            GeneratePagesFromOutlineEntityRequested({
                 'threadId': self.thread.id,
                 'topicId': self.topic.id,
                 'outlineEntityId': self.outline_entity.id,

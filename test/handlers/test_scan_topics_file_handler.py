@@ -9,7 +9,7 @@ def __setup_test():
 def test_scan_topics_file_handler():
     __setup_test()
 
-    handler = ScanTopicsFileHandler(topics_file="storage/topics.example.yaml")
+    handler = ScanTopicsFileHandler({'topicsFile': "storage/topics.example.yaml"})
     topics = handler.handle()
 
     assert len(topics) == 3
