@@ -21,19 +21,18 @@ class CheckForExistingPageMaterialHandler:
                 return EVENT_MANAGER.trigger(NoExistingPageContentForPracticeChallenge(self._event_payload(self.page)))
             if self.page.type == 'final-skill-challenge':
                 return EVENT_MANAGER.trigger(NoExistingPageContentForFinalChallenge(self._event_payload(self.page)))
+        else:
+            # If here, then the page content exists and we need to handle it.
+            self._soft_delete_existing_page()
 
-        # If here, then the page content exists and we need to handle it.
-        self._soft_delete_existing_page()
+            new_page = self._create_new_page_from_existing_page()
 
-        new_page = self._create_new_page_from_existing_page()
-
-        if new_page.type == 'lesson':
-            return EVENT_MANAGER.trigger(NewLessonPageCreatedFromExistingPage(self._event_payload(new_page)))
-        if new_page.type == 'challenge':
-            return EVENT_MANAGER.trigger(NewPracticeChallengePageCreatedFromExistingPage(self._event_payload(new_page)))
-        if new_page.type == 'final-skill-challenge':
-            return EVENT_MANAGER.trigger(NewFinalChallengePageCreatedFromExistingPage(self._event_payload(new_page)))
-
+            if new_page.type == 'lesson':
+                return EVENT_MANAGER.trigger(NewLessonPageCreatedFromExistingPage(self._event_payload(new_page)))
+            if new_page.type == 'challenge':
+                return EVENT_MANAGER.trigger(NewPracticeChallengePageCreatedFromExistingPage(self._event_payload(new_page)))
+            if new_page.type == 'final-skill-challenge':
+                return EVENT_MANAGER.trigger(NewFinalChallengePageCreatedFromExistingPage(self._event_payload(new_page)))
 
 
     def _create_new_page_from_existing_page(self):
@@ -67,10 +66,9 @@ class CheckForExistingPageMaterialHandler:
 
     def _soft_delete_existing_page(self):
         self.page.active = False
-        DB.add(self.page)
         DB.commit()
 
-        return EVENT_MANAGER.trigger(
+        EVENT_MANAGER.trigger(
             ExistingPageSoftDeletedForPageRegeneration(self._event_payload(self.page))
         )
 

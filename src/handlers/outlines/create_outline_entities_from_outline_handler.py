@@ -19,12 +19,10 @@ class CreateOutlineEntitiesFromOutlineHandler:
 
             # Building course record
             course_record = self._get_first_or_create_course(course['courseName'], course_index)
-            DB.add(course_record)
 
             for chapter_index, chapter in enumerate(course['chapters']):
                 # Building chapter record
                 chapter_record = self._get_first_or_create_chapter(chapter['name'], chapter_index, course_record)
-                DB.add(chapter_record)
 
                 # Building page record
                 for page_index, page in enumerate(chapter['pages']):
@@ -36,7 +34,6 @@ class CreateOutlineEntitiesFromOutlineHandler:
                         course_record
                     )
 
-                    DB.add(page_record)
                     page_position_in_course += 1
 
                     # Saving to the database
@@ -75,6 +72,8 @@ class CreateOutlineEntitiesFromOutlineHandler:
         course.level = position
         course.properties = properties
 
+        DB.add(course)
+
         return course
 
 
@@ -93,6 +92,8 @@ class CreateOutlineEntitiesFromOutlineHandler:
         chapter.slug = chapter_slug
         chapter.position = position
         chapter.content_type = Chapter.get_content_type(chapter_slug)
+
+        DB.add(chapter)
 
         return chapter
 
@@ -131,5 +132,7 @@ class CreateOutlineEntitiesFromOutlineHandler:
         page.position = position
         page.position_in_course = position_in_course
         page.type = Page.get_page_type(name, chapter.slug)
+
+        DB.add(page)
 
         return page

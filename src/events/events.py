@@ -10,6 +10,11 @@ class GenerateOutlineRequested(Event):
         self.data = data
 
 
+class OutlineGenerationProcessCompletedSuccessfully(Event):
+    def __init__(self, data):
+        self.data = data
+
+
 class GenerateOutlineMaterialRequested(Event):
     def __init__(self, data):
         self.data = data
@@ -219,5 +224,15 @@ class PracticeChallengeGenerationFailedDueToIncompleteChapter(Event):
 
 
 class LessonPageResponseReceivedFromLLM(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class GenerateOutlineMaterialCompletedSuccessfully(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class GenerateMaterialFromOutlineEntityCompletedSuccessfully(Event):
     def __init__(self, data):
         self.data = data

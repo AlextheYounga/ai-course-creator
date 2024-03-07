@@ -13,25 +13,33 @@ class GenerateMaterialFromOutlineEntityHandler:
         self.outline_entity = DB.get(OutlineEntity, data['outlineEntityId'])
         self.only_page_type = data.get('onlyPageType', False)   # lesson, challenge, final-skill-challenge
         self.topic = self.outline.topic
-        self.pages = self._get_entity_pages()
 
 
     def handle(self):
+        pages = self._get_entity_pages()
+
         if self.only_page_type:
             if self.only_page_type == 'lesson':
-                return self._handle_generate_lesson_pages()
+                return self._handle_generate_lesson_pages(pages)
             if self.only_page_type == 'challenge':
-                return self._handle_generate_practice_challenge_pages()
+                return self._handle_generate_practice_challenge_pages(pages)
             if self.only_page_type == 'final-skill-challenge':
-                return self._handler_generate_fsc_pages()
+                return self._handler_generate_fsc_pages(pages)
+        else:
+            self._handle_generate_lesson_pages(pages)
+            self._handle_generate_practice_challenge_pages(pages)
+            self._handler_generate_fsc_pages(pages)
 
-        self._handle_generate_lesson_pages()
-        self._handle_generate_practice_challenge_pages()
-        self._handler_generate_fsc_pages()
+        return EVENT_MANAGER.trigger(
+            GenerateMaterialFromOutlineEntityCompletedSuccessfully({
+                'threadId': self.thread_id,
+                'outlineId': self.outline.id,
+                'topicId': self.topic.id,
+            }))
 
 
-    def _handle_generate_lesson_pages(self):
-        lesson_pages = [page for page in self.pages if page.type == 'lesson']
+    def _handle_generate_lesson_pages(self, pages: list[Page]):
+        lesson_pages = [page for page in pages if page.type == 'lesson']
         page_count = len(lesson_pages)
         if page_count == 0: return None
 
@@ -41,8 +49,8 @@ class GenerateMaterialFromOutlineEntityHandler:
                 bar.increment()
 
 
-    def _handle_generate_practice_challenge_pages(self):
-        challenge_pages = [page for page in self.pages if page.type == 'challenge']
+    def _handle_generate_practice_challenge_pages(self, pages: list[Page]):
+        challenge_pages = [page for page in pages if page.type == 'challenge']
         page_count = len(challenge_pages)
         if page_count == 0: return None
 
@@ -52,8 +60,8 @@ class GenerateMaterialFromOutlineEntityHandler:
                 bar.increment()
 
 
-    def _handler_generate_fsc_pages(self):
-        fsc_pages = [page for page in self.pages if page.type == 'final-skill-challenge']
+    def _handler_generate_fsc_pages(self, pages: list[Page]):
+        fsc_pages = [page for page in pages if page.type == 'final-skill-challenge']
         page_count = len(fsc_pages)
         if page_count == 0: return None
 

@@ -67,5 +67,4 @@ class ProcessOutlineChunkResponseHandler:
         self.outline.properties = properties
         flag_modified(self.outline, "properties")
 
-        DB.add(self.outline)
         DB.commit()

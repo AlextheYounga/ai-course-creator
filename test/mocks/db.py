@@ -2,10 +2,6 @@ import os
 from db.db import *
 from sqlalchemy import text
 
-try:
-    os.remove('test/data/test.log')
-except:
-    pass
 
 DB = db_client()
 

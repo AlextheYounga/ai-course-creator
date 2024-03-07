@@ -3,6 +3,7 @@ from src.events.event_manager import EVENT_MANAGER
 from src.events.events import *
 from src.handlers.pages import *
 from src.handlers.create_new_thread_handler import CreateNewThreadHandler
+from src.handlers.complete_thread_handler import CompleteThreadHandler
 from src.handlers.generate_material_from_outline_entity_handler import GenerateMaterialFromOutlineEntityHandler
 
 """
@@ -17,6 +18,8 @@ See `docs/tasks/generate-outline-entity-pages-flow.md` for more information
 
 class GeneratePagesFromOutlineEntity:
     def __init__(self, topic_id: int, outline_entity_id: int, only_page_type: str | None = None):
+        EVENT_MANAGER.refresh()
+
         self.topic = DB.get(Topic, topic_id)
         self.outline_entity = DB.get(OutlineEntity, outline_entity_id)
         self.only_page_type = only_page_type
@@ -37,6 +40,7 @@ class GeneratePagesFromOutlineEntity:
             ],
             handler=CheckForExistingPageMaterialHandler
         )
+
 
         EVENT_MANAGER.subscribe(
             events=[
@@ -97,6 +101,10 @@ class GeneratePagesFromOutlineEntity:
             handler=ProcessChallengePageResponseHandler
         )
 
+        EVENT_MANAGER.subscribe(
+            events=[GenerateMaterialFromOutlineEntityCompletedSuccessfully],
+            handler=CompleteThreadHandler
+        )
 
         # Trigger starting event
         EVENT_MANAGER.trigger(

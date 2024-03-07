@@ -1,4 +1,4 @@
-
+from db.db import DB, Event as EventStore
 from .events import Event
 from ..utils.log_handler import LOG_HANDLER
 
@@ -18,9 +18,33 @@ class EventManager:
         if event_type in self.handlers:
             for handler in self.handlers[event_type]:
                 self.__log_event(event, handler)
+                self.__save_event(event, handler)
                 handler(data=event.data).handle()
         else:
             self.__log_event(event, None)
+            self.__save_event(event, None)
+
+
+    def refresh(self):
+        self.handlers = {}
+
+    def print_handlers(self):
+        for event, handlers in self.handlers.items():
+            print(f"{event.__name__}: {[handler.__name__ for handler in handlers]}")
+
+
+    def __save_event(self, event: Event, handler):
+        handler = handler.__name__ if handler else None
+
+        event_store = EventStore(
+            name=event.__class__.__name__,
+            handler=handler,
+            data=event.data
+        )
+
+        DB.add(event_store)
+        DB.commit()
+
 
     def __log_event(self, event: Event, handler):
         message = ""

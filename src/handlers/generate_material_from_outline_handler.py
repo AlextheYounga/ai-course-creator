@@ -1,4 +1,4 @@
-from db.db import DB, Outline, OutlineEntity, Course, Chapter, Page
+from db.db import DB, Outline, OutlineEntity, Page
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import *
 from src.handlers.pages import *
@@ -10,7 +10,6 @@ class GenerateMaterialFromOutlineHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
-        self.outline_entity = DB.get(OutlineEntity, data['outlineEntityId'])
         self.only_page_type = data.get('onlyPageType', False)   # lesson, challenge, final-skill-challenge
         self.topic = self.outline.topic
 
@@ -30,11 +29,17 @@ class GenerateMaterialFromOutlineHandler:
                 if self.only_page_type == 'final-skill-challenge':
                     self._handler_generate_fsc_pages(course_pages)
                     continue
+            else:
+                self._handle_generate_lesson_pages(course_pages)
+                self._handle_generate_practice_challenge_pages(course_pages)
+                self._handler_generate_fsc_pages(course_pages)
 
-            self._handle_generate_lesson_pages(course_pages)
-            self._handle_generate_practice_challenge_pages(course_pages)
-            self._handler_generate_fsc_pages(course_pages)
-
+        return EVENT_MANAGER.trigger(
+            GenerateOutlineMaterialCompletedSuccessfully({
+                'threadId': self.thread_id,
+                'outlineId': self.outline.id,
+                'topicId': self.topic.id,
+            }))
 
     def _handle_generate_lesson_pages(self, pages: list[Page]):
         lesson_pages = [page for page in pages if page.type == 'lesson']

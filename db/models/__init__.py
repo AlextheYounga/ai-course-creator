@@ -2,6 +2,7 @@ from .answer import Answer
 from .base import Base
 from .chapter import Chapter
 from .course import Course
+from .event import Event
 from .interactive import Interactive
 from .outline_entity import OutlineEntity
 from .outline import Outline

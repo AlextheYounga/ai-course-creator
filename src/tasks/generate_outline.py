@@ -3,6 +3,7 @@ from ..events.event_manager import EVENT_MANAGER
 from ..events.events import *
 from src.handlers.outlines import *
 from src.handlers.create_new_thread_handler import CreateNewThreadHandler
+from src.handlers.complete_thread_handler import CompleteThreadHandler
 
 """
 EVENT_MANAGER.subscribe([Event], Handler)
@@ -14,6 +15,8 @@ See `docs/tasks/generate-outline-flow.md` for more information
 
 class GenerateOutline:
     def __init__(self, topic_id: int):
+        EVENT_MANAGER.refresh()
+
         self.topic = DB.get(Topic, topic_id)
 
     def run(self):
@@ -78,6 +81,11 @@ class GenerateOutline:
         EVENT_MANAGER.subscribe(
             events=[MasterOutlineCompiledFromOutlineChunks],
             handler=CreateOutlineEntitiesFromOutlineHandler
+        )
+
+        EVENT_MANAGER.subscribe(
+            events=[OutlineGenerationProcessCompletedSuccessfully],
+            handler=CompleteThreadHandler
         )
 
         # Trigger starting event
