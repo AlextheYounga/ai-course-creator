@@ -16,19 +16,21 @@ class GenerateMaterialFromOutlineEntityHandler:
 
 
     def handle(self):
-        pages = self._get_entity_pages()
+        entity_pages = self._get_entity_pages()
 
         if self.only_page_type:
-            if self.only_page_type == 'lesson':
-                return self._handle_generate_lesson_pages(pages)
-            if self.only_page_type == 'challenge':
-                return self._handle_generate_practice_challenge_pages(pages)
-            if self.only_page_type == 'final-skill-challenge':
-                return self._handler_generate_fsc_pages(pages)
-        else:
-            self._handle_generate_lesson_pages(pages)
-            self._handle_generate_practice_challenge_pages(pages)
-            self._handler_generate_fsc_pages(pages)
+            entity_pages = [page for page in entity_pages if page.type == self.only_page_type]
+
+        with progressbar.ProgressBar(max_value=len(entity_pages), prefix='Generating pages: ', redirect_stdout=True).start() as bar:
+            for page in entity_pages:
+                if page.type == 'challenge':
+                    EVENT_MANAGER.trigger(GeneratePracticeChallengePageProcessStarted(self._event_payload(page)))
+                elif page.type == 'final-skill-challenge':
+                    EVENT_MANAGER.trigger(GenerateFinalSkillChallengePageProcessStarted(self._event_payload(page)))
+                else:
+                    EVENT_MANAGER.trigger(GenerateLessonPageProcessStarted(self._event_payload(page)))
+
+                bar.increment()
 
         return EVENT_MANAGER.trigger(
             GenerateMaterialFromOutlineEntityCompletedSuccessfully({
@@ -36,39 +38,6 @@ class GenerateMaterialFromOutlineEntityHandler:
                 'outlineId': self.outline.id,
                 'topicId': self.topic.id,
             }))
-
-
-    def _handle_generate_lesson_pages(self, pages: list[Page]):
-        lesson_pages = [page for page in pages if page.type == 'lesson']
-        page_count = len(lesson_pages)
-        if page_count == 0: return None
-
-        with progressbar.ProgressBar(max_value=len(lesson_pages), prefix='Generating lesson pages: ', redirect_stdout=True).start() as bar:
-            for page in lesson_pages:
-                EVENT_MANAGER.trigger(GenerateLessonPageProcessStarted(self._event_payload(page)))
-                bar.increment()
-
-
-    def _handle_generate_practice_challenge_pages(self, pages: list[Page]):
-        challenge_pages = [page for page in pages if page.type == 'challenge']
-        page_count = len(challenge_pages)
-        if page_count == 0: return None
-
-        with progressbar.ProgressBar(max_value=len(challenge_pages), prefix='Generating practice challenges: ', redirect_stdout=True).start() as bar:
-            for page in challenge_pages:
-                EVENT_MANAGER.trigger(GeneratePracticeChallengePageProcessStarted(self._event_payload(page)))
-                bar.increment()
-
-
-    def _handler_generate_fsc_pages(self, pages: list[Page]):
-        fsc_pages = [page for page in pages if page.type == 'final-skill-challenge']
-        page_count = len(fsc_pages)
-        if page_count == 0: return None
-
-        with progressbar.ProgressBar(max_value=len(fsc_pages), prefix='Generating final challenge pages: ', redirect_stdout=True).start() as bar:
-            for page in fsc_pages:
-                EVENT_MANAGER.trigger(GenerateFinalSkillChallengePageProcessStarted(self._event_payload(page)))
-                bar.increment()
 
 
     def _get_entity_pages(self) -> list[Page]:

@@ -68,3 +68,26 @@ def test_generate_chapter_with_existing_entity_pages():
     for page in soft_deleted_pages:
         assert page.active == False
         assert page.generated == True
+
+
+def test_generate_course_entity_lesson_pages():
+    __setup_test()
+
+    outline_entity = DB.query(OutlineEntity).filter(OutlineEntity.entity_type == 'Course').first()
+    course_count = DB.query(Page).filter(Page.course_id == outline_entity.entity_id).count()
+    print(course_count)
+
+    task = GeneratePagesFromOutlineEntity(
+        topic_id=1,
+        outline_entity_id=outline_entity.id,
+        only_page_type='lesson'
+    )
+
+    task.run()
+
+    generated_pages = DB.query(Page).filter(Page.generated == True).all()
+
+    assert len(generated_pages) == 7
+
+    for page in generated_pages:
+        assert page.type == 'lesson'
