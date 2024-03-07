@@ -3,6 +3,7 @@ from src.events.event_manager import EVENT_MANAGER
 from src.events.events import GenerateSkillsResponseReceivedFromLLM
 from ...llm.get_llm_client import get_llm_client
 from termcolor import colored
+import json
 from openai.types.completion import Completion
 
 
@@ -17,9 +18,6 @@ class SendGenerateSkillsPromptToLLMHandler:
 
     def handle(self) -> GenerateSkillsResponseReceivedFromLLM:
         print(colored(f"\nGenerating {self.topic.name} skills...", "yellow"))
-
-        messages = self.prompt.payload
-
 
         llm_client = get_llm_client()
         completion = llm_client.send_prompt(self.prompt)
@@ -46,7 +44,7 @@ class SendGenerateSkillsPromptToLLMHandler:
             outline_id=self.outline.id,
             prompt_id=self.prompt.id,
             role=completion.choices[0].message.role,
-            payload=completion.model_dump_json(),
+            payload=json.loads(completion.model_dump_json()),
             model=completion.model,
             prompt_tokens=completion.usage.prompt_tokens,
             completion_tokens=completion.usage.completion_tokens,

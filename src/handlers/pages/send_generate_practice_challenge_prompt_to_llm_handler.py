@@ -4,7 +4,7 @@ from src.events.events import PracticeChallengePageResponseReceivedFromLLM, Prac
 from ...llm.get_llm_client import get_llm_client
 from openai.types.completion import Completion
 from termcolor import colored
-
+import json
 
 
 class SendGeneratePracticeChallengePromptToLLMHandler:
@@ -43,7 +43,7 @@ class SendGeneratePracticeChallengePromptToLLMHandler:
             outline_id=self.outline.id,
             prompt_id=self.prompt.id,
             role=completion.choices[0].message.role,
-            payload=completion.model_dump_json(),
+            payload=json.loads(completion.model_dump_json()),
             model=completion.model,
             prompt_tokens=completion.usage.prompt_tokens,
             completion_tokens=completion.usage.completion_tokens,

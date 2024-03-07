@@ -16,7 +16,6 @@ class ValidateLLMResponseHandler:
 
     def handle(self) -> Outline:
         completion = self.response.payload
-
         if not completion['choices'][0]['message']['content']:
             print(colored("Malformed completion, unknown error. Aborting...", "red"))
             return False  # Retry

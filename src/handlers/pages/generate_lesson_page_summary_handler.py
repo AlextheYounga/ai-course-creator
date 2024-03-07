@@ -4,6 +4,7 @@ from src.events.events import LessonPageSummarizedSuccessfully, InvalidPageSumma
 from ...llm.get_llm_client import get_llm_client
 from .create_summarize_page_prompt_handler import CreateSummarizePagePromptHandler
 from openai.types.completion import Completion
+import json
 
 """
 This handler is the simplest LLM handler, as it requires no real validation. The request is sent, processed
@@ -55,7 +56,7 @@ class GenerateLessonPageSummaryHandler():
             outline_id=self.outline.id,
             prompt_id=prompt.id,
             role=completion.choices[0].message.role,
-            payload=completion.model_dump_json(),
+            payload=json.loads(completion.model_dump_json()),
             model=completion.model,
             prompt_tokens=completion.usage.prompt_tokens,
             completion_tokens=completion.usage.completion_tokens,

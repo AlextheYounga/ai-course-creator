@@ -3,6 +3,7 @@ from src.events.event_manager import EVENT_MANAGER
 from src.events.events import AllOutlineChunkResponsesProcessedSuccessfully, OutlineChunkResponseReceivedFromLLM
 from ...llm.get_llm_client import get_llm_client
 from termcolor import colored
+import json
 from openai.types.completion import Completion
 import progressbar
 
@@ -24,9 +25,7 @@ class SendAllOutlineChunkPromptsToLLMHandler:
         llm_client = get_llm_client()
 
         with progressbar.ProgressBar(max_value=prompt_count, prefix='Generating outline chunk: ', redirect_stdout=True).start() as bar:
-            for i, prompt in enumerate(self.prompts):
-                messages = prompt.payload
-
+            for prompt in self.prompts:
                 completion = llm_client.send_prompt(prompt)
 
                 response = self._save_response_to_db(prompt, completion)
@@ -40,7 +39,7 @@ class SendAllOutlineChunkPromptsToLLMHandler:
                     'responseId': response.id,
                 }))
 
-                bar.update(i)
+                bar.increment()
 
 
         return EVENT_MANAGER.trigger(AllOutlineChunkResponsesProcessedSuccessfully({
@@ -62,7 +61,7 @@ class SendAllOutlineChunkPromptsToLLMHandler:
             outline_id=self.outline.id,
             prompt_id=prompt.id,
             role=completion.choices[0].message.role,
-            payload=completion.model_dump_json(),
+            payload=json.loads(completion.model_dump_json()),
             model=completion.model,
             prompt_tokens=completion.usage.prompt_tokens,
             completion_tokens=completion.usage.completion_tokens,

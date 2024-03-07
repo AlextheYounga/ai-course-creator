@@ -34,7 +34,7 @@ class ProcessChallengePageResponseHandler:
             self.prompt.increment_attempts(DB)
             return EVENT_MANAGER.trigger(InvalidChallengePageResponseFromLLM(self.event_payload))
 
-        content = self._add_header_to_page_content(completion)
+        content = self._add_header_to_challenge_content(completion)
         self.page = self._save_content_to_page(content)
 
         return EVENT_MANAGER.trigger(

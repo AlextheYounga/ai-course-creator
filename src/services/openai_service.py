@@ -16,33 +16,20 @@ class OpenAiService:
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         self.params = read_yaml_file(params_file)
 
-
     def send_prompt(self, prompt: Prompt) -> OpenAI:
         prompt_params = prompt.properties.get('params', get_llm_params(prompt.subject))
-        messages = prompt.payload
+
         quiet = prompt_params.get('quiet', False)
         model = prompt_params['model']
 
         if not quiet:
-            for message in messages:
-                if message['role'] == 'user':
-                    prompt = message['content']
-                    print(colored(f"Sending {prompt.subject} - tokens: {prompt.estimated_tokens} - prompt: {prompt[:100]}...", "cyan"))
-                    break
-
+            print(colored(f"Sending {prompt.subject} - tokens: {prompt.estimated_tokens} - prompt: {prompt.content[:100]}...", "cyan"))
 
         completion = None
         try:
             LOG_HANDLER.info(f"SEND: {prompt.subject} - {model}")
-
-            completion = self.client.chat.completions.create(
-                messages=messages,
-                **prompt_params
-            )
-
-            LOG_HANDLER.info(f"RESPONSE: {prompt.subject} - {model} - status: {completion['status']}")
-
-            self.__handle_exponential_backoff(prompt)
+            completion = self.chat_completion(prompt, prompt_params)
+            LOG_HANDLER.info(f"RESPONSE: {prompt.subject} - {model} - ID: {completion.id}")
 
             return completion
 
@@ -50,6 +37,20 @@ class OpenAiService:
             print(colored(f"Unknown error from OpenAI: {e}", "red"))
             LOG_HANDLER.info(f"RESPONSE: {prompt.subject} - {model} - status: {e}")
             return None
+
+
+    def chat_completion(self, prompt: Prompt, params: dict):
+        messages = prompt.payload
+
+        completion = self.client.chat.completions.create(
+            messages=messages,
+            **params
+        )
+
+        self.__handle_exponential_backoff(prompt)
+
+        return completion
+
 
     def __handle_exponential_backoff(self, prompt: Prompt):
         sleep_time = 10 * prompt.attempts

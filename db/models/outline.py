@@ -60,14 +60,7 @@ class Outline(Base):
 
             if master_outline_record: return master_outline_record
 
-        print(colored(f"Master outline not set for topic {topic.name}", "red"))
-
-        last_outline = session.query(self).order_by(self.id.desc()).first()
-        topic.master_outline_id = last_outline.id
-        session.commit()
-
-        print(colored(f"Defaulting to last outline. ID:{last_outline.id}", "red"))
-        return last_outline
+        return None
 
 
 

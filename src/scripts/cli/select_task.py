@@ -31,4 +31,3 @@ def select_task():
 
     # Dynamic function call
     task_function(topic)
-    print('Done')

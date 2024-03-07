@@ -1,6 +1,8 @@
 import random
+import json
 from typing import Optional
 from termcolor import colored
+from src.services.openai_service import OpenAiService
 from unittest.mock import MagicMock
 
 EXPECTED_MASTER_OUTLINE_RESPONSE = open('test/fixtures/responses/master-outline.md').read()
@@ -11,17 +13,17 @@ EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE = open('test/fixtures/responses/pract
 EXPECTED_FINAL_SKILL_CHALLENGE_RESPONSE = open('test/fixtures/responses/final-skill-challenge.md').read()
 
 
-class OpenAiMockService:
+class OpenAiMockService(OpenAiService):
     def __init__(self, response: Optional[str] = None):
+        super()
         self.response = response
         self.chunk_outline_calls = 0
         self.mock = MagicMock()
 
-    def send_prompt(self, prompt):
+    def chat_completion(self, prompt, params={}):
         subject = prompt.subject
-        print(colored(f"Sending {subject} - prompt: {prompt.content[:100]}...", "cyan"))
-
         response = self.response
+
         if not response:
             if subject == 'skills':
                 response = EXPECTED_SKILLS_RESPONSE
@@ -54,7 +56,7 @@ class OpenAiMockService:
 
         response_object = self._completion_response_object(response)
         completion = self._mock_object(response_object)
-        completion.model_dump_json.return_value = response_object
+        completion.model_dump_json.return_value = json.dumps(response_object)
 
         return completion
 

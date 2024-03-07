@@ -18,6 +18,7 @@ def test_open_ai_handler_bad_response():
         subject='generate-skills',
         estimated_tokens=42,
         content="Test",
+        properties={}
     )
 
     mock_response = open('test/fixtures/responses/bad-yaml-response.md').read()

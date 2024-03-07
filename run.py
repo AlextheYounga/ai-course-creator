@@ -4,7 +4,7 @@ from src.scripts.cli.select_task import select_task
 from src.scripts.cli.select_util import select_util
 from src.scripts.cli.select_script import select_script
 from src.scripts.initialize import initialize_project
-# from server import run_server
+from server import run_server
 
 
 def main():
@@ -32,8 +32,8 @@ def main():
             return select_script()
         elif answer == 'Initialize Project':
             return initialize_project()
-        # elif answer == 'Run App Server':
-        #     return run_server()
+        elif answer == 'Run App Server':
+            return run_server()
         else:
             "You did not select a command category. Exiting..."
 

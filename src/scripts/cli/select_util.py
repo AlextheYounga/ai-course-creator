@@ -44,5 +44,3 @@ def select_util():
         return translate_to_course_draft()
     else:
         "You did not select a utility command. Exiting..."
-
-    print('Done.')
