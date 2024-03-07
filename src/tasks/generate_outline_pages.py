@@ -1,10 +1,12 @@
 from db.db import DB, Topic, Outline
+from sqlalchemy.orm.attributes import flag_modified
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import *
 from src.handlers.pages import *
 from src.handlers.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.complete_thread_handler import CompleteThreadHandler
 from src.handlers.generate_material_from_outline_handler import GenerateMaterialFromOutlineHandler
+
 
 """
 Generates all pages from an outline. Can specify a single page type to generate.
@@ -102,6 +104,7 @@ class GenerateOutlinePages:
             handler=CompleteThreadHandler
         )
 
+        self.__save_event_handlers_to_thread()
 
         # Trigger starting event
         EVENT_MANAGER.trigger(
@@ -114,3 +117,11 @@ class GenerateOutlinePages:
         )
 
         print('Done')
+
+
+    def __save_event_handlers_to_thread(self):
+        self.thread.properties = {
+            'eventHandlers': EVENT_MANAGER.dump_handlers()
+        }
+        flag_modified(self.thread, 'properties')
+        DB.commit()

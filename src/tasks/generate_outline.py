@@ -4,6 +4,7 @@ from ..events.events import *
 from src.handlers.outlines import *
 from src.handlers.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.complete_thread_handler import CompleteThreadHandler
+from sqlalchemy.orm.attributes import flag_modified
 
 """
 EVENT_MANAGER.subscribe([Event], Handler)
@@ -18,10 +19,9 @@ class GenerateOutline:
         EVENT_MANAGER.refresh()
 
         self.topic = DB.get(Topic, topic_id)
+        self.thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
 
     def run(self):
-        thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
-
         # Instantiate Outline
         EVENT_MANAGER.subscribe(
             events=[GenerateOutlineRequested],
@@ -88,12 +88,22 @@ class GenerateOutline:
             handler=CompleteThreadHandler
         )
 
+        self.__save_event_handlers_to_thread()
+
         # Trigger starting event
         EVENT_MANAGER.trigger(
             GenerateOutlineRequested({
-                'threadId': thread.id,
+                'threadId': self.thread.id,
                 'topicId': self.topic.id
             })
         )
 
         print('Done')
+
+
+    def __save_event_handlers_to_thread(self):
+        self.thread.properties = {
+            'eventHandlers': EVENT_MANAGER.dump_handlers()
+        }
+        flag_modified(self.thread, 'properties')
+        DB.commit()

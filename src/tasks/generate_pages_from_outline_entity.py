@@ -5,6 +5,8 @@ from src.handlers.pages import *
 from src.handlers.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.complete_thread_handler import CompleteThreadHandler
 from src.handlers.generate_material_from_outline_entity_handler import GenerateMaterialFromOutlineEntityHandler
+from sqlalchemy.orm.attributes import flag_modified
+
 
 """
 Generates pages from a single outline entity
@@ -106,6 +108,8 @@ class GeneratePagesFromOutlineEntity:
             handler=CompleteThreadHandler
         )
 
+        self.__save_event_handlers_to_thread()
+
         # Trigger starting event
         EVENT_MANAGER.trigger(
             GeneratePagesFromOutlineEntityRequested({
@@ -118,3 +122,11 @@ class GeneratePagesFromOutlineEntity:
         )
 
         print('Done')
+
+
+    def __save_event_handlers_to_thread(self):
+        self.thread.properties = {
+            'eventHandlers': EVENT_MANAGER.dump_handlers()
+        }
+        flag_modified(self.thread, 'properties')
+        DB.commit()

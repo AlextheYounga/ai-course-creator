@@ -28,10 +28,11 @@ class EventManager:
     def refresh(self):
         self.handlers = {}
 
-    def print_handlers(self):
-        for event, handlers in self.handlers.items():
-            print(f"{event.__name__}: {[handler.__name__ for handler in handlers]}")
-
+    def dump_handlers(self):
+        handlers = {}
+        for event, handler in self.handlers.items():
+            handlers[event.__name__] = [h.__name__ for h in handler]
+        return handlers
 
     def __save_event(self, event: Event, handler):
         handler = handler.__name__ if handler else None
