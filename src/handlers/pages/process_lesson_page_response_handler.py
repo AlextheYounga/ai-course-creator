@@ -37,15 +37,38 @@ class ProcessLessonPageResponseHandler:
             self.prompt.increment_attempts(DB)
             return EVENT_MANAGER.trigger(InvalidLessonPageResponseFromLLM(self.event_payload))
 
-        self.page = self._save_content_to_page(completion)
+        content = self._add_header_to_page_content(completion)
+        self.page = self._save_content_to_page(content)
 
         return EVENT_MANAGER.trigger(
             LessonPageResponseProcessedSuccessfully(self.event_payload)
         )
 
 
-    def _save_content_to_page(self, completion: dict):
-        material = completion['choices'][0]['message']['content']
+    def _add_header_to_page_content(self, completion: dict):
+        content = completion['choices'][0]['message']['content']
+
+        # If header is h1, do nothing
+        if content[:2] == '# ': return content
+
+        # If header is h2, make h1
+        if content[:3] == '## ':
+            split_content = content.split('## ', 1)[1]
+            content = '# ' + split_content
+
+        # If header is h3, make h1
+        if content[:3] == '### ':
+            split_content = content.split('## ', 1)[1]
+            content = '# ' + split_content
+
+        if content[:2] != '# ':
+            header = f"# {self.page.name}\n"
+            content = header + content
+
+        return content
+
+
+    def _save_content_to_page(self, material: str):
         content_hash = Page.hash_page(material)
 
         # Update page record
