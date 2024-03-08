@@ -15,33 +15,14 @@ class TaskController:
                 task = GenerateOutlinePages(topic.id, entityType)
                 task.run()
 
-            elif entityType == 'Course':
-                course_id = payload['id']
-                outline_entity = DB.query(OutlineEntity).filter(
-                    OutlineEntity.outline_id == outline.id,
-                    OutlineEntity.entity_id == course_id,
-                    OutlineEntity.entity_type == "Course",
-                )
-                task = GeneratePagesFromOutlineEntity(topic.id, outline_entity.id, None)
-                task.run()
+            else:
+                entity_id = payload['id']
 
-            elif entityType == 'Chapter':
-                chapter_id = payload['id']
                 outline_entity = DB.query(OutlineEntity).filter(
                     OutlineEntity.outline_id == outline.id,
-                    OutlineEntity.entity_id == chapter_id,
-                    OutlineEntity.entity_type == "Chapter",
-                )
-                task = GeneratePagesFromOutlineEntity(topic.id, outline_entity.id, None)
-                task.run()
-
-            elif entityType == 'Page':
-                page_id = payload['id']
-                outline_entity = DB.query(OutlineEntity).filter(
-                    OutlineEntity.outline_id == outline.id,
-                    OutlineEntity.entity_id == page_id,
-                    OutlineEntity.entity_type == "Page",
-                )
+                    OutlineEntity.entity_id == entity_id,
+                    OutlineEntity.entity_type == entityType,
+                ).first()
 
                 task = GeneratePagesFromOutlineEntity(topic.id, outline_entity.id, None)
                 task.run()
