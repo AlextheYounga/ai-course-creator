@@ -1,4 +1,6 @@
 from db.db import DB, Outline, Topic
+from src.handlers import CreateNewThreadHandler
+from src.handlers.outlines.create_new_outline_handler import CreateNewOutlineHandler
 from src.utils.helpers import dump_outline_content
 from flask import jsonify
 
@@ -11,31 +13,20 @@ class OutlineController:
 
     @staticmethod
     def create(data: dict):
-        outline_data = data['outline_data']
-        outline_hash = Outline.hash_outline(outline_data)
+        print(data)
+        thread = CreateNewThreadHandler(
+            {'eventName': 'OutlineController::create'}
+        ).handle()
 
-        existing_outlines = DB.query(Outline).filter(
-            Outline.hash == outline_hash
-        ).count()
+        handler_args = {
+            'threadId': thread.id,
+            'topicId': data['topic_id'],
+            'outlineData': data['outline_data']
+        }
 
-        if existing_outlines:
-            return 'Outline already exists', 409
+        thread.set_complete(DB)
 
-        topic_id = data['topic_id']
-        topic = DB.get(Topic, topic_id)
-
-        outline = Outline.instantiate(DB, topic_id)
-        outline.outline_data = outline_data
-        outline.hash = outline_hash
-        outline.file_path = Outline.default_outline_file_path(topic)
-
-        if outline.get('properties', False):
-            outline.properties = outline.get('properties')
-
-        DB.add(outline)
-        DB.commit()
-
-        Outline.create_outline_entities(DB, outline.id)
+        CreateNewOutlineHandler(handler_args).handle()
 
         return 'Success', 201
 
