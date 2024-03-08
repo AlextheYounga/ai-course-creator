@@ -79,14 +79,14 @@
                                 </li>
                             </ul>
                         </li>
-                        <li>
+                        <!-- <li>
                             <div class="text-xs font-semibold leading-6 text-gray-400">Commands</div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
-                                <!-- <li v-for="command in commands" :key="command.name">
+                                <li v-for="command in commands" :key="command.name">
                                     <button :click="command.method" type="button" class="rounded-md bg-white/10 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-white/20">{{ command.name }}</button>
-                                </li> -->
+                                </li>
                             </ul>
-                        </li>
+                        </li> -->
                         <li class="-mx-6 mt-auto">
                             <router-link to="#" class="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800">
                                 <img class="h-8 w-8 rounded-full bg-gray-800" :src="profileImg" alt="" />
@@ -345,13 +345,12 @@ export default {
         },
 
         async generateFromNode(node) {
-            await flaskApi.post('/generate', node.data)
             alert('Course generation started')
+            await flaskApi.post('/generate', node.data)
+            
+            await this.getCourseMaterial()
+            alert('Course generation complete')
         },
-
-        startPolling() {
-            setInterval(this.getCourseMaterial, 5000);
-        }
     },
 
     mounted() {
