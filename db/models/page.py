@@ -56,7 +56,7 @@ class Page(Base):
         if "final-skill-challenge" in chapter_slug:
             return 'final-skill-challenge'
 
-        if ('Challenge' in name):
+        if ('Practice Skill Challenge' in name):
             return 'challenge'
 
         return 'lesson'

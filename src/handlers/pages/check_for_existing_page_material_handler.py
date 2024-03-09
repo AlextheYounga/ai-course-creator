@@ -1,4 +1,4 @@
-from db.db import DB, Outline, Page
+from db.db import DB, Outline, OutlineEntity, Page
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import NoExistingPageContentForLesson, NoExistingPageContentForPracticeChallenge, NoExistingPageContentForFinalChallenge
 from src.events.events import NewLessonPageCreatedFromExistingPage, NewPracticeChallengePageCreatedFromExistingPage, NewFinalChallengePageCreatedFromExistingPage
@@ -60,6 +60,8 @@ class CheckForExistingPageMaterialHandler:
 
         DB.add(new_page)
         DB.commit()
+
+        OutlineEntity.first_or_create(DB, self.outline.id, new_page)
 
         return new_page
 
