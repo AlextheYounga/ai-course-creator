@@ -1,10 +1,9 @@
 from db.db import DB, Topic, Outline
 from sqlalchemy.orm.attributes import flag_modified
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import *
-from src.handlers.pages import *
+from ..pipes.generate_pages_pipeline import GeneratePagesEventPipeline
+from ..events.events import GenerateOutlineMaterialRequested
 from src.handlers.create_new_thread_handler import CreateNewThreadHandler
-from src.handlers.complete_thread_handler import CompleteThreadHandler
 from src.handlers.generate_material_from_outline_handler import GenerateMaterialFromOutlineHandler
 
 
@@ -31,78 +30,7 @@ class GenerateOutlinePages:
             handler=GenerateMaterialFromOutlineHandler
         )
 
-        EVENT_MANAGER.subscribe(
-            events=[
-                GenerateLessonPageProcessStarted,
-                GeneratePracticeChallengePageProcessStarted,
-                GenerateFinalSkillChallengePageProcessStarted
-            ],
-            handler=CheckForExistingPageMaterialHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[
-                NoExistingPageContentForLesson,
-                NewLessonPageCreatedFromExistingPage
-            ],
-            handler=CreateLessonPagePromptHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[
-                NoExistingPageContentForPracticeChallenge,
-                NewPracticeChallengePageCreatedFromExistingPage
-            ],
-            handler=CreatePracticeSkillChallengePromptHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[
-                NoExistingPageContentForFinalChallenge,
-                NewFinalChallengePageCreatedFromExistingPage
-            ],
-            handler=CreateFinalSkillChallengePromptHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[LessonPagePromptCreated],
-            handler=SendGenerateLessonPagePromptToLLMHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[PracticeChallengePagePromptCreated],
-            handler=SendGeneratePracticeChallengePromptToLLMHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[FinalSkillChallengePagePromptCreated],
-            handler=SendGenerateFinalChallengePromptToLLMHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[LessonPageResponseReceivedFromLLM],
-            handler=ProcessLessonPageResponseHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[LessonPageResponseProcessedSuccessfully],
-            handler=GenerateLessonPageSummaryHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[PracticeChallengePageResponseReceivedFromLLM],
-            handler=ProcessChallengePageResponseHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[FinalSkillChallengePageResponseReceivedFromLLM],
-            handler=ProcessChallengePageResponseHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[GenerateOutlineMaterialCompletedSuccessfully],
-            handler=CompleteThreadHandler
-        )
+        GeneratePagesEventPipeline.subscribe_all(EVENT_MANAGER)
 
         self.__save_event_handlers_to_thread()
 

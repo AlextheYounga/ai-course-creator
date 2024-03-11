@@ -1,9 +1,8 @@
 from db.db import DB, Topic
 from ..events.event_manager import EVENT_MANAGER
-from ..events.events import *
-from src.handlers.outlines import *
+from ..events.events import GenerateOutlineRequested
+from ..pipes.generate_outline_pipeline import GenerateOutlineEventPipeline
 from src.handlers.create_new_thread_handler import CreateNewThreadHandler
-from src.handlers.complete_thread_handler import CompleteThreadHandler
 from sqlalchemy.orm.attributes import flag_modified
 
 """
@@ -22,71 +21,7 @@ class GenerateOutline:
         self.thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
 
     def run(self):
-        # Instantiate Outline
-        EVENT_MANAGER.subscribe(
-            events=[GenerateOutlineRequested],
-            handler=InstantiateOutlineHandler
-        )
-
-        # Create Generate Skills Prompt
-        EVENT_MANAGER.subscribe(
-            events=[NewOutlineInstantiated],
-            handler=CreateGenerateSkillsPromptHandler
-        )
-
-        # Send Generate Skills Prompt to LLM
-        EVENT_MANAGER.subscribe(
-            events=[
-                GenerateSkillsPromptCreated,
-                InvalidGenerateSkillsResponseFromLLM,  # retry event
-                FailedToParseYamlFromGenerateSkillsResponse  # retry event
-            ],
-            handler=SendGenerateSkillsPromptToLLMHandler)
-
-        # Process Response
-        EVENT_MANAGER.subscribe(
-            events=[GenerateSkillsResponseReceivedFromLLM],
-            handler=ProcessGenerateSkillsResponseHandler
-        )
-
-        # Generate Outline Chunks Prompts
-        EVENT_MANAGER.subscribe(
-            events=[GenerateSkillsResponseProcessedSuccessfully],
-            handler=CreateAllOutlineChunkPromptsHandler
-        )
-
-        # Send All Generate Outline Chunks Prompts to LLM
-        EVENT_MANAGER.subscribe(
-            events=[
-                AllGenerateOutlineChunksPromptsCreated,
-                InvalidOutlineChunkResponseFromLLM,  # retry event
-                FailedToParseYamlFromOutlineChunkResponse  # retry event
-            ],
-            handler=SendAllOutlineChunkPromptsToLLMHandler
-        )
-
-        # Process Each Outline Chunk Response
-        EVENT_MANAGER.subscribe(
-            events=[OutlineChunkResponseReceivedFromLLM],
-            handler=ProcessOutlineChunkResponseHandler
-        )
-
-        # Compile Outline Chunks to Master Outline
-        EVENT_MANAGER.subscribe(
-            events=[AllOutlineChunkResponsesProcessedSuccessfully],
-            handler=CompileOutlineChunksToMasterOutlineHandler
-        )
-
-        # Create Outline Entities from Outline
-        EVENT_MANAGER.subscribe(
-            events=[MasterOutlineCompiledFromOutlineChunks],
-            handler=CreateOutlineEntitiesFromOutlineHandler
-        )
-
-        EVENT_MANAGER.subscribe(
-            events=[OutlineGenerationProcessCompletedSuccessfully],
-            handler=CompleteThreadHandler
-        )
+        GenerateOutlineEventPipeline.subscribe_all(EVENT_MANAGER)
 
         self.__save_event_handlers_to_thread()
 
