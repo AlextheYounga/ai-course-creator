@@ -1,5 +1,6 @@
 import os
 from ..mapping.map_courses_to_course_drafts import map_courses_to_course_drafts
+from .cli.select_topic import select_topic
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db.models.course_draft import *
@@ -23,7 +24,9 @@ def translate_to_course_draft(db_path: str = f"sqlite:///{DB_PATH}"):
 
     print("\n")
 
-    course_drafts = map_courses_to_course_drafts()
+    topic_name = select_topic()
+
+    course_drafts = map_courses_to_course_drafts(topic_name)
 
     MAP_DB = _map_db_client(db_path)
 
