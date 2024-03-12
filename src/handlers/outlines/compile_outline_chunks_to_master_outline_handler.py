@@ -24,7 +24,8 @@ class CompileOutlineChunksToMasterOutlineHandler:
 
 
     def handle(self) -> Outline:
-        if not self.outline.properties.get('outlineChunks', False):
+        outline_properties = self.outline.properties or {}
+        if not outline_properties.get('outlineChunks', False):
             raise Exception("OutlineChunks not found in outline properties.")
 
         outline_data = self._compile_outline_data_from_chunks()

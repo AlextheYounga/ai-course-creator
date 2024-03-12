@@ -2,7 +2,8 @@ from db.db import Topic
 
 
 def get_prompt(topic: Topic, filename: str, args: dict = {}) -> str:
-    prompt_collection = topic.properties.get("prompts", 'default')
+    topic_properties = topic.properties or {}
+    prompt_collection = topic_properties.get("prompts", 'default')
     prompt = open(f"storage/prompts/{prompt_collection}/{filename}.md", "r").read()
 
     if (args != None):

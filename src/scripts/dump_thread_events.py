@@ -10,7 +10,8 @@ import sys
 def dump_thread_events():
     thread = select_thread()
 
-    event_handlers = thread.properties.get('eventHandlers', [])
+    thread_properties = thread.properties or {}
+    event_handlers = thread_properties.get('eventHandlers', [])
     if not event_handlers:
         print(colored("No event handlers found. Exiting...", "red"))
         sys.exit()

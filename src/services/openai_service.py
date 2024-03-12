@@ -17,7 +17,8 @@ class OpenAiService:
         self.params = read_yaml_file(params_file)
 
     def send_prompt(self, prompt: Prompt) -> OpenAI:
-        prompt_params = prompt.properties.get('params', get_llm_params(prompt.subject))
+        prompt_properties = prompt.properties or {}
+        prompt_params = prompt_properties.get('params', get_llm_params(prompt.subject))
 
         quiet = prompt_params.get('quiet', False)
         model = prompt_params['model']

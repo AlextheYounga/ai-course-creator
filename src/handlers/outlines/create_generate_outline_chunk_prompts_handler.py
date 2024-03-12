@@ -20,7 +20,8 @@ class CreateAllOutlineChunkPromptsHandler:
         llm_params = get_llm_params(self.prompt_subject)
         model = llm_params['model']
 
-        skills = self.outline.properties.get('skills', None)
+        outline_properties = self.outline.properties or {}
+        skills = outline_properties.get('skills', None)
         if skills == None:
             raise Exception("Skills are required to generate outlines.")
 
@@ -51,7 +52,8 @@ class CreateAllOutlineChunkPromptsHandler:
         })
 
         outline_chunks_prompt = ''
-        if self.outline.properties.get('outline_chunks', False):
+        outline_properties = self.outline.properties or {}
+        if outline_properties.get('outline_chunks', False):
             outline_chunks_prompt = get_prompt(self.topic, 'system/outlines/tune-outline-chunks', {
                 'chunks': yaml.dump(self.outline.properties['outline_chunks'])
             })
