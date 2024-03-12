@@ -2,11 +2,14 @@ topics:
   Ruby on Rails:
     prompts: programming
     language: ruby
+    allCodeInEditors: true
 
   Javascript:
     prompts: programming
     language: javascript
+    allCodeInEditors: true
 
   Python:
     prompts: programming
     language: python
+    allCodeInEditors: true

@@ -1,5 +1,6 @@
 import inquirer
 from termcolor import colored
+from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.scripts.cli.select_task import select_task
 from src.scripts.cli.select_util import select_util
 from src.scripts.cli.select_script import select_script
@@ -8,6 +9,8 @@ from server import run_server
 
 
 def main():
+    ScanTopicsFileHandler().handle()
+
     try:
         choices = [
             inquirer.List('category',

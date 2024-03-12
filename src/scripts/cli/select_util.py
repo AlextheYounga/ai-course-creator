@@ -23,6 +23,7 @@ def select_util():
                           'Dump Content From Existing Outline',
                           'Run DB Migrations',
                           'Backup Database',
+                          'Sync Topics File',
                           'Save Chat',
                           'Clear Logs'
                       ]),
@@ -36,6 +37,8 @@ def select_util():
         return run_db_migrations()
     elif answer == 'Backup Database':
         return backup_database()
+    elif answer == 'Sync Topics File':
+        return sync_topics_file()
     elif answer == 'Save Chat':
         return save_chat()
     elif answer == 'Clear Logs':

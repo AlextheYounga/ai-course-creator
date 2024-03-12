@@ -1,5 +1,6 @@
 from db.db import DB, Topic
 from src.utils.files import read_yaml_file
+import yaml
 
 
 class ScanTopicsFileHandler:

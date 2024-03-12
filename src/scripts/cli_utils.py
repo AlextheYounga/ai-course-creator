@@ -1,4 +1,6 @@
+from db.db import DB, Topic
 import inquirer
+import yaml
 from termcolor import colored
 import os
 import shutil
@@ -53,3 +55,15 @@ def clear_logs():
     if (os.path.exists(f"{LOGS_PATH}/app.log")):
         os.remove(f"{LOGS_PATH}/app.log")
     open(f"{LOGS_PATH}/app.log", 'w').close()
+
+
+def sync_topics_file(topics_file='storage/topics.yaml'):
+    topics = DB.query(Topic).all()
+    topic_file_obj = {}
+
+    for topic in topics:
+        topic_file_obj[topic.name] = topic.properties
+
+    with open(topics_file, 'w') as topics_file:
+        topics_file.write(yaml.dump(topic_file_obj, sort_keys=False))
+        topics_file.close()
