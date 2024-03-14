@@ -4,7 +4,7 @@ import shutil
 
 
 def _create_env_file():
-    if not os.path.exists('./.env'):
+    if not os.path.exists('.env'):
         print(colored("Creating .env file...", "yellow"))
         shutil.copy('.env.example', '.env')
         print("Created. Please add any sensitive information to the .env file.")
@@ -34,5 +34,3 @@ def initialize_project():
     if initialized:
         print(colored("Project initialized.", "green"))
         return
-
-    print(colored("Project already initialized.", "yellow"))

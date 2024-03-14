@@ -9,6 +9,8 @@ from server import run_server
 
 
 def main():
+    initialize_project()
+
     ScanTopicsFileHandler().handle()
 
     try:
@@ -19,7 +21,6 @@ def main():
                               'Start Course Creator',
                               'Utilities',
                               'Scripts',
-                              'Initialize Project',
                               'Run App Server'
                           ]),
         ]
@@ -33,8 +34,6 @@ def main():
             return select_util()
         elif answer == 'Scripts':
             return select_script()
-        elif answer == 'Initialize Project':
-            return initialize_project()
         elif answer == 'Run App Server':
             return run_server()
         else:
