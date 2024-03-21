@@ -34,7 +34,7 @@ class GenerateLessonPageSummaryHandler():
 
         if completion == None:
             return EVENT_MANAGER.trigger(
-                InvalidPageSummaryResponseFromLLM(self._event_payload(prompt, response))
+                InvalidPageSummaryResponseFromLLM(self._event_payload(prompt))
             )
 
         response = self._save_response_to_db(prompt, completion)
