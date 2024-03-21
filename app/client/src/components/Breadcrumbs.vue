@@ -26,7 +26,7 @@
 
 <script>
 import { ChevronRightIcon, HomeIcon } from '@heroicons/vue/20/solid'
-import { capitalize } from '@/assets/helpers'
+import { capitalize } from '@/helpers'
 
 export default {
   components: {
@@ -70,7 +70,6 @@ export default {
   },
   mounted() {
     this.pages = this.buildBreadcrumbs()
-    console.log(this.pages)
   }
 }
 </script>
