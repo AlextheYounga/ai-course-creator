@@ -131,7 +131,9 @@
                                                 leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
                                                 <MenuItems class="absolute z-50 mt-0.5 bg-white origin-top-right rounded-md py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                                                     <MenuItem v-slot="{ active }">
-                                                    <button @click="generateFromNode(slotProps.node)" :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-xs leading-6 text-gray-900 text-nowrap']">Generate {{ slotProps.node?.data?.entityType }}</button>
+                                                    <button @click="generateFromNode(slotProps.node)" :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-xs leading-6 text-gray-900 text-nowrap']">
+                                                        Generate {{ slotProps.node?.data?.entityType }}
+                                                    </button>
                                                     </MenuItem>
                                                 </MenuItems>
                                             </transition>
@@ -148,7 +150,7 @@
                                             </router-link>
                                         </span>
                                         <span class="p-2.5 items-center">
-                                            <div :class="[slotProps.node?.data?.exists ? 'text-green-400 bg-green-400/10' : 'text-rose-400 bg-rose-400/10', 'flex-none rounded-full p-1']">
+                                            <div v-if="slotProps.node?.data?.entityType == 'Page'" :class="[slotProps.node?.data?.exists ? 'text-green-400 bg-green-400/10' : 'text-rose-400 bg-rose-400/10', 'flex-none rounded-full p-1']">
                                                 <div class="h-1.5 w-1.5 rounded-full bg-current"></div>
                                             </div>
                                         </span>
@@ -272,7 +274,7 @@ export default {
                                     entityType: 'Page',
                                     icon: DocumentTextIcon,
                                     exists: page?.generated ?? false,
-                                    url: `/page/${page.id}`
+                                    url: `/pages/${page.id}`
                                 },
                                 type: 'url'
                             }
@@ -295,11 +297,13 @@ export default {
                         key: `course-${course.id}`,
                         label: course.name,
                         children: courseChildren,
+                        type: 'url',
                         data: {
                             topic_id: topic.id,
                             id: course.id,
                             entityType: 'Course',
                             icon: AcademicCapIcon,
+                            url: `/courses/${course.id}`
                         },
                     }
                 })
@@ -340,7 +344,7 @@ export default {
         },
 
         async getCourseMaterial() {
-            const material = await flaskApi.get('/master-outline-course-material')
+            const material = await flaskApi.get('//topics/outlines/master/material')
             this.nodes = this.translateToTreeLibrary(material)
         },
 

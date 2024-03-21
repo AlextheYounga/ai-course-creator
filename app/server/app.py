@@ -2,14 +2,7 @@
 import os
 from flask import Flask, render_template, request
 from flask_cors import CORS
-from .controllers.outline_controller import OutlineController
-from .controllers.log_controller import LogController
-from .controllers.ping_controller import PingController
-from .controllers.page_controller import PageController
-from .controllers.task_controller import TaskController
-from .controllers.topic_controller import TopicController
-
-
+from .controllers import *
 
 # Instantiate the app
 template_directory = os.path.abspath('app/client/public')
@@ -27,17 +20,20 @@ def index():
     # Load Vue App
     return render_template('index.html')
 
+# Topics
+
 
 @app.route('/api/topics', methods=['GET'])
 def get_all_topics():
     return TopicController.get_all()
 
 
-@app.route('/api/master-outline-course-material', methods=['GET'])
+@app.route('/api/topics/outlines/master/material', methods=['GET'])
 def get_all_master_outline_material():
     return OutlineController.get_all_topics_master_outline_material()
 
 
+# Tasks
 @app.route('/api/generate', methods=['POST'])
 def creator_generate():
     data = request.json
@@ -45,6 +41,7 @@ def creator_generate():
     return 'Success', 200
 
 
+# Outlines
 @app.route('/api/outlines', methods=['GET'])
 def get_all_outlines():
     return OutlineController.get_all()
@@ -67,6 +64,7 @@ def set_master_outline(id: int):
     return 'Success', 200
 
 
+# Logs
 @app.route('/api/prompts/<id>', methods=['GET'])
 def get_log(id: int):
     return LogController.get(id)
@@ -76,12 +74,21 @@ def get_log(id: int):
 def get_all_logs():
     return LogController.get_all()
 
+# Courses
 
-@app.route('/api/page/<id>', methods=['GET'])
+
+@app.route('/api/courses/<id>/content', methods=['GET'])
+def get_course_content(id: int):
+    return CourseController.get_course_content(id)
+
+
+# Pages
+@app.route('/api/pages/<id>', methods=['GET'])
 def get_page(id: int):
     return PageController.get_page_html(id)
 
 
+# Test
 @app.route('/api/ping', methods=['GET'])
 def ping_pong():
     # sanity check route

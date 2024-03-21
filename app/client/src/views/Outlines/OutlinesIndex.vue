@@ -170,7 +170,7 @@ export default {
                                         entityType: 'Page',
                                         icon: DocumentTextIcon,
                                         exists: page?.generated ?? false,
-                                        url: `/page/${page.id}`
+                                        url: `/pages/${page.id}`
                                     },
                                     type: 'url'
                                 }
