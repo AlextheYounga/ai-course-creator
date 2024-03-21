@@ -1,6 +1,6 @@
 from ..mocks.db import *
 from src.tasks.generate_outline_pages import GenerateOutlinePages
-from src.handlers.create_new_thread_handler import CreateNewThreadHandler
+from src.handlers.threads.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.handlers.outlines.create_new_outline_handler import CreateNewOutlineHandler
 from sqlalchemy import Integer

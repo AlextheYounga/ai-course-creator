@@ -3,7 +3,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from src.events.event_manager import EVENT_MANAGER
 from ..pipes.generate_pages_pipeline import GeneratePagesEventPipeline
 from ..events.events import GenerateOutlineMaterialRequested
-from src.handlers.create_new_thread_handler import CreateNewThreadHandler
+from src.handlers.threads.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.generate_material_from_outline_handler import GenerateMaterialFromOutlineHandler
 
 

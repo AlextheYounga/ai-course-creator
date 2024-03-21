@@ -17,6 +17,7 @@ def select_task():
     base_tasks = {
         'Generate Outline': _generate_outline,
         'Generate Content': select_generate_content,
+        'Continue Thread': continue_thread
     }
 
     tasks = [

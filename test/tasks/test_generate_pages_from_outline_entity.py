@@ -1,7 +1,7 @@
 from ..mocks.db import *
 from src.events.event_manager import EVENT_MANAGER
 from src.tasks.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
-from src.handlers.create_new_thread_handler import CreateNewThreadHandler
+from src.handlers.threads.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.handlers.outlines.create_new_outline_handler import CreateNewOutlineHandler
 

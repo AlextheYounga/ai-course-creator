@@ -2,7 +2,7 @@ from db.db import DB, Topic
 from ..events.event_manager import EVENT_MANAGER
 from ..events.events import GenerateOutlineRequested
 from ..pipes.generate_outline_pipeline import GenerateOutlineEventPipeline
-from src.handlers.create_new_thread_handler import CreateNewThreadHandler
+from src.handlers.threads.create_new_thread_handler import CreateNewThreadHandler
 from sqlalchemy.orm.attributes import flag_modified
 
 """

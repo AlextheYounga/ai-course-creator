@@ -1,6 +1,6 @@
 from ..mocks.db import *
 from src.handlers.outlines.create_outline_entities_from_outline_handler import CreateOutlineEntitiesFromOutlineHandler
-from src.handlers.create_new_thread_handler import CreateNewThreadHandler
+from src.handlers.threads.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.utils.files import read_yaml_file
 

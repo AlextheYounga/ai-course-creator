@@ -1,6 +1,6 @@
 from ..events.events import *
 from ..handlers.pages import *
-from ..handlers.complete_thread_handler import CompleteThreadHandler
+from ..handlers.threads.complete_thread_handler import CompleteThreadHandler
 
 
 class GeneratePagesEventPipeline():
