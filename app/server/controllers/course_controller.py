@@ -28,6 +28,8 @@ class CourseController:
         course_pages = CourseController.get_course_pages(id)
 
         for page in course_pages:
+            if not page.content: continue
+
             html_content = markdown.markdown(page.content, extensions=['toc', 'fenced_code'])
             material = {
                 **page.to_dict(),
@@ -35,5 +37,6 @@ class CourseController:
             }
 
             course_content.append(material)
+
 
         return jsonify(course_content)
