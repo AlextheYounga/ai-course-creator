@@ -1,4 +1,4 @@
-export function capitalize(string: string | null): string | null {
+export function capitalize(string) {
     if (!string) return string;
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
