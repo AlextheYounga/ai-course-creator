@@ -1,6 +1,6 @@
 from db.db import DB, Outline, OutlineEntity, Page
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import *
+from src.events.events import GeneratePracticeChallengePageProcessStarted, GenerateFinalSkillChallengePageProcessStarted, GenerateLessonPageProcessStarted, GenerateOutlineMaterialCompletedSuccessfully
 from src.handlers.pages import *
 
 import progressbar
