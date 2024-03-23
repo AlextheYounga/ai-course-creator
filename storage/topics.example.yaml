@@ -13,3 +13,13 @@ topics:
     prompts: programming
     language: python
     allCodeInEditors: true
+
+  HTML:
+    prompts: programming
+    language: python
+    interactives:
+      codeEditor: false
+      multipleChoice: true
+      fillBlank: true
+      trueFalse: true
+      codepen: false # temporarily disabled

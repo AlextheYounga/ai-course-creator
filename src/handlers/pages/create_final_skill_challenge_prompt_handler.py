@@ -33,6 +33,21 @@ class CreateFinalSkillChallengePromptHandler:
             }))
 
 
+    def _get_appropriate_interactive_component_prompts(self):
+        interactives = []
+        topic_properties = self.topic.properties or {}
+        topic_interactives = topic_properties.get("interactives", {})
+        available_interactives = {'codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse'}  # codepen temporarily disabled
+
+        for interactive in available_interactives:
+            if topic_interactives.get(interactive, True):
+                prompt = get_prompt(self.topic, f"system/interactives/{interactive}")
+                interactives.append(prompt)
+
+        return "\n\n".join(interactives)
+
+
+
     def _build_final_skill_challenge_prompt(self):
         topic_properties = self.topic.properties or {}
         topic_language = topic_properties.get("language", self.topic.slug)
@@ -40,11 +55,13 @@ class CreateFinalSkillChallengePromptHandler:
         # Combine all page content into a single string
         all_pages_content = self._prepare_course_content_prompt()
         general_system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
-        interactives_system_prompt = get_prompt(self.topic, 'system/tune-interactives', {'topicLanguage': topic_language})
+        interactives_instruction_prompt = get_prompt(self.topic, 'system/tune-interactives', {'topicLanguage': topic_language})
+        interactive_shapes_prompt = self._get_appropriate_interactive_component_prompts()
 
         combined_system_prompt = "\n".join([
             general_system_prompt,
-            interactives_system_prompt,
+            interactives_instruction_prompt,
+            interactive_shapes_prompt,
             all_pages_content
         ])
 
