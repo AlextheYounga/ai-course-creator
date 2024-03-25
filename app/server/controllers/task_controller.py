@@ -1,6 +1,6 @@
-from db.db import DB, Topic, Outline, OutlineEntity, Course, Chapter, Page
-from src.tasks.generate_outline_pages import GenerateOutlinePages
-from src.tasks.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
+from db.db import DB, Topic, Outline, OutlineEntity
+from src.commands.generate_outline_pages import GenerateOutlinePages
+from src.commands.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
 
 
 class TaskController:

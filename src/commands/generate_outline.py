@@ -1,7 +1,7 @@
 from db.db import DB, Thread, Topic
 from ..events.event_manager import EVENT_MANAGER
 from ..events.events import GenerateOutlineRequested
-from ..pipes.generate_outline_pipeline import GenerateOutlineEventPipeline
+from ..pipelines.generate_outline_pipeline import GenerateOutlineEventPipeline
 from sqlalchemy.orm.attributes import flag_modified
 
 """

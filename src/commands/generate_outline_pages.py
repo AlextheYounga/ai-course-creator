@@ -1,35 +1,33 @@
-from db.db import DB, Thread, Topic, OutlineEntity
-from src.events.event_manager import EVENT_MANAGER
-from ..pipes.generate_pages_pipeline import GeneratePagesEventPipeline
-from ..events.events import GeneratePagesFromOutlineEntityRequested
-from src.handlers.generate_material_from_outline_entity_handler import GenerateMaterialFromOutlineEntityHandler
+from db.db import DB, Thread, Topic, Outline
 from sqlalchemy.orm.attributes import flag_modified
+from src.events.event_manager import EVENT_MANAGER
+from ..pipelines.generate_pages_pipeline import GeneratePagesEventPipeline
+from ..events.events import GenerateOutlineMaterialRequested
+from src.handlers.generate_material_from_outline_handler import GenerateMaterialFromOutlineHandler
 
 
 """
-Generates pages from a single outline entity
+Generates all pages from an outline. Can specify a single page type to generate.
 
 EVENT_MANAGER.subscribe([Event], Handler)
 EVENT_MANAGER.trigger(Event(data))
-
-See `docs/tasks/generate-outline-entity-pages-flow.md` for more information
 """
 
 
-class GeneratePagesFromOutlineEntity:
-    def __init__(self, topic_id: int, outline_entity_id: int, only_page_type: str | None = None):
+class GenerateOutlinePages:
+    def __init__(self, topic_id: int, only_page_type: str | None = None):
         EVENT_MANAGER.refresh()
 
         self.topic = DB.get(Topic, topic_id)
-        self.outline_entity = DB.get(OutlineEntity, outline_entity_id)
         self.only_page_type = only_page_type
-        self.outline = self.outline_entity.outline
+        self.outline = Outline.get_master_outline(DB, self.topic)
         self.thread = Thread.start(self.__class__.__name__, DB)
 
     def run(self):
+        # Create first event handler associatation
         EVENT_MANAGER.subscribe(
-            events=[GeneratePagesFromOutlineEntityRequested],
-            handler=GenerateMaterialFromOutlineEntityHandler
+            events=[GenerateOutlineMaterialRequested],
+            handler=GenerateMaterialFromOutlineHandler
         )
 
         # Main thread of events
@@ -39,10 +37,9 @@ class GeneratePagesFromOutlineEntity:
 
         # Trigger starting event
         EVENT_MANAGER.trigger(
-            GeneratePagesFromOutlineEntityRequested({
+            GenerateOutlineMaterialRequested({
                 'threadId': self.thread.id,
                 'topicId': self.topic.id,
-                'outlineEntityId': self.outline_entity.id,
                 'outlineId': self.outline.id,
                 'onlyPageType': self.only_page_type
             })

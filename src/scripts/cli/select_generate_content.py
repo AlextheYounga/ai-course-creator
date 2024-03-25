@@ -1,8 +1,8 @@
 from .select_hierarchy import select_hierarchy
 from .select_hierarchy_content_type import select_hierarchy_content_type
 from .select_outline_entity_record import select_outline_entity_record
-from src.tasks.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
-from src.tasks.generate_outline_pages import GenerateOutlinePages
+from src.commands.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
+from src.commands.generate_outline_pages import GenerateOutlinePages
 from db.db import Topic
 
 

@@ -2,7 +2,7 @@ import inquirer
 from db.db import DB, Topic
 from .select_topic import select_topic
 from .select_generate_content import select_generate_content
-from src.tasks.generate_outline import GenerateOutline
+from src.commands.generate_outline import GenerateOutline
 
 
 def _generate_outline(topic: Topic):
@@ -23,7 +23,7 @@ def select_task():
     tasks = [
         inquirer.List('task',
                       message="Select task",
-                      choices=list(base_tasks.keys())),
+                      choices=list(base_commands.keys())),
     ]
 
     choice = inquirer.prompt(tasks)
