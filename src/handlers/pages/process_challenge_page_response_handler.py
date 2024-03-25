@@ -1,7 +1,7 @@
 from db.db import DB, Outline, Response, Page
-from ..validate_llm_response_handler import ValidateLLMResponseHandler
+from ..validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import InvalidChallengePageResponseFromLLM, ChallengePageResponseProcessedSuccessfully
+from src.events.events import InvalidChallengePageResponseFromOpenAI, ChallengePageResponseProcessedSuccessfully
 
 
 class ProcessChallengePageResponseHandler:
@@ -24,7 +24,7 @@ class ProcessChallengePageResponseHandler:
     def handle(self) -> Outline:
         completion = self.response.payload
 
-        validated_response = ValidateLLMResponseHandler(self.event_payload).handle()
+        validated_response = ValidateResponseFromOpenAIHandler(self.event_payload).handle()
 
         if not validated_response:
             if self.prompt.attempts <= 3:
@@ -32,7 +32,7 @@ class ProcessChallengePageResponseHandler:
 
             # Retry
             self.prompt.increment_attempts(DB)
-            return EVENT_MANAGER.trigger(InvalidChallengePageResponseFromLLM(self.event_payload))
+            return EVENT_MANAGER.trigger(InvalidChallengePageResponseFromOpenAI(self.event_payload))
 
         content = self._add_header_to_challenge_content(completion)
         self.page = self._save_content_to_page(content)

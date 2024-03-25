@@ -1,6 +1,6 @@
 from db.db import DB, Outline, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import GenerateSkillsResponseReceivedFromLLM
+from src.events.events import GenerateSkillsResponseReceivedFromOpenAI
 from ...llm.get_llm_client import get_llm_client
 from termcolor import colored
 import json
@@ -8,7 +8,7 @@ from openai.types.completion import Completion
 
 
 
-class SendGenerateSkillsPromptToLLMHandler:
+class SendGenerateSkillsPromptToOpenAIHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
@@ -16,7 +16,7 @@ class SendGenerateSkillsPromptToLLMHandler:
         self.topic = self.outline.topic
 
 
-    def handle(self) -> GenerateSkillsResponseReceivedFromLLM:
+    def handle(self) -> GenerateSkillsResponseReceivedFromOpenAI:
         print(colored(f"\nGenerating {self.topic.name} skills...", "yellow"))
 
         llm_client = get_llm_client()
@@ -25,7 +25,7 @@ class SendGenerateSkillsPromptToLLMHandler:
         response = self._save_response_to_db(completion)
 
         return EVENT_MANAGER.trigger(
-            GenerateSkillsResponseReceivedFromLLM({
+            GenerateSkillsResponseReceivedFromOpenAI({
                 'threadId': self.thread_id,
                 'outlineId': self.outline.id,
                 'topicId': self.topic.id,

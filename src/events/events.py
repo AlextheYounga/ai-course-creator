@@ -35,7 +35,7 @@ class GenerateSkillsPromptCreated(Event):
         self.data = data
 
 
-class GenerateSkillsResponseReceivedFromLLM(Event):
+class GenerateSkillsResponseReceivedFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 
@@ -45,7 +45,7 @@ class GenerateSkillsResponseProcessedSuccessfully(Event):
         self.data = data
 
 
-class InvalidGenerateSkillsResponseFromLLM(Event):
+class InvalidGenerateSkillsResponseFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 
@@ -60,7 +60,7 @@ class AllGenerateOutlineChunksPromptsCreated(Event):
         self.data = data
 
 
-class OutlineChunkResponseReceivedFromLLM(Event):
+class OutlineChunkResponseReceivedFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 
@@ -70,7 +70,7 @@ class OutlineChunkResponseProcessedSuccessfully(Event):
         self.data = data
 
 
-class InvalidOutlineChunkResponseFromLLM(Event):
+class InvalidOutlineChunkResponseFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 
@@ -178,12 +178,12 @@ class LessonPageSummarizedSuccessfully(Event):
         self.data = data
 
 
-class InvalidPageSummaryResponseFromLLM(Event):
+class InvalidPageSummaryResponseFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 
 
-class InvalidChallengePageResponseFromLLM(Event):
+class InvalidChallengePageResponseFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 
@@ -193,7 +193,7 @@ class ChallengePageResponseProcessedSuccessfully(Event):
         self.data = data
 
 
-class InvalidLessonPageResponseFromLLM(Event):
+class InvalidLessonPageResponseFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 
@@ -208,12 +208,12 @@ class FinalChallengeGenerationFailedDueToIncompleteCourse(Event):
         self.data = data
 
 
-class FinalSkillChallengePageResponseReceivedFromLLM(Event):
+class FinalSkillChallengePageResponseReceivedFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 
 
-class PracticeChallengePageResponseReceivedFromLLM(Event):
+class PracticeChallengePageResponseReceivedFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 
@@ -223,7 +223,7 @@ class PracticeChallengeGenerationFailedDueToIncompleteChapter(Event):
         self.data = data
 
 
-class LessonPageResponseReceivedFromLLM(Event):
+class LessonPageResponseReceivedFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 

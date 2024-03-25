@@ -6,7 +6,7 @@ from src.handlers.pages import *
 import progressbar
 
 
-class GenerateMaterialFromOutlineHandler:
+class IterateAllPagesFromOutlineHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])

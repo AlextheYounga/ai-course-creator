@@ -1,7 +1,7 @@
 from db.db import DB, Outline, Response
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import GenerateSkillsResponseProcessedSuccessfully, InvalidGenerateSkillsResponseFromLLM, FailedToParseYamlFromGenerateSkillsResponse
-from ..validate_llm_response_handler import ValidateLLMResponseHandler
+from src.events.events import GenerateSkillsResponseProcessedSuccessfully, InvalidGenerateSkillsResponseFromOpenAI, FailedToParseYamlFromGenerateSkillsResponse
+from ..validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
 from sqlalchemy.orm.attributes import flag_modified
 
@@ -25,7 +25,7 @@ class ProcessGenerateSkillsResponseHandler:
 
 
     def handle(self) -> Outline:
-        validated_response = ValidateLLMResponseHandler(self.event_payload).handle()
+        validated_response = ValidateResponseFromOpenAIHandler(self.event_payload).handle()
 
         if not validated_response:
             if self.prompt.attempts <= 3:
@@ -33,7 +33,7 @@ class ProcessGenerateSkillsResponseHandler:
 
             # Retry
             self.prompt.increment_attempts(DB)
-            return EVENT_MANAGER.trigger(InvalidGenerateSkillsResponseFromLLM(self.event_payload))
+            return EVENT_MANAGER.trigger(InvalidGenerateSkillsResponseFromOpenAI(self.event_payload))
 
         yaml_data = ParseYamlFromResponseHandler(self.event_payload).handle()
 

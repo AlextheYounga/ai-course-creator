@@ -3,7 +3,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from src.events.event_manager import EVENT_MANAGER
 from ..pipelines.generate_pages_pipeline import GeneratePagesEventPipeline
 from ..events.events import GenerateOutlineMaterialRequested
-from src.handlers.generate_material_from_outline_handler import GenerateMaterialFromOutlineHandler
+from ..handlers.pages.iterate_all_pages_from_outline_handler import IterateAllPagesFromOutlineHandler
 
 
 """
@@ -27,7 +27,7 @@ class GenerateOutlinePages:
         # Create first event handler associatation
         EVENT_MANAGER.subscribe(
             events=[GenerateOutlineMaterialRequested],
-            handler=GenerateMaterialFromOutlineHandler
+            handler=IterateAllPagesFromOutlineHandler
         )
 
         # Main thread of events

@@ -19,8 +19,8 @@ def test_generate_outline():
     __setup_test()
 
     failed_events = [
-        'InvalidGenerateSkillsResponseFromLLM',
-        'InvalidOutlineChunkResponseFromLLM',
+        'InvalidGenerateSkillsResponseFromOpenAI',
+        'InvalidOutlineChunkResponseFromOpenAI',
         'FailedToParseYamlFromOutlineChunkResponse'
     ]
 

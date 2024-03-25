@@ -21,14 +21,14 @@ class GenerateOutlineEventPipeline():
         event_manager.subscribe(
             events=[
                 GenerateSkillsPromptCreated,
-                InvalidGenerateSkillsResponseFromLLM,  # retry event
+                InvalidGenerateSkillsResponseFromOpenAI,  # retry event
                 FailedToParseYamlFromGenerateSkillsResponse  # retry event
             ],
-            handler=SendGenerateSkillsPromptToLLMHandler)
+            handler=SendGenerateSkillsPromptToOpenAIHandler)
 
         # Process Response
         event_manager.subscribe(
-            events=[GenerateSkillsResponseReceivedFromLLM],
+            events=[GenerateSkillsResponseReceivedFromOpenAI],
             handler=ProcessGenerateSkillsResponseHandler
         )
 
@@ -42,15 +42,15 @@ class GenerateOutlineEventPipeline():
         event_manager.subscribe(
             events=[
                 AllGenerateOutlineChunksPromptsCreated,
-                InvalidOutlineChunkResponseFromLLM,  # retry event
+                InvalidOutlineChunkResponseFromOpenAI,  # retry event
                 FailedToParseYamlFromOutlineChunkResponse  # retry event
             ],
-            handler=SendAllOutlineChunkPromptsToLLMHandler
+            handler=SendAllOutlineChunkPromptsToOpenAIHandler
         )
 
         # Process Each Outline Chunk Response
         event_manager.subscribe(
-            events=[OutlineChunkResponseReceivedFromLLM],
+            events=[OutlineChunkResponseReceivedFromOpenAI],
             handler=ProcessOutlineChunkResponseHandler
         )
 

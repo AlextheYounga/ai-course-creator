@@ -1,13 +1,13 @@
 from db.db import DB, Page, Outline, OutlineEntity, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import PracticeChallengePageResponseReceivedFromLLM, PracticeChallengeGenerationFailedDueToIncompleteChapter
+from src.events.events import PracticeChallengePageResponseReceivedFromOpenAI, PracticeChallengeGenerationFailedDueToIncompleteChapter
 from ...llm.get_llm_client import get_llm_client
 from openai.types.completion import Completion
 from termcolor import colored
 import json
 
 
-class SendGeneratePracticeChallengePromptToLLMHandler:
+class SendGeneratePracticeChallengePromptToOpenAIHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
@@ -29,7 +29,7 @@ class SendGeneratePracticeChallengePromptToLLMHandler:
         response = self._save_response_to_db(completion)
 
         return EVENT_MANAGER.trigger(
-            PracticeChallengePageResponseReceivedFromLLM(self._event_payload(response))
+            PracticeChallengePageResponseReceivedFromOpenAI(self._event_payload(response))
         )
 
 

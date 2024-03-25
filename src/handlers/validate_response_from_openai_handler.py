@@ -5,7 +5,7 @@ from termcolor import colored
 
 
 
-class ValidateLLMResponseHandler:
+class ValidateResponseFromOpenAIHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])

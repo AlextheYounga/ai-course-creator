@@ -2,7 +2,7 @@ from db.db import DB, Thread, Topic, OutlineEntity
 from src.events.event_manager import EVENT_MANAGER
 from ..pipelines.generate_pages_pipeline import GeneratePagesEventPipeline
 from ..events.events import GeneratePagesFromOutlineEntityRequested
-from src.handlers.generate_material_from_outline_entity_handler import GenerateMaterialFromOutlineEntityHandler
+from ..handlers.pages.iterate_pages_from_outline_entity_handler import IteratePagesFromOutlineEntityHandler
 from sqlalchemy.orm.attributes import flag_modified
 
 
@@ -29,7 +29,7 @@ class GeneratePagesFromOutlineEntity:
     def run(self):
         EVENT_MANAGER.subscribe(
             events=[GeneratePagesFromOutlineEntityRequested],
-            handler=GenerateMaterialFromOutlineEntityHandler
+            handler=IteratePagesFromOutlineEntityHandler
         )
 
         # Main thread of events

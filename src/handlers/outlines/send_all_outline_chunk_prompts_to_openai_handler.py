@@ -1,6 +1,6 @@
 from db.db import DB, Outline, Thread, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import AllOutlineChunkResponsesProcessedSuccessfully, OutlineChunkResponseReceivedFromLLM
+from src.events.events import AllOutlineChunkResponsesProcessedSuccessfully, OutlineChunkResponseReceivedFromOpenAI
 from ...llm.get_llm_client import get_llm_client
 from termcolor import colored
 import json
@@ -9,7 +9,7 @@ import progressbar
 
 
 
-class SendAllOutlineChunkPromptsToLLMHandler:
+class SendAllOutlineChunkPromptsToOpenAIHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
@@ -31,7 +31,7 @@ class SendAllOutlineChunkPromptsToLLMHandler:
                 response = self._save_response_to_db(prompt, completion)
                 response_ids.append(response.id)
 
-                EVENT_MANAGER.trigger(OutlineChunkResponseReceivedFromLLM({
+                EVENT_MANAGER.trigger(OutlineChunkResponseReceivedFromOpenAI({
                     'threadId': self.thread_id,
                     'outlineId': self.outline.id,
                     'topicId': self.topic.id,

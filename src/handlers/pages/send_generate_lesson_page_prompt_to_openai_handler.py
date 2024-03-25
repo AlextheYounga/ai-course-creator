@@ -1,12 +1,12 @@
 from db.db import DB, Page, Outline, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import LessonPageResponseReceivedFromLLM
+from src.events.events import LessonPageResponseReceivedFromOpenAI
 from ...llm.get_llm_client import get_llm_client
 from openai.types.completion import Completion
 import json
 
 
-class SendGenerateLessonPagePromptToLLMHandler:
+class SendGenerateLessonPagePromptToOpenAIHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
@@ -22,7 +22,7 @@ class SendGenerateLessonPagePromptToLLMHandler:
         response = self._save_response_to_db(completion)
 
         return EVENT_MANAGER.trigger(
-            LessonPageResponseReceivedFromLLM({
+            LessonPageResponseReceivedFromOpenAI({
                 'threadId': self.thread_id,
                 'outlineId': self.outline.id,
                 'topicId': self.topic.id,
