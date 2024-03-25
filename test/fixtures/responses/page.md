@@ -28,14 +28,14 @@ end
 
 In this example, we use `has_many` and `belongs_to` to establish the one-to-many relationship between the `User` and `Post` models.
 
-### Interactive Element
-<div id="answerable-multiple-choice">
-    <p id="question">What type of relationship involves both tables being able to have multiple associated records in the other?</p>
-    <select id="choices">
-        <option>One-to-One Relationship</option>
-        <option id="correct-answer">Many-to-Many Relationship</option>
-        <option>One-to-Many Relationship</option>
-    </select>
-</div>
+
+[multipleChoice]
+[question]What type of relationship involves both tables being able to have multiple associated records in the other?[/question]
+
+- [ ] One-to-One Relationship
+- [x] Many-to-Many Relationship
+- [ ] One-to-Many Relationship
+
+[/multipleChoice]
 
 Understanding and implementing database relationships is a foundational aspect of building reliable and efficient web applications. As we explore further, you'll see how these relationships form the backbone of data management in Ruby on Rails.
