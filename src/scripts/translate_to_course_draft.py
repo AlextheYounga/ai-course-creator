@@ -17,14 +17,10 @@ def _map_db_client(db_path: str):
     return Session()
 
 
-def translate_to_course_draft(db_path: str = f"sqlite:///{DB_PATH}"):
+def translate_to_course_draft(topic_name: str, db_path: str = f"sqlite:///{DB_PATH}"):
     # Reset output directory
     if (os.path.exists(DB_PATH)):
         os.remove(DB_PATH)
-
-    print("\n")
-
-    topic_name = select_topic()
 
     course_drafts = map_courses_to_course_drafts(topic_name)
 

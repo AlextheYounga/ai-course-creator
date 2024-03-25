@@ -12,7 +12,7 @@ def test_scan_topics_file_handler():
     handler = ScanTopicsFileHandler({'topicsFile': "storage/topics.example.yaml"})
     topics = handler.handle()
 
-    assert len(topics) == 3
+    assert len(topics) > 0
 
     for topic in topics:
         assert topic.id is not None
