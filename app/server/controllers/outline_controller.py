@@ -1,5 +1,4 @@
-from db.db import DB, Outline, Topic
-from src.handlers import CreateNewThreadHandler
+from db.db import DB, Outline, Thread, Topic
 from src.handlers.outlines.create_new_outline_handler import CreateNewOutlineHandler
 from src.utils.helpers import dump_outline_content
 from flask import jsonify
@@ -14,9 +13,7 @@ class OutlineController:
     @staticmethod
     def create(data: dict):
         print(data)
-        thread = CreateNewThreadHandler(
-            {'eventName': 'OutlineController::create'}
-        ).handle()
+        thread = Thread.start('OutlineController::create', DB)
 
         handler_args = {
             'threadId': thread.id,

@@ -1,4 +1,4 @@
-from db.db import DB, Outline, Topic
+from db.db import DB, Thread, Outline, Topic
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import MasterOutlineCompiledFromOutlineChunks, OutlineGenerationProcessCompletedSuccessfully
 from termcolor import colored
@@ -10,13 +10,13 @@ class CompileOutlineChunksToMasterOutlineHandler:
     def __init__(self, data: dict):
         output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 
-        self.thread_id = data['threadId']
+        self.thread = DB.get(Thread, data['threadId'])
         self.outline = DB.get(Outline, data['outlineId'])
         self.topic = DB.get(Topic, self.outline.topic_id)
         self.output_path = f"{output_directory}/{self.topic.slug}"  # master outline sits at topic level
         self.series_path = f"{output_directory}/{self.topic.slug}/{self.outline.name}"
         self.event_payload = {
-            'threadId': self.thread_id,
+            'threadId': self.thread.id,
             'outlineId': self.outline.id,
             'topicId': self.topic.id,
         }

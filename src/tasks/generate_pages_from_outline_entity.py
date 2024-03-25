@@ -1,8 +1,7 @@
-from db.db import DB, Topic, OutlineEntity
+from db.db import DB, Thread, Topic, OutlineEntity
 from src.events.event_manager import EVENT_MANAGER
 from ..pipes.generate_pages_pipeline import GeneratePagesEventPipeline
 from ..events.events import GeneratePagesFromOutlineEntityRequested
-from src.handlers.threads.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.generate_material_from_outline_entity_handler import GenerateMaterialFromOutlineEntityHandler
 from sqlalchemy.orm.attributes import flag_modified
 
@@ -25,7 +24,7 @@ class GeneratePagesFromOutlineEntity:
         self.outline_entity = DB.get(OutlineEntity, outline_entity_id)
         self.only_page_type = only_page_type
         self.outline = self.outline_entity.outline
-        self.thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
+        self.thread = Thread.start(self.__class__.__name__, DB)
 
     def run(self):
         EVENT_MANAGER.subscribe(
@@ -33,6 +32,7 @@ class GeneratePagesFromOutlineEntity:
             handler=GenerateMaterialFromOutlineEntityHandler
         )
 
+        # Main thread of events
         GeneratePagesEventPipeline.subscribe_all(EVENT_MANAGER)
 
         self.__save_event_handlers_to_thread()
@@ -48,7 +48,8 @@ class GeneratePagesFromOutlineEntity:
             })
         )
 
-        print('Done')
+        # Finish thread
+        self.thread.set_complete(DB)
 
 
     def __save_event_handlers_to_thread(self):

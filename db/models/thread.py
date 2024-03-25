@@ -32,6 +32,32 @@ class Thread(Base):
             "updated_at": self.updated_at,
         }
 
+    @staticmethod
+    def first_or_create(event_name: str, session: Session):
+        pid = os.getpid()
+        running_thread = session.query(Thread).filter(
+            Thread.pid == pid
+        ).first()
+
+        if running_thread:
+            return running_thread
+
+        return Thread.start(event_name, session)
+
+
+    @staticmethod
+    def start(event_name: str, session: Session):
+        pid = os.getpid()
+
+        thread = Thread(
+            name=event_name,
+            pid=pid
+        )
+
+        session.add(thread)
+        session.commit()
+
+        return thread
 
     def set_complete(self, session: Session):
         self.status = "completed"

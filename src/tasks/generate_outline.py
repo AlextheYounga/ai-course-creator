@@ -1,8 +1,7 @@
-from db.db import DB, Topic
+from db.db import DB, Thread, Topic
 from ..events.event_manager import EVENT_MANAGER
 from ..events.events import GenerateOutlineRequested
 from ..pipes.generate_outline_pipeline import GenerateOutlineEventPipeline
-from src.handlers.threads.create_new_thread_handler import CreateNewThreadHandler
 from sqlalchemy.orm.attributes import flag_modified
 
 """
@@ -18,9 +17,10 @@ class GenerateOutline:
         EVENT_MANAGER.refresh()
 
         self.topic = DB.get(Topic, topic_id)
-        self.thread = CreateNewThreadHandler({'eventName': self.__class__.__name__}).handle()
+        self.thread = Thread.start(self.__class__.__name__, DB)
 
     def run(self):
+        # Main thread of events
         GenerateOutlineEventPipeline.subscribe_all(EVENT_MANAGER)
 
         self.__save_event_handlers_to_thread()
@@ -33,7 +33,8 @@ class GenerateOutline:
             })
         )
 
-        print('Done')
+        # Finish thread
+        self.thread.set_complete(DB)
 
 
     def __save_event_handlers_to_thread(self):

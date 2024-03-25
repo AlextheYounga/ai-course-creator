@@ -1,4 +1,4 @@
-from db.db import DB, Outline, OutlineEntity, Chapter, Page
+from db.db import DB, Thread, Outline, OutlineEntity, Chapter, Page
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import GeneratePracticeChallengePageProcessStarted, GenerateFinalSkillChallengePageProcessStarted, GenerateLessonPageProcessStarted, GenerateMaterialFromOutlineEntityCompletedSuccessfully
 from src.handlers.pages import *
@@ -8,7 +8,7 @@ import progressbar
 
 class GenerateMaterialFromOutlineEntityHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
+        self.thread = DB.get(Thread, data['threadId'])
         self.outline = DB.get(Outline, data['outlineId'])
         self.outline_entity = DB.get(OutlineEntity, data['outlineEntityId'])
         self.only_page_type = data.get('onlyPageType', False)   # lesson, challenge, final-skill-challenge
@@ -34,7 +34,7 @@ class GenerateMaterialFromOutlineEntityHandler:
 
         return EVENT_MANAGER.trigger(
             GenerateMaterialFromOutlineEntityCompletedSuccessfully({
-                'threadId': self.thread_id,
+                'threadId': self.thread.id,
                 'outlineId': self.outline.id,
                 'topicId': self.topic.id,
             }))
@@ -70,7 +70,7 @@ class GenerateMaterialFromOutlineEntityHandler:
 
     def _event_payload(self, page: Page):
         return {
-            'threadId': self.thread_id,
+            'threadId': self.thread.id,
             'outlineId': self.outline.id,
             'topicId': self.topic.id,
             'pageId': page.id,

@@ -1,6 +1,5 @@
 from ..events.events import *
 from ..handlers.outlines import *
-from ..handlers.threads.complete_thread_handler import CompleteThreadHandler
 
 
 class GenerateOutlineEventPipeline():
@@ -65,11 +64,6 @@ class GenerateOutlineEventPipeline():
         event_manager.subscribe(
             events=[MasterOutlineCompiledFromOutlineChunks],
             handler=CreateOutlineEntitiesFromOutlineHandler
-        )
-
-        event_manager.subscribe(
-            events=[OutlineGenerationProcessCompletedSuccessfully],
-            handler=CompleteThreadHandler
         )
 
         return event_manager

@@ -1,6 +1,5 @@
 from ..events.events import *
 from ..handlers.pages import *
-from ..handlers.threads.complete_thread_handler import CompleteThreadHandler
 
 
 class GeneratePagesEventPipeline():
@@ -73,11 +72,6 @@ class GeneratePagesEventPipeline():
         event_manager.subscribe(
             events=[FinalSkillChallengePageResponseReceivedFromLLM],
             handler=ProcessChallengePageResponseHandler
-        )
-
-        event_manager.subscribe(
-            events=[GenerateMaterialFromOutlineEntityCompletedSuccessfully],
-            handler=CompleteThreadHandler
         )
 
         return event_manager

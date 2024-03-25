@@ -1,6 +1,5 @@
 from ..mocks.db import *
 from src.handlers.outlines.create_outline_entities_from_outline_handler import CreateOutlineEntitiesFromOutlineHandler
-from src.handlers.threads.create_new_thread_handler import CreateNewThreadHandler
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.utils.files import read_yaml_file
 
@@ -12,7 +11,7 @@ LOG_FILE = 'test/data/test.log'
 
 def __setup_test():
     truncate_tables()
-    CreateNewThreadHandler({'eventName': __name__}).handle()
+    Thread.start(__name__, DB)
     topics_file = "storage/topics.example.yaml"
     ScanTopicsFileHandler({"topicsFile": topics_file}).handle()
 
