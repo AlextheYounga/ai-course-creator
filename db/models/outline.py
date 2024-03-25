@@ -51,9 +51,9 @@ class Outline(Base):
 
 
     @classmethod
-    def get_master_outline(self, session: Session, topic: Topic):
+    def get_master_outline(self, DB: Session, topic: Topic):
         if topic.master_outline_id:
-            master_outline_record = session.query(self).filter(
+            master_outline_record = DB.query(self).filter(
                 self.topic_id == topic.id,
                 self.id == topic.master_outline_id
             ).first()
@@ -65,32 +65,32 @@ class Outline(Base):
 
 
     @classmethod
-    def import_outline(self, session: Session, topic_id: int, outline_file: str):
-        topic = session.get(Topic, topic_id)
+    def import_outline(self, DB: Session, topic_id: int, outline_file: str):
+        topic = DB.get(Topic, topic_id)
 
         outline_data = open(outline_file).read()
         outline_hash = self.hash_outline(outline_data)
-        outline = session.query(self).filter(self.hash == outline_hash).first()
+        outline = DB.query(self).filter(self.hash == outline_hash).first()
 
         if outline:
             print(colored(f"Outline already exists with hash {outline_hash}", "red"))
 
         # Create new outline record
-        new_outline = self.instantiate(session, topic_id)
+        new_outline = self.instantiate(DB, topic_id)
         new_outline.outline_data = read_yaml_file(outline_file)  # Add changed outline to record
         new_outline.hash = self.hash_outline(new_outline.outline_data)
         new_outline.file_path = outline_file
 
-        session.add(new_outline)
-        session.commit()
+        DB.add(new_outline)
+        DB.commit()
         print(colored(f"New outline created {new_outline.name}\n", "green"))
 
         topic.master_outline_id = new_outline.id
-        session.commit()
+        DB.commit()
         print(colored(f"New master outline set {new_outline.id}\n", "green"))
 
         # Create outline entities
-        self.create_outline_entities(session, new_outline.id)
+        self.create_outline_entities(DB, new_outline.id)
 
         return new_outline
 
@@ -110,16 +110,16 @@ class Outline(Base):
 
 
     @staticmethod
-    def get_entities_by_type(session: Session, outline_id: int, type: str):
+    def get_entities_by_type(DB: Session, outline_id: int, type: str):
         if type == 'Course':
-            return session.query(Course).join(
+            return DB.query(Course).join(
                 OutlineEntity, OutlineEntity.entity_id == Course.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
                 OutlineEntity.entity_type == type
             ).all()
         elif type == 'Chapter':
-            return session.query(Chapter).join(
+            return DB.query(Chapter).join(
                 OutlineEntity, OutlineEntity.entity_id == Chapter.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
@@ -127,7 +127,7 @@ class Outline(Base):
             ).all()
 
         elif type == 'Page':
-            return session.query(Page).join(
+            return DB.query(Page).join(
                 OutlineEntity, OutlineEntity.entity_id == Page.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
@@ -139,23 +139,23 @@ class Outline(Base):
 
 
     @staticmethod
-    def get_entities(session: Session, outline_id: int):
+    def get_entities(DB: Session, outline_id: int):
         return {
-            'courses': session.query(Course).join(
+            'courses': DB.query(Course).join(
                 OutlineEntity, OutlineEntity.entity_id == Course.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
                 OutlineEntity.entity_type == 'Course'
             ).all(),
 
-            'chapters': session.query(Chapter).join(
+            'chapters': DB.query(Chapter).join(
                 OutlineEntity, OutlineEntity.entity_id == Chapter.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
                 OutlineEntity.entity_type == 'Chapter'
             ).all(),
 
-            'pages': session.query(Page).join(
+            'pages': DB.query(Page).join(
                 OutlineEntity, OutlineEntity.entity_id == Page.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,

@@ -31,13 +31,13 @@ class Question(Base):
         }
 
     @classmethod
-    def save(self, session: Session, question):
+    def save(self, DB: Session, question):
         question = self(
             question=question,
             hint=None,
         )
 
-        session.add(question)
-        session.commit()
+        DB.add(question)
+        DB.commit()
 
         return question

@@ -45,6 +45,6 @@ class Prompt(Base):
         }
 
 
-    def increment_attempts(self, session: Session):
+    def increment_attempts(self, DB: Session):
         self.attempts += 1
-        session.commit()
+        DB.commit()

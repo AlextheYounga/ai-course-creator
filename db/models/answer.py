@@ -33,14 +33,14 @@ class Answer(Base):
         }
 
     @classmethod
-    def save(self, session: Session, question_id: int, value: str):
+    def save(self, DB: Session, question_id: int, value: str):
         answer = self(
             question_id=question_id,
             value=value,
             value_type=type(value).__name__
         )
 
-        session.add(answer)
-        session.commit()
+        DB.add(answer)
+        DB.commit()
 
         return answer

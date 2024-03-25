@@ -33,20 +33,20 @@ class Thread(Base):
         }
 
     @staticmethod
-    def first_or_create(event_name: str, session: Session):
+    def first_or_create(event_name: str, DB: Session):
         pid = os.getpid()
-        running_thread = session.query(Thread).filter(
+        running_thread = DB.query(Thread).filter(
             Thread.pid == pid
         ).first()
 
         if running_thread:
             return running_thread
 
-        return Thread.start(event_name, session)
+        return Thread.start(event_name, DB)
 
 
     @staticmethod
-    def start(event_name: str, session: Session):
+    def start(event_name: str, DB: Session):
         pid = os.getpid()
 
         thread = Thread(
@@ -54,13 +54,13 @@ class Thread(Base):
             pid=pid
         )
 
-        session.add(thread)
-        session.commit()
+        DB.add(thread)
+        DB.commit()
 
         return thread
 
-    def set_complete(self, session: Session):
+    def set_complete(self, DB: Session):
         self.status = "completed"
-        session.commit()
+        DB.commit()
 
         return self

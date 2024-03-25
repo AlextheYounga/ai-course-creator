@@ -30,8 +30,8 @@ class OutlineEntity(Base):
 
 
     @classmethod
-    def first_or_create(self, session: Session, outline_id: int, entity):
-        entity_record = session.query(self).filter(
+    def first_or_create(self, DB: Session, outline_id: int, entity):
+        entity_record = DB.query(self).filter(
             self.outline_id == outline_id,
             self.entity_id == entity.id,
             self.entity_type == type(entity).__name__
@@ -45,28 +45,28 @@ class OutlineEntity(Base):
             entity_type=type(entity).__name__
         )
 
-        session.add(entity_record)
-        session.commit()
+        DB.add(entity_record)
+        DB.commit()
 
         return entity_record
 
 
     @classmethod
-    def create_entity(self, session: Session, outline_id: int, entity):
+    def create_entity(self, DB: Session, outline_id: int, entity):
         entity = self(
             outline_id=outline_id,
             entity_id=entity.id,
             entity_type=type(entity).__name__
         )
 
-        session.add(entity)
-        session.commit()
+        DB.add(entity)
+        DB.commit()
 
         return entity
 
 
     @classmethod
-    def create_entities(self, session: Session, outline_id: int, entities: list):
+    def create_entities(self, DB: Session, outline_id: int, entities: list):
         records = []
 
         for data in entities:
@@ -76,9 +76,9 @@ class OutlineEntity(Base):
                 entity_type=type(data).__name__
             )
 
-            session.add(entity)
+            DB.add(entity)
             records.append(entity)
 
-        session.commit()
+        DB.commit()
 
         return records
