@@ -1,7 +1,7 @@
 ### Practice Skill Challenge
 
 #### Question 1
-[multipleChoice]
+[multipleChoice id="1"]
 [question]Why are database indexes crucial for optimizing the performance of database queries?[/question]
 
 - [ ] Decrease query speed
@@ -13,14 +13,14 @@
 
 
 #### Question 2
-[fillBlank]
+[fillBlank id="2"]
 [question]What is a database attribute that can be added to a database column that allows for faster retrieval of records?[/question]
 [answer]index[/answer]
 [/fillBlank]
 
 
 #### Question 3
-[multipleChoice]
+[multipleChoice id="3"]
 [question]What is the primary benefit of using database transactions in Rails?[/question]
 
 - [ ] Ensuring data is stored without validation
@@ -32,7 +32,7 @@
 
 
 #### Question 4
-[trueFalse]
+[trueFalse id="4"]
 [question]Is it possible to over-index a database?[/question]
 
 - [x] True
@@ -41,7 +41,7 @@
 [/trueFalse]
 
 #### Question 5
-[codeEditor]
+[codeEditor id="5"]
 [question]Write a program that uses the appropriate syntax for creating a database transaction to update two tables in a Rails application.[/question]
 
 ```ruby

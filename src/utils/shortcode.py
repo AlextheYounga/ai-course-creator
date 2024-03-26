@@ -1,4 +1,5 @@
 import re
+from re import Match
 from functools import lru_cache
 
 # Shortcode attributes parsing
@@ -81,7 +82,7 @@ class Shortcode:
         result = {
             'index': match.start(),
             'content': match.group(0),
-            'shortcode': Shortcode.from_match(match.groups())
+            'shortcode': Shortcode.from_match(match)
         }
 
         # Adjust the content and index if the shortcode is preceded by '['
@@ -105,7 +106,7 @@ class Shortcode:
             left, right = match.group(1), match.group(7)
             if left == '[' and right == ']':
                 return match.group(0)
-            result = callback(Shortcode.from_match(match.groups()))
+            result = callback(Shortcode.from_match(match))
             return left + result + right if result or result == '' else match.group(0)
 
         return re.sub(Shortcode.shortcode_regex(tag), replacer, text)
@@ -115,7 +116,7 @@ class Shortcode:
 
 
     @staticmethod
-    def from_match(match):
+    def from_match(match: Match):
         """
         Create a shortcode object from the regular expression match.
 
@@ -125,7 +126,8 @@ class Shortcode:
         Returns:
             dict: A dictionary representing the shortcode with its tag, attributes, type, and content.
         """
-        tag, attr_string, self_closing, content, closing_tag = match[1], match[2], match[3], match[4], match[5]
+        match_groups = match.groups()
+        tag, attr_string, self_closing, content, closing_tag = match_groups[1], match_groups[2], match_groups[3], match_groups[4], match_groups[5]
         type = 'single'
 
         if self_closing:
@@ -137,12 +139,36 @@ class Shortcode:
 
         return {
             'tag': tag,
-            'attrs': attrs,  # Attributes are now parsed into a dictionary
+            'attrs': attrs,
             'type': type,
             'content': content
         }
 
+
+
+    @staticmethod
+    def from_match_with_index(match: Match):
+        """
+        Create a shortcode object from the regular expression match while emulating find_next return object.
+
+        Args:
+            match (tuple): The match groups from the regular expression match.
+
+        Returns:
+            dict: A dictionary containing the index, content and shortcode with its tag, attributes, type, and content.
+        """
+
+        shortcode = Shortcode.from_match(match)
+
+        return {
+            'index': match.start(),
+            'content': match.group(0),
+            'shortcode': shortcode
+        }
+
+
     # Generate a string from shortcode parameters
+
 
     @staticmethod
     def shortcode_string(options):
