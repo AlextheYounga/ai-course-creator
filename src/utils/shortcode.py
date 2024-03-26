@@ -185,7 +185,7 @@ class Shortcode:
 
         if type == 'self-closing':
             return f'[{tag}{attrs_string} /]'
-        elif type == 'closed':
-            return f'[{tag}{attrs_string}]{content}[/{tag}]'
-        else:
+        elif type == 'single':
             return f'[{tag}{attrs_string}]'
+        else:
+            return f'[{tag}{attrs_string}]{content}[/{tag}]'
