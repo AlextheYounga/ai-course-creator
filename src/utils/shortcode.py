@@ -52,27 +52,52 @@ class Shortcode:
 
     @staticmethod
     def find_next(tag, text, index=0):
+        """
+        Find the next matching shortcode in the text starting from the given index.
+
+        Args:
+            tag (str): The shortcode tag to search for.
+            text (str): The text in which to search for the shortcode.
+            index (int, optional): The index in the text from which to start the search. Defaults to 0.
+
+        Returns:
+            dict or None: A dictionary containing the index where the shortcode is found,
+                        the matched content, and the shortcode object. Returns None if no match is found.
+        """
+        # Generate the regular expression for the given tag
         regex = Shortcode.shortcode_regex(tag)
+
+        # Search for the next match in the text starting from the given index
         match = regex.search(text, index)
-        if not match:
+
+        # Return None if no match is found
+        if match is None:
             return None
+
+        # Check if the match is an escaped shortcode, and if so, recurse to find the next one
+        if match.group(1) == '[' and match.group(7) == ']':
+            return Shortcode.find_next(tag, text, match.end())
 
         result = {
             'index': match.start(),
             'content': match.group(0),
-            'shortcode': Shortcode.from_match(match.groups()),
+            'shortcode': Shortcode.from_match(match.groups())
         }
 
-        if match.group(1) == '[':
+        # Adjust the content and index if the shortcode is preceded by '['
+        if match.group(1):
             result['content'] = result['content'][1:]
             result['index'] += 1
 
-        if match.group(7) == ']':
+        # Adjust the content if the shortcode is followed by ']'
+        if match.group(7):
             result['content'] = result['content'][:-1]
 
         return result
 
+
     # Replace matching shortcodes in text
+
 
     @staticmethod
     def replace(tag, text, callback):
@@ -85,17 +110,36 @@ class Shortcode:
 
         return re.sub(Shortcode.shortcode_regex(tag), replacer, text)
 
+
     # Generate a shortcode object from a regex match
+
 
     @staticmethod
     def from_match(match):
-        type = 'self-closing' if match[3] else 'closed' if match[5] else 'single'
-        attrs = Shortcode.parse_attrs(match[2]) if match[2] else {'named': {}, 'numeric': []}
+        """
+        Create a shortcode object from the regular expression match.
+
+        Args:
+            match (tuple): The match groups from the regular expression match.
+
+        Returns:
+            dict: A dictionary representing the shortcode with its tag, attributes, type, and content.
+        """
+        tag, attr_string, self_closing, content, closing_tag = match[1], match[2], match[3], match[4], match[5]
+        type = 'single'
+
+        if self_closing:
+            type = 'self-closing'
+        elif closing_tag:
+            type = 'closed'
+
+        attrs = Shortcode.parse_attrs(attr_string)
+
         return {
-            'tag': match[1],
-            'attrs': attrs,
+            'tag': tag,
+            'attrs': attrs,  # Attributes are now parsed into a dictionary
             'type': type,
-            'content': match[4] or '',
+            'content': content
         }
 
     # Generate a string from shortcode parameters
