@@ -43,6 +43,9 @@ class Page(Base):
         return slugify(name)
 
 
+    def get_properties(self):
+        return self.properties or {}
+
     def hash_page(content):
         page_material = content.strip()
 
