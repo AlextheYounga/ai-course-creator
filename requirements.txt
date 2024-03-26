@@ -5,6 +5,7 @@ inquirer
 SQLAlchemy
 beautifulsoup4
 markdown
+markdown-checklist
 autopep8
 termcolor
 pyyaml
