@@ -29,7 +29,7 @@ end
 In this example, we use `has_many` and `belongs_to` to establish the one-to-many relationship between the `User` and `Post` models.
 
 
-[multipleChoice]
+[multipleChoice id="4"]
 [question]What type of relationship involves both tables being able to have multiple associated records in the other?[/question]
 
 - [ ] One-to-One Relationship

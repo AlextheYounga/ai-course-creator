@@ -2,7 +2,6 @@ openai
 python-dotenv
 python-environ
 inquirer
-gpt4all
 SQLAlchemy
 beautifulsoup4
 markdown
@@ -17,4 +16,5 @@ progressbar2
 cuid
 tiktoken
 pytz
-apscheduler
+# gpt4all
+# apscheduler

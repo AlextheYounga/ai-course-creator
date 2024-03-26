@@ -2,24 +2,29 @@ topics:
   Ruby on Rails:
     prompts: programming
     language: ruby
-    allCodeInEditors: true
+    options:
+      allCodeInEditors: true
 
   Javascript:
     prompts: programming
     language: javascript
-    allCodeInEditors: true
+    options:
+      allCodeInEditors: true
 
   Python:
     prompts: programming
     language: python
-    allCodeInEditors: true
+    options:
+      allCodeInEditors: true
 
   HTML:
     prompts: programming
     language: python
-    interactives:
-      codeEditor: false
-      multipleChoice: true
-      fillBlank: true
-      trueFalse: true
-      codepen: false # temporarily disabled
+    options:
+      allCodeInEditors: false
+      interactives:
+        codeEditor: false
+        multipleChoice: true
+        fillBlank: true
+        trueFalse: true
+        codepen: false # temporarily disabled
