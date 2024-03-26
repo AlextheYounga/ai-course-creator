@@ -34,8 +34,7 @@ class CreatePracticeSkillChallengePromptHandler:
 
 
     def _build_practice_skill_challenge_prompt(self):
-        topic_properties = self.topic.properties or {}
-        topic_language = topic_properties.get("language", self.topic.slug)
+        topic_language = self.topic.get_properties().get("language", self.topic.slug)
 
         # Combine all page content into a single string
         all_pages_content = self._prepare_chapter_content_prompt()

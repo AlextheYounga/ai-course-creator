@@ -59,6 +59,8 @@ class Topic(Base):
         latest_outline = self.outlines[-1]
         return latest_outline
 
+    def get_properties(self):
+        return self.properties or {}
 
     @classmethod
     def get_topic_properties_from_file(self, name: str):

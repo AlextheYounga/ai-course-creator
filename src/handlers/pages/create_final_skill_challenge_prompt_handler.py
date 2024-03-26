@@ -35,8 +35,8 @@ class CreateFinalSkillChallengePromptHandler:
 
     def _get_appropriate_interactive_component_prompts(self):
         interactives = []
-        topic_properties = self.topic.properties or {}
-        topic_interactives = topic_properties.get("interactives", {})
+        topic_options = self.topic.get_properties().get("options", {})
+        topic_interactives = topic_options.get("interactives", {})
         available_interactives = {'codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse'}  # codepen temporarily disabled
 
         for interactive in available_interactives:
@@ -49,8 +49,7 @@ class CreateFinalSkillChallengePromptHandler:
 
 
     def _build_final_skill_challenge_prompt(self):
-        topic_properties = self.topic.properties or {}
-        topic_language = topic_properties.get("language", self.topic.slug)
+        topic_language = self.topic.get_properties().get("language", self.topic.slug)
 
         # Combine all page content into a single string
         all_pages_content = self._prepare_course_content_prompt()

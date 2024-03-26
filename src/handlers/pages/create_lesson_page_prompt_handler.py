@@ -34,8 +34,7 @@ class CreateLessonPagePromptHandler:
 
 
     def _build_lesson_page_prompt(self):
-        topic_properties = self.topic.properties or {}
-        topic_language = topic_properties.get("language", self.topic.slug)
+        topic_language = self.topic.get_properties().get("language", self.topic.slug)
 
         # Combine multiple system prompts into one
         general_system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
