@@ -56,9 +56,10 @@ class OpenAiService:
     def __handle_exponential_backoff(self, prompt: Prompt):
         sleep_time = 10 * prompt.attempts
 
-        if prompt.attempts == 0:
+        if prompt.attempts <= 1:
             sleep_time = 1
 
-        print(f"Sleeping for {sleep_time} seconds. Prompt attempts: {prompt.attempts}")
+        if sleep_time > 1:
+            print(colored(f"Sleeping for {sleep_time} seconds. Prompt attempts: {prompt.attempts}", "yellow"))
 
         sleep(sleep_time)
