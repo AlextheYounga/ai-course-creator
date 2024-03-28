@@ -17,13 +17,12 @@ def select_task():
     base_tasks = {
         'Generate Outline': _generate_outline,
         'Generate Content': select_generate_content,
-        'Continue Thread': continue_thread
     }
 
     tasks = [
         inquirer.List('task',
                       message="Select task",
-                      choices=list(base_commands.keys())),
+                      choices=list(base_tasks.keys())),
     ]
 
     choice = inquirer.prompt(tasks)
