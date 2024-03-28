@@ -46,7 +46,7 @@ class GeneratePagesEventPipeline():
         event_manager.subscribe(
             events=[
                 LessonPagePromptCreated,
-                InvalidLessonPageResponseFromOpenAI
+                InvalidLessonPageResponseFromOpenAI  # retry event
             ],
             handler=SendGenerateLessonPagePromptToOpenAIHandler
         )
@@ -55,7 +55,7 @@ class GeneratePagesEventPipeline():
         event_manager.subscribe(
             events=[
                 PracticeChallengePagePromptCreated,
-                InvalidChallengePageResponseFromOpenAI
+                InvalidPracticeChallengePageResponseFromOpenAI  # retry event
             ],
             handler=SendGeneratePracticeChallengePromptToOpenAIHandler
         )
@@ -64,7 +64,7 @@ class GeneratePagesEventPipeline():
         event_manager.subscribe(
             events=[
                 FinalSkillChallengePagePromptCreated,
-                InvalidChallengePageResponseFromOpenAI
+                InvalidFinalChallengePageResponseFromOpenAI  # retry event
             ],
             handler=SendGenerateFinalChallengePromptToOpenAIHandler
         )

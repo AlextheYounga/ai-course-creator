@@ -33,6 +33,7 @@ class ProcessLessonPageResponseHandler:
         validated_response = ValidateResponseFromOpenAIHandler(self.event_payload).handle()
 
         if not validated_response:
+            print(colored(f"Invalid response from OpenAI. Retrying...", "yellow"))
             return EVENT_MANAGER.trigger(InvalidLessonPageResponseFromOpenAI(self.event_payload))
 
         content = self._add_header_to_page_content(completion)

@@ -183,7 +183,12 @@ class InvalidPageSummaryResponseFromOpenAI(Event):
         self.data = data
 
 
-class InvalidChallengePageResponseFromOpenAI(Event):
+class InvalidPracticeChallengePageResponseFromOpenAI(Event):
+    def __init__(self, data):
+        self.data = data
+
+
+class InvalidFinalChallengePageResponseFromOpenAI(Event):
     def __init__(self, data):
         self.data = data
 

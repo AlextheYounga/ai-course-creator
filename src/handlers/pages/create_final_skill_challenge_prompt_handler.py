@@ -33,21 +33,6 @@ class CreateFinalSkillChallengePromptHandler:
             }))
 
 
-    def _get_appropriate_interactive_component_prompts(self):
-        interactives = []
-        topic_options = self.topic.get_properties().get("options", {})
-        topic_interactives = topic_options.get("interactives", {})
-        available_interactives = {'codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse'}  # codepen temporarily disabled
-
-        for interactive in available_interactives:
-            if topic_interactives.get(interactive, True):
-                prompt = get_prompt(self.topic, f"system/interactives/{interactive}")
-                interactives.append(prompt)
-
-        return "\n\n".join(interactives)
-
-
-
     def _build_final_skill_challenge_prompt(self):
         topic_language = self.topic.get_properties().get("language", self.topic.slug)
 
@@ -55,7 +40,7 @@ class CreateFinalSkillChallengePromptHandler:
         all_pages_content = self._prepare_course_content_prompt()
         general_system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
         interactives_instruction_prompt = get_prompt(self.topic, 'system/tune-interactives', {'topicLanguage': topic_language})
-        interactive_shapes_prompt = self._get_appropriate_interactive_component_prompts()
+        interactive_shapes_prompt = self._get_interactive_component_shape_prompts()
 
         combined_system_prompt = "\n".join([
             general_system_prompt,
@@ -71,6 +56,20 @@ class CreateFinalSkillChallengePromptHandler:
         user_payload = [{"role": "user", "content": user_prompt}]
 
         return system_payload + user_payload
+
+
+    def _get_interactive_component_shape_prompts(self):
+        interactives = []
+        topic_options = self.topic.get_properties().get("options", {})
+        topic_interactives = topic_options.get("interactives", {})
+        available_interactives = {'codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse'}  # codepen temporarily disabled
+
+        for interactive in available_interactives:
+            if topic_interactives.get(interactive, True):
+                prompt = get_prompt(self.topic, f"system/interactives/{interactive}")
+                interactives.append(prompt)
+
+        return "\n\n".join(interactives)
 
 
     def _prepare_course_content_prompt(self):

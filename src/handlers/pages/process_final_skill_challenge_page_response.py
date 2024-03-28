@@ -2,12 +2,12 @@ from db.db import DB, Outline, Response, Page
 from ..mapping.map_page_content_to_nodes_handler import MapPageContentToNodesHandler
 from ..validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import InvalidPracticeChallengePageResponseFromOpenAI, ChallengePageResponseProcessedSuccessfully
+from src.events.events import InvalidFinalChallengePageResponseFromOpenAI, ChallengePageResponseProcessedSuccessfully
 from sqlalchemy.orm.attributes import flag_modified
 from termcolor import colored
 
 
-class ProcessChallengePageResponseHandler:
+class ProcessFinalSkillChallengePageResponseHandler:
     def __init__(self, data: dict):
         self.thread_id = data['threadId']
         self.outline = DB.get(Outline, data['outlineId'])
@@ -32,7 +32,7 @@ class ProcessChallengePageResponseHandler:
 
         if not validated_response:
             print(colored(f"Invalid response from OpenAI. Retrying...", "yellow"))
-            return EVENT_MANAGER.trigger(InvalidPracticeChallengePageResponseFromOpenAI(self.event_payload))
+            return EVENT_MANAGER.trigger(InvalidFinalChallengePageResponseFromOpenAI(self.event_payload))
 
         content = self._add_header_to_challenge_content(completion)
 
@@ -43,7 +43,7 @@ class ProcessChallengePageResponseHandler:
             self._save_nodes_to_page(nodes)
         except Exception as e:
             print(colored(f"Error parsing page nodes. Retrying... Error: {e}", "yellow"))
-            return EVENT_MANAGER.trigger(InvalidPracticeChallengePageResponseFromOpenAI(self.event_payload))
+            return EVENT_MANAGER.trigger(InvalidFinalChallengePageResponseFromOpenAI(self.event_payload))
 
         return EVENT_MANAGER.trigger(
             ChallengePageResponseProcessedSuccessfully(self.event_payload)
@@ -51,7 +51,7 @@ class ProcessChallengePageResponseHandler:
 
     def _add_header_to_challenge_content(self, completion: dict):
         content = completion['choices'][0]['message']['content']
-        header = "# Practice Skill Challenge\n"
+        header = "# Final Skill Challenge\n"
 
         # If header is h1, skip
         if content[:2] == '# ': return content
