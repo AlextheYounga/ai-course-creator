@@ -1,8 +1,10 @@
 from db.db import DB, Outline, Response, Page
+from ..mapping.map_page_content_to_nodes_handler import MapPageContentToNodesHandler
 from ..validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import InvalidLessonPageResponseFromOpenAI, LessonPageResponseProcessedSuccessfully
-
+from sqlalchemy.orm.attributes import flag_modified
+from termcolor import colored
 
 
 
@@ -30,15 +32,19 @@ class ProcessLessonPageResponseHandler:
         validated_response = ValidateResponseFromOpenAIHandler(self.event_payload).handle()
 
         if not validated_response:
-            if self.prompt.attempts <= 3:
-                raise Exception("Invalid response; maximum retries exceeded. Aborting...")
-
-            # Retry
-            self.prompt.increment_attempts(DB)
             return EVENT_MANAGER.trigger(InvalidLessonPageResponseFromOpenAI(self.event_payload))
 
         content = self._add_header_to_page_content(completion)
-        self.page = self._save_content_to_page(content)
+
+        self._save_content_to_page(content)
+
+        try:
+            nodes = MapPageContentToNodesHandler({'page': self.page}).handle()
+            self._save_content_to_page(nodes)
+        except Exception as e:
+            print(colored(f"Error parsing page nodes. Retrying... Error: {e}", "yellow"))
+            print(self.prompt.attempts)
+            return EVENT_MANAGER.trigger(InvalidLessonPageResponseFromOpenAI(self.event_payload))
 
         return EVENT_MANAGER.trigger(
             LessonPageResponseProcessedSuccessfully(self.event_payload)
@@ -78,4 +84,17 @@ class ProcessLessonPageResponseHandler:
         self.page.generated = True
 
         # Save to Database
+        DB.commit()
+
+
+    def _save_nodes_to_page(self, nodes: list[dict]):
+        updated_properties = {
+            **self.page.get_properties(),
+            "nodes": nodes,
+        }
+
+        self.page.properties = updated_properties
+
+        flag_modified(self.page, "properties")
+
         DB.commit()

@@ -28,11 +28,6 @@ class ProcessGenerateSkillsResponseHandler:
         validated_response = ValidateResponseFromOpenAIHandler(self.event_payload).handle()
 
         if not validated_response:
-            if self.prompt.attempts <= 3:
-                raise Exception("Invalid response; maximum retries exceeded. Aborting...")
-
-            # Retry
-            self.prompt.increment_attempts(DB)
             return EVENT_MANAGER.trigger(InvalidGenerateSkillsResponseFromOpenAI(self.event_payload))
 
         yaml_data = ParseYamlFromResponseHandler(self.event_payload).handle()
@@ -40,11 +35,6 @@ class ProcessGenerateSkillsResponseHandler:
         skills_obj = yaml_data['dict']
 
         if yaml_data['error']:
-            if self.prompt.attempts <= 3:
-                raise Exception("Failed to parse YAML content; maximum retries exceeded. Aborting...")
-
-            # Retry
-            self.prompt.increment_attempts(DB)
             return EVENT_MANAGER.trigger(FailedToParseYamlFromGenerateSkillsResponse(self.event_payload))
 
         self._save_skills_to_outline(skills_obj)

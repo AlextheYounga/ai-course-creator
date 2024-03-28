@@ -44,19 +44,28 @@ class GeneratePagesEventPipeline():
 
         # Send lesson prompts to LLM
         event_manager.subscribe(
-            events=[LessonPagePromptCreated],
+            events=[
+                LessonPagePromptCreated,
+                InvalidLessonPageResponseFromOpenAI
+            ],
             handler=SendGenerateLessonPagePromptToOpenAIHandler
         )
 
         # Send practice challenge prompts to LLM
         event_manager.subscribe(
-            events=[PracticeChallengePagePromptCreated],
+            events=[
+                PracticeChallengePagePromptCreated,
+                InvalidChallengePageResponseFromOpenAI
+            ],
             handler=SendGeneratePracticeChallengePromptToOpenAIHandler
         )
 
         # Send final challenge prompts to LLM
         event_manager.subscribe(
-            events=[FinalSkillChallengePagePromptCreated],
+            events=[
+                FinalSkillChallengePagePromptCreated,
+                InvalidChallengePageResponseFromOpenAI
+            ],
             handler=SendGenerateFinalChallengePromptToOpenAIHandler
         )
 

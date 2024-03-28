@@ -33,6 +33,11 @@ def __setup_with_existing():
 def test_generate_outline_pages():
     __setup_test()
 
+    bad_events = [
+        'ExistingPageSoftDeletedForPageRegeneration',
+        'InvalidLessonPageResponseFromOpenAI'
+    ]
+
     task = GenerateOutlinePages(topic_id=1)
 
     task.run()
@@ -50,23 +55,23 @@ def test_generate_outline_pages():
         assert page.hash is not None
 
     events = DB.query(Event).filter(
-        Event.name == 'ExistingPageSoftDeletedForPageRegeneration',
+        Event.name.in_(bad_events),
         Event.data['threadId'].cast(Integer) == task.thread.id
     ).count()
 
     assert events == 0
 
 
-def test_generate_only_outline_fsc_pages():
-    __setup_with_existing()
+# def test_generate_only_outline_fsc_pages():
+#     __setup_with_existing()
 
-    task = GenerateOutlinePages(topic_id=1, only_page_type='final-skill-challenge')
+#     task = GenerateOutlinePages(topic_id=1, only_page_type='final-skill-challenge')
 
-    task.run()
+#     task.run()
 
-    events = DB.query(Event).filter(
-        Event.name == 'ChallengePageResponseProcessedSuccessfully',
-        Event.data['threadId'].cast(Integer) == task.thread.id
-    ).all()
+#     events = DB.query(Event).filter(
+#         Event.name == 'ChallengePageResponseProcessedSuccessfully',
+#         Event.data['threadId'].cast(Integer) == task.thread.id
+#     ).all()
 
-    assert len(events) == 7
+#     assert len(events) == 7

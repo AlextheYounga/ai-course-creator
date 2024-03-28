@@ -39,6 +39,7 @@ class Prompt(Base):
             "estimated_tokens": self.estimated_tokens,
             "content": self.content,
             "payload": self.payload,
+            "attempts": self.attempts,
             "properties": self.properties,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
@@ -46,5 +47,12 @@ class Prompt(Base):
 
 
     def increment_attempts(self, DB: Session):
-        self.attempts += 1
+        attempts = self.attempts + 1
+
+        if attempts > 3:
+            raise Exception("Invalid response; maximum retries exceeded. Aborting...")
+
+        self.attempts = attempts
         DB.commit()
+
+        return self

@@ -27,11 +27,6 @@ class ProcessChallengePageResponseHandler:
         validated_response = ValidateResponseFromOpenAIHandler(self.event_payload).handle()
 
         if not validated_response:
-            if self.prompt.attempts <= 3:
-                raise Exception("Invalid response; maximum retries exceeded. Aborting...")
-
-            # Retry
-            self.prompt.increment_attempts(DB)
             return EVENT_MANAGER.trigger(InvalidChallengePageResponseFromOpenAI(self.event_payload))
 
         content = self._add_header_to_challenge_content(completion)

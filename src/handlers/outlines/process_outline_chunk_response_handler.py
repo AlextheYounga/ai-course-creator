@@ -28,11 +28,6 @@ class ProcessOutlineChunkResponseHandler:
         validated_response = ValidateResponseFromOpenAIHandler(self.event_payload).handle()
 
         if not validated_response:
-            if self.response.prompt.attempts <= 3:
-                raise Exception("Invalid response; maximum retries exceeded. Aborting...")
-
-            # Retry
-            self.response.prompt.increment_attempts(DB)
             return EVENT_MANAGER.trigger(InvalidOutlineChunkResponseFromOpenAI(self.event_payload))
 
         yaml_handler = ParseYamlFromResponseHandler(self.event_payload)
@@ -42,9 +37,6 @@ class ProcessOutlineChunkResponseHandler:
         if yaml_data['error']:
             if self.response.prompt.attempts <= 3:
                 raise Exception("Failed to parse YAML content; maximum retries exceeded. Aborting...")
-
-            # Retry
-            self.response.prompt.increment_attempts(DB)
             return EVENT_MANAGER.trigger(FailedToParseYamlFromOutlineChunkResponse(self.event_payload))
 
         self._save_chunk_to_outline(chunk_obj)

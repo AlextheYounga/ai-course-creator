@@ -21,6 +21,8 @@ class SendGenerateLessonPagePromptToOpenAIHandler:
 
         response = self._save_response_to_db(completion)
 
+        self.prompt.increment_attempts(DB)
+
         return EVENT_MANAGER.trigger(
             LessonPageResponseReceivedFromOpenAI({
                 'threadId': self.thread_id,

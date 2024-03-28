@@ -59,4 +59,6 @@ class OpenAiService:
         if prompt.attempts == 0:
             sleep_time = 1
 
+        print(f"Sleeping for {sleep_time} seconds. Prompt attempts: {prompt.attempts}")
+
         sleep(sleep_time)

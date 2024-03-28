@@ -28,6 +28,8 @@ class SendGeneratePracticeChallengePromptToOpenAIHandler:
 
         response = self._save_response_to_db(completion)
 
+        self.prompt.increment_attempts(DB)
+
         return EVENT_MANAGER.trigger(
             PracticeChallengePageResponseReceivedFromOpenAI(self._event_payload(response))
         )
