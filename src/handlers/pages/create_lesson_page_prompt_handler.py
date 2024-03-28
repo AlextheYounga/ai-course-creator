@@ -34,13 +34,11 @@ class CreateLessonPagePromptHandler:
 
 
     def _build_lesson_page_prompt(self):
-        topic_language = self.topic.get_properties().get("language", self.topic.slug)
-
         # Combine multiple system prompts into one
         general_system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
 
         # Inform model on how we want to format interactives
-        interactives_instruction_prompt = get_prompt(self.topic, 'system/tune-interactives', {'topicLanguage': topic_language})
+        interactives_instruction_prompt = self._prepare_interactives_instruction_prompt()
         interactive_shapes_prompt = self._get_interactive_component_shape_prompts()
 
         # Inform model on our outline
@@ -52,10 +50,9 @@ class CreateLessonPagePromptHandler:
 
         # Get prior page summaries
         summaries = self._collect_prior_page_summaries()
-
         prior_page_material_prompt = get_prompt(self.topic, 'system/pages/tune-page-summaries', {
             'summaries': summaries
-        })
+        }) if len(summaries) > 0 else ""
 
         combined_system_prompt = "\n---\n".join([
             general_system_prompt,
@@ -74,11 +71,34 @@ class CreateLessonPagePromptHandler:
         ]
 
 
+    def _prepare_interactives_instruction_prompt(self):
+        interactives_list = '\n'
+        topic_interactives = self._get_interactives_settings()
+        available_interactives = {
+            'codeEditor': 'Code Editor',
+            'multipleChoice': 'Multiple Choice',
+            'fillBlank': 'Fill in the Blank',
+            'trueFalse': 'True/False'
+        }  # codepen temporarily disabled
+
+        for interactive in available_interactives:
+            if topic_interactives.get(interactive, True):
+                interactives_list += f"- {interactive}\n"
+
+        interactives_list += '\n'
+
+        return get_prompt(
+            self.topic,
+            'system/tune-interactives',
+            {'interactives': interactives_list}
+        )
+
+
     def _get_interactive_component_shape_prompts(self):
         interactives = []
         topic_options = self.topic.get_properties().get("options", {})
         topic_interactives = topic_options.get("interactives", {})
-        available_interactives = {'codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse'}  # codepen temporarily disabled
+        available_interactives = ['codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse']  # codepen temporarily disabled
 
         for interactive in available_interactives:
             if topic_interactives.get(interactive, True):
@@ -156,3 +176,10 @@ class CreateLessonPagePromptHandler:
         DB.commit()
 
         return prompt
+
+
+    def _get_interactives_settings(self):
+        topic_options = self.topic.get_properties().get("options", {})
+        topic_interactives = topic_options.get("interactives", {})
+
+        return topic_interactives

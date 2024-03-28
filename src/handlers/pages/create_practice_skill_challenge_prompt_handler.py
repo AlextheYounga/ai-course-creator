@@ -34,12 +34,11 @@ class CreatePracticeSkillChallengePromptHandler:
 
 
     def _build_practice_skill_challenge_prompt(self):
-        topic_language = self.topic.get_properties().get("language", self.topic.slug)
-
         # Combine all page content into a single string
         all_pages_content = self._prepare_chapter_content_prompt()
         general_system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
-        interactives_instruction_prompt = get_prompt(self.topic, 'system/tune-interactives', {'topicLanguage': topic_language})
+
+        interactives_instruction_prompt = self._prepare_interactives_instruction_prompt()
         interactive_shapes_prompt = self._get_interactive_component_shape_prompts()
 
         combined_system_prompt = "\n".join([
@@ -58,11 +57,34 @@ class CreatePracticeSkillChallengePromptHandler:
         return system_payload + user_payload
 
 
+    def _prepare_interactives_instruction_prompt(self):
+        interactives_list = '\n'
+        topic_interactives = self._get_interactives_settings()
+        available_interactives = {
+            'codeEditor': 'Code Editor',
+            'multipleChoice': 'Multiple Choice',
+            'fillBlank': 'Fill in the Blank',
+            'trueFalse': 'True/False'
+        }  # codepen temporarily disabled
+
+        for interactive in available_interactives:
+            if topic_interactives.get(interactive, True):
+                interactives_list += f"- {interactive}\n"
+
+        interactives_list += '\n'
+
+        return get_prompt(
+            self.topic,
+            'system/tune-interactives',
+            {'interactives': interactives_list}
+        )
+
+
     def _get_interactive_component_shape_prompts(self):
         interactives = []
-        topic_options = self.topic.get_properties().get("options", {})
-        topic_interactives = topic_options.get("interactives", {})
-        available_interactives = {'codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse'}  # codepen temporarily disabled
+
+        available_interactives = ['codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse']  # codepen temporarily disabled
+        topic_interactives = self._get_interactives_settings()
 
         for interactive in available_interactives:
             if topic_interactives.get(interactive, True):
@@ -119,3 +141,9 @@ class CreatePracticeSkillChallengePromptHandler:
         DB.commit()
 
         return prompt
+
+    def _get_interactives_settings(self):
+        topic_options = self.topic.get_properties().get("options", {})
+        topic_interactives = topic_options.get("interactives", {})
+
+        return topic_interactives
