@@ -22,6 +22,7 @@ class ProcessLessonPageResponseHandler:
             'responseId': self.response.id,
             'topicId': self.topic.id,
             'promptId': self.prompt.id,
+            'pageId': self.page.id,
             **data
         }
 
@@ -39,11 +40,10 @@ class ProcessLessonPageResponseHandler:
         self._save_content_to_page(content)
 
         try:
-            nodes = MapPageContentToNodesHandler({'page': self.page}).handle()
-            self._save_content_to_page(nodes)
+            nodes = MapPageContentToNodesHandler({'pageId': self.page.id}).handle()
+            self._save_nodes_to_page(nodes)
         except Exception as e:
             print(colored(f"Error parsing page nodes. Retrying... Error: {e}", "yellow"))
-            print(self.prompt.attempts)
             return EVENT_MANAGER.trigger(InvalidLessonPageResponseFromOpenAI(self.event_payload))
 
         return EVENT_MANAGER.trigger(
