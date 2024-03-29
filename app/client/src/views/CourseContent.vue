@@ -1,6 +1,6 @@
 <template>
     <div class="lg:px-8">
-        <div class="flex py-4 justify-between mb-16">
+        <div class="flex py-4 justify-between">
             <Breadcrumbs />
 
             <SwitchGroup as="div" class="flex items-center">
@@ -16,8 +16,29 @@
 
         <div class="flex">
             <div class="mx-auto max-w-3xl text-base leading-7 text-gray-200">
-                <div v-if="courseHtml" id="page-body">
-                    <div v-html="courseHtml"></div>
+                <div v-for="page of coursePages">
+                    <div id="page-body">
+                        <div v-for="node of page.nodes">
+                            <template v-if="node.type == 'html'">
+                                <div v-html="node.content"></div>
+                            </template>
+                            <template v-else-if="node.type == 'codepen'">
+                                <Codepen :data=node></Codepen>
+                            </template>
+                            <template v-else-if="node.type == 'codeEditor'">
+                                <CodeEditor :data=node></CodeEditor>
+                            </template>
+                            <template v-else-if="node.type == 'multipleChoice'">
+                                <MultipleChoice :data=node></MultipleChoice>
+                            </template>
+                            <template v-else-if="node.type == 'fillBlank'">
+                                <FillInTheBlank :data=node></FillInTheBlank>
+                            </template>
+                            <template v-else>
+                                <div v-html="node?.content"></div>
+                            </template>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div v-if="courseHtml">
@@ -31,48 +52,40 @@
 <script>
 import { ref } from 'vue'
 import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue'
-import Breadcrumbs from '@/components/Breadcrumbs.vue'
-import flaskApi from '@/router/api'
-import AnchorNavigation from '@/components/AnchorNavigation.vue'
 import hljs from 'highlight.js';
+import flaskApi from '@/router/api'
+import Breadcrumbs from '@/components/Breadcrumbs.vue'
+import AnchorNavigation from '@/components/AnchorNavigation.vue'
+import CodeEditor from '@/components/Interactives/CodeEditor.vue'
+import Codepen from '@/components/Interactives/Codepen.vue'
+import FillInTheBlank from '@/components/Interactives/FillInTheBlank.vue'
+import MultipleChoice from '@/components/Interactives/MultipleChoice.vue'
+
 
 export default {
     name: 'CourseContent',
     components: {
         AnchorNavigation,
         Breadcrumbs,
-        Switch, SwitchGroup, SwitchLabel
+        Switch, SwitchGroup, SwitchLabel,
+        CodeEditor, Codepen, FillInTheBlank, MultipleChoice
     },
     data() {
-        const courseHtml = "";
-
         return {
             challenges: ref(false),
-            courseHtml: courseHtml,
-            courseContent: [],
+            courseContent: []
         }
     },
     methods: {
-        compileCourseHtml(courseContent) {
-            let html = ""
+        processNodes(courseContent) {
+            const content = []
             for (const page of courseContent) {
                 if (this.challenges == false && page.type.includes('challenge')) {
                     continue
                 }
-
-                const pageHtml = `\n\n<div style="margin:5rem 0;" class="page">` + page.html + "</div>\n\n"
-                const formattedHtml = pageHtml.replace(/<h1/g, '<h2').replace(/<\/h1/g, '</h2')
-                html += formattedHtml
+                content.push(page)
             }
-            return html
-        }
-    },
-    watch: {
-        challenges: {
-            immediate: true,
-            handler() {
-                this.courseHtml = this.compileCourseHtml(this.courseContent)
-            }
+            return content
         }
     },
     updated() {
@@ -80,24 +93,26 @@ export default {
             hljs.highlightElement(block);
         });
     },
+    computed: {
+        coursePages() {
+            if (this.courseContent.length) {
+                return this.processNodes(this.courseContent)
+            }
+            return []
+        }
+    },
     async beforeCreate() {
         const courseId = (this.$route.params.id)
         this.courseContent = await flaskApi.get(`/courses/${courseId}/content`)
-
-        this.courseHtml = this.compileCourseHtml(this.courseContent)
     },
 }
 </script>
 
-<style>
-.page {
+<style scoped>
+#page-body {
     margin: 5rem 0;
     padding-bottom: 5rem;
     border-bottom: 1px solid #44403c
 }
-
-/* Temporary */
-[id^="answerable"] {
-    display: none;
-}
 </style>
+

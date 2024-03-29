@@ -46,7 +46,6 @@ const router = createRouter({
       name: 'outline',
       component: OutlineView
     },
-  
     {
       path: '/ping',
       name: 'ping',
@@ -55,8 +54,11 @@ const router = createRouter({
       * route level code-splitting
       * this generates a separate chunk (About.[hash].js) for this route
       * component: () => import('@/views/AboutView.vue')
-      */ 
+      */
     },
+    
+    // default redirect to home page
+    { path: '/:pathMatch(.*)*', redirect: '/' }
   ]
 })
 
