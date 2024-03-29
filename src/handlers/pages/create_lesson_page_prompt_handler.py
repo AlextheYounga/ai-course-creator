@@ -97,8 +97,7 @@ class CreateLessonPagePromptHandler:
 
     def _get_interactive_component_shape_prompts(self):
         interactives = []
-        topic_options = self.topic.get_properties().get("options", {})
-        topic_interactives = topic_options.get("interactives", {})
+        topic_interactives = self._get_interactives_settings()
         available_interactives = ['codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse', 'codepen']
 
         for interactive in available_interactives:
@@ -180,7 +179,7 @@ class CreateLessonPagePromptHandler:
 
 
     def _get_interactives_settings(self):
-        topic_options = self.topic.get_properties().get("options", {})
-        topic_interactives = topic_options.get("interactives", {})
+        scoped_settings = self.topic.get_settings('lesson')
+        topic_interactives = scoped_settings.get("interactives", {})
 
         return topic_interactives

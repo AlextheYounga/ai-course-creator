@@ -35,3 +35,4 @@ def test_create_practice_skill_challenge_prompt_handler():
     assert '[fillBlank' in prompt.content
     assert '[codeEditor' in prompt.content
     assert '[trueFalse' in prompt.content
+    assert '[codepen' not in prompt.content

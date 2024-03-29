@@ -58,8 +58,6 @@ class CreateFinalSkillChallengePromptHandler:
 
 
     def _prepare_interactives_instruction_prompt(self):
-        topic_language = self.topic.get_properties().get("language", self.topic.slug)
-
         interactives_list = '\n'
         topic_interactives = self._get_interactives_settings()
         available_interactives = {
@@ -85,8 +83,7 @@ class CreateFinalSkillChallengePromptHandler:
 
     def _get_interactive_component_shape_prompts(self):
         interactives = []
-        topic_options = self.topic.get_properties().get("options", {})
-        topic_interactives = topic_options.get("interactives", {})
+        topic_interactives = self._get_interactives_settings()
         available_interactives = ['codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse', 'codepen']
 
         for interactive in available_interactives:
@@ -144,7 +141,7 @@ class CreateFinalSkillChallengePromptHandler:
         return prompt
 
     def _get_interactives_settings(self):
-        topic_options = self.topic.get_properties().get("options", {})
-        topic_interactives = topic_options.get("interactives", {})
+        scoped_settings = self.topic.get_settings('final-skill-challenge')
+        topic_interactives = scoped_settings.get("interactives", {})
 
         return topic_interactives

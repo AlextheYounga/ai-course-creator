@@ -59,8 +59,21 @@ class Topic(Base):
         latest_outline = self.outlines[-1]
         return latest_outline
 
+
     def get_properties(self):
         return self.properties or {}
+
+
+    def get_settings(self, level: str = 'global'):
+        properties = self.get_properties()
+        settings = properties.get('settings', {})
+
+        if level in settings:
+            return settings.get(level, {})
+
+        return settings.get('global', {})
+
+
 
     @classmethod
     def get_topic_properties_from_file(self, name: str):
