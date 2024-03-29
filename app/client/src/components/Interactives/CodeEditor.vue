@@ -7,7 +7,6 @@
 </template>
 
 <script>
-import hljs from 'highlight.js';
 export default {
     name: 'CodeEditor',
     props: {
@@ -16,8 +15,5 @@ export default {
             required: true,
         }
     },
-    mounted() {
-        hljs.highlightAll();
-    }
 };
 </script>

@@ -90,7 +90,13 @@ export default {
     },
     updated() {
         document.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightElement(block);
+            const parent = block.parentElement
+            const secondParent = parent.parentElement
+            const isCodepen = secondParent.classList.contains('codepen') || parent.classList.contains('codepen')
+            
+            if (isCodepen) {
+                hljs.highlightElement(block);
+            }
         });
     },
     computed: {
