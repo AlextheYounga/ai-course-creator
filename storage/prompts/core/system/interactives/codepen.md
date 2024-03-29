@@ -31,3 +31,4 @@ document.getElementsByTagName("h1")[0].style.fontSize = "80px";
 
 <!-- End Example CodePen Component -->
 >NOTE: Codepen components are not submittable, so these components will not require "answer" or "must-contain" fields.
+>NOTE: Do your best with the dependency field, but it is not super important if you simply add the name of a dependency and not a direct cdn link.

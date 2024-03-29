@@ -64,8 +64,9 @@ class CreatePracticeSkillChallengePromptHandler:
             'codeEditor': 'Code Editor',
             'multipleChoice': 'Multiple Choice',
             'fillBlank': 'Fill in the Blank',
-            'trueFalse': 'True/False'
-        }  # codepen temporarily disabled
+            'trueFalse': 'True/False',
+            'codepen': 'Codepen'
+        }
 
         for interactive in available_interactives:
             if topic_interactives.get(interactive, True):
@@ -83,7 +84,7 @@ class CreatePracticeSkillChallengePromptHandler:
     def _get_interactive_component_shape_prompts(self):
         interactives = []
 
-        available_interactives = ['codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse']  # codepen temporarily disabled
+        available_interactives = ['codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse', 'codepen']
         topic_interactives = self._get_interactives_settings()
 
         for interactive in available_interactives:
