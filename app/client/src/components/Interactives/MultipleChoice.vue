@@ -1,6 +1,6 @@
 <template>
     <form>
-        <p class="text-xl">Question: {{ this.data.question }}</p>
+        <p class="font-bold text-xl">Question: {{ this.data.question }}</p>
         <template v-for="choice of choices">
             <input type="radio" :id="`choice-${uniqueId(choice)}`" name="radio">
             <label :for="`choice-${uniqueId(choice)}`">{{ `${getLetter(choice)}.  ${choice}` }}</label>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p class="text-xl">Question: {{ this.data.question }}</p>
+        <p class="font-bold text-xl">Question: {{ this.data.question }}</p>
         <input class="text-gray-700 w-full rounded-md mb-4" :value="this.data.answer"></input>
     </div>
 </template>

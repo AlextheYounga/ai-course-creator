@@ -94,7 +94,7 @@ export default {
             const secondParent = parent.parentElement
             const isCodepen = secondParent.classList.contains('codepen') || parent.classList.contains('codepen')
             
-            if (isCodepen) {
+            if (!isCodepen) {
                 hljs.highlightElement(block);
             }
         });
