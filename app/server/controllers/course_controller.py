@@ -1,5 +1,4 @@
 from db.db import DB, Course, Outline, OutlineEntity, Page
-import markdown
 from flask import jsonify
 
 
@@ -30,10 +29,12 @@ class CourseController:
         for page in course_pages:
             if not page.content: continue
 
-            html_content = markdown.markdown(page.content, extensions=['toc', 'fenced_code'])
+            nodes = page.get_properties()['nodes']
+
             material = {
-                **page.to_dict(),
-                'html': html_content
+                'id': page.id,
+                'type': page.type,
+                'nodes': nodes
             }
 
             course_content.append(material)

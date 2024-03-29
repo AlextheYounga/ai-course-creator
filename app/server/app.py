@@ -85,7 +85,7 @@ def get_course_content(id: int):
 # Pages
 @app.route('/api/pages/<id>', methods=['GET'])
 def get_page(id: int):
-    return PageController.get_page_html(id)
+    return PageController.get_page(id)
 
 
 # Test
