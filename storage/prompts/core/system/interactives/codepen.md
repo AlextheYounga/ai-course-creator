@@ -5,6 +5,7 @@ Codepen (codepen.io) allows us to embed Codepen editors on our website. Codepen 
 
 [description]Description of the Codepen component.[/description]
 
+[template]
 ```html
 <h1>Hello World!</h1>
 
@@ -12,7 +13,9 @@ Codepen (codepen.io) allows us to embed Codepen editors on our website. Codepen 
   <button id="btn">Click me</button>
 </body>
 ```
+[/template]
 
+[/styles]
 ```css
 $blue: #a3d5d3;
 
@@ -20,10 +23,13 @@ body {
   background-color: $blue;
 }
 ```
+[/styles]
 
+[scripts]
 ```javascript
 document.getElementsByTagName("h1")[0].style.fontSize = "80px";
 ```
+[/scripts]
 
 [dependency]https://link-to-dependency-or-dependency-name/dependency.min.js[/dependency]
 
