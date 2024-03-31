@@ -20,16 +20,16 @@ class IterateAllPagesFromOutlineHandler:
         if self.only_page_type:
             outline_pages = [page for page in outline_pages if page.type == self.only_page_type]
 
-        with progressbar.ProgressBar(max_value=len(outline_pages), prefix='Generating pages: ', redirect_stdout=True).start() as bar:
-            for page in outline_pages:
-                if page.type == 'challenge':
-                    EVENT_MANAGER.trigger(GeneratePracticeChallengePageProcessStarted(self._event_payload(page)))
-                elif page.type == 'final-skill-challenge':
-                    EVENT_MANAGER.trigger(GenerateFinalSkillChallengePageProcessStarted(self._event_payload(page)))
-                else:
-                    EVENT_MANAGER.trigger(GenerateLessonPageProcessStarted(self._event_payload(page)))
+        page_count = len(outline_pages)
 
-                bar.increment()
+        for page in outline_pages:
+            if page.type == 'challenge':
+                EVENT_MANAGER.trigger(GeneratePracticeChallengePageProcessStarted(self._event_payload(page, page_count)))
+            elif page.type == 'final-skill-challenge':
+                EVENT_MANAGER.trigger(GenerateFinalSkillChallengePageProcessStarted(self._event_payload(page, page_count)))
+            else:
+                EVENT_MANAGER.trigger(GenerateLessonPageProcessStarted(self._event_payload(page, page_count)))
+
 
 
         return EVENT_MANAGER.trigger(
@@ -57,10 +57,11 @@ class IterateAllPagesFromOutlineHandler:
         ).all()
 
 
-    def _event_payload(self, page: Page):
+    def _event_payload(self, page: Page, page_count: int):
         return {
             'threadId': self.thread_id,
             'outlineId': self.outline.id,
             'topicId': self.topic.id,
             'pageId': page.id,
+            'totalSteps': page_count,
         }

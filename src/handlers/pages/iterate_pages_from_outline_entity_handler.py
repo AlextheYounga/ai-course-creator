@@ -3,8 +3,6 @@ from src.events.event_manager import EVENT_MANAGER
 from src.events.events import GeneratePracticeChallengePageProcessStarted, GenerateFinalSkillChallengePageProcessStarted, GenerateLessonPageProcessStarted, GenerateMaterialFromOutlineEntityCompletedSuccessfully
 from src.handlers.pages import *
 
-import progressbar
-
 
 class IteratePagesFromOutlineEntityHandler:
     def __init__(self, data: dict):
@@ -21,16 +19,16 @@ class IteratePagesFromOutlineEntityHandler:
         if self.only_page_type:
             entity_pages = [page for page in entity_pages if page.type == self.only_page_type]
 
-        with progressbar.ProgressBar(max_value=len(entity_pages), prefix='Generating pages: ', redirect_stdout=True).start() as bar:
-            for page in entity_pages:
-                if page.type == 'challenge':
-                    EVENT_MANAGER.trigger(GeneratePracticeChallengePageProcessStarted(self._event_payload(page)))
-                elif page.type == 'final-skill-challenge':
-                    EVENT_MANAGER.trigger(GenerateFinalSkillChallengePageProcessStarted(self._event_payload(page)))
-                else:
-                    EVENT_MANAGER.trigger(GenerateLessonPageProcessStarted(self._event_payload(page)))
+        page_count = len(entity_pages)
 
-                bar.increment()
+        for page in entity_pages:
+            if page.type == 'challenge':
+                EVENT_MANAGER.trigger(GeneratePracticeChallengePageProcessStarted(self._event_payload(page, page_count)))
+            elif page.type == 'final-skill-challenge':
+                EVENT_MANAGER.trigger(GenerateFinalSkillChallengePageProcessStarted(self._event_payload(page, page_count)))
+            else:
+                EVENT_MANAGER.trigger(GenerateLessonPageProcessStarted(self._event_payload(page, page_count)))
+
 
         return EVENT_MANAGER.trigger(
             GenerateMaterialFromOutlineEntityCompletedSuccessfully({
@@ -68,10 +66,11 @@ class IteratePagesFromOutlineEntityHandler:
         return query.all()
 
 
-    def _event_payload(self, page: Page):
+    def _event_payload(self, page: Page, page_count: int):
         return {
             'threadId': self.thread.id,
             'outlineId': self.outline.id,
             'topicId': self.topic.id,
             'pageId': page.id,
+            'totalSteps': page_count,
         }

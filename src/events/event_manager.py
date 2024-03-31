@@ -1,11 +1,14 @@
 from db.db import DB, Event as EventStore
 from .events import Event
 from ..utils.log_handler import LOG_HANDLER
+from ..utils.event_progressbar import EventProgressbar
 
 
 class EventManager:
     def __init__(self):
         self.handlers = {}
+        self.show_progress = False
+        self.progressbar = None
 
     def subscribe(self, events: list[Event], handler):
         for event_type in events:
@@ -17,22 +20,29 @@ class EventManager:
         event_type = type(event)
         if event_type in self.handlers:
             for handler in self.handlers[event_type]:
-                self.__log_event(event, handler)
-                self.__save_event(event, handler)
+                self.__run_accessory_event_functions(event, handler)
+
                 handler(data=event.data).handle()
         else:
-            self.__log_event(event, None)
-            self.__save_event(event, None)
+            self.__run_accessory_event_functions(event, None)
 
 
     def refresh(self):
         self.handlers = {}
+
 
     def dump_handlers(self):
         handlers = {}
         for event, handler in self.handlers.items():
             handlers[event.__name__] = [h.__name__ for h in handler]
         return handlers
+
+
+    def __run_accessory_event_functions(self, event: Event, handler):
+        self.__log_event(event, handler)
+        self.__save_event(event, handler)
+        self.__update_progress(event)
+
 
     def __save_event(self, event: Event, handler):
         handler = handler.__name__ if handler else None
@@ -61,6 +71,15 @@ class EventManager:
             message = f"{event_name} | Data: {message}"
 
         LOG_HANDLER.info(message)
+
+
+    def __update_progress(self, event: Event):
+        if self.show_progress:
+            if self.progressbar == None:
+                thread_id = event.data['threadId']
+                self.progressbar = EventProgressbar(thread_id).start()
+        
+            self.progressbar.update_on_event(event)
 
 
 EVENT_MANAGER = EventManager()
