@@ -51,7 +51,6 @@ class GeneratePagesFromOutlineEntity:
 
         # Finish thread
         self.thread.set_complete(DB)
-        EVENT_MANAGER.progressbar.finish()
 
 
     def __save_event_handlers_to_thread(self):

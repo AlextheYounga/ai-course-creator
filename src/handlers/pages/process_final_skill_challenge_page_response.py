@@ -2,7 +2,7 @@ from db.db import DB, Outline, Response, Page
 from ..mapping.map_page_content_to_nodes_handler import MapPageContentToNodesHandler
 from ..validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import InvalidFinalChallengePageResponseFromOpenAI, ChallengePageResponseProcessedSuccessfully
+from src.events.events import InvalidFinalChallengePageResponseFromOpenAI, FinalChallengePageResponseProcessedSuccessfully
 from sqlalchemy.orm.attributes import flag_modified
 from termcolor import colored
 
@@ -46,7 +46,7 @@ class ProcessFinalSkillChallengePageResponseHandler:
             return EVENT_MANAGER.trigger(InvalidFinalChallengePageResponseFromOpenAI(self.event_payload))
 
         return EVENT_MANAGER.trigger(
-            ChallengePageResponseProcessedSuccessfully(self.event_payload)
+            FinalChallengePageResponseProcessedSuccessfully(self.event_payload)
         )
 
     def _add_header_to_challenge_content(self, completion: dict):

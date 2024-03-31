@@ -77,7 +77,12 @@ class EventManager:
         if self.show_progress:
             if self.progressbar == None:
                 thread_id = event.data['threadId']
-                self.progressbar = EventProgressbar(thread_id).start()
+
+                max_value = event.data.get('totalSteps', False) # We need a total to show the progress bar
+                if not max_value:
+                    return
+                
+                self.progressbar = EventProgressbar(thread_id).start(event)
         
             self.progressbar.update_on_event(event)
 

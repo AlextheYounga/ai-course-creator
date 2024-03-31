@@ -197,6 +197,10 @@ class ChallengePageResponseProcessedSuccessfully(Event):
     def __init__(self, data):
         self.data = data
 
+class FinalChallengePageResponseProcessedSuccessfully(Event):
+    def __init__(self, data):
+        self.data = data
+
 
 class InvalidLessonPageResponseFromOpenAI(Event):
     def __init__(self, data):
