@@ -1,10 +1,9 @@
+from termcolor import colored
 from db.db import DB, Outline, Response, Page
 from ..mapping.map_page_content_to_nodes_handler import MapPageContentToNodesHandler
 from ..validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import InvalidFinalChallengePageResponseFromOpenAI, FinalChallengePageResponseProcessedSuccessfully
-from sqlalchemy.orm.attributes import flag_modified
-from termcolor import colored
 
 
 class ProcessFinalSkillChallengePageResponseHandler:
@@ -40,7 +39,7 @@ class ProcessFinalSkillChallengePageResponseHandler:
 
         try:
             nodes = MapPageContentToNodesHandler({'pageId': self.page.id}).handle()
-            self._save_nodes_to_page(nodes)
+            self.page.update_properties(DB, {'nodes': nodes})
         except Exception as e:
             print(colored(f"Error parsing page nodes. Retrying... Error: {e}", "yellow"))
             return EVENT_MANAGER.trigger(InvalidFinalChallengePageResponseFromOpenAI(self.event_payload))
@@ -81,17 +80,4 @@ class ProcessFinalSkillChallengePageResponseHandler:
         self.page.generated = True
 
         # Save to Database
-        DB.commit()
-
-
-    def _save_nodes_to_page(self, nodes: list[dict]):
-        updated_properties = {
-            **self.page.get_properties(),
-            "nodes": nodes,
-        }
-
-        self.page.properties = updated_properties
-
-        flag_modified(self.page, "properties")
-
         DB.commit()

@@ -3,7 +3,6 @@ from src.events.event_manager import EVENT_MANAGER
 from src.events.events import GenerateSkillsResponseProcessedSuccessfully, InvalidGenerateSkillsResponseFromOpenAI, FailedToParseYamlFromGenerateSkillsResponse
 from ..validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
-from sqlalchemy.orm.attributes import flag_modified
 
 
 
@@ -37,22 +36,8 @@ class ProcessGenerateSkillsResponseHandler:
         if yaml_data['error']:
             return EVENT_MANAGER.trigger(FailedToParseYamlFromGenerateSkillsResponse(self.event_payload))
 
-        self._save_skills_to_outline(skills_obj)
+        self.outline.update_properties(DB, {'skills': skills_obj})
 
         return EVENT_MANAGER.trigger(
             GenerateSkillsResponseProcessedSuccessfully(self.event_payload)
         )
-
-
-    def _save_skills_to_outline(self, skills_obj: dict):
-        outline_properties = self.outline.properties or {}
-
-        properties = {
-            **outline_properties,
-            'skills': skills_obj
-        }
-
-        self.outline.properties = properties
-        flag_modified(self.outline, "properties")
-
-        DB.commit()

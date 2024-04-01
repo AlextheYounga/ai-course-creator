@@ -3,7 +3,6 @@ from src.events.event_manager import EVENT_MANAGER
 from src.events.events import OutlineChunkResponseProcessedSuccessfully, InvalidOutlineChunkResponseFromOpenAI, FailedToParseYamlFromOutlineChunkResponse
 from ..validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
 from ..parse_yaml_from_response_handler import ParseYamlFromResponseHandler
-from sqlalchemy.orm.attributes import flag_modified
 
 
 
@@ -47,16 +46,7 @@ class ProcessOutlineChunkResponseHandler:
 
 
     def _save_chunk_to_outline(self, chunk_obj: dict):
-        outline_properties = self.outline.properties
-        existing_outline_chunks = outline_properties.get('outlineChunks', [])
+        existing_outline_chunks = self.outline.get_properties().get('outlineChunks', [])
         updated_outline_chunks = existing_outline_chunks + chunk_obj
 
-        properties = {
-            **outline_properties,
-            'outlineChunks': updated_outline_chunks
-        }
-
-        self.outline.properties = properties
-        flag_modified(self.outline, "properties")
-
-        DB.commit()
+        self.outline.update_properties(DB, {'outlineChunks': updated_outline_chunks})

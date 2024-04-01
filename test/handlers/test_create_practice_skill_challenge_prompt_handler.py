@@ -12,7 +12,7 @@ DB_PATH = 'test/data/test.db'
 
 def __setup_test():
     truncate_tables()
-    thread = Thread.start(__name__, DB)
+    thread = Thread.start(DB, __name__)
     topics_file = "storage/topics.example.yaml"
     ScanTopicsFileHandler({"topicsFile": topics_file}).handle()
     CreateNewOutlineHandler({'threadId': thread.id, 'topicId': 1, 'outlineData': OUTLINE_DATA}).handle()

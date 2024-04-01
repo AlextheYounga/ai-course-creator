@@ -1,9 +1,9 @@
-from db.db import DB, Thread, Outline, Topic
-from src.events.event_manager import EVENT_MANAGER
-from src.events.events import MasterOutlineCompiledFromOutlineChunks, OutlineGenerationProcessCompletedSuccessfully
 from termcolor import colored
 import os
 import yaml
+from db.db import DB, Thread, Outline, Topic
+from src.events.event_manager import EVENT_MANAGER
+from src.events.events import MasterOutlineCompiledFromOutlineChunks, OutlineGenerationProcessCompletedSuccessfully
 
 
 class CompileOutlineChunksToMasterOutlineHandler:
@@ -24,8 +24,7 @@ class CompileOutlineChunksToMasterOutlineHandler:
 
 
     def handle(self) -> Outline:
-        outline_properties = self.outline.properties or {}
-        if not outline_properties.get('outlineChunks', False):
+        if not self.outline.get_properties().get('outlineChunks', False):
             raise Exception("OutlineChunks not found in outline properties.")
 
         outline_data = self._compile_outline_data_from_chunks()
