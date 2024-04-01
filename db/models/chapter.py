@@ -1,11 +1,8 @@
-from .base import Base
-from .topic import Topic
 from sqlalchemy.sql import func
-from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey
+from sqlalchemy import Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
 from src.utils.strings import slugify
-from sqlalchemy.orm import Session
-
+from .base import Base
 
 
 class Chapter(Base):
@@ -22,19 +19,6 @@ class Chapter(Base):
 
     topic = relationship("Topic", back_populates="chapters")
 
-    def make_slug(name, course_slug):
-        return slugify(name) if name != 'Final Skill Challenge' else f"final-skill-challenge-{course_slug}"
-
-
-    def get_content_type(slug):
-        if 'final-skill-challenge' in slug:
-            return 'final-skill-challenge'
-
-        if 'challenge' in slug:
-            return 'challenge'
-
-        return 'lesson'
-
 
     def to_dict(self):
         return {
@@ -48,3 +32,19 @@ class Chapter(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+
+    @classmethod
+    def make_slug(cls, name, course_slug):
+        return slugify(name) if name != 'Final Skill Challenge' else f"final-skill-challenge-{course_slug}"
+
+
+    @classmethod
+    def get_content_type(cls, slug):
+        if 'final-skill-challenge' in slug:
+            return 'final-skill-challenge'
+
+        if 'challenge' in slug:
+            return 'challenge'
+
+        return 'lesson'

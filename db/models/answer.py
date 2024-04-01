@@ -1,8 +1,8 @@
-from .base import Base
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
 from sqlalchemy.orm import Session
+from .base import Base
 
 
 
@@ -32,15 +32,16 @@ class Answer(Base):
             "updated_at": self.updated_at,
         }
 
+
     @classmethod
-    def save(self, DB: Session, question_id: int, value: str):
-        answer = self(
+    def save(cls, db: Session, question_id: int, value: str):
+        answer = cls(
             question_id=question_id,
             value=value,
             value_type=type(value).__name__
         )
 
-        DB.add(answer)
-        DB.commit()
+        db.add(answer)
+        db.commit()
 
         return answer

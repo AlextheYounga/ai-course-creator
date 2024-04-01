@@ -1,8 +1,8 @@
-from .base import Base
 from sqlalchemy.sql import func
 from sqlalchemy import ForeignKey, Integer, String, DateTime, Text, JSON
-from sqlalchemy.orm import mapped_column, relationship
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, mapped_column, relationship
+from sqlalchemy.orm.attributes import flag_modified
+from .base import Base
 
 
 
@@ -46,13 +46,26 @@ class Prompt(Base):
         }
 
 
-    def increment_attempts(self, DB: Session):
+    def get_properties(self):
+        return self.properties or {}
+
+
+    def update_properties(self, db: Session, properties: dict):
+        self.properties = self.get_properties()
+        self.properties.update(properties)
+        flag_modified(self, 'properties')
+        db.commit()
+
+        return self
+
+
+    def increment_attempts(self, db: Session):
         attempts = self.attempts + 1
 
         if attempts > 3:
             raise Exception("Invalid response; maximum retries exceeded. Aborting...")
 
         self.attempts = attempts
-        DB.commit()
+        db.commit()
 
         return self

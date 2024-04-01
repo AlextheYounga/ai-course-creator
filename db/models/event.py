@@ -1,8 +1,8 @@
-from .base import Base
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, DateTime, JSON
-from sqlalchemy.orm import mapped_column
-
+from sqlalchemy.orm import Session, mapped_column
+from sqlalchemy.orm.attributes import flag_modified
+from .base import Base
 
 
 class Event(Base):
@@ -24,3 +24,16 @@ class Event(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+
+    def get_data(self):
+        return self.data or {}
+
+
+    def update_data(self, db: Session, data: dict):
+        self.data = self.get_data()
+        self.data.update(data)
+        flag_modified(self, 'data')
+        db.commit()
+
+        return self

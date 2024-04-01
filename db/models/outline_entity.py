@@ -1,9 +1,8 @@
-from .base import Base
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
-
 from sqlalchemy.orm import Session
+from .base import Base
 
 
 
@@ -30,55 +29,55 @@ class OutlineEntity(Base):
 
 
     @classmethod
-    def first_or_create(self, DB: Session, outline_id: int, entity):
-        entity_record = DB.query(self).filter(
-            self.outline_id == outline_id,
-            self.entity_id == entity.id,
-            self.entity_type == type(entity).__name__
+    def first_or_create(cls, db: Session, outline_id: int, entity):
+        entity_record = db.query(cls).filter(
+            cls.outline_id == outline_id,
+            cls.entity_id == entity.id,
+            cls.entity_type == type(entity).__name__
         ).first()
 
         if entity_record: return entity_record
 
-        entity_record = self(
+        entity_record = cls(
             outline_id=outline_id,
             entity_id=entity.id,
             entity_type=type(entity).__name__
         )
 
-        DB.add(entity_record)
-        DB.commit()
+        db.add(entity_record)
+        db.commit()
 
         return entity_record
 
 
     @classmethod
-    def create_entity(self, DB: Session, outline_id: int, entity):
-        entity = self(
+    def create_entity(cls, db: Session, outline_id: int, entity):
+        entity = cls(
             outline_id=outline_id,
             entity_id=entity.id,
             entity_type=type(entity).__name__
         )
 
-        DB.add(entity)
-        DB.commit()
+        db.add(entity)
+        db.commit()
 
         return entity
 
 
     @classmethod
-    def create_entities(self, DB: Session, outline_id: int, entities: list):
+    def create_entities(cls, db: Session, outline_id: int, entities: list):
         records = []
 
         for data in entities:
-            entity = self(
+            entity = cls(
                 outline_id=outline_id,
                 entity_id=data.id,
                 entity_type=type(data).__name__
             )
 
-            DB.add(entity)
+            db.add(entity)
             records.append(entity)
 
-        DB.commit()
+        db.commit()
 
         return records

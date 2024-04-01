@@ -1,0 +1,11 @@
+[MASTER]
+disable=
+    C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    C0116, # missing-function-docstring
+    C0321, # no single-line statements
+    W0718, # catch-all exception
+    W0719, # too general exceptions
+    C0412, # imports not grouped correctly
+    C0121, # singleton comparison
+    C0301, # line too long

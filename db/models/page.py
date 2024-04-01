@@ -1,13 +1,11 @@
 import os
-from .base import Base
-from .topic import Topic
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, JSON, DateTime, Text, ForeignKey, Boolean
-from sqlalchemy.orm import mapped_column, relationship
-from src.utils.strings import slugify, string_hash
+from sqlalchemy.orm import Session, mapped_column, relationship
+from sqlalchemy.orm.attributes import flag_modified
 from termcolor import colored
-from sqlalchemy.orm import Session
-
+from src.utils.strings import slugify, string_hash
+from .base import Base
 
 
 class Page(Base):
@@ -35,41 +33,25 @@ class Page(Base):
 
     topic = relationship("Topic", back_populates="pages")
 
-    def make_slug(name, course_slug, chapter_slug):
-        if name == 'Practice Skill Challenge':
-            return f"challenge-{chapter_slug}"
-        if 'Final Skill Challenge' in name:
-            return f"{course_slug}-{slugify(name)}"
-        return slugify(name)
-
 
     def get_properties(self):
         return self.properties or {}
 
-    def hash_page(content):
-        page_material = content.strip()
 
-        try:
-            return string_hash(page_material)
-        except Exception:
-            return None
+    def update_properties(self, db: Session, properties: dict):
+        self.properties = self.get_properties()
+        self.properties.update(properties)
+        flag_modified(self, 'properties')
+        db.commit()
 
-
-    def get_page_type(name, chapter_slug):
-        if "final-skill-challenge" in chapter_slug:
-            return 'final-skill-challenge'
-
-        if ('Practice Skill Challenge' in name):
-            return 'challenge'
-
-        return 'lesson'
+        return self
 
 
     def dump_page(self):
         print(colored(f"Writing page: {self.path}", "green"))
 
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
-        with open(self.path, 'w') as f:
+        with open(self.path, 'w', encoding="utf-8") as f:
             f.write(self.content)
             f.close()
 
@@ -97,6 +79,35 @@ class Page(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+    @classmethod
+    def make_slug(cls, name, course_slug, chapter_slug):
+        if name == 'Practice Skill Challenge':
+            return f"challenge-{chapter_slug}"
+        if 'Final Skill Challenge' in name:
+            return f"{course_slug}-{slugify(name)}"
+        return slugify(name)
+
+
+    @classmethod
+    def hash_page(cls, content):
+        page_material = content.strip()
+
+        try:
+            return string_hash(page_material)
+        except Exception:
+            return None
+
+
+    @classmethod
+    def get_page_type(cls, name, chapter_slug):
+        if "final-skill-challenge" in chapter_slug:
+            return 'final-skill-challenge'
+
+        if 'Practice Skill Challenge' in name:
+            return 'challenge'
+
+        return 'lesson'
 
 
     @staticmethod

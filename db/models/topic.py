@@ -1,10 +1,10 @@
-from .base import Base
-from src.utils.files import read_yaml_file
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, DateTime, JSON
-from sqlalchemy.orm import mapped_column, relationship
+from sqlalchemy.orm import Session, mapped_column, relationship
+from sqlalchemy.orm.attributes import flag_modified
 from src.utils.strings import slugify
-from sqlalchemy.orm import Session
+from src.utils.files import read_yaml_file
+from .base import Base
 
 
 
@@ -39,9 +39,6 @@ class Topic(Base):
         cascade="all, delete-orphan"
     )
 
-    def make_slug(name):
-        return slugify(name)
-
 
     def to_dict(self):
         return {
@@ -64,6 +61,15 @@ class Topic(Base):
         return self.properties or {}
 
 
+    def update_properties(self, db: Session, properties: dict):
+        self.properties = self.get_properties()
+        self.properties.update(properties)
+        flag_modified(self, 'properties')
+        db.commit()
+
+        return self
+
+
     def get_settings(self, level: str = 'global'):
         properties = self.get_properties()
         settings = properties.get('settings', {})
@@ -74,9 +80,13 @@ class Topic(Base):
         return settings.get('global', {})
 
 
+    @classmethod
+    def make_slug(cls, name):
+        return slugify(name)
+
 
     @classmethod
-    def get_topic_properties_from_file(self, name: str):
+    def get_topic_properties_from_file(cls, name: str):
         topics_data = read_yaml_file("storage/topics.yaml")
         topic = topics_data['topics'][name]
         if topic: return topic
@@ -84,21 +94,18 @@ class Topic(Base):
 
 
     @classmethod
-    def first_or_create(self, DB: Session, name: str):
-        topic_record = DB.query(self).filter(self.name == name).first()
+    def first_or_create(cls, db: Session, name: str):
+        topic_record = db.query(cls).filter(cls.name == name).first()
         if topic_record: return topic_record
 
-        topic_slug = self.make_slug(name)
-        properties = self.get_topic_properties_from_file(name)
-
-        new_topic_record = self(
+        new_topic_record = cls(
             name=name,
-            slug=topic_slug,
-            properties=properties
+            slug=cls.make_slug(name),
+            properties=cls.get_topic_properties_from_file(name)
         )
 
         # Save topic to database
-        DB.add(new_topic_record)
-        DB.commit()
+        db.add(new_topic_record)
+        db.commit()
 
         return new_topic_record

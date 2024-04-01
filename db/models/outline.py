@@ -1,18 +1,15 @@
-import os
+from sqlalchemy.sql import func
+from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey
+from sqlalchemy.orm import Session, mapped_column, relationship
+from sqlalchemy.orm.attributes import flag_modified
+import yaml
+from src.utils.strings import string_hash
 from .base import Base
 from .topic import Topic
 from .chapter import Chapter
 from .course import Course
 from .page import Page
 from .outline_entity import OutlineEntity
-from sqlalchemy.sql import func
-from termcolor import colored
-from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey
-from sqlalchemy.orm import mapped_column, relationship
-from src.utils.files import read_yaml_file
-from sqlalchemy.orm import Session
-from src.utils.strings import string_hash
-import yaml
 
 
 class Outline(Base):
@@ -50,49 +47,30 @@ class Outline(Base):
         }
 
 
+    def get_properties(self):
+        return self.properties or {}
+
+
+    def update_properties(self, db: Session, properties: dict):
+        self.properties = self.get_properties()
+        self.properties.update(properties)
+        flag_modified(self, 'properties')
+        db.commit()
+
+        return self
+
+
     @classmethod
-    def get_master_outline(self, DB: Session, topic: Topic):
+    def get_master_outline(cls, db: Session, topic: Topic):
         if topic.master_outline_id:
-            master_outline_record = DB.query(self).filter(
-                self.topic_id == topic.id,
-                self.id == topic.master_outline_id
+            master_outline_record = db.query(cls).filter(
+                cls.topic_id == topic.id,
+                cls.id == topic.master_outline_id
             ).first()
 
             if master_outline_record: return master_outline_record
 
         return None
-
-
-
-    @classmethod
-    def import_outline(self, DB: Session, topic_id: int, outline_file: str):
-        topic = DB.get(Topic, topic_id)
-
-        outline_data = open(outline_file).read()
-        outline_hash = self.hash_outline(outline_data)
-        outline = DB.query(self).filter(self.hash == outline_hash).first()
-
-        if outline:
-            print(colored(f"Outline already exists with hash {outline_hash}", "red"))
-
-        # Create new outline record
-        new_outline = self.instantiate(DB, topic_id)
-        new_outline.outline_data = read_yaml_file(outline_file)  # Add changed outline to record
-        new_outline.hash = self.hash_outline(new_outline.outline_data)
-        new_outline.file_path = outline_file
-
-        DB.add(new_outline)
-        DB.commit()
-        print(colored(f"New outline created {new_outline.name}\n", "green"))
-
-        topic.master_outline_id = new_outline.id
-        DB.commit()
-        print(colored(f"New master outline set {new_outline.id}\n", "green"))
-
-        # Create outline entities
-        self.create_outline_entities(DB, new_outline.id)
-
-        return new_outline
 
 
     @staticmethod
@@ -110,28 +88,28 @@ class Outline(Base):
 
 
     @staticmethod
-    def get_entities_by_type(DB: Session, outline_id: int, type: str):
-        if type == 'Course':
-            return DB.query(Course).join(
+    def get_entities_by_type(db: Session, outline_id: int, entity_type: str):
+        if entity_type == 'Course':
+            return db.query(Course).join(
                 OutlineEntity, OutlineEntity.entity_id == Course.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
-                OutlineEntity.entity_type == type
+                OutlineEntity.entity_type == entity_type
             ).all()
-        elif type == 'Chapter':
-            return DB.query(Chapter).join(
+        elif entity_type == 'Chapter':
+            return db.query(Chapter).join(
                 OutlineEntity, OutlineEntity.entity_id == Chapter.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
-                OutlineEntity.entity_type == type
+                OutlineEntity.entity_type == entity_type
             ).all()
 
-        elif type == 'Page':
-            return DB.query(Page).join(
+        elif entity_type == 'Page':
+            return db.query(Page).join(
                 OutlineEntity, OutlineEntity.entity_id == Page.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
-                OutlineEntity.entity_type == type,
+                OutlineEntity.entity_type == entity_type,
                 Page.active == True,
             ).all()
         else:
@@ -139,23 +117,23 @@ class Outline(Base):
 
 
     @staticmethod
-    def get_entities(DB: Session, outline_id: int):
+    def get_entities(db: Session, outline_id: int):
         return {
-            'courses': DB.query(Course).join(
+            'courses': db.query(Course).join(
                 OutlineEntity, OutlineEntity.entity_id == Course.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
                 OutlineEntity.entity_type == 'Course'
             ).all(),
 
-            'chapters': DB.query(Chapter).join(
+            'chapters': db.query(Chapter).join(
                 OutlineEntity, OutlineEntity.entity_id == Chapter.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,
                 OutlineEntity.entity_type == 'Chapter'
             ).all(),
 
-            'pages': DB.query(Page).join(
+            'pages': db.query(Page).join(
                 OutlineEntity, OutlineEntity.entity_id == Page.id
             ).filter(
                 OutlineEntity.outline_id == outline_id,

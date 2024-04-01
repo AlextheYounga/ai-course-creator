@@ -1,8 +1,8 @@
-from .base import Base
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, DateTime
 from sqlalchemy.orm import mapped_column, relationship
 from sqlalchemy.orm import Session
+from .base import Base
 
 
 
@@ -31,13 +31,13 @@ class Question(Base):
         }
 
     @classmethod
-    def save(self, DB: Session, question):
-        question = self(
+    def save(cls, db: Session, question):
+        question = cls(
             question=question,
             hint=None,
         )
 
-        DB.add(question)
-        DB.commit()
+        db.add(question)
+        db.commit()
 
         return question

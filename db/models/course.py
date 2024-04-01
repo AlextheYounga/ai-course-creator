@@ -1,10 +1,9 @@
-from .base import Base
-from .topic import Topic
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey, Boolean
-from sqlalchemy.orm import mapped_column, relationship
+from sqlalchemy.orm import Session, mapped_column, relationship
+from sqlalchemy.orm.attributes import flag_modified
 from src.utils.strings import slugify
-from sqlalchemy.orm import Session
+from .base import Base
 
 
 class Course(Base):
@@ -23,10 +22,6 @@ class Course(Base):
     topic = relationship("Topic", back_populates="courses")
 
 
-    def make_slug(name):
-        return slugify(name)
-
-
     def to_dict(self):
         return {
             "id": self.id,
@@ -40,3 +35,21 @@ class Course(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+
+
+    def get_properties(self):
+        return self.properties or {}
+
+
+    def update_properties(self, db: Session, properties: dict):
+        self.properties = self.get_properties()
+        self.properties.update(properties)
+        flag_modified(self, 'properties')
+        db.commit()
+
+        return self
+
+
+    @classmethod
+    def make_slug(cls, name):
+        return slugify(name)

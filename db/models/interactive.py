@@ -1,8 +1,7 @@
-from .base import Base
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, JSON, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
-from bs4 import BeautifulSoup
+from .base import Base
 
 
 class Interactive(Base):
@@ -30,11 +29,11 @@ class Interactive(Base):
         }
 
     @classmethod
-    def save(self, session, question_id, answer_id, type, content):
-        interactive = self(
+    def save(cls, session, question_id, answer_id, interactive_type, content):
+        interactive = cls(
             question_id=question_id,
             answer_id=answer_id,
-            type=type,
+            type=interactive_type,
             content=content
         )
 
