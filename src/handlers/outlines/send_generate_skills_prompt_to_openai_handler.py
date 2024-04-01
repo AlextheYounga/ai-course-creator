@@ -1,19 +1,18 @@
-from db.db import DB, Outline, Prompt, Response
-from src.events.event_manager import EVENT_MANAGER
-from src.events.events import GenerateSkillsResponseReceivedFromOpenAI
-from ...llm.get_llm_client import get_llm_client
 from termcolor import colored
 import json
 from openai.types.completion import Completion
+from db.db import DB, Topic, Prompt, Response
+from src.events.event_manager import EVENT_MANAGER
+from src.events.events import GenerateSkillsResponseReceivedFromOpenAI
+from ...llm.get_llm_client import get_llm_client
 
 
 
 class SendGenerateSkillsPromptToOpenAIHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
-        self.outline = DB.get(Outline, data['outlineId'])
+        self.data = data
         self.prompt = DB.get(Prompt, data['promptId'])
-        self.topic = self.outline.topic
+        self.topic = DB.get(Topic, data['topicId'])
 
 
     def handle(self) -> GenerateSkillsResponseReceivedFromOpenAI:
@@ -26,10 +25,7 @@ class SendGenerateSkillsPromptToOpenAIHandler:
 
         return EVENT_MANAGER.trigger(
             GenerateSkillsResponseReceivedFromOpenAI({
-                'threadId': self.thread_id,
-                'outlineId': self.outline.id,
-                'topicId': self.topic.id,
-                'promptId': self.prompt.id,
+                **self.data,
                 'responseId': response.id,
             }))
 
@@ -40,8 +36,8 @@ class SendGenerateSkillsPromptToOpenAIHandler:
         }
 
         response = Response(
-            thread_id=self.thread_id,
-            outline_id=self.outline.id,
+            thread_id=self.data['threadId'],
+            outline_id=self.data['outlineId'],
             prompt_id=self.prompt.id,
             role=completion.choices[0].message.role,
             payload=json.loads(completion.model_dump_json()),

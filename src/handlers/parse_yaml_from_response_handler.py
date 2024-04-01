@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 class ParseYamlFromResponseHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
+        self.data = data
         self.response = DB.get(Response, data['responseId'])
         self.yaml_content = ''
 

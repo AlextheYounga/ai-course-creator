@@ -7,11 +7,9 @@ from termcolor import colored
 
 class ValidateResponseFromOpenAIHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
-        self.outline = DB.get(Outline, data['outlineId'])
+        self.data = data
         self.response = DB.get(Response, data['responseId'])
         self.prompt = self.response.prompt
-        self.topic = self.outline.topic
 
 
     def handle(self) -> Outline:

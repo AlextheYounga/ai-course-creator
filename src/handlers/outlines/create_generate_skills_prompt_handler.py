@@ -9,7 +9,7 @@ from ...llm.token_counter import count_tokens_using_encoding
 
 class CreateGenerateSkillsPromptHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
+        self.data = data
         self.outline = DB.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
         self.prompt_subject = 'skills'  # corresponds with key in params.yaml
@@ -26,9 +26,7 @@ class CreateGenerateSkillsPromptHandler:
 
         return EVENT_MANAGER.trigger(
             GenerateSkillsPromptCreated({
-                'threadId': self.thread_id,
-                'outlineId': self.outline.id,
-                'topicId': self.topic.id,
+                **self.data,
                 'promptId': prompt.id,
             }))
 
@@ -54,7 +52,7 @@ class CreateGenerateSkillsPromptHandler:
         }
 
         prompt = Prompt(
-            thread_id=self.thread_id,
+            thread_id=self.data['threadId'],
             outline_id=self.outline.id,
             subject=self.prompt_subject,
             model=properties['params']['model'],

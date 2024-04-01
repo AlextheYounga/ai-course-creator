@@ -1,12 +1,13 @@
+import os
 from db.db import DB, Outline, OutlineEntity, Course, Chapter, Page
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import OutlineEntitiesCreatedFromOutline
-import os
+
 
 
 class CreateOutlineEntitiesFromOutlineHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
+        self.data = data
         self.outline = DB.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
 
@@ -45,11 +46,7 @@ class CreateOutlineEntitiesFromOutlineHandler:
             OutlineEntity.first_or_create(DB, self.outline.id, course_record)
 
         return EVENT_MANAGER.trigger(
-            OutlineEntitiesCreatedFromOutline({
-                'threadId': self.thread_id,
-                'outlineId': self.outline.id,
-                'topicId': self.topic.id,
-            }))
+            OutlineEntitiesCreatedFromOutline(self.data))
 
 
     def _get_first_or_create_course(self, name, position):

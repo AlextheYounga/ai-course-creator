@@ -1,16 +1,16 @@
+from termcolor import colored
+import yaml
+import os
 from db.db import DB, Topic, Outline
 from .create_outline_entities_from_outline_handler import CreateOutlineEntitiesFromOutlineHandler
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import NewOutlineCreated
-from termcolor import colored
-import yaml
-import os
 
 
 
 class CreateNewOutlineHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
+        self.data = data
         self.topic = DB.get(Topic, data['topicId'])
         self.outline_data = self._read_outline_data(data['outlineData'])
 
@@ -44,15 +44,14 @@ class CreateNewOutlineHandler:
 
         # Create outline entities
         CreateOutlineEntitiesFromOutlineHandler({
-            'threadId': self.thread_id,
+            **self.data,
             'outlineId': new_outline.id,
-            'topicId': self.topic.id
+
         }).handle()
 
         return EVENT_MANAGER.trigger(
             NewOutlineCreated({
-                'threadId': self.thread_id,
-                'topicId': self.topic.id,
+                **self.data,
                 'outlineId': new_outline.id
             }))
 

@@ -1,3 +1,4 @@
+import yaml
 from db.db import DB, Outline, Prompt
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import AllGenerateOutlineChunksPromptsCreated
@@ -5,12 +6,12 @@ from ...llm.get_prompt import get_prompt
 from ...utils.chunks import chunks_list
 from ...llm.get_llm_params import get_llm_params
 from ...llm.token_counter import count_tokens_using_encoding
-import yaml
+
 
 
 class CreateAllOutlineChunkPromptsHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
+        self.data = data
         self.outline = DB.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
         self.prompt_subject = 'outline'  # corresponds with key in params.yaml
@@ -37,10 +38,8 @@ class CreateAllOutlineChunkPromptsHandler:
 
         return EVENT_MANAGER.trigger(
             AllGenerateOutlineChunksPromptsCreated({
-                'threadId': self.thread_id,
-                'outlineId': self.outline.id,
+                **self.data,
                 'promptIds': prompt_ids,
-                'topicId': self.topic.id,
             }))
 
 
@@ -78,7 +77,7 @@ class CreateAllOutlineChunkPromptsHandler:
         }
 
         prompt = Prompt(
-            thread_id=self.thread_id,
+            thread_id=self.data['threadId'],
             outline_id=self.outline.id,
             subject=self.prompt_subject,
             model=properties['params']['model'],

@@ -1,13 +1,13 @@
+import os
 from db.db import DB, Topic, Outline
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import NewOutlineInstantiated
-import os
 
 
 
 class InstantiateOutlineHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
+        self.data = data
         self.topic = DB.get(Topic, data['topicId'])
 
 
@@ -28,8 +28,7 @@ class InstantiateOutlineHandler:
 
         return EVENT_MANAGER.trigger(
             NewOutlineInstantiated({
-                'threadId': self.thread_id,
-                'topicId': self.topic.id,
+                **self.data,
                 'outlineId': new_outline.id
             }))
 
