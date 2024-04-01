@@ -6,10 +6,9 @@ from ...llm import *
 
 class CreateSummarizePagePromptHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
+        self.data = data
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
-        self.topic = self.outline.topic
         self.prompt_subject = 'summarize-page'  # corresponds with key in params.yaml
 
 
@@ -25,11 +24,8 @@ class CreateSummarizePagePromptHandler:
 
         return EVENT_MANAGER.trigger(
             SummarizePagePromptCreated({
-                'threadId': self.thread_id,
-                'outlineId': self.outline.id,
-                'topicId': self.topic.id,
+                **self.data,
                 'promptId': prompt.id,
-                'pageId': self.page.id,
             }))
 
 
@@ -50,8 +46,8 @@ class CreateSummarizePagePromptHandler:
         }
 
         prompt = Prompt(
-            thread_id=self.thread_id,
-            outline_id=self.outline.id,
+            thread_id=self.data['threadId'],
+            outline_id=self.data['outlineId'],
             subject=self.prompt_subject,
             model=properties['params']['model'],
             content=content,

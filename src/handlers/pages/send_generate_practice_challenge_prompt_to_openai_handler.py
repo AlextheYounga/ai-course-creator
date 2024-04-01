@@ -9,11 +9,9 @@ import json
 
 class SendGeneratePracticeChallengePromptToOpenAIHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
-        self.outline = DB.get(Outline, data['outlineId'])
+        self.data = data
         self.prompt = DB.get(Prompt, data['promptId'])
         self.page = DB.get(Page, data['pageId'])
-        self.topic = self.outline.topic
 
 
     def handle(self):
@@ -41,8 +39,8 @@ class SendGeneratePracticeChallengePromptToOpenAIHandler:
         }
 
         response = Response(
-            thread_id=self.thread_id,
-            outline_id=self.outline.id,
+            thread_id=self.data['threadId'],
+            outline_id=self.data['outlineId'],
             prompt_id=self.prompt.id,
             role=completion.choices[0].message.role,
             payload=json.loads(completion.model_dump_json()),
@@ -63,7 +61,7 @@ class SendGeneratePracticeChallengePromptToOpenAIHandler:
         chapter_pages = DB.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
-            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.outline_id == self.data['outlineId'],
             OutlineEntity.entity_type == "Page",
             Page.course_id == page.course_id,
             Page.chapter_id == page.chapter_id,
@@ -75,13 +73,7 @@ class SendGeneratePracticeChallengePromptToOpenAIHandler:
 
 
     def _event_payload(self, response: Response | None = None):
-        payload = {
-            'threadId': self.thread_id,
-            'outlineId': self.outline.id,
-            'topicId': self.topic.id,
-            'promptId': self.prompt.id,
-            'pageId': self.page.id,
-        }
+        payload = self.data.copy()
 
         if response:
             payload['responseId'] = response.id

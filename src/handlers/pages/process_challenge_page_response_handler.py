@@ -9,30 +9,18 @@ from src.events.events import InvalidPracticeChallengePageResponseFromOpenAI, Ch
 
 class ProcessChallengePageResponseHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
-        self.outline = DB.get(Outline, data['outlineId'])
+        self.data = data
         self.response = DB.get(Response, data['responseId'])
         self.page = DB.get(Page, data['pageId'])
-        self.prompt = self.response.prompt
-        self.topic = self.outline.topic
-        self.event_payload = {
-            'threadId': self.thread_id,
-            'outlineId': self.outline.id,
-            'responseId': self.response.id,
-            'topicId': self.topic.id,
-            'promptId': self.prompt.id,
-            'pageId': self.page.id,
-            **data
-        }
 
     def handle(self) -> Outline:
         completion = self.response.payload
 
-        validated_response = ValidateResponseFromOpenAIHandler(self.event_payload).handle()
+        validated_response = ValidateResponseFromOpenAIHandler(self.data).handle()
 
         if not validated_response:
             print(colored(f"Invalid response from OpenAI. Retrying...", "yellow"))
-            return EVENT_MANAGER.trigger(InvalidPracticeChallengePageResponseFromOpenAI(self.event_payload))
+            return EVENT_MANAGER.trigger(InvalidPracticeChallengePageResponseFromOpenAI(self.data))
 
         content = self._add_header_to_challenge_content(completion)
 
@@ -43,10 +31,10 @@ class ProcessChallengePageResponseHandler:
             self.page.update_properties(DB, {'nodes': nodes})
         except Exception as e:
             print(colored(f"Error parsing page nodes. Retrying... Error: {e}", "yellow"))
-            return EVENT_MANAGER.trigger(InvalidPracticeChallengePageResponseFromOpenAI(self.event_payload))
+            return EVENT_MANAGER.trigger(InvalidPracticeChallengePageResponseFromOpenAI(self.data))
 
         return EVENT_MANAGER.trigger(
-            ChallengePageResponseProcessedSuccessfully(self.event_payload)
+            ChallengePageResponseProcessedSuccessfully(self.data)
         )
 
     def _add_header_to_challenge_content(self, completion: dict):

@@ -1,4 +1,4 @@
-from db.db import DB, Outline, OutlineEntity, Page
+from db.db import DB, OutlineEntity, Page
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import NoExistingPageContentForLesson, NoExistingPageContentForPracticeChallenge, NoExistingPageContentForFinalChallenge
 from src.events.events import NewLessonPageCreatedFromExistingPage, NewPracticeChallengePageCreatedFromExistingPage, NewFinalChallengePageCreatedFromExistingPage
@@ -7,10 +7,8 @@ from src.events.events import ExistingPageSoftDeletedForPageRegeneration
 
 class CheckForExistingPageMaterialHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
-        self.outline = DB.get(Outline, data['outlineId'])
+        self.data = data
         self.page = DB.get(Page, data['pageId'])
-        self.topic = self.outline.topic
 
 
     def handle(self) -> Page:
@@ -61,7 +59,7 @@ class CheckForExistingPageMaterialHandler:
         DB.add(new_page)
         DB.commit()
 
-        OutlineEntity.first_or_create(DB, self.outline.id, new_page)
+        OutlineEntity.first_or_create(DB, self.data.get('outlineId'), new_page)
 
         return new_page
 
@@ -76,8 +74,6 @@ class CheckForExistingPageMaterialHandler:
 
     def _event_payload(self, page: Page):
         return {
-            'threadId': self.thread_id,
-            'outlineId': self.outline.id,
-            'topicId': self.topic.id,
-            'pageId': page.id,
+            **self.data,
+            'pageId': page.id
         }

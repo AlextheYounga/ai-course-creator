@@ -1,4 +1,4 @@
-from db.db import DB, Outline, OutlineEntity, Prompt, Page
+from db.db import DB, Topic, OutlineEntity, Prompt, Page
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import FinalSkillChallengePagePromptCreated
 from ...llm import *
@@ -7,10 +7,9 @@ from ...llm import *
 
 class CreateFinalSkillChallengePromptHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
-        self.outline = DB.get(Outline, data['outlineId'])
+        self.data = data
+        self.topic = DB.get(Topic, data['topicId'])
         self.page = DB.get(Page, data['pageId'])
-        self.topic = self.outline.topic
         self.prompt_subject = 'final-skill-challenge'  # corresponds with key in params.yaml
 
 
@@ -25,11 +24,8 @@ class CreateFinalSkillChallengePromptHandler:
 
         return EVENT_MANAGER.trigger(
             FinalSkillChallengePagePromptCreated({
-                'threadId': self.thread_id,
-                'outlineId': self.outline.id,
-                'topicId': self.topic.id,
+                **self.data,
                 'promptId': prompt.id,
-                'pageId': self.page.id,
             }))
 
 
@@ -102,7 +98,7 @@ class CreateFinalSkillChallengePromptHandler:
         pages = DB.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
-            OutlineEntity.outline_id == self.outline.id,
+            OutlineEntity.outline_id == self.data['outlineId'],
             OutlineEntity.entity_type == "Page",
             Page.course_id == self.page.course_id,
             Page.type == 'lesson',
@@ -125,8 +121,8 @@ class CreateFinalSkillChallengePromptHandler:
         }
 
         prompt = Prompt(
-            thread_id=self.thread_id,
-            outline_id=self.outline.id,
+            thread_id=self.data['threadId'],
+            outline_id=self.data['outlineId'],
             subject=self.prompt_subject,
             model=properties['params']['model'],
             content=content,

@@ -1,13 +1,13 @@
+import yaml
 from db.db import DB, Outline, OutlineEntity, Prompt, Page
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import LessonPagePromptCreated
 from ...llm import *
-import yaml
 
 
 class CreateLessonPagePromptHandler:
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
+        self.data = data
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
@@ -25,11 +25,8 @@ class CreateLessonPagePromptHandler:
 
         return EVENT_MANAGER.trigger(
             LessonPagePromptCreated({
-                'threadId': self.thread_id,
-                'outlineId': self.outline.id,
-                'topicId': self.topic.id,
+                **self.data,
                 'promptId': prompt.id,
-                'pageId': self.page.id,
             }))
 
 
@@ -162,7 +159,7 @@ class CreateLessonPagePromptHandler:
         }
 
         prompt = Prompt(
-            thread_id=self.thread_id,
+            thread_id=self.data['threadId'],
             outline_id=self.outline.id,
             subject=self.prompt_subject,
             model=properties['params']['model'],

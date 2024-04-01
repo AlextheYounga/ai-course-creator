@@ -1,23 +1,22 @@
-from db.db import DB, Page, Outline, Prompt, Response
+from openai.types.completion import Completion
+import json
+from db.db import DB, Page, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import LessonPageProcessedAndSummarizedSuccessfully, InvalidPageSummaryResponseFromOpenAI
 from ...llm.get_llm_client import get_llm_client
 from .create_summarize_page_prompt_handler import CreateSummarizePagePromptHandler
-from openai.types.completion import Completion
-import json
-
-"""
-This handler is the simplest LLM handler, as it requires no real validation. The request is sent, processed
-and saved from this single handler. 
-"""
 
 
 class GenerateLessonPageSummaryHandler():
+    """
+    This handler is the simplest LLM handler, as it requires no real validation. The request is sent, processed
+    and saved from this single handler. 
+    """
+
     def __init__(self, data: dict):
-        self.thread_id = data['threadId']
-        self.outline = DB.get(Outline, data['outlineId'])
+        self.data = data
         self.page = DB.get(Page, data['pageId'])
-        self.topic = self.outline.topic
+
 
     def handle(self):
         # Build prompt
@@ -52,8 +51,8 @@ class GenerateLessonPageSummaryHandler():
         }
 
         response = Response(
-            thread_id=self.thread_id,
-            outline_id=self.outline.id,
+            thread_id=self.data['threadId'],
+            outline_id=self.data['outlineId'],
             prompt_id=prompt.id,
             role=completion.choices[0].message.role,
             payload=json.loads(completion.model_dump_json()),
@@ -77,12 +76,7 @@ class GenerateLessonPageSummaryHandler():
 
 
     def _event_payload(self, prompt: Prompt | None = None, response: Response | None = None):
-        payload = {
-            'threadId': self.thread_id,
-            'outlineId': self.outline.id,
-            'topicId': self.topic.id,
-            'pageId': self.page.id,
-        }
+        payload = self.data
 
         if prompt:
             payload['promptId'] = prompt.id
