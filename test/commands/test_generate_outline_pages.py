@@ -38,7 +38,7 @@ def test_generate_outline_pages():
         'InvalidLessonPageResponseFromOpenAI'
     ]
 
-    task = GenerateOutlinePages(topic_id=1)
+    task = GenerateOutlinePages(topic_id=1, progress_bar=False)
 
     task.run()
 

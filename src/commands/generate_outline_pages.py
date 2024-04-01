@@ -15,8 +15,9 @@ EVENT_MANAGER.trigger(Event(data))
 
 
 class GenerateOutlinePages:
-    def __init__(self, topic_id: int, only_page_type: str | None = None):
+    def __init__(self, topic_id: int, only_page_type: str | None = None, progress_bar: bool = False):
         EVENT_MANAGER.refresh()
+        EVENT_MANAGER.show_progress = progress_bar
 
         self.topic = DB.get(Topic, topic_id)
         self.only_page_type = only_page_type

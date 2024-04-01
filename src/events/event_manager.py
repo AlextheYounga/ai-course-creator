@@ -8,7 +8,7 @@ class EventManager:
     def __init__(self):
         self.handlers = {}
         self.show_progress = False
-        self.progressbar = None
+        self.progressbar = EventProgressbar()
 
     def subscribe(self, events: list[Event], handler):
         for event_type in events:
@@ -75,15 +75,6 @@ class EventManager:
 
     def __update_progress(self, event: Event):
         if self.show_progress:
-            if self.progressbar == None:
-                thread_id = event.data['threadId']
-
-                max_value = event.data.get('totalSteps', False) # We need a total to show the progress bar
-                if not max_value:
-                    return
-                
-                self.progressbar = EventProgressbar(thread_id).start(event)
-        
             self.progressbar.update_on_event(event)
 
 

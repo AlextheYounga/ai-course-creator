@@ -1,54 +1,68 @@
 from db.db import DB, Thread
 from ..events.events import Event
-import tqdm
+import progressbar
 
-START_EVENTS = [
-'GeneratePracticeChallengePageProcessStarted',
-'GenerateFinalSkillChallengePageProcessStarted',
-'GenerateLessonPageProcessStarted'
-]
 
+# This is a helper class to show a progress bar for events that have a total number of steps
+# This was incredibly finicky to set up. Yes it is a bit hacky but it works.
 
 INCREMENT_EVENTS = [
-'LessonPageResponseProcessedSuccessfully',
-'ChallengePageResponseProcessedSuccessfully',
-''
+    'LessonPageResponseProcessedSuccessfully',
+    'ChallengePageResponseProcessedSuccessfully',
+    'FinalChallengePageResponseProcessedSuccessfully'
 ]
 
-
+CLOSE_EVENTS = [
+    'GenerateMaterialFromOutlineEntityCompletedSuccessfully'
+]
 
 
 class EventProgressbar:
-    def __init__(self, thread_id: int):
-        self.thread = DB.get(Thread, thread_id)
+    def __init__(self):
         self.bar = None
+        self.max_value = None
+        self.thread = None
 
-    def check_event(self, event: Event):
-        if event.__class__.__name__ in START_EVENTS:
-            return self.start(event)
+    def setup(self, event: Event):
+        self.max_value = event.data['totalSteps']
+        self.thread = DB.get(Thread, event.data['threadId'])
 
-        if self.bar:
-            self.update_on_event(event)
-
-    def start(self, event: Event):
-        self.bar = tqdm.tqdm(
-            total=event.data['totalSteps'],
-            desc=event.__class__.__name__,
-            position=0,
-            leave=False
+        self.bar = progressbar.ProgressBar(
+            label=f"bar-{self.thread.id}",
+            suffix=' {variables.event_name}',
+            variables={'event_name': event.__class__.__name__},
+            max_value=self.max_value,
+            redirect_stdout=True,
         )
 
-        return self
-
     def update_on_event(self, event: Event):
-        if self.thread.status == "completed":
-            self.bar.close()
+        try:
+            # If bar has not been instantiated, instantiate
+            if self.bar is None:
+                self.setup(event)
+                self.bar.start()
+
+            if self.bar:
+                # Close out the bar and reset the bar if we are done
+                if self.thread.status == 'completed' or event.__class__.__name__ in CLOSE_EVENTS:
+                    self.bar.finish()
+                    self.bar = None
+                    return
+
+                # The update method must be run in order to update the label name.
+                # If the event is not in the INCREMENT_EVENTS list, the step will be None
+                step = None
+                if event.__class__.__name__ in INCREMENT_EVENTS:
+                    step = self.bar.value + 1
+
+                self.bar.update(step, event_name=event.__class__.__name__)
+
+        except Exception as e:
+            if self.bar:
+                self.bar.finish()
+            print(f'Progress Bar Error (this should not effect the main program): {e}')
             return
 
-        self.bar.set_description(event.__class__.__name__)
-
-        if event.__class__.__name__ in INCREMENT_EVENTS:
-            self.bar.update(1)
 
     def close(self):
-        self.bar.close()    
+        self.bar.finish()

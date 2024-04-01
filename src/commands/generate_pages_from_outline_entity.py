@@ -17,9 +17,9 @@ See `docs/tasks/generate-outline-entity-pages-flow.md` for more information
 
 
 class GeneratePagesFromOutlineEntity:
-    def __init__(self, topic_id: int, outline_entity_id: int, only_page_type: str | None = None):
+    def __init__(self, topic_id: int, outline_entity_id: int, only_page_type: str | None = None, progress_bar: bool = False):
         EVENT_MANAGER.refresh()
-        EVENT_MANAGER.show_progress = True
+        EVENT_MANAGER.show_progress = progress_bar
 
         self.topic = DB.get(Topic, topic_id)
         self.outline_entity = DB.get(OutlineEntity, outline_entity_id)

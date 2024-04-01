@@ -31,7 +31,6 @@ class IterateAllPagesFromOutlineHandler:
                 EVENT_MANAGER.trigger(GenerateLessonPageProcessStarted(self._event_payload(page, page_count)))
 
 
-
         return EVENT_MANAGER.trigger(
             GenerateOutlineMaterialCompletedSuccessfully({
                 'threadId': self.thread_id,
