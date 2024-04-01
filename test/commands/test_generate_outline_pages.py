@@ -65,7 +65,7 @@ def test_generate_outline_pages():
 def test_generate_only_outline_fsc_pages():
     __setup_with_existing()
 
-    task = GenerateOutlinePages(topic_id=1, only_page_type='final-skill-challenge')
+    task = GenerateOutlinePages(topic_id=1, only_page_type='final-skill-challenge', progress_bar=False)
 
     task.run()
 

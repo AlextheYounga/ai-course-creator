@@ -14,7 +14,7 @@ from ..handlers.pages.iterate_pages_from_outline_entity_handler import IteratePa
 
 
 class GeneratePagesFromOutlineEntity:
-    def __init__(self, topic_id: int, outline_entity_id: int, only_page_type: str | None = None, progress_bar: bool = False):
+    def __init__(self, topic_id: int, outline_entity_id: int, only_page_type: str | None = None, progress_bar: bool = True):
         EVENT_MANAGER.refresh()
         EVENT_MANAGER.show_progress = progress_bar
 

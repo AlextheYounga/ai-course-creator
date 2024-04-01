@@ -20,7 +20,7 @@ def test_generate_chapter_entity_pages():
     __setup_test()
 
     outline_entity = DB.query(OutlineEntity).filter(OutlineEntity.entity_type == 'Chapter').first()
-    task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id)
+    task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id, progress_bar=False)
     task.run()
 
     generated_pages = DB.query(Page).filter(Page.generated == True).all()
@@ -36,7 +36,7 @@ def test_generate_course_entity_pages():
     course_count = DB.query(Page).filter(Page.course_id == outline_entity.entity_id).count()
     print(course_count)
 
-    task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id)
+    task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id, progress_bar=False)
     task.run()
 
     generated_pages = DB.query(Page).filter(Page.generated == True).all()
@@ -46,7 +46,7 @@ def test_generate_course_entity_pages():
 
 def test_generate_chapter_with_existing_entity_pages():
     outline_entity = DB.query(OutlineEntity).filter(OutlineEntity.entity_type == 'Chapter').first()
-    task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id)
+    task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id, progress_bar=False)
     task.run()
 
     generated_pages = DB.query(Page).filter(
@@ -78,7 +78,8 @@ def test_generate_course_entity_lesson_pages():
     task = GeneratePagesFromOutlineEntity(
         topic_id=1,
         outline_entity_id=outline_entity.id,
-        only_page_type='lesson'
+        only_page_type='lesson',
+        progress_bar=False
     )
 
     task.run()
