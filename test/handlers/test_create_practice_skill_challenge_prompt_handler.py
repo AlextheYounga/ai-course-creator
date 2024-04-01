@@ -24,7 +24,8 @@ def test_create_practice_skill_challenge_prompt_handler():
     CreatePracticeSkillChallengePromptHandler({
         'threadId': 1,
         'outlineId': 1,
-        'pageId': 1
+        'pageId': 1,
+        'topicId': 1,
     }).handle()
 
     prompt = DB.query(Prompt).first()

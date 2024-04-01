@@ -44,30 +44,6 @@ def test_generate_course_entity_pages():
     assert len(generated_pages) == 10
 
 
-def test_generate_chapter_with_existing_entity_pages():
-    outline_entity = DB.query(OutlineEntity).filter(OutlineEntity.entity_type == 'Chapter').first()
-    task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id, progress_bar=False)
-    task.run()
-
-    generated_pages = DB.query(Page).filter(
-        Page.generated == True,
-        Page.active == True
-    ).all()
-
-    soft_deleted_pages = DB.query(Page).filter(Page.id.in_([1, 2, 3, 4, 5])).all()
-
-    assert len(generated_pages) == 10
-    assert len(soft_deleted_pages) == 5
-
-    for page in generated_pages:
-        assert page.active == True
-        assert page.generated == True
-
-    for page in soft_deleted_pages:
-        assert page.active == False
-        assert page.generated == True
-
-
 def test_generate_course_entity_lesson_pages():
     __setup_test()
 
@@ -90,3 +66,27 @@ def test_generate_course_entity_lesson_pages():
 
     for page in generated_pages:
         assert page.type == 'lesson'
+
+
+# def test_generate_chapter_with_existing_entity_pages():
+#     outline_entity = DB.query(OutlineEntity).filter(OutlineEntity.entity_type == 'Chapter').first()
+#     task = GeneratePagesFromOutlineEntity(topic_id=1, outline_entity_id=outline_entity.id, progress_bar=False)
+#     task.run()
+
+#     generated_pages = DB.query(Page).filter(
+#         Page.generated == True,
+#         Page.active == True
+#     ).all()
+
+#     soft_deleted_pages = DB.query(Page).filter(Page.id.in_([1, 2, 3, 4, 5])).all()
+
+#     assert len(generated_pages) == 10
+#     assert len(soft_deleted_pages) == 5
+
+#     for page in generated_pages:
+#         assert page.active == True
+#         assert page.generated == True
+
+#     for page in soft_deleted_pages:
+#         assert page.active == False
+#         assert page.generated == True

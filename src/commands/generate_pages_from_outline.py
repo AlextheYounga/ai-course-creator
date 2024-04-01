@@ -2,7 +2,7 @@ from db.db import DB, Thread, Topic, Outline
 from src.events.event_manager import EVENT_MANAGER
 from ..pipelines.generate_pages_pipeline import GeneratePagesEventPipeline
 from ..events.events import GenerateOutlineMaterialRequested
-from ..handlers.pages.get_next_page_to_generate_from_outline_handler import GetNextPageToGenerateFromOutlineHandler
+from ..handlers.pages.get_next_page_to_generate_from_thread_handler import GetNextPageToGenerateFromThreadHandler
 
 
 # Generates all pages from an outline. Can specify a single page type to generate.
@@ -10,7 +10,7 @@ from ..handlers.pages.get_next_page_to_generate_from_outline_handler import GetN
 # EVENT_MANAGER.trigger(Event(data))
 
 
-class GenerateOutlinePages:
+class GeneratePagesFromOutline:
     def __init__(self, topic_id: int, page_type: str | None = None, progress_bar: bool = True):
         EVENT_MANAGER.refresh()
         EVENT_MANAGER.show_progress = progress_bar
@@ -24,7 +24,7 @@ class GenerateOutlinePages:
         # Create first event handler associatation
         EVENT_MANAGER.subscribe(
             events=[GenerateOutlineMaterialRequested],
-            handler=GetNextPageToGenerateFromOutlineHandler
+            handler=GetNextPageToGenerateFromThreadHandler
         )
 
         # Main thread of events

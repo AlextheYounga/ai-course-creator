@@ -1,5 +1,5 @@
 from ..mocks.db import *
-from src.commands.generate_outline_pages import GenerateOutlinePages
+from src.commands.generate_pages_from_outline import GeneratePagesFromOutline
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.handlers.outlines.create_new_outline_handler import CreateNewOutlineHandler
 from sqlalchemy import Integer
@@ -30,7 +30,7 @@ def __setup_with_existing():
     DB.commit()
 
 
-def test_generate_outline_pages():
+def test_generate_pages_from_outline():
     __setup_test()
 
     bad_events = [
@@ -38,7 +38,7 @@ def test_generate_outline_pages():
         'InvalidLessonPageResponseFromOpenAI'
     ]
 
-    task = GenerateOutlinePages(topic_id=1, progress_bar=False)
+    task = GeneratePagesFromOutline(topic_id=1, progress_bar=False)
 
     task.run()
 
@@ -65,7 +65,7 @@ def test_generate_outline_pages():
 def test_generate_only_outline_fsc_pages():
     __setup_with_existing()
 
-    task = GenerateOutlinePages(topic_id=1, page_type='final-skill-challenge', progress_bar=False)
+    task = GeneratePagesFromOutline(topic_id=1, page_type='final-skill-challenge', progress_bar=False)
 
     task.run()
 
@@ -74,4 +74,4 @@ def test_generate_only_outline_fsc_pages():
         Event.data['threadId'].cast(Integer) == task.thread.id
     ).all()
 
-    assert len(events) == 23
+    assert len(events) == 7

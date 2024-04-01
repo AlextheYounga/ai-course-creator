@@ -2,7 +2,7 @@ from db.db import DB, Thread, Topic, OutlineEntity
 from src.events.event_manager import EVENT_MANAGER
 from ..pipelines.generate_pages_pipeline import GeneratePagesEventPipeline
 from ..events.events import GeneratePagesFromOutlineEntityRequested
-from ..handlers.pages.iterate_pages_from_outline_entity_handler import IteratePagesFromOutlineEntityHandler
+from ..handlers.pages.get_next_page_to_generate_from_thread_handler import GetNextPageToGenerateFromThreadHandler
 
 
 # Generates pages from a single outline entity
@@ -27,7 +27,7 @@ class GeneratePagesFromOutlineEntity:
     def run(self):
         EVENT_MANAGER.subscribe(
             events=[GeneratePagesFromOutlineEntityRequested],
-            handler=IteratePagesFromOutlineEntityHandler
+            handler=GetNextPageToGenerateFromThreadHandler
         )
 
         # Main thread of events

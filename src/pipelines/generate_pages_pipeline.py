@@ -101,7 +101,7 @@ class GeneratePagesEventPipeline():
                 ChallengePageResponseProcessedSuccessfully,
                 FinalChallengePageResponseProcessedSuccessfully
             ],
-            handler=GetNextPageToGenerateFromOutlineHandler
+            handler=GetNextPageToGenerateFromThreadHandler
         )
 
         return event_manager

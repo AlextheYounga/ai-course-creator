@@ -2,7 +2,7 @@ from .select_hierarchy import select_hierarchy
 from .select_hierarchy_content_type import select_hierarchy_content_type
 from .select_outline_entity_record import select_outline_entity_record
 from src.commands.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
-from src.commands.generate_outline_pages import GenerateOutlinePages
+from commands.generate_pages_from_outline import GeneratePagesFromOutline
 from db.db import Topic
 
 
@@ -21,7 +21,7 @@ def select_generate_content(topic: Topic):
     content_type = select_hierarchy_content_type(hierarchy)
 
     if hierarchy == 'Topic':
-        task = GenerateOutlinePages(topic.id, type_mapping[content_type])
+        task = GeneratePagesFromOutline(topic.id, type_mapping[content_type])
         return task.run()
     else:
         # Prompt user to select outline entity record from DB; types = Course, Chapter, Page

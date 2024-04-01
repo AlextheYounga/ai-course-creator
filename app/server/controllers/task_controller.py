@@ -1,5 +1,5 @@
 from db.db import DB, Topic, Outline, OutlineEntity
-from src.commands.generate_outline_pages import GenerateOutlinePages
+from commands.generate_pages_from_outline import GeneratePagesFromOutline
 from src.commands.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
 
 
@@ -12,7 +12,7 @@ class TaskController:
 
         if topic and entityType:
             if entityType == 'Topic':
-                task = GenerateOutlinePages(topic.id, entityType)
+                task = GeneratePagesFromOutline(topic.id, entityType)
                 task.run()
 
             else:
