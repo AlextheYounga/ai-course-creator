@@ -9,3 +9,6 @@ disable=
     C0412, # imports not grouped correctly
     C0121, # singleton comparison
     C0301, # line too long
+    # Imports
+    E0401, # unable to import
+    E0402, # relative import

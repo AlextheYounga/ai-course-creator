@@ -78,7 +78,7 @@ def test_generate_course_entity_lesson_pages():
     task = GeneratePagesFromOutlineEntity(
         topic_id=1,
         outline_entity_id=outline_entity.id,
-        only_page_type='lesson',
+        page_type='lesson',
         progress_bar=False
     )
 

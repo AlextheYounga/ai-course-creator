@@ -173,7 +173,7 @@ class SummarizePagePromptCreated(Event):
         self.data = data
 
 
-class LessonPageSummarizedSuccessfully(Event):
+class LessonPageProcessedAndSummarizedSuccessfully(Event):
     def __init__(self, data):
         self.data = data
 

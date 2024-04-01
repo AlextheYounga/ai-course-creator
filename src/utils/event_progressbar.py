@@ -7,7 +7,7 @@ import progressbar
 # This was incredibly finicky to set up. Yes it is a bit hacky but it works.
 
 INCREMENT_EVENTS = [
-    'LessonPageResponseProcessedSuccessfully',
+    'LessonPageProcessedAndSummarizedSuccessfully',
     'ChallengePageResponseProcessedSuccessfully',
     'FinalChallengePageResponseProcessedSuccessfully'
 ]

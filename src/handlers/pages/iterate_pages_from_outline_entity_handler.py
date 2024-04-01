@@ -9,15 +9,15 @@ class IteratePagesFromOutlineEntityHandler:
         self.thread = DB.get(Thread, data['threadId'])
         self.outline = DB.get(Outline, data['outlineId'])
         self.outline_entity = DB.get(OutlineEntity, data['outlineEntityId'])
-        self.only_page_type = data.get('onlyPageType', False)   # lesson, challenge, final-skill-challenge
+        self.page_type = data.get('pageType', False)   # lesson, challenge, final-skill-challenge
         self.topic = self.outline.topic
 
 
     def handle(self):
         entity_pages = self._get_entity_pages()
 
-        if self.only_page_type:
-            entity_pages = [page for page in entity_pages if page.type == self.only_page_type]
+        if self.page_type:
+            entity_pages = [page for page in entity_pages if page.type == self.page_type]
 
         page_count = len(entity_pages)
 

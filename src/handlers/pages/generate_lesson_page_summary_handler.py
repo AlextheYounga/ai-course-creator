@@ -1,6 +1,6 @@
 from db.db import DB, Page, Outline, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
-from src.events.events import LessonPageSummarizedSuccessfully, InvalidPageSummaryResponseFromOpenAI
+from src.events.events import LessonPageProcessedAndSummarizedSuccessfully, InvalidPageSummaryResponseFromOpenAI
 from ...llm.get_llm_client import get_llm_client
 from .create_summarize_page_prompt_handler import CreateSummarizePagePromptHandler
 from openai.types.completion import Completion
@@ -42,7 +42,7 @@ class GenerateLessonPageSummaryHandler():
         self._update_page_with_summary(response)
 
         return EVENT_MANAGER.trigger(
-            LessonPageSummarizedSuccessfully(self._event_payload(prompt, response))
+            LessonPageProcessedAndSummarizedSuccessfully(self._event_payload(prompt, response))
         )
 
 

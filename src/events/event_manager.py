@@ -46,9 +46,11 @@ class EventManager:
 
     def __save_event(self, event: Event, handler):
         handler = handler.__name__ if handler else None
+        thread_id = event.data.get('threadId', None)
 
         event_store = EventStore(
             name=event.__class__.__name__,
+            thread_id=thread_id,
             handler=handler,
             data=event.data
         )

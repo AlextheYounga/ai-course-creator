@@ -65,7 +65,7 @@ def test_generate_outline_pages():
 def test_generate_only_outline_fsc_pages():
     __setup_with_existing()
 
-    task = GenerateOutlinePages(topic_id=1, only_page_type='final-skill-challenge', progress_bar=False)
+    task = GenerateOutlinePages(topic_id=1, page_type='final-skill-challenge', progress_bar=False)
 
     task.run()
 
@@ -74,4 +74,4 @@ def test_generate_only_outline_fsc_pages():
         Event.data['threadId'].cast(Integer) == task.thread.id
     ).all()
 
-    assert len(events) == 7
+    assert len(events) == 23

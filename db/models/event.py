@@ -8,6 +8,7 @@ from .base import Base
 class Event(Base):
     __tablename__ = "event"
     id = mapped_column(Integer, primary_key=True)
+    thread_id = mapped_column(Integer, index=True)
     name = mapped_column(String, nullable=False)
     handler = mapped_column(String)
     data = mapped_column(JSON)
@@ -18,6 +19,7 @@ class Event(Base):
     def to_dict(self):
         return {
             "id": self.id,
+            "thread_id": self.thread_id,
             "name": self.name,
             "handler": self.handler,
             "data": self.data,

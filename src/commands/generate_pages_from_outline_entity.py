@@ -14,13 +14,13 @@ from ..handlers.pages.iterate_pages_from_outline_entity_handler import IteratePa
 
 
 class GeneratePagesFromOutlineEntity:
-    def __init__(self, topic_id: int, outline_entity_id: int, only_page_type: str | None = None, progress_bar: bool = True):
+    def __init__(self, topic_id: int, outline_entity_id: int, page_type: str | None = None, progress_bar: bool = True):
         EVENT_MANAGER.refresh()
         EVENT_MANAGER.show_progress = progress_bar
 
         self.topic = DB.get(Topic, topic_id)
         self.outline_entity = DB.get(OutlineEntity, outline_entity_id)
-        self.only_page_type = only_page_type
+        self.page_type = page_type
         self.outline = self.outline_entity.outline
         self.thread = Thread.start(DB, self.__class__.__name__)
 
@@ -42,7 +42,7 @@ class GeneratePagesFromOutlineEntity:
                 'topicId': self.topic.id,
                 'outlineEntityId': self.outline_entity.id,
                 'outlineId': self.outline.id,
-                'onlyPageType': self.only_page_type
+                'pageType': self.page_type
             })
         )
 

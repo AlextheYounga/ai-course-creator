@@ -94,4 +94,14 @@ class GeneratePagesEventPipeline():
             handler=ProcessChallengePageResponseHandler
         )
 
+        # Get next page
+        event_manager.subscribe(
+            events=[
+                LessonPageProcessedAndSummarizedSuccessfully,
+                ChallengePageResponseProcessedSuccessfully,
+                FinalChallengePageResponseProcessedSuccessfully
+            ],
+            handler=GetNextPageToGenerateFromOutlineHandler
+        )
+
         return event_manager
