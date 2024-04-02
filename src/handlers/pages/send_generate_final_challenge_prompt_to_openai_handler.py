@@ -1,6 +1,6 @@
+import json
 from openai.types.completion import Completion
 from termcolor import colored
-import json
 from db.db import DB, Page, OutlineEntity, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import FinalSkillChallengePageResponseReceivedFromOpenAI, FinalChallengeGenerationFailedDueToIncompleteCourse

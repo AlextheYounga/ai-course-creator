@@ -1,5 +1,5 @@
 import collections
-from db.db import DB, Outline, OutlineEntity, Chapter, Page, Event as EventStore
+from db.db import DB, OutlineEntity, Chapter, Page, Event as EventStore
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import GeneratePracticeChallengePageProcessStarted, GenerateFinalSkillChallengePageProcessStarted, GenerateLessonPageProcessStarted, GenerateOutlineMaterialCompletedSuccessfully
 from src.handlers.pages import *

@@ -1,4 +1,4 @@
-from db.db import DB, Page, Outline, OutlineEntity, Prompt, Response
+from db.db import DB, Page, OutlineEntity, Prompt, Response
 from src.events.event_manager import EVENT_MANAGER
 from src.events.events import PracticeChallengePageResponseReceivedFromOpenAI, PracticeChallengeGenerationFailedDueToIncompleteChapter
 from ...llm.get_llm_client import get_llm_client

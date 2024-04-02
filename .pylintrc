@@ -12,3 +12,5 @@ disable=
     # Imports
     E0401, # unable to import
     E0402, # relative import
+    W0401, # wildcard import
+    R0903, # too few public methods
