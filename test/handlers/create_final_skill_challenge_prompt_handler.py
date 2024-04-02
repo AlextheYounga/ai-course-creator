@@ -2,12 +2,9 @@ from ..mocks.db import *
 from src.handlers.pages.create_final_skill_challenge_prompt_handler import CreateFinalSkillChallengePromptHandler
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.handlers.outlines.create_new_outline_handler import CreateNewOutlineHandler
-from sqlalchemy import Integer
 
 TOPIC = 'Ruby on Rails'
 OUTLINE_DATA = open('test/fixtures/master-outline.yaml').read()
-LOG_FILE = 'test/data/test.log'
-DB_PATH = 'test/data/test.db'
 
 
 def __setup_test():

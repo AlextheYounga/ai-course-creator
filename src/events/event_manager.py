@@ -26,6 +26,9 @@ class EventManager:
         else:
             self.__run_accessory_event_functions(event, None)
 
+        # Return the event for testing purposes
+        return event
+
 
     def refresh(self):
         self.handlers = {}
