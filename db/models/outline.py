@@ -124,6 +124,8 @@ class Outline(Base):
             ).filter(
                 OutlineEntity.outline_id == outline_id,
                 OutlineEntity.entity_type == 'Course'
+            ).order_by(
+                Course.level.asc()
             ).all(),
 
             'chapters': db.query(Chapter).join(
