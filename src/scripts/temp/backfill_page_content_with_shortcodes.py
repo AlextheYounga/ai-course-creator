@@ -26,7 +26,12 @@ class BackfillPageContentWithShortcodes:
                 if len(answerable_elements) == 0: continue
 
                 for element in answerable_elements:
-                    interactive_content = self._parse_interactive(element)
+                    try:
+                        interactive_content = self._parse_interactive(element)
+                    except ValueError as e:
+                        print(f"Error parsing interactive content: {e}")
+                        continue
+
                     interactive_node = interactive_node = self._build_interactive_node(interactive_content)
 
                     if interactive_node:
