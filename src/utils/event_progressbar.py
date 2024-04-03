@@ -1,6 +1,8 @@
-from db.db import DB, Thread
-from ..events.events import Event
 import progressbar
+from termcolor import colored
+from db.db import DB, Thread, Event as EventStore
+from ..events.events import Event
+
 
 
 # This is a helper class to show a progress bar for events that have a total number of steps
@@ -27,18 +29,23 @@ class EventProgressbar:
         self.max_value = event.data['totalSteps']
         self.thread = DB.get(Thread, event.data['threadId'])
 
+        current_increment = self._get_current_increment()
+
         self.bar = progressbar.ProgressBar(
             label=f"bar-{self.thread.id}",
             suffix=' {variables.event_name}',
             variables={'event_name': event.__class__.__name__},
+            min_value=current_increment,
             max_value=self.max_value,
             redirect_stdout=True,
         )
 
     def update_on_event(self, event: Event):
         try:
-            # If bar has not been instantiated, instantiate
+            # If bar has not been instantiated yet, instantiate
             if self.bar is None:
+                if not event.data.get('totalSteps', False): return  # We need a max value to start
+
                 self.setup(event)
                 self.bar.start()
 
@@ -60,9 +67,15 @@ class EventProgressbar:
         except Exception as e:
             if self.bar:
                 self.bar.finish()
-            print(f'Progress Bar Error (this should not effect the main program): {e}')
-            return
 
+            print(colored(f'ProgressBar Error (this should not effect the main program): {e}', 'yellow'))
+            return
 
     def close(self):
         self.bar.finish()
+
+    def _get_current_increment(self):
+        return DB.query(EventStore).filter(
+            EventStore.thread_id == self.thread.id,
+            EventStore.name.in_(INCREMENT_EVENTS)
+        ).count()

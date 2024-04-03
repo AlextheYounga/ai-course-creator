@@ -1,12 +1,20 @@
 import inquirer
 from db.db import DB, Topic
+from .select_thread import select_thread
 from .select_topic import select_topic
 from .select_generate_content import select_generate_content
 from src.commands.generate_outline import GenerateOutline
+from src.commands.resume_thread import ResumeThread
 
 
 def _generate_outline(topic: Topic):
     task = GenerateOutline(topic.id)
+    task.run()
+
+
+def _resume_thread(topic: Topic):
+    thread = select_thread()
+    task = ResumeThread(thread.id)
     task.run()
 
 
@@ -17,6 +25,7 @@ def select_task():
     base_tasks = {
         'Generate Outline': _generate_outline,
         'Generate Content': select_generate_content,
+        'Resume Thread': _resume_thread
     }
 
     tasks = [

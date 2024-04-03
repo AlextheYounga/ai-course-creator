@@ -2,7 +2,7 @@ from .select_hierarchy import select_hierarchy
 from .select_hierarchy_content_type import select_hierarchy_content_type
 from .select_outline_entity_record import select_outline_entity_record
 from src.commands.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
-from commands.generate_pages_from_outline import GeneratePagesFromOutline
+from src.commands.generate_pages_from_outline import GeneratePagesFromOutline
 from db.db import Topic
 
 

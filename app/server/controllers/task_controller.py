@@ -1,5 +1,5 @@
 from db.db import DB, Topic, Outline, OutlineEntity
-from commands.generate_pages_from_outline import GeneratePagesFromOutline
+from src.commands.generate_pages_from_outline import GeneratePagesFromOutline
 from src.commands.generate_pages_from_outline_entity import GeneratePagesFromOutlineEntity
 
 

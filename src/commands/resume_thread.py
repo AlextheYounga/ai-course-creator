@@ -1,8 +1,9 @@
+import sys
 from db.db import DB, Thread, Event as EventStore
 from ..events.event_manager import EVENT_MANAGER
-from ..handlers.pages.get_next_page_to_generate_from_thread_handler import GetNextPageToGenerateFromThreadHandler
 from ..pipelines.generate_outline_pipeline import GenerateOutlineEventPipeline
 from ..pipelines.generate_pages_pipeline import GeneratePagesEventPipeline
+from ..handlers.pages import *
 
 # EVENT_MANAGER.subscribe([Event], Handler)
 # EVENT_MANAGER.trigger(Event(data))
@@ -26,8 +27,14 @@ class ResumeThread:
     def run(self):
         if self.thread.name == 'GenerateOutline':
             raise Exception('Resume GenerateOutline thread is not yet implemented. WIP')
+        else:
+            self._handle_generate_pages_pipeline()
+
+        # Finish thread
+        self.thread.set_complete(DB)
 
 
+    def _handle_generate_pages_pipeline(self):
         pipeline = PIPELINE_MAPPING.get(self.thread.name)
         if not pipeline:
             raise Exception(f'Pipeline for {self.thread.name} not found')
@@ -36,13 +43,12 @@ class ResumeThread:
 
         last_event = self._get_last_event()
 
-        # Get next page to generate from thread
-        EVENT_MANAGER.trigger(
-            GetNextPageToGenerateFromThreadHandler(last_event.data)
-        )
+        handler = GetNextPageToGenerateFromThreadHandler  # Default handler
+        if last_event.handler:
+            handler = getattr(sys.modules[__name__], last_event.handler)
 
-        # Finish thread
-        self.thread.set_complete(DB)
+        # Get next page to generate from thread
+        handler(last_event.data).handle()
 
 
     def _get_last_event(self):

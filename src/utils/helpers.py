@@ -1,8 +1,6 @@
-from db.db import DB, Topic, Outline
 import os
 import yaml
-
-
+from db.db import DB, Topic, Outline
 
 
 

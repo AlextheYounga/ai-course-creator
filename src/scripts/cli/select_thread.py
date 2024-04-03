@@ -1,8 +1,7 @@
-from db.db import DB, Thread
-from termcolor import colored
 import sys
 import inquirer
-
+from termcolor import colored
+from db.db import DB, Thread
 
 
 def select_thread():

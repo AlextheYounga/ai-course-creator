@@ -1,10 +1,10 @@
-from db.db import DB, Topic
+import os
+from datetime import datetime
 import inquirer
 import yaml
 from termcolor import colored
-import os
 import shutil
-from datetime import datetime
+from db.db import DB, Topic
 from src.utils.strings import slugify
 from src.utils.files import zip_folder, zip_file
 
@@ -37,8 +37,10 @@ def save_chat():
 
 
 def backup_database():
+    name = inquirer.text(message="Enter backup name (a date will automatically be appended)") or "database"
+
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    filename = f"database-{timestamp}.db.zip"
+    filename = f"{name}-{timestamp}.db.zip"
     output_path = "storage/data/backups/database.db"
 
     # Copying logs file to out folder
