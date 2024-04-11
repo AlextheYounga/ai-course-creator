@@ -12,7 +12,6 @@ class OutlineController:
 
     @staticmethod
     def create(data: dict):
-        print(data)
         thread = Thread.start(DB, 'OutlineController::create')
 
         handler_args = {
