@@ -32,6 +32,7 @@ global:
   # gpt-3.5-turbo-0301 => Fastest, dumbest model
   # gpt-3.5-turbo-1106 => Midwit model
   # gpt-4-0125-preview => Slowest, smartest model
+  # gpt-4-turbo => Latest model
 
   # Adjusts the likelihood of the model repeating the same words or phrases.
   frequency_penalty: 0 # number, optional, defaults to 0, range: -2.0 to 2.0
