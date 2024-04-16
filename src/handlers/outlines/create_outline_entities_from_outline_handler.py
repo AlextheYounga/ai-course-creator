@@ -41,9 +41,9 @@ class CreateOutlineEntitiesFromOutlineHandler:
                     DB.commit()
 
                     # Create outline entities
-                    OutlineEntity.create_entity(DB, self.outline.id, page_record)
-                OutlineEntity.create_entity(DB, self.outline.id, chapter_record)
-            OutlineEntity.create_entity(DB, self.outline.id, course_record)
+                    OutlineEntity.first_or_create(DB, self.outline.id, page_record)
+                OutlineEntity.first_or_create(DB, self.outline.id, chapter_record)
+            OutlineEntity.first_or_create(DB, self.outline.id, course_record)
 
         return EVENT_MANAGER.trigger(
             OutlineEntitiesCreatedFromOutline(self.data))
