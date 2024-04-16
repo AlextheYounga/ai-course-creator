@@ -1,3 +1,4 @@
+import sys
 from db.db import DB, Event as EventStore
 from .events import Event
 from ..utils.log_handler import LOG_HANDLER
@@ -6,6 +7,9 @@ from ..utils.event_progressbar import EventProgressbar
 
 class EventManager:
     def __init__(self):
+        # TODO: Set up queues for events to prevent stack overflow errors
+        sys.setrecursionlimit(2000)  # Increasing the default limit from 1000 to 2000
+
         self.handlers = {}
         self.show_progress = False
         self.progressbar = EventProgressbar()
