@@ -1,4 +1,5 @@
 import inquirer
+import argparse
 from termcolor import colored
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.scripts.cli.select_task import select_task
@@ -9,9 +10,13 @@ from server import run_server
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Description of your program')
+    parser.add_argument('-t', '--topics', help='Topics file path', required=False, default="storage/topics.yaml")
+    args = vars(parser.parse_args())
+
     initialize_project()
 
-    ScanTopicsFileHandler().handle()
+    ScanTopicsFileHandler(args).handle()
 
     try:
         choices = [
