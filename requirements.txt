@@ -18,5 +18,6 @@ cuid
 tiktoken
 pytz
 redis
+setproctitle
 # gpt4all
 # apscheduler

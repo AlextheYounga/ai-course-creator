@@ -1,7 +1,7 @@
+import setproctitle
 import inquirer
 from db.db import DB, Topic
 from src.utils.files import read_yaml_file
-
 
 
 def select_topic():
@@ -22,5 +22,7 @@ def select_topic():
 
     choice = inquirer.prompt(choices)
     answer = choice['topic']
+
+    setproctitle.setproctitle(answer)
 
     return answer
