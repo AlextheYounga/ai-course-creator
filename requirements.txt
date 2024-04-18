@@ -17,5 +17,6 @@ progressbar2
 cuid
 tiktoken
 pytz
+redis
 # gpt4all
 # apscheduler
