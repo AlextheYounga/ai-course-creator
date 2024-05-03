@@ -14,7 +14,7 @@ class CreateAllOutlineChunkPromptsHandler:
         self.data = data
         self.outline = DB.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
-        self.prompt_subject = 'outline'  # corresponds with key in params.yaml
+        self.prompt_subject = 'outline'  # corresponds with key in configs/params.yaml
 
 
     def handle(self):

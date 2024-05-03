@@ -4,7 +4,7 @@ from src.utils.files import read_yaml_file
 
 class ScanTopicsFileHandler:
     def __init__(self, data: dict = {}):
-        self.topics_file = data.get('topics', "storage/topics.yaml")
+        self.topics_file = data.get('topics', "configs/topics.yaml")
 
     def handle(self) -> list[Topic]:
         topics = []

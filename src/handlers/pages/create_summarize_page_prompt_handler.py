@@ -9,7 +9,7 @@ class CreateSummarizePagePromptHandler:
         self.data = data
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
-        self.prompt_subject = 'summarize-page'  # corresponds with key in params.yaml
+        self.prompt_subject = 'summarize-page'  # corresponds with key in configs/params.yaml
 
 
 

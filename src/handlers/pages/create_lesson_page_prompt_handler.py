@@ -11,7 +11,7 @@ class CreateLessonPagePromptHandler:
         self.outline = DB.get(Outline, data['outlineId'])
         self.page = DB.get(Page, data['pageId'])
         self.topic = self.outline.topic
-        self.prompt_subject = 'page-material'  # corresponds with key in params.yaml
+        self.prompt_subject = 'page-material'  # corresponds with key in configs/params.yaml
 
 
     def handle(self) -> Prompt:

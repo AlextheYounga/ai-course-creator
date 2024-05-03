@@ -87,7 +87,7 @@ class Topic(Base):
 
     @classmethod
     def get_topic_properties_from_file(cls, name: str):
-        topics_data = read_yaml_file("storage/topics.yaml")
+        topics_data = read_yaml_file("configs/topics.yaml")
         topic = topics_data['topics'][name]
         if topic: return topic
         return {}

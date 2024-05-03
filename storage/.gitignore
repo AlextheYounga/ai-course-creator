@@ -1,7 +1,7 @@
 logs/*.log
 outlines/*.yaml
-data/backups/**
-!data/backups/.gitkeep
+backups/**
+!backups/.gitkeep
 topics.yaml
 custom
 custom/**

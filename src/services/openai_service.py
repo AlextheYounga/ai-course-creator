@@ -12,7 +12,7 @@ load_dotenv()
 
 
 class OpenAiService:
-    def __init__(self, params_file: str = 'params.yaml'):
+    def __init__(self, params_file: str = 'configs/params.yaml'):
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         self.params = read_yaml_file(params_file)
 

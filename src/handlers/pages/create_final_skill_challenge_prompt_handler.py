@@ -10,7 +10,7 @@ class CreateFinalSkillChallengePromptHandler:
         self.data = data
         self.topic = DB.get(Topic, data['topicId'])
         self.page = DB.get(Page, data['pageId'])
-        self.prompt_subject = 'final-skill-challenge'  # corresponds with key in params.yaml
+        self.prompt_subject = 'final-skill-challenge'  # corresponds with key in configs/params.yaml
 
 
     def handle(self) -> Prompt:

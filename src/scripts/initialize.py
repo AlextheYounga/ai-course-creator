@@ -13,15 +13,15 @@ def _create_env_file():
 
 
 def _copy_params_file():
-    if not os.path.exists('params.yaml'):
-        shutil.copy('params.example.yaml', 'params.yaml')
+    if not os.path.exists('configs/params.yaml'):
+        shutil.copy('params.example.yaml', 'configs/params.yaml')
         return True
     return False
 
 
 def _copy_topics_file():
-    if not os.path.exists('storage/topics.yaml'):
-        shutil.copy('storage/topics.example.yaml', 'storage/topics.yaml')
+    if not os.path.exists('configs/topics.yaml'):
+        shutil.copy('storage/topics.example.yaml', 'configs/topics.yaml')
         return True
     return False
 

@@ -11,7 +11,7 @@ from server import run_server
 
 def main():
     parser = argparse.ArgumentParser(description='Description of your program')
-    parser.add_argument('-t', '--topics', help='Topics file path', required=False, default="storage/topics.yaml")
+    parser.add_argument('-t', '--topics', help='Topics file path', required=False, default="configs/topics.yaml")
     args = vars(parser.parse_args())
 
     initialize_project()

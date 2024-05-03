@@ -41,11 +41,11 @@ def backup_database():
 
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     filename = f"{name}-{timestamp}.db.zip"
-    output_path = "storage/data/backups/database.db"
+    output_path = "storage/backups/database.db"
 
     # Copying logs file to out folder
     shutil.copy(DATABASE_PATH, output_path)
-    zip_file(output_path, f"storage/data/backups/{filename}")
+    zip_file(output_path, f"storage/backups/{filename}")
 
     # Delete the original file in storage folder
     os.remove(output_path)
@@ -59,7 +59,7 @@ def clear_logs():
     open(f"{LOGS_PATH}/app.log", 'w').close()
 
 
-def sync_topics_file(topics_file='storage/topics.yaml'):
+def sync_topics_file(topics_file='configs/topics.yaml'):
     topics = DB.query(Topic).all()
     topic_file_obj = {}
 
