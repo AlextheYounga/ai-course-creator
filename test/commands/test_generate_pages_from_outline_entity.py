@@ -11,7 +11,7 @@ OUTLINE_DATA = open('test/fixtures/master-outline.yaml').read()
 def __setup_test():
     truncate_tables()
     thread = Thread.start(DB, __name__)
-    topics_file = "storage/topics.example.yaml"
+    topics_file = "configs/topics.example.yaml"
     ScanTopicsFileHandler({"topicsFile": topics_file}).handle()
     CreateNewOutlineHandler({'threadId': thread.id, 'topicId': 1, 'outlineData': OUTLINE_DATA}).handle()
 

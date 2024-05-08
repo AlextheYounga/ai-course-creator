@@ -21,7 +21,7 @@ def _copy_params_file():
 
 def _copy_topics_file():
     if not os.path.exists('configs/topics.yaml'):
-        shutil.copy('storage/topics.example.yaml', 'configs/topics.yaml')
+        shutil.copy('configs/topics.example.yaml', 'configs/topics.yaml')
         return True
     return False
 

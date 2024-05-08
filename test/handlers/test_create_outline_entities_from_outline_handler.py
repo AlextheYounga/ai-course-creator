@@ -12,7 +12,7 @@ LOG_FILE = 'test/data/test.log'
 def __setup_test():
     truncate_tables()
     Thread.start(DB, __name__)
-    topics_file = "storage/topics.example.yaml"
+    topics_file = "configs/topics.example.yaml"
     ScanTopicsFileHandler({"topicsFile": topics_file}).handle()
 
     outline_hash = Outline.hash_outline(OUTLINE_DATA)

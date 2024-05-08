@@ -16,7 +16,7 @@ def main():
 
     initialize_project()
 
-    ScanTopicsFileHandler(args).handle()
+    ScanTopicsFileHandler({'topicsFile': args['topics']}).handle()
 
     try:
         choices = [
