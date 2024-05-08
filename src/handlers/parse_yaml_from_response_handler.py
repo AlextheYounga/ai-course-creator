@@ -1,16 +1,17 @@
-from db.db import DB, Response
-from termcolor import colored
 import markdown
 import yaml
 import re
 from bs4 import BeautifulSoup
+from db.db import DB, Response
+from termcolor import colored
 
 
 
 class ParseYamlFromResponseHandler:
     def __init__(self, data: dict):
         self.data = data
-        self.response = DB.get(Response, data['responseId'])
+        self.db = DB()
+        self.response = self.db.get(Response, data['responseId'])
         self.yaml_content = ''
 
 

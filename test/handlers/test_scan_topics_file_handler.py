@@ -1,5 +1,5 @@
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
-from ..mocks.db import *
+from ..mocks.mock_db import *
 
 
 def __setup_test():

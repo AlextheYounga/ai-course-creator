@@ -1,14 +1,12 @@
-from db.db import DB, Outline, Response
-from db.db import DB, Outline, Response
 from termcolor import colored
-
-
+from db.db import DB, Outline, Response
 
 
 class ValidateResponseFromOpenAIHandler:
     def __init__(self, data: dict):
         self.data = data
-        self.response = DB.get(Response, data['responseId'])
+        self.db = DB()
+        self.response = self.db.get(Response, data['responseId'])
         self.prompt = self.response.prompt
 
 
@@ -44,4 +42,4 @@ class ValidateResponseFromOpenAIHandler:
         self.response.content = completion['choices'][0]['message']['content']
         self.response.properties = properties
 
-        DB.commit()
+        self.db.commit()

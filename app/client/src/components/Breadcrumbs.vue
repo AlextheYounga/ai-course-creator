@@ -26,7 +26,7 @@
 
 <script>
 import { ChevronRightIcon, HomeIcon } from '@heroicons/vue/20/solid'
-import { capitalize } from '@/helpers'
+import { capitalize } from '@/helpers/index'
 
 export default {
   components: {

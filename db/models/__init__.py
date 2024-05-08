@@ -2,13 +2,13 @@ from .answer import Answer
 from .base import Base
 from .chapter import Chapter
 from .course import Course
-from .event import Event
+from .event_store import EventStore
 from .interactive import Interactive
 from .outline_entity import OutlineEntity
 from .outline import Outline
 from .page import Page
 from .question import Question
 from .topic import Topic
-from .thread import Thread
+from .job_store import JobStore
 from .prompt import Prompt
 from .response import Response

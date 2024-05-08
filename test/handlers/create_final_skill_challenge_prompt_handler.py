@@ -1,7 +1,7 @@
-from ..mocks.db import *
-from src.handlers.pages.create_final_skill_challenge_prompt_handler import CreateFinalSkillChallengePromptHandler
+from ..mocks.mock_db import *
+from src.handlers.create_final_skill_challenge_prompt_handler import CreateFinalSkillChallengePromptHandler
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
-from src.handlers.outlines.create_new_outline_handler import CreateNewOutlineHandler
+from src.handlers.create_new_outline_handler import CreateNewOutlineHandler
 
 TOPIC = 'Ruby on Rails'
 OUTLINE_DATA = open('test/fixtures/master-outline.yaml').read()
@@ -9,10 +9,9 @@ OUTLINE_DATA = open('test/fixtures/master-outline.yaml').read()
 
 def __setup_test():
     truncate_tables()
-    thread = Thread.start(DB, __name__)
     topics_file = "configs/topics.example.yaml"
     ScanTopicsFileHandler({"topicsFile": topics_file}).handle()
-    CreateNewOutlineHandler({'threadId': thread.id, 'topicId': 1, 'outlineData': OUTLINE_DATA}).handle()
+    CreateNewOutlineHandler({'topicId': 1, 'outlineData': OUTLINE_DATA}).handle()
 
 
 def test_create_final_skill_challenge_prompt_handler():

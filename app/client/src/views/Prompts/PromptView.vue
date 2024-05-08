@@ -45,7 +45,7 @@
 </template>
   
 <script>
-import flaskApi from '@/router/api'
+import fastApi from '@/router/api'
 import {
     Dialog,
     DialogPanel,
@@ -119,8 +119,8 @@ export default {
 
     async mounted() {
         const promptId = (this.$route.params.id)
-        const log = await flaskApi.get(`/prompts/${promptId}`)
-        this.log = log
+        const res = await fastApi.get(`/prompts/${promptId}`)
+        this.log = res.data
     }
 }
 </script>

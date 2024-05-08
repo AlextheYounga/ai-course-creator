@@ -1,20 +1,31 @@
 import os
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
+from dotenv import load_dotenv
 from db.models import *
 
 
-
-def db_client():
+def create_session():
     load_dotenv()
 
-    database_path = os.environ.get("DATABASE_URL") or 'sqlite:///db/database.db'
-    engine = create_engine(database_path)
+    database_url = os.environ.get("DATABASE_URL") or 'sqlite:///db/database.db'
+    engine = create_engine(database_url, pool_size=20, max_overflow=0)
     Base.metadata.create_all(engine)
-    session = sessionmaker(bind=engine)
+    session_factory = sessionmaker(bind=engine)
+    return scoped_session(session_factory)
 
-    return session()
+
+# Create a global database session factory
+DB = create_session()
 
 
-DB = db_client()
+# Function to get a session from the session factory
+def get_session():
+    return DB()
+
+
+# Optional: Call this function at application startup to ensure the database engine is initialized
+def init_db():
+    database_url = os.environ.get("DATABASE_URL") or 'sqlite:///db/database.db'
+    engine = create_engine(database_url)
+    Base.metadata.create_all(engine)

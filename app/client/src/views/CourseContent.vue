@@ -53,7 +53,7 @@
 import { ref } from 'vue'
 import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 import hljs from 'highlight.js';
-import flaskApi from '@/router/api'
+import fastApi from '@/router/api'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import AnchorNavigation from '@/components/AnchorNavigation.vue'
 import CodeEditor from '@/components/Interactives/CodeEditor.vue'
@@ -109,7 +109,8 @@ export default {
     },
     async beforeCreate() {
         const courseId = (this.$route.params.id)
-        this.courseContent = await flaskApi.get(`/courses/${courseId}/content`)
+        const res = await fastApi.get(`/courses/${courseId}/content`)
+        this.courseContent = res.data
     },
 }
 </script>

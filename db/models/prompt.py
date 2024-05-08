@@ -9,7 +9,6 @@ from .base import Base
 class Prompt(Base):
     __tablename__ = "prompt"
     id = mapped_column(Integer, primary_key=True)
-    thread_id = mapped_column(Integer, ForeignKey("thread.id"))
     outline_id = mapped_column(Integer, nullable=False, index=True)
     model = mapped_column(String, nullable=False)
     subject = mapped_column(String)
@@ -27,12 +26,9 @@ class Prompt(Base):
         cascade="all, delete-orphan"
     )
 
-    thread = relationship("Thread", back_populates="prompts")
-
     def to_dict(self):
         return {
             "id": self.id,
-            "thread_id": self.thread_id,
             "outline_id": self.outline_id,
             "model": self.model,
             "subject": self.subject,

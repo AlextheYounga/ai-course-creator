@@ -15,7 +15,7 @@ def _select_migration():
                       choices=migration_choices),
     ]
 
-    choice = inquirer.prompt(choices)
+    choice = inquirer.prompt(choices, raise_keyboard_interrupt=True)
     answer = choice['migrations']
 
     return answer

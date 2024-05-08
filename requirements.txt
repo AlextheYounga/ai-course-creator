@@ -9,15 +9,18 @@ markdown-checklist
 autopep8
 termcolor
 pyyaml
-Flask
-Flask-Cors
 pytest
 pytest-env
 progressbar2
 cuid
 tiktoken
 pytz
+fastapi
+uvicorn[standard]
 redis
+fakeredis
 setproctitle
+# Flask
+# Flask-Cors
 # gpt4all
 # apscheduler

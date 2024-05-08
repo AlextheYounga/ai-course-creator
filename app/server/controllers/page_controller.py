@@ -1,11 +1,11 @@
 from db.db import DB, Page
-import markdown
-from flask import jsonify
+
+db = DB()
 
 
 class PageController:
     @staticmethod
     def get_page(id: int):
-        page = DB.get(Page, id)
+        page = db.get(Page, id)
 
-        return jsonify(page.to_dict())
+        return page.to_dict()

@@ -2,12 +2,12 @@ import axios from 'axios';
 
 const host = 'http://localhost:5001/api';
 
-const flaskApi = {
+const fastApi = {
     get(path) {
         const url = host + path
         return axios.get(url)
             .then((res) => {
-                return res.data
+                return res
             })
             .catch((error) => {
                 console.error(error);
@@ -17,7 +17,7 @@ const flaskApi = {
         const url = host + path
         return axios.put(url)
             .then((res) => {
-                return res.data
+                return res
             })
             .catch((error) => {
                 console.error(error);
@@ -28,7 +28,18 @@ const flaskApi = {
 
         return axios.post(url, data)
             .then((res) => {
-                return res.data
+                return res
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    },
+    delete(path) {
+        const url = host + path
+
+        return axios.delete(url)
+            .then((res) => {
+                return res
             })
             .catch((error) => {
                 console.error(error);
@@ -36,4 +47,4 @@ const flaskApi = {
     },
 }
 
-export default flaskApi
+export default fastApi

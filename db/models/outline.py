@@ -19,7 +19,7 @@ class Outline(Base):
     name = mapped_column(String)
     hash = mapped_column(String, unique=True)
     outline_data = mapped_column(JSON)
-    file_path = mapped_column(String)
+    type = mapped_column(String)
     properties = mapped_column(JSON)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
@@ -40,7 +40,7 @@ class Outline(Base):
             "name": self.name,
             "hash": self.hash,
             "outline_data": self.outline_data,
-            "file_path": self.file_path,
+            "type": self.type,
             "properties": self.properties,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
@@ -89,31 +89,31 @@ class Outline(Base):
 
     @staticmethod
     def get_entities_by_type(db: Session, outline_id: int, entity_type: str):
-        if entity_type == 'Course':
-            return db.query(Course).join(
-                OutlineEntity, OutlineEntity.entity_id == Course.id
-            ).filter(
-                OutlineEntity.outline_id == outline_id,
-                OutlineEntity.entity_type == entity_type
-            ).all()
-        elif entity_type == 'Chapter':
-            return db.query(Chapter).join(
-                OutlineEntity, OutlineEntity.entity_id == Chapter.id
-            ).filter(
-                OutlineEntity.outline_id == outline_id,
-                OutlineEntity.entity_type == entity_type
-            ).all()
+        match entity_type:
+            case 'Course':
+                return db.query(Course).join(
+                    OutlineEntity, OutlineEntity.entity_id == Course.id
+                ).filter(
+                    OutlineEntity.outline_id == outline_id,
+                    OutlineEntity.entity_type == entity_type
+                ).all()
+            case 'Chapter':
+                return db.query(Chapter).join(
+                    OutlineEntity, OutlineEntity.entity_id == Chapter.id
+                ).filter(
+                    OutlineEntity.outline_id == outline_id,
+                    OutlineEntity.entity_type == entity_type
+                ).all()
 
-        elif entity_type == 'Page':
-            return db.query(Page).join(
-                OutlineEntity, OutlineEntity.entity_id == Page.id
-            ).filter(
-                OutlineEntity.outline_id == outline_id,
-                OutlineEntity.entity_type == entity_type,
-                Page.active == True,
-            ).all()
-        else:
-            return None
+            case 'Page':
+                return db.query(Page).join(
+                    OutlineEntity, OutlineEntity.entity_id == Page.id
+                ).filter(
+                    OutlineEntity.outline_id == outline_id,
+                    OutlineEntity.entity_type == entity_type,
+                ).all()
+            case _:
+                return None
 
 
     @staticmethod
@@ -140,6 +140,5 @@ class Outline(Base):
             ).filter(
                 OutlineEntity.outline_id == outline_id,
                 OutlineEntity.entity_type == 'Page',
-                Page.active == True,
             ).all()
         }

@@ -3,5 +3,7 @@ outlines/*.yaml
 backups/**
 !backups/.gitkeep
 topics.yaml
+
+# Custom prompts
 custom
 custom/**

@@ -34,7 +34,7 @@
 
 <script>
 import hljs from 'highlight.js';
-import flaskApi from '@/router/api'
+import fastApi from '@/router/api'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import CodeEditor from '@/components/Interactives/CodeEditor.vue'
 import Codepen from '@/components/Interactives/Codepen.vue'
@@ -66,7 +66,8 @@ export default {
     },
     async beforeCreate() {
         const pageId = (this.$route.params.id)
-        const page = await flaskApi.get(`/pages/${pageId}`)
+        const res = await fastApi.get(`/pages/${pageId}`)
+        const page = res.data
         const nodes = page?.properties?.nodes ?? []
 
         this.page = page

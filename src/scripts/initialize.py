@@ -14,7 +14,7 @@ def _create_env_file():
 
 def _copy_params_file():
     if not os.path.exists('configs/params.yaml'):
-        shutil.copy('params.example.yaml', 'configs/params.yaml')
+        shutil.copy('configs/params.example.yaml', 'configs/params.yaml')
         return True
     return False
 

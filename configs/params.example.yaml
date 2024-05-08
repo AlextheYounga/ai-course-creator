@@ -31,7 +31,8 @@ global:
   # Other models used:
   # gpt-3.5-turbo-0301 => Fastest, dumbest model
   # gpt-3.5-turbo-1106 => Midwit model
-  # gpt-4-0125-preview => Slowest, smartest model
+  # gpt-3.5-turbo => Latest 3.5
+  # gpt-4-0125-preview => 100 IQ model
   # gpt-4-turbo => Latest model
 
   # Adjusts the likelihood of the model repeating the same words or phrases.

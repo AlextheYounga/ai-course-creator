@@ -1,9 +1,13 @@
 from db.db import DB, Topic
-from flask import jsonify
+
+db = DB()
 
 
 class PingController:
     @staticmethod
     def ping_pong():
-        topics_count = len(DB.query(Topic).all())
-        return jsonify('pong! ' + str(topics_count) + ' topics in db')
+        topics_count = len(db.query(Topic).all())
+        return {
+            'message': 'pong!',
+            'topics_count': topics_count
+        }

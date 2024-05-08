@@ -1,25 +1,25 @@
-from db.db import DB, Event
+from db.db import DB, EventStore
 from sqlalchemy import Integer
 from termcolor import colored
-from .cli.select_thread import select_thread
+from .cli.select.select_jobstore import select_job
 import sys
 
 
 
 
-def dump_thread_events():
-    thread = select_thread()
+def dump_job_events():
+    job = select_job()
 
-    thread_properties = thread.properties or {}
-    event_handlers = thread_properties.get('eventHandlers', [])
+    job_properties = job.properties or {}
+    event_handlers = job_properties.get('eventHandlers', [])
     if not event_handlers:
         print(colored("No event handlers found. Exiting...", "red"))
         sys.exit()
 
-    events = DB.query(Event).filter(
-        Event.data['threadId'].cast(Integer) == thread.id
+    events = DB.query(EventStore).filter(
+        EventStore.data['jobId'].cast(Integer) == job.id
     ).order_by(
-        Event.id.asc()
+        EventStore.id.asc()
     ).all()
 
     space = ' '
@@ -36,7 +36,6 @@ def dump_thread_events():
             retab = False
             continue
 
-
         space = space + '  '
 
         if event.handler:
@@ -52,4 +51,4 @@ def dump_thread_events():
     print(colored(f"\nEvent count: {len(events)}", "green"))
 
 
-dump_thread_events()
+dump_job_events()

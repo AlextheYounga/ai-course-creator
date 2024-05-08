@@ -3,10 +3,13 @@ import DashboardView from '@/views/DashboardView.vue'
 import PageView from '@/views/PageView.vue'
 import CourseContent from '@/views/CourseContent.vue'
 import Ping from '@/components/Ping.vue'
-import PromptsIndex from '@/views/Prompts/PromptsIndex.vue'
+import PromptIndex from '@/views/Prompts/PromptIndex.vue'
 import PromptView from '@/views/Prompts/PromptView.vue'
-import OutlinesIndex from '@/views/Outlines/OutlinesIndex.vue'
-import OutlineView from '@/views/Outlines/OutlineView.vue'
+import OutlineIndex from '@/views/Outlines/OutlineIndex.vue'
+import OutlineEdit from '@/views/Outlines/OutlineEdit.vue'
+import OutlineNew from '@/views/Outlines/OutlineNew.vue'
+import GenerationForm from '@/views/GenerationForm.vue'
+import TopicsIndex from '../views/TopicsIndex.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +18,11 @@ const router = createRouter({
       path: '/',
       name: 'dashboard',
       component: DashboardView
+    },
+    {
+      path: '/topics',
+      name: 'topics',
+      component: TopicsIndex
     },
     {
       path: '/pages/:id',
@@ -29,7 +37,7 @@ const router = createRouter({
     {
       path: '/prompts',
       name: 'prompts',
-      component: PromptsIndex
+      component: PromptIndex
     },
     {
       path: '/prompts/:id',
@@ -37,14 +45,24 @@ const router = createRouter({
       component: PromptView
     },
     {
-      path: '/outlines',
-      name: 'outlines',
-      component: OutlinesIndex
+      path: '/outlines/new',
+      name: 'outlines.new',
+      component: OutlineNew
     },
     {
       path: '/outlines/:id',
       name: 'outline',
-      component: OutlineView
+      component: OutlineEdit
+    },
+    {
+      path: '/outlines',
+      name: 'outlines',
+      component: OutlineIndex
+    },
+    {
+      path: '/generate',
+      name: 'generate',
+      component: GenerationForm
     },
     {
       path: '/ping',

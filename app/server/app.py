@@ -1,95 +1,119 @@
-# flask --app app.server.app run --port 5001
+# uvicorn app.server.app:app --port=5001 --reload
 import os
-from flask import Flask, render_template, request
-from flask_cors import CORS
+from fastapi import FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 from .controllers import *
+load_dotenv()
 
-# Instantiate the app
-template_directory = os.path.abspath('app/client/public')
-static_folder = os.path.abspath('app/client/public/assets')
+app = FastAPI()
 
-app = Flask(__name__, template_folder=template_directory, static_folder=static_folder)
-app.config["TEMPLATES_AUTO_RELOAD"] = True
+if os.getenv('APP_ENV') == 'development':
+    origins = [
+        "http://localhost",
+        "http://localhost:5173",  # Vue dev server
+    ]
 
-# enable CORS
-CORS(app, resources={r'/*': {'origins': '*'}})
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
-@app.route('/', methods=['GET'])
-def index():
-    # Load Vue App
-    return render_template('index.html')
+@app.get("/", status_code=status.HTTP_200_OK)
+def read_root():
+    return {"Hello": "World"}
+
+
+# Threads
+@app.get('/api/jobs', status_code=status.HTTP_200_OK)
+def get_all_threads():
+    return JobController.get_all()
+
 
 # Topics
-
-
-@app.route('/api/topics', methods=['GET'])
+@app.get('/api/topics', status_code=status.HTTP_200_OK)
 def get_all_topics():
     return TopicController.get_all()
 
 
-@app.route('/api/topics/outlines/master/material', methods=['GET'])
-def get_all_master_outline_material():
-    return OutlineController.get_all_topics_master_outline_material()
+@app.post('/api/topics', status_code=status.HTTP_201_CREATED)
+def new(data: dict):
+    return TopicController.new(data['topicName'])
 
 
-# Tasks
-@app.route('/api/generate', methods=['POST'])
-def creator_generate():
-    data = request.json
-    TaskController.generate_entities(data)
-    return 'Success', 200
+@app.delete('/api/topics/{id}', status_code=status.HTTP_204_NO_CONTENT)
+def destroy(id: int):
+    TopicController.destroy(id)
+
+
+@app.get('/api/topics/materials', status_code=status.HTTP_200_OK)
+def get_all_topics_materials():
+    return TopicController.get_all_topics_materials()
+
+
+# Jobs
+@app.post('/api/jobs/generate', status_code=status.HTTP_201_CREATED)
+def request_generate(data: dict):
+    return JobController.determine_job(data)
 
 
 # Outlines
-@app.route('/api/outlines', methods=['GET'])
-def get_all_outlines():
-    return OutlineController.get_all()
+@app.get('/api/outlines/materials', status_code=status.HTTP_200_OK)
+def get_all_outlines_materials():
+    return OutlineController.get_all_outlines_materials()
 
 
-@app.route('/api/outlines', methods=['POST'])
-def create_outline():
-    data = request.json
+@app.post('/api/outlines', status_code=status.HTTP_201_CREATED)
+def create_outline(data: dict):
     return OutlineController.create(data)
 
 
-@app.route('/api/outlines/<id>', methods=['GET'])
+@app.get('/api/outlines/{id}', status_code=status.HTTP_200_OK)
 def get_outline(id: int):
     return OutlineController.get(id)
 
 
-@app.route('/api/outlines/<id>/set-master', methods=['PUT'])
+@app.put('/api/outlines/{id}/set-master', status_code=status.HTTP_201_CREATED)
 def set_master_outline(id: int):
     OutlineController.set_master(id)
     return 'Success', 200
 
 
-# Logs
-@app.route('/api/prompts/<id>', methods=['GET'])
+# Outline Entities
+@app.put('/api/outline/{id}/entities/{entity_type}', status_code=status.HTTP_201_CREATED)
+def get_outline_entities(id: int, entity_type: str):
+    return OutlineEntityController.get_entities(id, entity_type)
+
+
+# Prompts
+@app.get('/api/prompts/{id}', status_code=status.HTTP_200_OK)
 def get_log(id: int):
-    return LogController.get(id)
+    return PromptController.get(id)
 
 
-@app.route('/api/prompts', methods=['GET'])
+@app.get('/api/prompts', status_code=status.HTTP_200_OK)
 def get_all_logs():
-    return LogController.get_all()
+    return PromptController.get_all()
+
 
 # Courses
-
-
-@app.route('/api/courses/<id>/content', methods=['GET'])
+@app.get('/api/courses/{id}/content', status_code=status.HTTP_200_OK)
 def get_course_content(id: int):
     return CourseController.get_course_content(id)
 
 
 # Pages
-@app.route('/api/pages/<id>', methods=['GET'])
+@app.get('/api/pages/{id}', status_code=status.HTTP_200_OK)
 def get_page(id: int):
     return PageController.get_page(id)
 
 
 # Test
-@app.route('/api/ping', methods=['GET'])
+@app.get('/api/ping', status_code=status.HTTP_200_OK)
 def ping_pong():
     # sanity check route
     return PingController.ping_pong()
