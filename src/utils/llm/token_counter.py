@@ -1,7 +1,3 @@
-
-import os
-
-
 def _messages_to_single_string(messages):
     prompt = ""
     for message in messages:

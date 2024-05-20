@@ -15,10 +15,8 @@ class CreateSummarizePagePromptHandler:
 
     def handle(self) -> Prompt:
         llm_params = get_llm_params(self.prompt_subject)
-        model = llm_params['model']
-
         messages = self._build_summarize_page_prompt()
-        tokens = count_tokens_using_encoding(model, messages)
+        tokens = count_token_estimate(messages)
 
         prompt = self._save_prompt(messages, tokens, llm_params)
 

@@ -4,7 +4,7 @@ from src.events.events import AllGenerateOutlineChunksPromptsCreated
 from ..utils.llm.get_prompt import get_prompt
 from ..utils.chunks import chunks_list
 from ..utils.llm.get_llm_params import get_llm_params
-from ..utils.llm.token_counter import count_tokens_using_encoding
+from ..utils.llm.token_counter import count_token_estimate
 
 
 
@@ -19,8 +19,6 @@ class CreateAllOutlineChunkPromptsHandler:
 
     def handle(self):
         llm_params = get_llm_params(self.prompt_subject)
-        model = llm_params['model']
-
         skills = self.outline.get_properties().get('skills', None)
         if skills == None:
             raise Exception("Skills are required to generate outlines.")
@@ -30,7 +28,7 @@ class CreateAllOutlineChunkPromptsHandler:
 
         for chunk in skill_chunks:
             messages = self._build_generate_outline_chunks_prompts(chunk)
-            tokens = count_tokens_using_encoding(model, messages)
+            tokens = count_token_estimate(messages)
 
             prompt = self._save_prompt(messages, tokens, llm_params)
             prompt_ids.append(prompt.id)

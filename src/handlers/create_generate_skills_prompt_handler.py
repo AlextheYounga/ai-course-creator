@@ -2,7 +2,7 @@ from db.db import DB, Topic, Outline, Prompt
 from src.events.events import GenerateSkillsPromptCreated
 from ..utils.llm.get_prompt import get_prompt
 from ..utils.llm.get_llm_params import get_llm_params
-from ..utils.llm.token_counter import count_tokens_using_encoding
+from ..utils.llm.token_counter import count_token_estimate
 
 
 
@@ -17,10 +17,8 @@ class CreateGenerateSkillsPromptHandler:
 
     def handle(self) -> GenerateSkillsPromptCreated:
         llm_params = get_llm_params(self.prompt_subject)
-        model = llm_params['model']
-
         messages = self._build_skills_prompt()
-        tokens = count_tokens_using_encoding(model, messages)
+        tokens = count_token_estimate(messages)
 
         prompt = self._save_prompt(messages, tokens, llm_params)
 
