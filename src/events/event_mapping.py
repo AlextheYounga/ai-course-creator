@@ -1,9 +1,9 @@
 # All job pipeline event handler definitions
 EVENT_HANDLER_MAPPING = {
     # Starting Events
-    "GenerateOutlineRequested": "InstantiateOutlineHandler",
-    "GenerateOutlineMaterialRequested": "GetNextPageToGenerateFromJobHandler",
-    "GeneratePagesFromOutlineEntityRequested": "GetNextPageToGenerateFromJobHandler",
+    "GenerateOutlineJobRequested": "InstantiateOutlineHandler",
+    "GeneratePagesFromOutlineJobRequested": "GetNextPageToGenerateFromJobHandler",
+    "GeneratePageInteractivesJobRequested": "CalculateInteractiveCountsForPageHandler",
 
     # Outline Event Handlers
     "NewOutlineInstantiated": "CreateGenerateSkillsPromptHandler",
@@ -23,19 +23,31 @@ EVENT_HANDLER_MAPPING = {
 
     # Page Generation Event Handlers
     "GenerateLessonPageProcessStarted": "CreateLessonPagePromptHandler",
-    "GeneratePracticeChallengePageProcessStarted": "CreatePracticeSkillChallengePromptHandler",
-    "GenerateFinalSkillChallengePageProcessStarted": "CreateFinalSkillChallengePromptHandler",
     "LessonPagePromptCreated": "SendGenerateLessonPagePromptToOpenAIHandler",
     "InvalidLessonPageResponseFromOpenAI": "SendGenerateLessonPagePromptToOpenAIHandler",  # retry event
-    "PracticeChallengePagePromptCreated": "SendGeneratePracticeChallengePromptToOpenAIHandler",
-    "InvalidPracticeChallengePageResponseFromOpenAI": "SendGeneratePracticeChallengePromptToOpenAIHandler",  # retry event
-    "FinalSkillChallengePagePromptCreated": "SendGenerateFinalChallengePromptToOpenAIHandler",
-    "InvalidFinalChallengePageResponseFromOpenAI": "SendGenerateFinalChallengePromptToOpenAIHandler",  # retry event
     "LessonPageResponseReceivedFromOpenAI": "ProcessLessonPageResponseHandler",
     "LessonPageResponseProcessedSuccessfully": "GenerateLessonPageSummaryHandler",
-    "PracticeChallengePageResponseReceivedFromOpenAI": "ProcessPracticeChallengePageResponseHandler",
-    "FinalSkillChallengePageResponseReceivedFromOpenAI": "ProcessFinalSkillChallengePageResponseHandler",
     "LessonPageProcessedAndSummarizedSuccessfully": "GetNextPageToGenerateFromJobHandler",
-    "PracticeChallengePageResponseProcessedSuccessfully": "GetNextPageToGenerateFromJobHandler",
-    "FinalChallengePageResponseProcessedSuccessfully": "GetNextPageToGenerateFromJobHandler",
+
+    # Page Interactives Generation Event Handlers
+    "InteractiveCountsCalculatedForPage": "GetNextPageInteractivesToGenerateHandler",
+    "GenerateMultipleChoicePageInteractivesProcessStarted": "CreateMultipleChoiceInteractiveBatchPromptHandler",
+    "GenerateCodeEditorPageInteractiveProcessStarted": "CreateCodeEditorInteractivePromptHandler",
+    "GenerateCodepenPageInteractiveProcessStarted": "CreateCodepenInteractivePromptHandler",
+    "MultipleChoiceInteractiveBatchPromptCreated": "SendMultipleChoiceInteractiveBatchPromptToOpenAIHandler",
+    "CodeEditorInteractivePromptCreated": "SendCodeEditorInteractivePromptToOpenAIHandler",
+    "CodepenInteractivePromptCreated": "SendCodepenInteractivePromptToOpenAIHandler",
+    "MultipleChoiceInteractiveBatchResponseReceivedFromOpenAI": "ProcessMultipleChoiceInteractiveBatchResponseHandler",
+    "CodeEditorInteractiveResponseReceivedFromOpenAI": "ProcessCodeEditorInteractiveResponseHandler",
+    "CodepenInteractiveResponseReceivedFromOpenAI": "ProcessCodepenInteractiveResponseHandler",
+    "MultipleChoiceInteractiveShortcodeParsingFailed": "SendMultipleChoiceInteractiveBatchPromptToOpenAIHandler",  # retry event
+    "CodeEditorInteractiveShortcodeParsingFailed": "SendCodeEditorInteractivePromptToOpenAIHandler",  # retry event
+    "CodepenInteractiveShortcodeParsingFailed": "SendCodepenInteractivePromptToOpenAIHandler",  # retry event
+    "MultipleChoiceInteractivesSavedFromResponse": "GetNextPageInteractivesToGenerateHandler",
+    "CodeEditorInteractiveSavedFromResponse": "GetNextPageInteractivesToGenerateHandler",
+    "CodepenInteractiveSavedFromResponse": "GetNextPageInteractivesToGenerateHandler",
+    "PageInteractivesGenerationComplete": "DetermineInteractiveCompilationForPagesHandler",
+    "LessonPageReadyForInteractiveCompilation": "CompileInteractivesToLessonPageHandler",
+    "ChallengePageReadyForInteractiveCompilation": "CompileInteractivesToChallengePageHandler",
+    "FinalChallengePageReadyForInteractiveCompilation": "CompileInteractivesToFinalChallengePageHandler",
 }

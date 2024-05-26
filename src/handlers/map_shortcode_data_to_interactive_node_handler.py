@@ -48,7 +48,7 @@ class MapShortcodeDataToInteractiveNodeHandler:
     def _parse_custom_fields(self):
         custom_fields = {}
 
-        if self.tag in ['multipleChoice', 'trueFalse']:
+        if self.tag == 'multipleChoice':
             custom_fields = MapMultipleChoiceFieldsToNodeHandler(self.data).handle()
 
         if self.tag in ['codeEditor', 'codeSnippet']:

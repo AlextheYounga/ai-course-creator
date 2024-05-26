@@ -31,27 +31,21 @@ class CreateLessonPagePromptHandler:
         # Combine multiple system prompts into one
         general_system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
 
-        # Inform model on how we want to format interactives
-        interactives_instruction_prompt = self._prepare_interactives_instruction_prompt()
-        interactive_shapes_prompt = self._get_interactive_component_shape_prompts()
-
         # Inform model on our outline
         pruned_outline = self._prune_challenges_from_outline()
-        material_system_prompt = get_prompt(self.topic, 'system/pages/tune-outline', {
+        material_system_prompt = get_prompt(self.topic, 'system/pages/outline-context', {
             'topic': self.topic.name,
             'outline': yaml.dump(pruned_outline, sort_keys=False)
         })
 
         # Get prior page summaries
         summaries = self._collect_prior_page_summaries()
-        prior_page_material_prompt = get_prompt(self.topic, 'system/pages/tune-page-summaries', {
+        prior_page_material_prompt = get_prompt(self.topic, 'system/pages/page-summaries-context', {
             'summaries': summaries
         }) if len(summaries) > 0 else ""
 
         combined_system_prompt = "\n---\n".join([
             general_system_prompt,
-            interactives_instruction_prompt,
-            interactive_shapes_prompt,
             material_system_prompt,
             prior_page_material_prompt
         ])
@@ -63,43 +57,6 @@ class CreateLessonPagePromptHandler:
             {"role": "system", "content": combined_system_prompt},
             {"role": "user", "content": user_prompt}
         ]
-
-
-    def _prepare_interactives_instruction_prompt(self):
-        interactives_list = '\n'
-        topic_interactives = self._get_interactives_settings()
-        available_interactives = {
-            'codeEditor': 'Code Editor',
-            'multipleChoice': 'Multiple Choice',
-            'fillBlank': 'Fill in the Blank',
-            'trueFalse': 'True/False',
-            'codepen': 'CodePen'
-        }
-
-        for interactive in available_interactives:
-            if topic_interactives.get(interactive, True):
-                interactives_list += f"- {interactive}\n"
-
-        interactives_list += '\n'
-
-        return get_prompt(
-            self.topic,
-            'system/tune-interactives',
-            {'interactives': interactives_list}
-        )
-
-
-    def _get_interactive_component_shape_prompts(self):
-        interactives = []
-        topic_interactives = self._get_interactives_settings()
-        available_interactives = ['codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse', 'codepen']
-
-        for interactive in available_interactives:
-            if topic_interactives.get(interactive, True):
-                prompt = get_prompt(self.topic, f"system/interactives/{interactive}")
-                interactives.append(prompt)
-
-        return "\n\n".join(interactives)
 
     def _collect_prior_page_summaries(self):
         summaries = ""
@@ -122,6 +79,7 @@ class CreateLessonPagePromptHandler:
 
 
     def _prune_challenges_from_outline(self):
+        # We don't want the model knowing about challenges at the moment and getting confused
         outline_formatted = []
 
         for course in self.outline.outline_data:
@@ -168,10 +126,3 @@ class CreateLessonPagePromptHandler:
         self.db.commit()
 
         return prompt
-
-
-    def _get_interactives_settings(self):
-        scoped_settings = self.topic.get_settings('lesson')
-        topic_interactives = scoped_settings.get("interactives", {})
-
-        return topic_interactives

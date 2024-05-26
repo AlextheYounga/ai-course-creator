@@ -3,39 +3,13 @@ topics:
     prompts: programming
     language: ruby
     settings:
-      global:
-        interactives:
-          codepen: false
-        allCodeInEditors: true
-
-  Javascript:
-    prompts: programming
-    language: javascript
-    settings:
-      global:
-        interactives:
-          codepen: false
-        allCodeInEditors: true
-
-  Python:
-    prompts: programming
-    language: python
-    settings:
-      global:
-        allCodeInEditors: true
-        interactives:
-          codepen: false
-
-  HTML:
-    prompts: programming
-    language: python
-    settings:
-      global:
-        interactives:
-          codeEditor: false
-      challenge:
-        interactives:
-          codepen: false
-      final-skill-challenge:
-        interactives:
-          codepen: false
+        hasInteractives: true # true by default
+        interactives: # interactive settings
+          counts: 
+            lesson: 1
+            challenge: 5
+            final-skill-challenge: 20
+          weights: # determines how often each type appears in the curriculum
+            multipleChoice: 0.6
+            codeEditor: 0.2
+            codepen: 0.2

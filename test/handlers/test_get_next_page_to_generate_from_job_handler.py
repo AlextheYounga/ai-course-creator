@@ -26,7 +26,7 @@ def test_get_next_page_to_generate_from_thread_using_only_outline_id():
     assert triggered_event is not None
     assert triggered_event.data.get('pageId', None) is not None
     assert triggered_event.data['pageId'] == 1
-    assert triggered_event.data.get('totalSteps', None) == 77
+    assert triggered_event.data.get('totalSteps', None) == 54
     assert triggered_event.__class__.__name__ == 'GenerateLessonPageProcessStarted'
 
 
@@ -42,5 +42,5 @@ def test_get_next_page_to_generate_from_thread_using_chapter_outline_entity_id()
 
     assert triggered_event is not None
     assert triggered_event.data.get('pageId', None) is not None
-    assert triggered_event.data.get('totalSteps', None) == 5
+    assert triggered_event.data.get('totalSteps', None) == 4
     assert triggered_event.__class__.__name__ == 'GenerateLessonPageProcessStarted'

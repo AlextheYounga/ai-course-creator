@@ -31,6 +31,7 @@ class Job:
         self.context = context
         self.status = 'in_progress'
         self.data.update({'jobId': self.id})
+        self.record = context.save_job(self)
         self.work()
 
     def serialize(self):

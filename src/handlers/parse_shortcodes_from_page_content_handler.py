@@ -15,7 +15,7 @@ class ParseShortcodesFromPageContentHandler:
         parsed_content = copy.copy(self.page.content)
 
         if self.page.content:
-            interactive_types = ['codeEditor', 'multipleChoice', 'fillBlank', 'trueFalse', 'codepen']
+            interactive_types = ['codeEditor', 'multipleChoice', 'fillBlank', 'codepen']
 
             for tag in interactive_types:
                 shortcode_matches = re.finditer(Shortcode.shortcode_regex(tag), self.page.content)

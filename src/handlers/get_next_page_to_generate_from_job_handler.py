@@ -1,6 +1,6 @@
 import collections
 from db.db import DB, OutlineEntity, Chapter, Page, EventStore
-from src.events.events import GeneratePracticeChallengePageProcessStarted, GenerateFinalSkillChallengePageProcessStarted, GenerateLessonPageProcessStarted, GenerateOutlineMaterialJobFinished, GenerateMaterialFromOutlineEntityJobFinished
+from src.events.events import GeneratePracticeChallengePageProcessStarted, GenerateFinalSkillChallengePageProcessStarted, GenerateLessonPageProcessStarted, GenerateOutlinePagesJobFinished
 
 
 class GetNextPageToGenerateFromJobHandler:
@@ -18,7 +18,6 @@ class GetNextPageToGenerateFromJobHandler:
         self.data = data
         self.db = DB()
         self.outline_entity = self.db.get(OutlineEntity, data['outlineEntityId']) if data.get('outlineEntityId', False) else False
-        self.page_type = data.get('pageType', False)   # lesson, challenge, final-skill-challenge
 
 
     def handle(self):
@@ -29,10 +28,7 @@ class GetNextPageToGenerateFromJobHandler:
         all_pages_generated = collections.Counter(generated_page_ids) == collections.Counter(pages_to_generate_ids)
 
         if all_pages_generated:
-            if self.outline_entity:
-                return GenerateMaterialFromOutlineEntityJobFinished(self.data)
-            else:
-                return GenerateOutlineMaterialJobFinished(self.data)
+            return GenerateOutlinePagesJobFinished(self.data)
 
         page_trigger_events = {
             'lesson': GenerateLessonPageProcessStarted,
@@ -63,10 +59,9 @@ class GetNextPageToGenerateFromJobHandler:
         else:
             pages_to_generate = self._get_outline_pages()
 
-        if self.page_type:
-            pages_to_generate = [page for page in pages_to_generate if page.type == self.page_type]
+        lesson_pages_to_generate = [page for page in pages_to_generate if page.type == 'lesson']
 
-        return pages_to_generate
+        return lesson_pages_to_generate
 
 
     def _get_outline_pages(self) -> list[Page]:

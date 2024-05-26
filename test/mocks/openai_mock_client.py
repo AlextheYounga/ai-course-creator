@@ -8,8 +8,10 @@ EXPECTED_MASTER_OUTLINE_RESPONSE = open('test/fixtures/responses/master-outline.
 EXPECTED_SKILLS_RESPONSE = open('test/fixtures/responses/skills.md').read()
 EXPECTED_PAGE_RESPONSE = open('test/fixtures/responses/page.md').read()
 EXPECTED_PAGE_SUMMARY_RESPONSE = open('test/fixtures/responses/summary.md').read()
-EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE = open('test/fixtures/responses/practice-skill-challenge.md').read()
-EXPECTED_FINAL_SKILL_CHALLENGE_RESPONSE = open('test/fixtures/responses/final-skill-challenge.md').read()
+EXPECTED_MULTIPLE_CHOICE_RESPONSE = open('test/fixtures/responses/interactives/multiple-choice.md').read()
+EXPECTED_CODE_EDITOR_RESPONSE = open('test/fixtures/responses/interactives/code-editor.md').read()
+EXPECTED_CODEPEN_RESPONSE = open('test/fixtures/responses/interactives/codepen.md').read()
+
 
 
 class OpenAiMockClient(OpenAiClient):
@@ -21,35 +23,43 @@ class OpenAiMockClient(OpenAiClient):
     def chat_completion(self, prompt, params={}):
         subject = prompt.subject
         response = self.response
+        if response: return response
 
-        if not response:
-            if subject == 'skills':
+        match subject:
+            case 'skills':
                 response = EXPECTED_SKILLS_RESPONSE
 
-            if subject == 'outline':
+            case 'outline':
                 outline_chunk_file = prompt.id - 1
                 response = open(f"test/fixtures/responses/outline-chunks/outline-chunk-{outline_chunk_file}.md").read()
 
-            if subject == 'master-outline':
+            case 'master-outline':
                 response = EXPECTED_MASTER_OUTLINE_RESPONSE
 
-            if subject == 'page-material':
+            case 'page-material':
                 hash = random.getrandbits(128)
                 material = str(hash) + "\n" + EXPECTED_PAGE_RESPONSE
                 response = material
 
-            if subject == 'summarize-page':
+            case 'summarize-page':
                 response = EXPECTED_PAGE_SUMMARY_RESPONSE
 
-            if subject == 'practice-skill-challenge':
-                hash = random.getrandbits(128)
-                material = str(hash) + "\n" + EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE
-                response = material
+            case 'multiple-choice':
+                count = int(prompt.content.split('Prompt: please generate ')[1][0])
+                multiple_choice_interactives = []
+                for _ in range(count):
+                    hash = random.getrandbits(128)
+                    interactive_shortcode = EXPECTED_MULTIPLE_CHOICE_RESPONSE.replace('[multipleChoice', f'[multipleChoice hash="{hash}"')
+                    multiple_choice_interactives.append(interactive_shortcode)
+                response = "\n\n".join(multiple_choice_interactives)
 
-            if subject == 'final-skill-challenge':
+            case 'code-editor':
                 hash = random.getrandbits(128)
-                material = str(hash) + "\n" + EXPECTED_PRACTICE_SKILL_CHALLENGE_RESPONSE
-                response = material
+                response = EXPECTED_CODE_EDITOR_RESPONSE.replace('[codeEditor', f'[codeEditor hash="{hash}"')
+
+            case 'codepen':
+                hash = random.getrandbits(128)
+                response = EXPECTED_CODEPEN_RESPONSE.replace('[codepen', f'[codepen hash="{hash}"')
 
         response_object = self._completion_response_object(response)
         completion = self._mock_object(response_object)

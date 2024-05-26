@@ -16,12 +16,11 @@ class Page(Base):
     chapter_id = mapped_column(Integer, nullable=False, index=True)
     name = mapped_column(String, nullable=False)
     slug = mapped_column(String, nullable=False)
-    permalink = mapped_column(String)
     link = mapped_column(String)
-    path = mapped_column(String)
     hash = mapped_column(String, unique=True)
     type = mapped_column(String)
     content = mapped_column(Text)
+    interactive_ids = mapped_column(JSON)
     summary = mapped_column(Text)
     position = mapped_column(Integer, nullable=False)
     position_in_course = mapped_column(Integer, nullable=False)
@@ -33,8 +32,11 @@ class Page(Base):
     topic = relationship("Topic", back_populates="pages")
 
 
-    def get_properties(self):
-        return self.properties or {}
+    def get_properties(self, key=None):
+        properties = self.properties or {}
+        if key: return properties.get(key, None)
+
+        return properties
 
 
     def update_properties(self, db: Session, properties: dict):
@@ -55,6 +57,12 @@ class Page(Base):
             f.close()
 
 
+    def get_content_compiled(self):
+        if self.appends:
+            return f"{self.content}\n\n{self.appends}"
+
+        return self.content
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -63,12 +71,11 @@ class Page(Base):
             "chapter_id": self.chapter_id,
             "name": self.name,
             "slug": self.slug,
-            "permalink": self.permalink,
             "link": self.link,
-            "path": self.path,
             "hash": self.hash,
             "type": self.type,
             "content": self.content,
+            "interactive_ids": self.interactive_ids,
             "summary": self.summary,
             "position": self.position,
             "position_in_course": self.position_in_course,

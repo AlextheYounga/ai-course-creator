@@ -1,9 +1,7 @@
 from termcolor import colored
 from db.db import DB, Outline, Response, Page
-from .map_page_content_to_nodes_handler import MapPageContentToNodesHandler
 from .validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
-from src.events.events import InvalidLessonPageResponseFromOpenAI, LessonPageResponseProcessedSuccessfully
-
+from src.events.events import InvalidLessonPageResponseFromOpenAI, LessonPageResponseProcessedSuccessfully, GeneratePageInteractivesJobRequested
 
 
 class ProcessLessonPageResponseHandler:
@@ -12,11 +10,13 @@ class ProcessLessonPageResponseHandler:
         self.db = DB()
         self.response = self.db.get(Response, data['responseId'])
         self.page = self.db.get(Page, data['pageId'])
+        self.next_events = []
 
 
     def handle(self) -> Outline:
         completion = self.response.payload
 
+        # Check response for blatant problems
         validated_response = ValidateResponseFromOpenAIHandler(self.data).handle()
 
         if not validated_response:
@@ -26,19 +26,15 @@ class ProcessLessonPageResponseHandler:
         content = self._add_header_to_page_content(completion)
 
         self._save_content_to_page(content)
+        self.next_events.append(LessonPageResponseProcessedSuccessfully(self.data))
 
-        try:
-            nodes = MapPageContentToNodesHandler({'pageId': self.page.id}).handle()
-            self.page.update_properties(self.db, {'nodes': nodes})
-        except Exception as e:
-            print(colored(f"Error parsing page nodes. Retrying... Error: {e}", "yellow"))
-            return InvalidLessonPageResponseFromOpenAI(self.data)
+        if self._topic_permits_interactives():  # true by default
+            self.next_events.append(GeneratePageInteractivesJobRequested(self.data))  # Async job flow
 
-        return LessonPageResponseProcessedSuccessfully(self.data)
-
-
+        return self.next_events
 
     def _add_header_to_page_content(self, completion: dict):
+        # If page does not have a header, add one
         content = completion['choices'][0]['message']['content']
 
         # If header is h1, do nothing
@@ -61,13 +57,16 @@ class ProcessLessonPageResponseHandler:
         return content
 
 
+    def _topic_permits_interactives(self):
+        return self.page.topic.get_properties().get('settings', {}).get('hasInteractives', True)
+
+
     def _save_content_to_page(self, material: str):
         content_hash = Page.hash_page(material)
 
         # Update page record
         self.page.content = material
         self.page.hash = content_hash
-        self.page.link = self.page.permalink
         self.page.generated = True
 
         # Save to Database

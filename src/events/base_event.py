@@ -10,7 +10,6 @@ class BaseEvent:
         self.id = None
         self.db = DB()
         self.handler = None
-        self.status = "pending"
 
 
     @classmethod
@@ -59,7 +58,6 @@ class BaseEvent:
 
         # Create the event instance
         event = locate(f'src.events.events.{event_name}')(event_data, event_id)
-        event.status = job.status
 
         return event
 

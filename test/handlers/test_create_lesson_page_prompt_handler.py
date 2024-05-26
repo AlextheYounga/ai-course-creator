@@ -28,8 +28,3 @@ def test_create_lesson_page_prompt_handler():
 
     assert prompt is not None
     assert prompt.content is not None
-    assert '[multipleChoice' in prompt.content
-    assert '[fillBlank' in prompt.content
-    assert '[codeEditor' in prompt.content
-    assert '[trueFalse' in prompt.content
-    assert '[codepen' not in prompt.content

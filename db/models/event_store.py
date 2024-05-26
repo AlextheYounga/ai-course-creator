@@ -12,7 +12,6 @@ class EventStore(Base):
     name = mapped_column(String, nullable=False)
     handler = mapped_column(String)
     data = mapped_column(JSON)
-    status = mapped_column(String, default="pending")
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
@@ -24,7 +23,6 @@ class EventStore(Base):
             "name": self.name,
             "handler": self.handler,
             "data": self.data,
-            "status": self.status,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }

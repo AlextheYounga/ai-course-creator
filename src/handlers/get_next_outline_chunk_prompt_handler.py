@@ -40,10 +40,6 @@ class GetNextOutlineChunkPromptHandler:
         })
 
 
-
-
-
-
     def _get_all_prompts_already_sent(self, prompts_to_send: list[int]):
         responses = self.db.query(Response).filter(Response.prompt_id.in_(prompts_to_send)).all()
         sent_prompt_ids = [r.prompt_id for r in responses]

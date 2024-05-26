@@ -4,23 +4,21 @@ from .base_event import BaseEvent as Event
 
 
 # Job Start Events
-
-
-class GenerateOutlineRequested(Event):
+class GenerateOutlineJobRequested(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class GenerateOutlineMaterialRequested(Event):
+class GeneratePagesFromOutlineJobRequested(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class GeneratePagesFromOutlineEntityRequested(Event):
+class GeneratePageInteractivesJobRequested(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
@@ -143,13 +141,6 @@ class OutlineEntitiesCreatedFromOutline(Event):
 
 
 # Pages
-class GeneratePagesFromOutlineEntityRequested(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
 class GenerateLessonPageProcessStarted(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
@@ -290,6 +281,167 @@ class LessonPageResponseReceivedFromOpenAI(Event):
         self.data = data
 
 
+# Interactives
+class InteractiveCountsCalculatedForPage(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class GenerateMultipleChoicePageInteractivesProcessStarted(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class GenerateCodeEditorPageInteractiveProcessStarted(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class GenerateCodepenPageInteractiveProcessStarted(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class MultipleChoiceInteractiveBatchPromptCreated(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CodeEditorInteractivePromptCreated(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CodepenInteractivePromptCreated(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class MultipleChoiceInteractiveBatchResponseReceivedFromOpenAI(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CodeEditorInteractiveResponseReceivedFromOpenAI(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CodepenInteractiveResponseReceivedFromOpenAI(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class MultipleChoiceInteractiveShortcodeParsingFailed(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CodeEditorInteractiveShortcodeParsingFailed(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CodepenInteractiveShortcodeParsingFailed(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class MultipleChoiceInteractivesSavedFromResponse(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CodeEditorInteractiveSavedFromResponse(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CodepenInteractiveSavedFromResponse(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class LessonPageReadyForInteractiveCompilation(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class ChallengePageReadyForInteractiveCompilation(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class FinalChallengePageReadyForInteractiveCompilation(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CompiledInteractivesToLessonPage(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CompiledInteractivesToChallengePage(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class CompiledInteractivesToFinalChallengePage(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class PageInteractivesGenerationComplete(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
 
 # Finish Events
 class GenerateOutlineJobFinished(Event):
@@ -299,14 +451,7 @@ class GenerateOutlineJobFinished(Event):
         self.data = data
 
 
-class GenerateOutlineMaterialJobFinished(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class GenerateMaterialFromOutlineEntityJobFinished(Event):
+class GenerateOutlinePagesJobFinished(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id

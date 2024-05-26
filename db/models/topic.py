@@ -57,8 +57,11 @@ class Topic(Base):
         return latest_outline
 
 
-    def get_properties(self):
-        return self.properties or {}
+    def get_properties(self, key=None):
+        properties = self.properties or {}
+        if key: return properties.get(key, None)
+
+        return properties
 
 
     def update_properties(self, db: Session, properties: dict):

@@ -1,7 +1,8 @@
+import time
 from .mocks.mock_db import *
 from src.jobs import QueueContext, StorageQueue, JobQueue, Job, Worker
 from src.handlers import ScanTopicsFileHandler, CreateNewOutlineHandler
-from src.events.events import GenerateOutlineMaterialRequested
+from src.events.events import GeneratePagesFromOutlineJobRequested
 
 
 TOPIC = 'Ruby on Rails'
@@ -19,39 +20,32 @@ def __setup_test():
     }).handle()
 
 
-def __run_job(expected_jobs: int, data: dict):
+def __run_job(data: dict):
     queue_context = QueueContext()
     storage_queue = StorageQueue()
     job_queue = JobQueue(storage_queue, 'main_queue')
 
-    job_event = GenerateOutlineMaterialRequested(data)
+    job_event = GeneratePagesFromOutlineJobRequested(data)
     job = Job({'data': job_event.serialize()})
     job_queue.enqueue(job)
 
     worker = Worker(queue_context, storage_queue, job_queue)
 
-    while expected_jobs > 0:
-        worker.handle()
-        expected_jobs -= 1
-
+    worker = Worker(queue_context, storage_queue, job_queue)
+    worker.perform()
 
     return job
 
 
-def __setup_with_existing():
-    truncate_tables()
-    import_sql_data_from_file('test/data/test.db', 'test/data/test.sql.zip', zipped=True)
-
-    fsc_pages = DB.query(Page).filter(Page.type == 'final-skill-challenge').all()
-    for page in fsc_pages:
-        page.generated = False
-        page.content = None
-        page.hash = None
-    DB.commit()
-
-
-def test_generate_pages_from_outline():
+def test_generate_pages_from_outline_without_interactives():
     __setup_test()
+
+    db = get_session()
+
+    topic = db.query(Topic).first()
+    topic_properties = topic.get_properties()
+    topic_properties['settings']['hasInteractives'] = False
+    topic.update_properties(db, topic_properties)
 
     good_events = [
         'LessonPageProcessedAndSummarizedSuccessfully',
@@ -65,56 +59,111 @@ def test_generate_pages_from_outline():
         'InvalidFinalChallengePageResponseFromOpenAI'
     ]
 
-    expected_jobs = 364
     job_data = {
         'topicId': 1,
         'outlineId': 1,
     }
 
-    job = __run_job(expected_jobs, job_data)
+    job = __run_job(job_data)
 
-    pages = DB.query(Page).all()
+    pages = db.query(Page).all()
     assert len(pages) == 77
 
     for page in pages:
-        assert page.content is not None
-        assert page.content != ''
-        assert page.generated
         assert page.topic_id == 1
-        assert page.type in ['lesson', 'challenge', 'final-skill-challenge']
         assert page.chapter_id is not None
-        assert page.hash is not None
+        assert page.type in ['lesson', 'challenge', 'final-skill-challenge']
 
-    good_events = DB.query(EventStore).filter(
+        match page.type:
+            case 'lesson':
+                assert page.content is not None
+                assert page.content != ''
+                assert page.generated
+                assert page.hash is not None
+            case 'challenge':
+                assert page.content is None
+                assert page.generated is False
+                assert page.hash is None
+            case 'final-skill-challenge':
+                assert page.content is None
+                assert page.generated is False
+                assert page.hash is None
+
+
+    good_events = db.query(EventStore).filter(
         EventStore.name.in_(good_events),
         EventStore.job_id == job.id
     ).count()
 
-    bad_events = DB.query(EventStore).filter(
+    bad_events = db.query(EventStore).filter(
         EventStore.name.in_(bad_events),
         EventStore.job_id == job.id
     ).count()
 
-    assert good_events == 77
+    assert good_events == 54
     assert bad_events == 0
 
 
+def test_generate_pages_from_outline_with_interactives():
+    __setup_test()
 
-# def test_generate_only_outline_fsc_pages():
-#     __setup_with_existing()
+    db = get_session()
 
-#     expected_jobs = 30
-#     job_data = {
-#         'topicId': 1,
-#         'outlineId': 1,
-#         'pageType': 'final-skill-challenge'
-#     }
+    good_events = [
+        'LessonPageProcessedAndSummarizedSuccessfully',
+        'PracticeChallengePageResponseProcessedSuccessfully',
+        'FinalChallengePageResponseProcessedSuccessfully'
+    ]
 
-#     job = __run_job(expected_jobs, job_data)
+    bad_events = [
+        'InvalidLessonPageResponseFromOpenAI',
+        'InvalidPracticeChallengePageResponseFromOpenAI',
+        'InvalidFinalChallengePageResponseFromOpenAI'
+        "MultipleChoiceInteractiveShortcodeParsingFailed",
+        "CodeEditorInteractiveShortcodeParsingFailed",
+        "CodepenInteractiveShortcodeParsingFailed",
+    ]
 
-#     events = DB.query(EventStore).filter(
-#         EventStore.name == 'FinalChallengePageResponseProcessedSuccessfully',
-#         EventStore.job_id == job.id
-#     ).all()
+    job_data = {
+        'topicId': 1,
+        'outlineId': 1,
+    }
 
-#     assert len(events) == 7
+    job = __run_job(job_data)
+
+    pages = db.query(Page).all()
+    interactives = db.query(Interactive).all()
+
+    assert len(pages) == 77
+    assert len(interactives) > 0
+    assert len(interactives) <= 385  # Highest possible number of interactives
+
+    for page in pages:
+        assert page.topic_id == 1
+        assert page.chapter_id is not None
+        assert page.type in ['lesson', 'challenge', 'final-skill-challenge']
+        assert page.content is not None
+        assert page.content != ''
+        assert page.generated
+        assert page.hash is not None
+        assert len(page.interactive_ids) > 0
+
+    for interactive in interactives:
+        assert interactive.outline_entity_id is not None
+        assert interactive.type in ['multipleChoice', 'codeEditor', 'codepen']
+        assert interactive.difficulty in [1, 2, 3]
+        assert interactive.data is not None
+        assert interactive.data != ''
+
+    good_events = db.query(EventStore).filter(
+        EventStore.name.in_(good_events),
+        EventStore.job_id == job.id
+    ).count()
+
+    bad_events = db.query(EventStore).filter(
+        EventStore.name.in_(bad_events),
+        EventStore.job_id == job.id
+    ).count()
+
+    assert good_events == 54
+    assert bad_events == 0

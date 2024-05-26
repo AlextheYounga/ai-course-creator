@@ -1,0 +1,1 @@
+Prompt: please generate {count_of_type} based on the page material provided in the context. Please only provide shortcodes in your response and no other content, as we would like the priority to be the quality of the interactives. 

@@ -5,6 +5,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from .base import Base
 
 
+# TODO: Change this to QueueStore, since this is basically tracking queues and not individual jobs.
 
 class JobStore(Base):
     __tablename__ = "job"
@@ -29,8 +30,11 @@ class JobStore(Base):
         }
 
 
-    def get_properties(self):
-        return self.properties or {}
+    def get_properties(self, key=None):
+        properties = self.properties or {}
+        if key: return properties.get(key, None)
+
+        return properties
 
 
     def set_complete(self, db: Session):

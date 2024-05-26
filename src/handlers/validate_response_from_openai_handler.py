@@ -16,13 +16,11 @@ class ValidateResponseFromOpenAIHandler:
             print(colored("Malformed completion, unknown error. Aborting...", "red"))
             return False  # Retry
 
-
         content = completion['choices'][0]['message']['content']
 
         if len(content) < 200:
             print(colored("Shit response; retrying...", "red"))
             return False  # Retry
-
 
         self._update_response_record(completion)
 

@@ -1,6 +1,6 @@
 import os
 from db.db import DB, Outline, OutlineEntity, Course, Chapter, Page
-from src.events.events import OutlineEntitiesCreatedFromOutline
+from src.events.events import OutlineEntitiesCreatedFromOutline, GenerateOutlineJobFinished
 
 
 
@@ -11,7 +11,7 @@ class CreateOutlineEntitiesFromOutlineHandler:
         self.outline = self.db.get(Outline, data['outlineId'])
         self.topic = self.outline.topic
 
-    def handle(self) -> list[Page]:
+    def handle(self):
         outline_data = self.outline.outline_data
 
         for course_index, course in enumerate(outline_data):
@@ -45,7 +45,10 @@ class CreateOutlineEntitiesFromOutlineHandler:
                 OutlineEntity.first_or_create(self.db, self.outline.id, chapter_record)
             OutlineEntity.first_or_create(self.db, self.outline.id, course_record)
 
-        return OutlineEntitiesCreatedFromOutline(self.data)
+        return [
+            OutlineEntitiesCreatedFromOutline(self.data),
+            GenerateOutlineJobFinished(self.data)
+        ]
 
 
     def _get_first_or_create_course(self, name, position):
@@ -95,8 +98,6 @@ class CreateOutlineEntitiesFromOutlineHandler:
 
 
     def _get_first_or_create_page(self, name: str, position: int, position_in_course: int, chapter: Chapter, course: Course):
-        output_directory = os.environ.get("OUTPUT_DIRECTORY") or 'out'
-
         page_slug = Page.make_slug(name, course.slug, chapter.slug)
 
         page = self.db.query(Page).filter(
@@ -109,22 +110,15 @@ class CreateOutlineEntitiesFromOutlineHandler:
         if not page:
             page = Page(topic_id=self.topic.id)
 
-        def get_page_content():
-            if page.content: return page.content
-            if os.path.exists(page.path): return open(page.path).read()
-            return None
-
         page.name = name
         page.course_id = course.id
         page.chapter_id = chapter.id
         page.slug = page_slug
-        page.path = f"{output_directory}/{self.topic.slug}/{self.outline.name}/content/{course.slug}/{chapter.slug}/page-{page_slug}.md"
-        page.content = get_page_content()
+        page.content = page.content if page.content else None
         page.summary = page.summary
-        page.generated = os.path.exists(page.path) or page.content != None
+        page.generated = page.content != None
         page.hash = Page.hash_page(page.content) if page.content else None
-        page.permalink = f"/page/{self.topic.slug}/{course.slug}/{chapter.slug}/{page_slug}"
-        page.link = page.permalink if page.generated else '#'
+        page.link = f"/page/{self.topic.slug}/{course.slug}/{chapter.slug}/{page_slug}"
         page.position = position
         page.position_in_course = position_in_course
         page.type = Page.get_page_type(name, chapter.slug)

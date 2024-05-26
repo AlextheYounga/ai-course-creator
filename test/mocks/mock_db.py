@@ -15,6 +15,8 @@ def truncate_tables():
         DB.execute(text(f"DELETE FROM {table}"))
         DB.commit()
 
+    DB.close()  # Was getting flush warnings
+
 
 def import_sql_data_from_file(db_path: str, sql_file_path: str, zipped: bool = False):
     # Step 1: Connect to the SQLite database

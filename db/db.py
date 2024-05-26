@@ -1,8 +1,9 @@
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, scoped_session
 from dotenv import load_dotenv
 from db.models import *
+from db.hooks import *
 
 
 def create_session():

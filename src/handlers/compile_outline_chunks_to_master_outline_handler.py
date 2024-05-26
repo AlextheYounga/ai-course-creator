@@ -2,7 +2,7 @@ from termcolor import colored
 import os
 import yaml
 from db.db import DB, Outline
-from src.events.events import MasterOutlineCompiledFromOutlineChunks, GenerateOutlineJobFinished
+from src.events.events import MasterOutlineCompiledFromOutlineChunks
 
 
 class CompileOutlineChunksToMasterOutlineHandler:
@@ -17,7 +17,7 @@ class CompileOutlineChunksToMasterOutlineHandler:
 
 
     def handle(self) -> Outline:
-        if not self.outline.get_properties().get('outlineChunks', False):
+        if not self.outline.get_properties('outlineChunks'):
             raise Exception("OutlineChunks not found in outline properties.")
 
         outline_data = self._compile_outline_data_from_chunks()
@@ -42,10 +42,7 @@ class CompileOutlineChunksToMasterOutlineHandler:
 
         self._save_master_outline_to_yaml_file()
 
-        return [
-            MasterOutlineCompiledFromOutlineChunks(self.data),
-            GenerateOutlineJobFinished(self.data)
-        ]
+        return MasterOutlineCompiledFromOutlineChunks(self.data)
 
 
     def _compile_outline_data_from_chunks(self) -> dict:

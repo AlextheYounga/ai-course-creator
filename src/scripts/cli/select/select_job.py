@@ -6,7 +6,7 @@ from .select_topic import select_topic
 from .select_generate_content import select_generate_content
 from .select_jobstore import select_jobstore
 from src.jobs import QueueContext, StorageQueue, JobQueue, Job, Worker
-from src.events.events import GenerateOutlineRequested, GenerateOutlineMaterialRequested, GeneratePagesFromOutlineEntityRequested
+from src.events.events import GenerateOutlineJobRequested, GeneratePagesFromOutlineJobRequested, GeneratePagesFromOutlineJobRequested
 
 db = DB()
 
@@ -26,7 +26,7 @@ def _dispatch(job_event):
 def _generate_outline(topic: Topic):
     redis.Redis().flushall()  # We should flush all here to avoid running previous jobs
     job_data = {'topicId': topic.id}
-    job_event = GenerateOutlineRequested(job_data)
+    job_event = GenerateOutlineJobRequested(job_data)
     return _dispatch(job_event)
 
 
@@ -36,11 +36,11 @@ def _generate_content(topic: Topic):
 
     # Generate Outline Entities (specific sections from outline)
     if 'outlineEntityId' in job_data:
-        job_event = GeneratePagesFromOutlineEntityRequested(job_data)
+        job_event = GeneratePagesFromOutlineJobRequested(job_data)
         return _dispatch(job_event)
 
     # Generate Full Outline Material
-    job_event = GenerateOutlineMaterialRequested(job_data)
+    job_event = GeneratePagesFromOutlineJobRequested(job_data)
     return _dispatch(job_event)
 
 

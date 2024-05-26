@@ -19,10 +19,13 @@ prompts:
     max_tokens: 100
     temperature: .7
 
-  practice-skill-challenge:
+  multiple-choice:
     temperature: .7
 
-  final-skill-challenge:
+  code-editor:
+    temperature: .7
+
+  codepen:
     temperature: .7
 
 global: 
@@ -33,7 +36,8 @@ global:
   # gpt-3.5-turbo-1106 => Midwit model
   # gpt-3.5-turbo => Latest 3.5
   # gpt-4-0125-preview => 100 IQ model
-  # gpt-4-turbo => Latest model
+  # gpt-4-turbo => 120 IQ model
+  # gpt-4o => Latest model
 
   # Adjusts the likelihood of the model repeating the same words or phrases.
   frequency_penalty: 0 # number, optional, defaults to 0, range: -2.0 to 2.0

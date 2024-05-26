@@ -209,7 +209,6 @@ const form = ref({
             allCodeInEditors: false,
             multipleChoice: true,
             fillBlank: true,
-            trueFalse: true,
             codeEditor: true
         },
         lesson: {
@@ -218,7 +217,6 @@ const form = ref({
             codeEditor: true,
             multipleChoice: true,
             fillBlank: true,
-            trueFalse: true,
         },
         challenge: {
             allCodeInEditors: false,
@@ -226,7 +224,6 @@ const form = ref({
             codeEditor: true,
             multipleChoice: true,
             fillBlank: true,
-            trueFalse: true,
         },
         finalChallenge: {
             allCodeInEditors: false,
@@ -234,7 +231,6 @@ const form = ref({
             codeEditor: true,
             multipleChoice: true,
             fillBlank: true,
-            trueFalse: true,
         }
     }
 });
