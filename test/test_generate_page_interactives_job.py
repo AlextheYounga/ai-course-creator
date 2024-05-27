@@ -1,4 +1,3 @@
-from datetime import datetime
 from .mocks.mock_db import *
 from src.jobs import QueueContext, StorageQueue, JobQueue, Job, Worker
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler

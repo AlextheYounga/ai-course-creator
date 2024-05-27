@@ -57,11 +57,13 @@ class Page(Base):
             f.close()
 
 
-    def get_content_compiled(self):
-        if self.appends:
-            return f"{self.content}\n\n{self.appends}"
+    def get_content_with_interactives(self):
+        page_interactives = self.get_properties('interactives')
+        if page_interactives:
+            return f"{self.content}\n{page_interactives}"
 
         return self.content
+
 
     def to_dict(self):
         return {

@@ -1,6 +1,6 @@
 import random
 from functools import lru_cache
-from db.db import DB, Topic, OutlineEntity, Page, Interactive
+from db.db import DB, Topic, OutlineEntity, Chapter, Page, Interactive
 from src.events.events import CompiledInteractivesToChallengePage
 
 
@@ -27,8 +27,7 @@ class CompileInteractivesToChallengePageHandler:
 
         # Associate the interactives with the challenge page
         practice_challenge_page = self._get_chapter_practice_challenge_page()
-        practice_challenge_interactive_ids = [i.id for i in practice_challenge_interactives]
-        practice_challenge_content = self._build_challenge_page_content(practice_challenge_interactive_ids)
+        practice_challenge_content = self._build_challenge_page_content()
 
         # Save to DB
         practice_challenge_page.interactive_ids = [i.id for i in practice_challenge_interactives]
@@ -38,10 +37,21 @@ class CompileInteractivesToChallengePageHandler:
 
         self.db.commit()
 
+        practice_challenge_page.update_properties(self.db, {
+            'interactives': self._compile_page_interactive_shortcodes(practice_challenge_page.interactive_ids)
+        })
+
         return CompiledInteractivesToChallengePage(self.data)
 
 
-    def _build_challenge_page_content(self, selected_interactive_ids: list[int]):
+    def _build_challenge_page_content(self):
+        chapter_record = self.db.get(Chapter, self.chapter_entity.entity_id)
+        page_title = f"# Practice Skill Challenge\n## {chapter_record.name}\n\n"
+
+        return page_title
+
+
+    def _compile_page_interactive_shortcodes(self, selected_interactive_ids: list[int]):
         content = []
         interactives = self._get_chapter_interactives()
         selected_interactives = [i for i in interactives if i.id in selected_interactive_ids]

@@ -18,8 +18,7 @@ class ProcessCodeEditorInteractiveResponseHandler:
 
     def handle(self):
         interactive_ids = []
-        completion = self.response.payload
-        content = completion['choices'][0]['message']['content']
+        content = self.response.content
 
         try:
             shortcodes = self._parse_shortcodes_from_content(content)
@@ -70,14 +69,15 @@ class ProcessCodeEditorInteractiveResponseHandler:
             'answer': nested_fields.get('answer', None),
             'answer_type': named_attrs.get('answerType', None),
             'difficulty': named_attrs.get('difficulty', None),
-            'content': nested_fields.get('content', None),
+            'content': nested_fields.get('editorContent', None),
             'expectedOutput': nested_fields.get('expectedOutput', None),
             'exampleAnswer': nested_fields.get('exampleAnswer', None),
+            'testCase': nested_fields.get('testCase', None),
             'mustContain': nested_fields.get('mustContain', None),
             'language': nested_fields.get('language', None),
             "hint": nested_fields.get('hint', None),
             'shortcode': shortcode['match'],
-            'shortcodeIndex': shortcode['index'],
+            'index': shortcode['index'],
         })
 
         interactive = Interactive(
@@ -94,73 +94,69 @@ class ProcessCodeEditorInteractiveResponseHandler:
 
 
     def _parse_nested_fields_from_shortcode(self, shortcode):
-        nested_fields, parsed_content = self._pop_nested_fields_from_shortcode_content(shortcode)
-        editor_data = self._parse_editor_data_from_content(parsed_content)
-
-        code_editor_fields = {
-            'name': nested_fields.get('name', None),
-            'question': nested_fields.get('question', None),
-            'answer': nested_fields.get('answer', None),
-            'expectedOutput': nested_fields.get('expectedOutput', None),
-            'exampleAnswer': nested_fields.get('exampleAnswer', None),
-            'mustContain': nested_fields.get('mustContain', None),
-            'content': editor_data.get('content', None),
-            'language': editor_data.get('language', None)
-        }
-
-        return code_editor_fields
-
-
-    def _pop_nested_fields_from_shortcode_content(self, shortcode):
-        nested_fields = {
-            'name': '',
-            'question': '',
-            'answer': '',
-            'expectedOutput': '',
-            'exampleAnswer': '',
-            'mustContain': []
-        }
+        # This function can automatically parse nested fields from a shortcode block
+        # If there are multiple of the same shortcodes, it will return as a list
+        # If content is in a code block, it will parse it accordingly.
+        # Probably being too clever here
+        parsed_fields = {}
+        nested_fields = [
+            'name',
+            'question',
+            'answer',
+            'editorContent',
+            'expectedOutput',
+            'exampleAnswer',
+            'testCase',
+            'mustContain',
+        ]
 
         content = shortcode['shortcode']['content']
+        for field in nested_fields:
+            search_results = self._search_for_shortcode_tags(field, content)
 
-        for field in list(nested_fields.keys()):
-            if isinstance(nested_fields[field], list):
-                matches = re.finditer(Shortcode.shortcode_regex(field), content)
-                if not matches: continue
+            parsed_values = []
+            # Search results is returned in a generator; so we need to loop through it.
+            for block in search_results:
+                block_content = Shortcode.from_match(block).get('content', None)
+                if not block_content: continue
 
-                for match in matches:
-                    value = Shortcode.from_match(match).get('content', None)
-                    if value:
-                        nested_fields[field].append(value.strip())
-                        content = content.replace(match.group(), '')
+                # Check if content is wrapped in code block
+                if '```' not in block_content:
+                    parsed_values.append(block_content.strip())  # Normal string values
+                    continue
 
+                # Account for code block values
+                code_block = self._parse_code_block(block_content)
+                if not code_block: continue
+
+                # We can only get the language field from a code block
+                if not parsed_fields.get('language', False):
+                    parsed_fields['language'] = code_block['language']
+
+                parsed_values.append(code_block['content'])
+
+            if not parsed_values: continue
+            if len(parsed_values) == 1:
+                parsed_fields[field] = parsed_values[0]  # If only one value, return as string
             else:
-                match = Shortcode.shortcode_regex(field).search(content)
-                if not match: continue
-                value = Shortcode.from_match(match).get('content', None)
+                parsed_fields[field] = parsed_values  # If multiple values, return as list
 
-                if value:
-                    nested_fields[field] = value.strip()
-                    content = content.replace(match.group(), '')
-
-        nested_fields = {k: v for k, v in nested_fields.items() if len(v) > 0}
-
-        return nested_fields, content
+        return parsed_fields
 
 
-    def _parse_editor_data_from_content(self, parsed_content: str):
-        html = markdown.markdown(parsed_content, extensions=['fenced_code'])
+    def _parse_code_block(self, content):
+        code_content_markdown = content.strip()
+        html = markdown.markdown(code_content_markdown, extensions=['fenced_code'])
         soup = BeautifulSoup(html, 'html.parser')
-
         code_block = soup.find('code')
-        language = self._parse_language(code_block)
 
-        editor_data = {
-            'content': code_block.getText() if code_block else None,
+        language = self._parse_language(code_block)
+        code_content = code_block.getText() if code_block else None,
+
+        return {
+            'content': code_content,
             'language': language
         }
-
-        return editor_data
 
 
     def _parse_language(self, code_block: BeautifulSoup):
@@ -175,7 +171,13 @@ class ProcessCodeEditorInteractiveResponseHandler:
         return language
 
 
-    @lru_cache(maxsize=None)  # memoize
+    def _search_for_shortcode_tags(self, tag, content):
+        match_blocks = re.finditer(Shortcode.shortcode_regex(tag), content)
+        if not match_blocks: return None
+        return match_blocks
+
+
+    @ lru_cache(maxsize=None)  # memoize
     def _get_page_outline_entity_id(self):
         # Get interactive relation to outline entity
         return self.db.query(OutlineEntity.id).filter(

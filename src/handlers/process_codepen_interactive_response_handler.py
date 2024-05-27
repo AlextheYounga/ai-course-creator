@@ -73,7 +73,7 @@ class ProcessCodepenInteractiveResponseHandler:
             'description': nested_fields.get('description', None),
             'dependencies': nested_fields.get('dependencies', None),
             'shortcode': shortcode['match'],
-            'shortcodeIndex': shortcode['index'],
+            'index': shortcode['index'],
         })
 
         interactive = Interactive(

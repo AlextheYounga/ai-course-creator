@@ -74,7 +74,7 @@ class ProcessMultipleChoiceInteractiveBatchResponseHandler:
             'content': nested_fields.get('content', None),
             "hint": nested_fields.get('hint', None),
             'shortcode': shortcode['match'],
-            'shortcodeIndex': shortcode['index'],
+            'index': shortcode['index'],
         })
 
         interactive = Interactive(

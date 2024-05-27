@@ -33,8 +33,26 @@ class CompileInteractivesToLessonPageHandler:
             selectedInteractives = lessonInteractives[:lesson_interactives_count]
 
         self.page.interactive_ids = [i.id for i in selectedInteractives]
+        self.db.commit()
+
+        self.page.update_properties(self.db, {
+            'interactives': self._compile_page_interactive_shortcodes(self.page.interactive_ids)
+        })
 
         return CompiledInteractivesToLessonPage(self.data)
+
+
+    def _compile_page_interactive_shortcodes(self, interactive_ids: list[int]):
+        content = []
+
+        selected_interactives = self.db.query(Interactive).filter(
+            Interactive.id.in_(interactive_ids)
+        ).order_by(Interactive.difficulty).all()
+
+        for interactive in selected_interactives:
+            content.append(interactive.get_data('shortcode'))
+
+        return "\n\n".join(content)
 
 
     def _get_page_outline_entity_id(self):
