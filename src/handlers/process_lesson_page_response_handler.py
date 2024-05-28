@@ -14,7 +14,7 @@ class ProcessLessonPageResponseHandler:
 
 
     def handle(self) -> Outline:
-        completion = self.response.payload
+        content = self.response.content
 
         # Check response for blatant problems
         validated_response = ValidateResponseFromOpenAIHandler(self.data).handle()
@@ -23,7 +23,7 @@ class ProcessLessonPageResponseHandler:
             print(colored(f"Invalid response from OpenAI. Retrying...", "yellow"))
             return InvalidLessonPageResponseFromOpenAI(self.data)
 
-        content = self._add_header_to_page_content(completion)
+        content = self._add_header_to_page_content(content)
 
         self._save_content_to_page(content)
         self.next_events.append(LessonPageResponseProcessedSuccessfully(self.data))
@@ -33,10 +33,8 @@ class ProcessLessonPageResponseHandler:
 
         return self.next_events
 
-    def _add_header_to_page_content(self, completion: dict):
+    def _add_header_to_page_content(self, content: str):
         # If page does not have a header, add one
-        content = completion['choices'][0]['message']['content']
-
         # If header is h1, do nothing
         if content[:2] == '# ': return content
 
@@ -58,7 +56,11 @@ class ProcessLessonPageResponseHandler:
 
 
     def _topic_permits_interactives(self):
-        return self.page.topic.get_properties().get('settings', {}).get('hasInteractives', True)
+        if 'hasInteractives' in self.data:
+            return self.data['hasInteractives']
+        else:
+            topic_settings = self.page.topic.get_properties('settings')
+            return topic_settings.get('hasInteractives', True)
 
 
     def _save_content_to_page(self, material: str):

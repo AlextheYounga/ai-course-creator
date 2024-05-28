@@ -42,11 +42,6 @@ def test_generate_pages_from_outline_without_interactives():
 
     db = get_session()
 
-    topic = db.query(Topic).first()
-    topic_properties = topic.get_properties()
-    topic_properties['settings']['hasInteractives'] = False
-    topic.update_properties(db, topic_properties)
-
     good_events = [
         'LessonPageProcessedAndSummarizedSuccessfully',
         'PracticeChallengePageResponseProcessedSuccessfully',
@@ -62,6 +57,7 @@ def test_generate_pages_from_outline_without_interactives():
     job_data = {
         'topicId': 1,
         'outlineId': 1,
+        'hasInteractives': False
     }
 
     job = __run_job(job_data)

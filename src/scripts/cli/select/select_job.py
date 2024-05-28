@@ -30,9 +30,11 @@ def _generate_outline(topic: Topic):
     return _dispatch(job_event)
 
 
-def _generate_content(topic: Topic):
+def _generate_page_material(topic: Topic, has_interactives=True):
     redis.Redis().flushall()  # We should flush all here to avoid running previous jobs
     job_data = select_generate_content(topic)
+
+    job_data['hasInteractives'] = has_interactives
 
     # Generate Outline Entities (specific sections from outline)
     if 'outlineEntityId' in job_data:
@@ -44,7 +46,7 @@ def _generate_content(topic: Topic):
     return _dispatch(job_event)
 
 
-def _resume_job(topic: Topic):
+def _resume_job():
     job = select_jobstore()
     last_event = db.query(EventStore).filter_by(job_id=job.id).all().last()
     event = pydoc.locate(f'src.events.events.{last_event.name}')(last_event.data)
@@ -56,21 +58,32 @@ def select_job():
     topic_name = select_topic()
     topic = Topic.first_or_create(db, name=topic_name)
 
-    base_tasks = {
-        'Generate Outline': _generate_outline,
-        'Generate Content': _generate_content,
-        'Resume Job': _resume_job
-    }
+    base_tasks = [
+        'Generate Outline',
+        'Generate Page Material With Interactives',
+        'Generate Page Material Only',
+        'Generate Interactives',
+        'Resume Job',
+    ]
 
     tasks = [
         inquirer.List('task',
                       message="Select task",
-                      choices=list(base_tasks.keys())),
+                      choices=list(base_tasks)),
     ]
 
     choice = inquirer.prompt(tasks, raise_keyboard_interrupt=True)
     task = choice['task']
-    task_function = base_tasks[task]
 
-    # Dynamic function call
-    task_function(topic)
+    match task:
+        case 'Generate Outline':
+            return _generate_outline(topic)
+        case 'Generate Page Material With Interactives':
+            return _generate_page_material(topic)
+        case 'Generate Page Material Only':
+            return _generate_page_material(topic, has_interactives=False)
+        case 'Generate Interactives':
+            print("Not implemented. Work in progress...")
+            return
+        case 'Resume Job':
+            return _resume_job()
