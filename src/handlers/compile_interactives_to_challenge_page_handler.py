@@ -37,10 +37,6 @@ class CompileInteractivesToChallengePageHandler:
 
         self.db.commit()
 
-        practice_challenge_page.update_properties(self.db, {
-            'interactives': self._compile_page_interactive_shortcodes(practice_challenge_page.interactive_ids)
-        })
-
         return CompiledInteractivesToChallengePage(self.data)
 
 
@@ -49,17 +45,6 @@ class CompileInteractivesToChallengePageHandler:
         page_title = f"# Practice Skill Challenge\n## {chapter_record.name}\n\n"
 
         return page_title
-
-
-    def _compile_page_interactive_shortcodes(self, selected_interactive_ids: list[int]):
-        content = []
-        interactives = self._get_chapter_interactives()
-        selected_interactives = [i for i in interactives if i.id in selected_interactive_ids]
-
-        for interactive in selected_interactives:
-            content.append(interactive.get_data('shortcode'))
-
-        return "\n\n".join(content)
 
 
     @ lru_cache(maxsize=None)  # memoize

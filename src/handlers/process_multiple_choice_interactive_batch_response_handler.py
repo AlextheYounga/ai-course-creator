@@ -18,8 +18,7 @@ class ProcessMultipleChoiceInteractiveBatchResponseHandler:
 
     def handle(self):
         interactive_ids = []
-        completion = self.response.payload
-        content = completion['choices'][0]['message']['content']
+        content = self.response.content
 
         try:
             shortcodes = self._parse_shortcodes_from_content(content)
@@ -69,7 +68,8 @@ class ProcessMultipleChoiceInteractiveBatchResponseHandler:
         interactive_data = self._remove_none_attributes({
             'question': nested_fields.get('question', None),
             'answer': nested_fields.get('answer', None),
-            'answer_type': named_attrs.get('answerType', None),
+            'description': nested_fields.get('description', None),
+            'answerType': named_attrs.get('answerType', None),
             'difficulty': named_attrs.get('difficulty', None),
             'content': nested_fields.get('content', None),
             "hint": nested_fields.get('hint', None),
@@ -97,6 +97,7 @@ class ProcessMultipleChoiceInteractiveBatchResponseHandler:
         multiple_choice_nested_fields = {
             'name': nested_fields.get('name', None),
             'question': nested_fields.get('question', None),
+            'description': nested_fields.get('description', None),
             'answer': answer,
             'content': choices,
         }
@@ -110,6 +111,7 @@ class ProcessMultipleChoiceInteractiveBatchResponseHandler:
         nested_fields = {
             'question': None,
             'name': None,
+            'description': None,
         }
 
         content = shortcode['shortcode']['content']

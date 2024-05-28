@@ -35,10 +35,6 @@ class CompileInteractivesToFinalChallengePageHandler:
 
         self.db.commit()
 
-        final_challenge_page.update_properties(self.db, {
-            'interactives': self._compile_page_interactive_shortcodes(final_challenge_page.interactive_ids)
-        })
-
         return CompiledInteractivesToFinalChallengePage(self.data)
 
 
@@ -47,17 +43,6 @@ class CompileInteractivesToFinalChallengePageHandler:
         page_title = f"# Final Skill Challenge\n## {course_record.name}\n\n"
 
         return page_title
-
-
-    def _compile_page_interactive_shortcodes(self, selected_interactive_ids: list[int]):
-        content = []
-        interactives = self._get_course_interactives()
-        selected_interactives = [i for i in interactives if i.id in selected_interactive_ids]
-
-        for interactive in selected_interactives:
-            content.append(interactive.get_data('shortcode'))
-
-        return "\n\n".join(content)
 
 
     @ lru_cache(maxsize=None)  # memoize

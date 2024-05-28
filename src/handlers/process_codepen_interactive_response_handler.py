@@ -18,8 +18,7 @@ class ProcessCodepenInteractiveResponseHandler:
 
     def handle(self):
         interactive_ids = []
-        completion = self.response.payload
-        content = completion['choices'][0]['message']['content']
+        content = self.response.content
 
         try:
             shortcodes = self._parse_shortcodes_from_content(content)
@@ -68,10 +67,10 @@ class ProcessCodepenInteractiveResponseHandler:
         interactive_data = self._remove_none_attributes({
             'question': nested_fields.get('question', None),
             'answer': nested_fields.get('answer', None),
-            'answer_type': named_attrs.get('answerType', None),
+            'answerType': named_attrs.get('answerType', None),
             'content': nested_fields.get('content', None),
             'description': nested_fields.get('description', None),
-            'dependencies': nested_fields.get('dependencies', None),
+            'dependencies': nested_fields.get('dependency', None),
             'shortcode': shortcode['match'],
             'index': shortcode['index'],
         })
@@ -91,12 +90,12 @@ class ProcessCodepenInteractiveResponseHandler:
 
     def _parse_nested_fields_from_shortcode(self, shortcode):
         nested_fields = self._parse_simple_nested_fields_from_shortcode_content(shortcode)
-        codepen_content = self._parse_nested_code_fields(shortcode)
+        codepen_content = self._parse_codepen_specific_fields(shortcode)
 
         code_editor_fields = {
             'name': nested_fields.get('name', None),
             'description': nested_fields.get('description', None),
-            'dependencies': nested_fields.get('dependencies', None),
+            'dependency': nested_fields.get('dependency', None),
             'content': codepen_content,
         }
 
@@ -107,38 +106,36 @@ class ProcessCodepenInteractiveResponseHandler:
         nested_fields = {
             'name': '',
             'description': '',
-            'dependencies': [],
+            'dependency': [],
         }
 
         content = shortcode['shortcode']['content']
 
         for field in list(nested_fields.keys()):
-            # If field is a list
-            if isinstance(nested_fields[field], list):
-                matches = re.finditer(Shortcode.shortcode_regex(field), content)
-                if not matches: continue
+            match nested_fields[field].__class__.__name__:
+                case 'list':
+                    matches = re.finditer(Shortcode.shortcode_regex(field), content)
+                    if not matches: continue
 
-                for match in matches:
-                    value = Shortcode.from_match(match).get('content', None)
-                    if value:
-                        nested_fields[field].append(value.strip())
+                    for match in matches:
+                        value = Shortcode.from_match(match).get('content', None)
+                        if value:
+                            nested_fields[field].append(value.strip())
 
-            # If field is a string
-            else:
-                match = Shortcode.shortcode_regex(field).search(content)
-                if not match: continue
-                inner_content = Shortcode.from_match(match).get('content', None)
+                case 'str':
+                    match = Shortcode.shortcode_regex(field).search(content)
+                    if not match: continue
+                    inner_content = Shortcode.from_match(match).get('content', None)
 
-                if inner_content:
-                    nested_fields[field] = inner_content
-
+                    if inner_content:
+                        nested_fields[field] = inner_content
 
         nested_fields = {k: v for k, v in nested_fields.items() if len(v) > 0}
 
         return nested_fields
 
 
-    def _parse_nested_code_fields(self, shortcode):
+    def _parse_codepen_specific_fields(self, shortcode):
         content = shortcode['shortcode']['content']
         code = {
             'template': {},

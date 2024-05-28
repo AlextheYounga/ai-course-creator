@@ -15,18 +15,10 @@ def select_generate_content(topic: Topic):
     # Prompt user for hierarchy
     hierarchy = select_hierarchy()
 
-    # Prompt user for content type: (All, Page Material, Practice Skill Challenges, Final Skill Challenges)
-    content_type = select_hierarchy_content_type(hierarchy)
-
-    page_type = type_mapping[content_type]
-
     data = {
         'topicId': topic.id,
         'outlineId': topic.master_outline_id,
     }
-
-    if page_type != None:
-        data['pageType'] = page_type
 
     if hierarchy == 'Topic':
         return data

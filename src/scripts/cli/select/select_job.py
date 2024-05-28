@@ -46,7 +46,7 @@ def _generate_content(topic: Topic):
 
 def _resume_job(topic: Topic):
     job = select_jobstore()
-    last_event = EventStore.query.filter_by(job_id=job.id).all().last()
+    last_event = db.query(EventStore).filter_by(job_id=job.id).all().last()
     event = pydoc.locate(f'src.events.events.{last_event.name}')(last_event.data)
     _dispatch(event)
 

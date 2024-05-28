@@ -67,7 +67,7 @@ class ProcessCodeEditorInteractiveResponseHandler:
         interactive_data = self._remove_none_attributes({
             'question': nested_fields.get('question', None),
             'answer': nested_fields.get('answer', None),
-            'answer_type': named_attrs.get('answerType', None),
+            'answerType': named_attrs.get('answerType', None),
             'difficulty': named_attrs.get('difficulty', None),
             'content': nested_fields.get('editorContent', None),
             'expectedOutput': nested_fields.get('expectedOutput', None),
@@ -96,50 +96,65 @@ class ProcessCodeEditorInteractiveResponseHandler:
     def _parse_nested_fields_from_shortcode(self, shortcode):
         # This function can automatically parse nested fields from a shortcode block
         # If there are multiple of the same shortcodes, it will return as a list
-        # If content is in a code block, it will parse it accordingly.
-        # Probably being too clever here
         parsed_fields = {}
-        nested_fields = [
-            'name',
-            'question',
-            'answer',
-            'editorContent',
-            'expectedOutput',
-            'exampleAnswer',
-            'testCase',
-            'mustContain',
-        ]
+        nested_fields = {
+            'simple': [
+                'name',
+                'question',
+                'answer',
+                'description',
+                'mustContain'
+            ],
+            'code': [
+                'editorContent',
+                'expectedOutput',
+                'exampleAnswer',
+                'testCase',
+            ]
+
+        }
 
         content = shortcode['shortcode']['content']
-        for field in nested_fields:
-            search_results = self._search_for_shortcode_tags(field, content)
 
-            parsed_values = []
-            # Search results is returned in a generator; so we need to loop through it.
-            for block in search_results:
-                block_content = Shortcode.from_match(block).get('content', None)
-                if not block_content: continue
+        for field_type in nested_fields:
+            for field in nested_fields[field_type]:
+                # Search results is returned in a generator; so we need to loop through it.
+                # We'll store the parsed values in a list and take the first value if there's only one.
+                parsed_field_values = []
+                search_results = self._search_for_shortcode_tags(field, content)
+                if not search_results: continue
 
-                # Check if content is wrapped in code block
-                if '```' not in block_content:
-                    parsed_values.append(block_content.strip())  # Normal string values
-                    continue
+                match field_type:
+                    case 'simple':  # Normal string values
+                        for block in search_results:
+                            block_content = Shortcode.from_match(block).get('content', None)
+                            if not block_content: continue
 
-                # Account for code block values
-                code_block = self._parse_code_block(block_content)
-                if not code_block: continue
+                            parsed_field_values.append(block_content.strip())
+                    case 'code':
+                        for block in search_results:
+                            block_content = Shortcode.from_match(block).get('content', None)
+                            if not block_content: continue
 
-                # We can only get the language field from a code block
-                if not parsed_fields.get('language', False):
-                    parsed_fields['language'] = code_block['language']
+                            # Check if content is wrapped in code block
+                            if '```' in block_content:
+                                code_block = self._parse_code_block(block_content)
+                                if not code_block: continue
 
-                parsed_values.append(code_block['content'])
+                                # We can only get the language field from a code block
+                                if not parsed_fields.get('language', False):
+                                    parsed_fields['language'] = code_block['language']
 
-            if not parsed_values: continue
-            if len(parsed_values) == 1:
-                parsed_fields[field] = parsed_values[0]  # If only one value, return as string
-            else:
-                parsed_fields[field] = parsed_values  # If multiple values, return as list
+                                parsed_field_values.append(code_block['content'])
+                            else:
+                                parsed_field_values.append(block_content.strip())  # Normal string values
+
+                if not parsed_field_values: continue
+
+                if len(parsed_field_values) == 1:
+                    parsed_fields[field] = parsed_field_values[0]  # If only one value, return as string
+                else:
+                    parsed_fields[field] = parsed_field_values  # If multiple values, return as list
 
         return parsed_fields
 
@@ -151,7 +166,7 @@ class ProcessCodeEditorInteractiveResponseHandler:
         code_block = soup.find('code')
 
         language = self._parse_language(code_block)
-        code_content = code_block.getText() if code_block else None,
+        code_content = code_block.getText() if code_block else None
 
         return {
             'content': code_content,

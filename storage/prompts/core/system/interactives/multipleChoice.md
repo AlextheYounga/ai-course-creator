@@ -4,7 +4,7 @@ In order to accurately parse this information, we have developed custom Wordpres
 
 <!-- Example Multiple Choice Shortcode -->
 [multipleChoice difficulty="easy"]
-
+[description]Some question context[/description]
 [question]What is the correct answer?[/question]
 
 - [ ] First choice

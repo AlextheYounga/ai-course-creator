@@ -19,40 +19,23 @@ class CompileInteractivesToLessonPageHandler:
             Interactive.outline_entity_id == page_outline_entity_id
         ).all()
 
-        selectedInteractives = []
+        selected_interactives = []
 
         # If there are codepen interactives, prioritize those over anything else for lesson pages.
         if len(codepen_interactives) > 0:
-            selectedInteractives = codepen_interactives[:lesson_interactives_count]
+            selected_interactives = codepen_interactives[:lesson_interactives_count]
         else:
             # Else we'll get the first interactives for this page.
-            lessonInteractives = self.db.query(Interactive).filter(
+            lesson_interactives = self.db.query(Interactive).filter(
                 Interactive.outline_entity_id == page_outline_entity_id
             ).all()
 
-            selectedInteractives = lessonInteractives[:lesson_interactives_count]
+            selected_interactives = lesson_interactives[:lesson_interactives_count]
 
-        self.page.interactive_ids = [i.id for i in selectedInteractives]
+        self.page.interactive_ids = [i.id for i in selected_interactives]
         self.db.commit()
 
-        self.page.update_properties(self.db, {
-            'interactives': self._compile_page_interactive_shortcodes(self.page.interactive_ids)
-        })
-
         return CompiledInteractivesToLessonPage(self.data)
-
-
-    def _compile_page_interactive_shortcodes(self, interactive_ids: list[int]):
-        content = []
-
-        selected_interactives = self.db.query(Interactive).filter(
-            Interactive.id.in_(interactive_ids)
-        ).order_by(Interactive.difficulty).all()
-
-        for interactive in selected_interactives:
-            content.append(interactive.get_data('shortcode'))
-
-        return "\n\n".join(content)
 
 
     def _get_page_outline_entity_id(self):

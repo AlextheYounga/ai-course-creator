@@ -26,7 +26,6 @@ class CalculateInteractiveCountsForPageHandler:
         self.outline = self.db.get(Outline, data['outlineId'])
         self.page = self.db.get(Page, data['pageId'])
         self.topic = self.db.get(Topic, data['topicId'])
-        self.topic_settings = self.topic.get_properties('settings')
 
 
     def handle(self):
@@ -62,7 +61,7 @@ class CalculateInteractiveCountsForPageHandler:
         self._save_interactive_info_to_course({
             'totalCount': total_questions,
             'perPage': interactives_per_page,
-            'totalLessonInteractives': lesson_interactives,
+            'totallesson_interactives': lesson_interactives,
             'totalChallengeInteractives': chapter_interactives,
             'totalFinalInteractives': final_interactives,
             'weights': interactives_weights,
@@ -80,7 +79,8 @@ class CalculateInteractiveCountsForPageHandler:
         default_practice_challenge_interactive_count = 5
         default_final_skill_challenge_interactive_count = 20
 
-        interactive_options = self.topic_settings.get('interactives', {})
+        topic_settings = self._get_topic_settings()
+        interactive_options = topic_settings.get('interactives', {})
         interactives_counts = interactive_options.get('counts', {
             'lesson': default_lesson_interactive_count,
             'challenge': default_practice_challenge_interactive_count,
@@ -93,11 +93,11 @@ class CalculateInteractiveCountsForPageHandler:
     def _get_interactive_weights_from_settings(self):
         default_page_interactives_weight = {
             'multipleChoice': 0.6,
-            'codeEditor': 0.2,
-            'codepen': 0.2,
+            'codeEditor': 0.4,
         }
 
-        interactive_options = self.topic_settings.get('interactives', {})
+        topic_settings = self._get_topic_settings()
+        interactive_options = topic_settings.get('interactives', {})
         interactives_weights = interactive_options.get('weights', default_page_interactives_weight)
 
         # If topic does not allow codepen or code_editor, add their weights to multipleChoice
@@ -106,12 +106,51 @@ class CalculateInteractiveCountsForPageHandler:
             interactives_weights['multipleChoice'] = multiple_choice_weight
             del interactives_weights['codeEditor']
 
-        if not self._topic_allows_codepen():
-            multiple_choice_weight = round(interactives_weights['multipleChoice'] + interactives_weights['codepen'], 2)
-            interactives_weights['multipleChoice'] = multiple_choice_weight
-            del interactives_weights['codepen']
+        # TODO: Rethink this
+        # if not self._topic_allows_codepen():
+        #     multiple_choice_weight = round(interactives_weights['multipleChoice'] + interactives_weights['codepen'], 2)
+        #     interactives_weights['multipleChoice'] = multiple_choice_weight
+        #     del interactives_weights['codepen']
 
         return interactives_weights
+
+
+    def _get_course_chapter_count(self):
+        pages = self._get_total_course_lesson_pages()
+        chapter_ids = [page.chapter_id for page in pages]
+        return len(set(chapter_ids))
+
+
+    def _topic_allows_code_editor(self):
+        # Check topic settings for codepen settings.
+        # If it's not set, default to allowing codepen
+        # If prompts are not of collection 'programming', do not allow codepen.
+        topic_settings = self._get_topic_settings()
+        interactive_options = topic_settings.get('interactives', {})
+        allows_codepen = interactive_options.get('code_editor', True)
+
+        prompt_collection = self.topic.get_properties('prompts')
+        if prompt_collection != 'programming':
+            allows_codepen = False
+
+        return allows_codepen
+
+
+    def _topic_allows_codepen(self):
+        # Default is false because there are inherently fewer languages supported by codepen
+        topic_settings = self._get_topic_settings()
+        interactive_options = topic_settings.get('interactives', {})
+        allows_codepen = interactive_options.get('codepen', False)
+
+        return allows_codepen
+
+    def _save_interactive_info_to_course(self, info: dict):
+        course = self._get_page_course()
+
+        course.update_properties(self.db, {
+            "hasInteractives": True,
+            'interactives': info,
+        })
 
 
     @lru_cache(maxsize=None)  # memoize
@@ -126,32 +165,9 @@ class CalculateInteractiveCountsForPageHandler:
         ).all()
 
 
-    def _get_course_chapter_count(self):
-        pages = self._get_total_course_lesson_pages()
-        chapter_ids = [page.chapter_id for page in pages]
-        return len(set(chapter_ids))
-
-
-    def _topic_allows_code_editor(self):
-        # Check topic settings for codepen settings.
-        # If it's not set, default to allowing codepen
-        # If prompts are not of collection 'programming', do not allow codepen.
-
-        interactive_options = self.topic_settings.get('interactives', {})
-        allows_codepen = interactive_options.get('code_editor', True)
-
-        prompt_collection = self.topic.get_properties('prompts')
-        if prompt_collection != 'programming':
-            allows_codepen = False
-
-        return allows_codepen
-
-
-    def _topic_allows_codepen(self):
-        interactive_options = self.topic_settings.get('interactives', {})
-        allows_codepen = interactive_options.get('codepen', True)
-
-        return allows_codepen
+    @lru_cache(maxsize=None)  # memoize
+    def _get_topic_settings(self):
+        return self.topic.get_properties('settings')
 
 
     @lru_cache(maxsize=None)  # memoize
@@ -159,12 +175,3 @@ class CalculateInteractiveCountsForPageHandler:
         return self.db.query(Course).filter(
             Course.id == self.page.course_id
         ).first()
-
-
-    def _save_interactive_info_to_course(self, info: dict):
-        course = self._get_page_course()
-
-        course.update_properties(self.db, {
-            "hasInteractives": True,
-            'interactives': info,
-        })

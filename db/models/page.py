@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session, mapped_column, relationship
 from sqlalchemy.orm.attributes import flag_modified
 from termcolor import colored
 from src.utils.strings import slugify, string_hash
+from .interactive import Interactive
 from .base import Base
 
 
@@ -48,21 +49,27 @@ class Page(Base):
         return self
 
 
-    def dump_page(self):
-        print(colored(f"Writing page: {self.path}", "green"))
+    def dump_page(self, db: Session):
+        page_path = f"out/{self.link.split('/page/')[1]}.md"
+        print(colored(f"Writing page: {page_path}", "green"))
 
-        os.makedirs(os.path.dirname(self.path), exist_ok=True)
-        with open(self.path, 'w', encoding="utf-8") as f:
-            f.write(self.content)
+        page_content = self.get_full_content(db)
+
+        os.makedirs(os.path.dirname(page_path), exist_ok=True)
+        with open(page_path, 'w', encoding="utf-8") as f:
+            f.write(page_content)
             f.close()
 
 
-    def get_content_with_interactives(self):
-        page_interactives = self.get_properties('interactives')
-        if page_interactives:
-            return f"{self.content}\n{page_interactives}"
+    def get_full_content(self, db: Session):
+        interactives = db.query(Interactive).filter(Interactive.id.in_(self.interactive_ids)).all()
+        content = [self.content]
 
-        return self.content
+        if interactives:
+            for interactive in interactives:
+                content.append(interactive.get_data('shortcode'))
+
+        return "\n\n".join(content)
 
 
     def to_dict(self):

@@ -1,6 +1,6 @@
 INSERT INTO "response" ("id", "prompt_id", "outline_id", "role", "model", "completion_tokens", "prompt_tokens", "total_tokens", "content", "payload", "properties", "created_at", "updated_at") VALUES
 ('1', '1', '1', 'assistant', 'gpt-3.5-turbo-0301', '611', '4410', '5021', '
-[codeEditor hash="253219505500927021799610082410846315431"]
+[codeEditor hash="253219505500927021799610082410846315431" difficulty="advanced"]
 [question]Write a Ruby function that takes a number as input and returns the factorial of that number[/question]
 [description]In Ruby, the factorial of a non-negative integer n is the product of all positive integers less than or equal to n. For example, the factorial of 5 (denoted as 5!) is 5*4*3*2*1 = 120.[/description]
 

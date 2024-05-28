@@ -59,7 +59,7 @@ class Topic(Base):
 
     def get_properties(self, key=None):
         properties = self.properties or {}
-        if key: return properties.get(key, None)
+        if key: return properties.get(key, {})
 
         return properties
 
