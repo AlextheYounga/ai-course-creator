@@ -54,6 +54,7 @@ export default {
         async submit() {
             const data = {
                 ...this.outline,
+                'topicId': this.outline.topic_id, // reformat key to camelCase
                 outlineData: YAML.parse(this.outlineYaml)
             }
 
@@ -64,7 +65,7 @@ export default {
             const outlineId = (this.$route.params.id)
             const res = await fastApi.get(`/outlines/${outlineId}`)
             this.outline = res.data
-            this.outlineYaml = YAML.stringify(outline?.outline_data, { indent: 4 }) ?? ''
+            this.outlineYaml = YAML.stringify(this.outline?.outline_data, { indent: 4 }) ?? ''
         },
     },
     computed: {

@@ -2,7 +2,7 @@
 [question]Write a Ruby function that takes a number as input and returns the factorial of that number[/question]
 [description]In Ruby, the factorial of a non-negative integer n is the product of all positive integers less than or equal to n. For example, the factorial of 5 (denoted as 5!) is 5*4*3*2*1 = 120.[/description]
 
-[editorContent]
+[editorData]
 ```ruby
 def factorial(n)
   if n == 0
@@ -14,7 +14,7 @@ end
 
 puts factorial(5)
 ```
-[/editorContent]
+[/editorData]
 
 [expectedOutput]120[/expectedOutput]
 [mustContain]"def factorial(n)" "if n == 0" "n * factorial(n - 1)"[/mustContain]

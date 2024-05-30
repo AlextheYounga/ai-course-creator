@@ -7,7 +7,7 @@ In order to accurately parse this information, we have developed custom Wordpres
 
 [description]Description of the Codepen component.[/description]
 
-[template]
+[template lang="html"]
 ```html
 <h1>Hello World!</h1>
 
@@ -17,7 +17,7 @@ In order to accurately parse this information, we have developed custom Wordpres
 ```
 [/template]
 
-[/styles]
+[/styles lang="css"]
 ```css
 body {
   background-color: blue;
@@ -25,7 +25,7 @@ body {
 ```
 [/styles]
 
-[scripts]
+[scripts lang="javascript"]
 ```javascript
 document.getElementsByTagName("h1")[0].style.fontSize = "80px";
 ```

@@ -69,7 +69,7 @@ class ProcessCodeEditorInteractiveResponseHandler:
             'answer': nested_fields.get('answer', None),
             'answerType': named_attrs.get('answerType', None),
             'difficulty': named_attrs.get('difficulty', None),
-            'content': nested_fields.get('editorContent', None),
+            'content': nested_fields.get('editorData', None),
             'expectedOutput': nested_fields.get('expectedOutput', None),
             'exampleAnswer': nested_fields.get('exampleAnswer', None),
             'testCase': nested_fields.get('testCase', None),
@@ -103,10 +103,12 @@ class ProcessCodeEditorInteractiveResponseHandler:
                 'question',
                 'answer',
                 'description',
-                'mustContain'
+            ],
+            'list': [
+                'mustContain',
             ],
             'code': [
-                'editorContent',
+                'editorData',
                 'expectedOutput',
                 'exampleAnswer',
                 'testCase',
@@ -120,7 +122,8 @@ class ProcessCodeEditorInteractiveResponseHandler:
             for field in nested_fields[field_type]:
                 # Search results is returned in a generator; so we need to loop through it.
                 # We'll store the parsed values in a list and take the first value if there's only one.
-                parsed_field_values = []
+
+                parsed_values = []
                 search_results = self._search_for_shortcode_tags(field, content)
                 if not search_results: continue
 
@@ -130,7 +133,22 @@ class ProcessCodeEditorInteractiveResponseHandler:
                             block_content = Shortcode.from_match(block).get('content', None)
                             if not block_content: continue
 
-                            parsed_field_values.append(block_content.strip())
+                            parsed_values.append(block_content.strip())
+
+                        if not parsed_values: continue
+                        if len(parsed_values) == 1:
+                            parsed_fields[field] = parsed_values[0]  # If only one block, return as string
+                        else:
+                            parsed_fields[field] = parsed_values  # If multiple values, return as list
+                    case 'list':
+                        for block in search_results:
+                            block_content = Shortcode.from_match(block).get('content', None)
+                            if not block_content: continue
+
+                            parsed_values.append(block_content.strip())
+
+                        if not parsed_values: continue
+                        parsed_fields[field] = parsed_values  # If multiple values, return as list
                     case 'code':
                         for block in search_results:
                             block_content = Shortcode.from_match(block).get('content', None)
@@ -145,16 +163,15 @@ class ProcessCodeEditorInteractiveResponseHandler:
                                 if not parsed_fields.get('language', False):
                                     parsed_fields['language'] = code_block['language']
 
-                                parsed_field_values.append(code_block['content'])
+                                parsed_values.append(code_block['content'])
                             else:
-                                parsed_field_values.append(block_content.strip())  # Normal string values
+                                parsed_values.append(block_content.strip())  # Normal string values
 
-                if not parsed_field_values: continue
-
-                if len(parsed_field_values) == 1:
-                    parsed_fields[field] = parsed_field_values[0]  # If only one value, return as string
-                else:
-                    parsed_fields[field] = parsed_field_values  # If multiple values, return as list
+                        if not parsed_values: continue
+                        if len(parsed_values) == 1:
+                            parsed_fields[field] = parsed_values[0]  # If only one block, return as string
+                        else:
+                            parsed_fields[field] = parsed_values  # If multiple values, return as list
 
         return parsed_fields
 

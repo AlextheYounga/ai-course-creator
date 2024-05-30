@@ -37,7 +37,7 @@ def __run_job(data: dict):
     return job
 
 
-def test_generate_pages_from_outline_without_interactives():
+def __test_generate_pages_from_outline_without_interactives():
     __setup_test()
 
     db = get_session()

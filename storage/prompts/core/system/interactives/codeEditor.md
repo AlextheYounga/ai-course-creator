@@ -8,7 +8,7 @@ In order to accurately parse this information, we have developed custom Wordpres
 [question]Write a function that outputs "Hello World!"[/question]
 [description]Lorem ipsum[/description]
 
-[editorContent]
+[editorData]
 ```language
 function pseudoCodeFunction() {
     print('Hello World');
@@ -16,10 +16,10 @@ function pseudoCodeFunction() {
 
 pseudoCodeFunction();
 ```
-[/editorContent]
+[/editorData]
 
-[expectedOutput]"Hello World!"[/expectedOutput]
-[mustContain]"Hello World!"[/mustContain]
+[expectedOutput]Hello World![/expectedOutput]
+[mustContain]Hello World![/mustContain]
 [exampleAnswer]
 ```language
 function pseudoCodeFunction() {
@@ -41,7 +41,7 @@ describe() {
 
 Shortcode Rules:
 - Please ensure the code editor content is something that could be passed through a Judge0 instance; all code must be executable on the server. 
-- The main content for the editor should be inside of the [editorContent] block
+- The main content for the editor should be inside of the [editorData] block
 - Please provide any additional context the user might need to complete in a [description] block or feel free to omit this field if this is unnecessary. 
 - Each [codeEditor] block should be given a "difficulty" attribute based on how difficult the problem should be to solve, which can either be "easy", "intermediate", or "advanced"
 - The output of the code should be listed under the [expectedOutput] block if the code has an output.
