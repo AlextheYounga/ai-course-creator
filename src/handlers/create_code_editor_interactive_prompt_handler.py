@@ -65,7 +65,7 @@ class CreateCodeEditorInteractivePromptHandler:
         interactive_questions_string = '\n - '.join(interactive_questions) if interactive_questions else "No questions generated yet."
 
         return get_prompt(self.topic, 'system/interactive-context', {
-            'type': self.interactive_type,
+            'content': self.page.content,
             'questions': interactive_questions_string
         })
 

@@ -4,7 +4,7 @@ In order to accurately parse this information, we have developed custom Wordpres
 
 <!-- Example Code Editor Shortcode -->
 
-[codeEditor difficulty="easy"]
+[codeEditor language="language" difficulty="easy"]
 [question]Write a function that outputs "Hello World!"[/question]
 [description]Lorem ipsum[/description]
 
@@ -41,7 +41,9 @@ describe() {
 
 Shortcode Rules:
 - Please ensure the code editor content is something that could be passed through a Judge0 instance; all code must be executable on the server. 
+- Every [codeEditor] shortcode must contain a [question] block.
 - The main content for the editor should be inside of the [editorData] block
+- The language of the content of [editorData] should exist as an attribute in the [codeEditor] block.
 - Please provide any additional context the user might need to complete in a [description] block or feel free to omit this field if this is unnecessary. 
 - Each [codeEditor] block should be given a "difficulty" attribute based on how difficult the problem should be to solve, which can either be "easy", "intermediate", or "advanced"
 - The output of the code should be listed under the [expectedOutput] block if the code has an output.

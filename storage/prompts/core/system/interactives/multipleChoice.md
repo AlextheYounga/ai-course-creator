@@ -21,7 +21,7 @@ Multiple Choice shortcodes can also take the shape of true false questions, whic
 <!-- Example True/False Multiple Choice Shortcode -->
 
 [multipleChoice difficulty="advanced"]
-
+[description]Some question context[/description]
 [question]Is this statement true?[/question]
 
 - [x] True
@@ -32,5 +32,8 @@ Multiple Choice shortcodes can also take the shape of true false questions, whic
 <!-- End Example True/False Multiple Choice Shortcode -->
 
 Shortcode Rules:
-- A multiple choice element should never have more than one correct answer. 
+- A [multipleChoice] element should never have more than one correct answer. 
+- Every [multipleChoice] shortcode must contain a [question] block.
+- The [question] should contain few to no special characters. For example, a code block should not exist within the question. 
+- The [description] block should be used to give further context to the question if necessary. For example, if the question pertains to a code block, the code block should go in this shortcode. 
 - Each [multipleChoice] block should be given a "difficulty" attribute based on how difficult the problem should be to solve, which can either be "easy", "intermediate", or "advanced"
