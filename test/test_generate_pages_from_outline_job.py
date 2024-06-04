@@ -35,14 +35,10 @@ def test_generate_pages_from_outline():
 
     good_events = [
         'LessonPageProcessedAndSummarizedSuccessfully',
-        'PracticeChallengePageResponseProcessedSuccessfully',
-        'FinalChallengePageResponseProcessedSuccessfully'
     ]
 
     bad_events = [
         'InvalidLessonPageResponseFromOpenAI',
-        'InvalidPracticeChallengePageResponseFromOpenAI',
-        'InvalidFinalChallengePageResponseFromOpenAI'
         "MultipleChoiceInteractiveShortcodeParsingFailed",
         "CodeEditorInteractiveShortcodeParsingFailed",
         "CodepenInteractiveShortcodeParsingFailed",

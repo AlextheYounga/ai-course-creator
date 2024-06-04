@@ -35,7 +35,7 @@ def __run_job_async(data: dict):
     return worker
 
 
-def __test_multithreading_queue():
+def test_multithreading_queue():
     __setup_test()
     db = get_session()
     topic = db.query(Topic).first()

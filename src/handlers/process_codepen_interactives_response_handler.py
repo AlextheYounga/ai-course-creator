@@ -7,7 +7,7 @@ from db.db import DB, Response, OutlineEntity, Page, Interactive
 from src.events.events import CodepenInteractiveSavedFromResponse, CodepenInteractiveShortcodeParsingFailed
 
 
-class ProcessCodepenInteractiveResponseHandler:
+class ProcessCodepenInteractivesResponseHandler:
     def __init__(self, data: dict):
         self.data = data
         self.db = DB()

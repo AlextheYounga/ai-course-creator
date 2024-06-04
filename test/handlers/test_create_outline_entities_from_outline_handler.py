@@ -11,6 +11,7 @@ LOG_FILE = 'test/data/test.log'
 
 def __setup_test():
     truncate_tables()
+    db = DB()
     topics_file = "configs/topics.example.yaml"
     ScanTopicsFileHandler({"topicsFile": topics_file}).handle()
 
@@ -23,14 +24,16 @@ def __setup_test():
         properties={}
     )
 
-    DB.add(outline)
-    DB.commit()
+    db.add(outline)
+    db.commit()
+    db.close()
 
 
 def test_create_outline_entities_from_outline():
     __setup_test()
-    outline = DB.query(Outline).first()
-    topic = DB.query(Topic).first()
+    db = DB()
+    outline = db.query(Outline).first()
+    topic = db.query(Topic).first()
 
     # Create outline entities
     CreateOutlineEntitiesFromOutlineHandler({
@@ -38,14 +41,15 @@ def test_create_outline_entities_from_outline():
         'topicId': topic.id
     }).handle()
 
-    outline_entities = DB.query(OutlineEntity).all()
+    outline_entities = db.query(OutlineEntity).all()
 
     assert len(outline_entities) == 107
 
 
 def test_duplicate_create_outline_entities_from_outline():
-    outline = DB.query(Outline).first()
-    topic = DB.query(Topic).first()
+    db = DB()
+    outline = db.query(Outline).first()
+    topic = db.query(Topic).first()
 
     # Create outline entities
     CreateOutlineEntitiesFromOutlineHandler({
@@ -53,6 +57,6 @@ def test_duplicate_create_outline_entities_from_outline():
         'topicId': topic.id
     }).handle()
 
-    outline_entities = DB.query(OutlineEntity).all()
+    outline_entities = db.query(OutlineEntity).all()
 
     assert len(outline_entities) == 107

@@ -31,18 +31,18 @@ EVENT_HANDLER_MAPPING = {
 
     # Page Interactives Generation Event Handlers
     "InteractiveCountsCalculatedForPage": "GetNextPageInteractivesToGenerateHandler",
-    "GenerateMultipleChoicePageInteractivesProcessStarted": "CreateMultipleChoiceInteractiveBatchPromptHandler",
-    "GenerateCodeEditorPageInteractiveProcessStarted": "CreateCodeEditorInteractivePromptHandler",
-    "GenerateCodepenPageInteractiveProcessStarted": "CreateCodepenInteractivePromptHandler",
-    "MultipleChoiceInteractiveBatchPromptCreated": "SendMultipleChoiceInteractiveBatchPromptToOpenAIHandler",
-    "CodeEditorInteractivePromptCreated": "SendCodeEditorInteractivePromptToOpenAIHandler",
-    "CodepenInteractivePromptCreated": "SendCodepenInteractivePromptToOpenAIHandler",
-    "MultipleChoiceInteractiveBatchResponseReceivedFromOpenAI": "ProcessMultipleChoiceInteractiveBatchResponseHandler",
-    "CodeEditorInteractiveResponseReceivedFromOpenAI": "ProcessCodeEditorInteractiveResponseHandler",
-    "CodepenInteractiveResponseReceivedFromOpenAI": "ProcessCodepenInteractiveResponseHandler",
-    "MultipleChoiceInteractiveShortcodeParsingFailed": "SendMultipleChoiceInteractiveBatchPromptToOpenAIHandler",  # retry event
-    "CodeEditorInteractiveShortcodeParsingFailed": "SendCodeEditorInteractivePromptToOpenAIHandler",  # retry event
-    "CodepenInteractiveShortcodeParsingFailed": "SendCodepenInteractivePromptToOpenAIHandler",  # retry event
+    "GenerateMultipleChoicePageInteractivesProcessStarted": "CreateMultipleChoiceInteractivesPromptHandler",
+    "GenerateCodeEditorPageInteractivesProcessStarted": "CreateCodeEditorInteractivesPromptHandler",
+    "GenerateCodepenPageInteractivesProcessStarted": "CreateCodepenInteractivesPromptHandler",
+    "MultipleChoiceInteractivesPromptCreated": "SendMultipleChoiceInteractivesPromptToOpenAIHandler",
+    "CodeEditorInteractivesPromptCreated": "SendCodeEditorInteractivesPromptToOpenAIHandler",
+    "CodepenInteractivesPromptCreated": "SendCodepenInteractivesPromptToOpenAIHandler",
+    "MultipleChoiceInteractivesResponseReceivedFromOpenAI": "ProcessMultipleChoiceInteractivesResponseHandler",
+    "CodeEditorInteractivesResponseReceivedFromOpenAI": "ProcessCodeEditorInteractivesResponseHandler",
+    "CodepenInteractivesResponseReceivedFromOpenAI": "ProcessCodepenInteractivesResponseHandler",
+    "MultipleChoiceInteractiveShortcodeParsingFailed": "SendMultipleChoiceInteractivesPromptToOpenAIHandler",  # retry event
+    "CodeEditorInteractiveShortcodeParsingFailed": "SendCodeEditorInteractivesPromptToOpenAIHandler",  # retry event
+    "CodepenInteractiveShortcodeParsingFailed": "SendCodepenInteractivesPromptToOpenAIHandler",  # retry event
     "MultipleChoiceInteractivesSavedFromResponse": "GetNextPageInteractivesToGenerateHandler",
     "CodeEditorInteractiveSavedFromResponse": "GetNextPageInteractivesToGenerateHandler",
     "CodepenInteractiveSavedFromResponse": "GetNextPageInteractivesToGenerateHandler",

@@ -148,35 +148,7 @@ class GenerateLessonPageProcessStarted(Event):
         self.data = data
 
 
-class GeneratePracticeChallengePageProcessStarted(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class GenerateFinalSkillChallengePageProcessStarted(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
 class LessonPagePromptCreated(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class PracticeChallengePagePromptCreated(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class FinalSkillChallengePagePromptCreated(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
@@ -204,34 +176,6 @@ class InvalidPageSummaryResponseFromOpenAI(Event):
         self.data = data
 
 
-class InvalidPracticeChallengePageResponseFromOpenAI(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class InvalidFinalChallengePageResponseFromOpenAI(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class PracticeChallengePageResponseProcessedSuccessfully(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class FinalChallengePageResponseProcessedSuccessfully(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
 class InvalidLessonPageResponseFromOpenAI(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
@@ -240,34 +184,6 @@ class InvalidLessonPageResponseFromOpenAI(Event):
 
 
 class LessonPageResponseProcessedSuccessfully(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class FinalChallengeGenerationFailedDueToIncompleteCourse(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class FinalSkillChallengePageResponseReceivedFromOpenAI(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class PracticeChallengePageResponseReceivedFromOpenAI(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class PracticeChallengeGenerationFailedDueToIncompleteChapter(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
@@ -296,56 +212,56 @@ class GenerateMultipleChoicePageInteractivesProcessStarted(Event):
         self.data = data
 
 
-class GenerateCodeEditorPageInteractiveProcessStarted(Event):
+class GenerateCodeEditorPageInteractivesProcessStarted(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class GenerateCodepenPageInteractiveProcessStarted(Event):
+class GenerateCodepenPageInteractivesProcessStarted(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class MultipleChoiceInteractiveBatchPromptCreated(Event):
+class MultipleChoiceInteractivesPromptCreated(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class CodeEditorInteractivePromptCreated(Event):
+class CodeEditorInteractivesPromptCreated(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class CodepenInteractivePromptCreated(Event):
+class CodepenInteractivesPromptCreated(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class MultipleChoiceInteractiveBatchResponseReceivedFromOpenAI(Event):
+class MultipleChoiceInteractivesResponseReceivedFromOpenAI(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class CodeEditorInteractiveResponseReceivedFromOpenAI(Event):
+class CodeEditorInteractivesResponseReceivedFromOpenAI(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class CodepenInteractiveResponseReceivedFromOpenAI(Event):
+class CodepenInteractivesResponseReceivedFromOpenAI(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id

@@ -23,13 +23,5 @@ def test_calculate_interactive_counts_for_page_handler():
         'topicId': 1,
     }).handle()
 
-    print(event)
-
-    # for event in next_events:
-    #     assert event.__class__.__name__ in [
-    #         'GenerateMultipleChoicePageInteractivesProcessStarted',
-    #         'GenerateCodeEditorPageInteractiveProcessStarted',
-    #         'GenerateCodepenPageInteractiveProcessStarted'
-    #     ]
-    #     print(event.__class__.__name__)
-    #     print(event.data['interactives'])
+    assert event.data is not None
+    assert event.data['interactives'] is not None

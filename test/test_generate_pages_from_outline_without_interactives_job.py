@@ -34,13 +34,9 @@ def test_generate_pages_from_outline_without_interactives():
     db = get_session()
     good_events = [
         'LessonPageProcessedAndSummarizedSuccessfully',
-        'PracticeChallengePageResponseProcessedSuccessfully',
-        'FinalChallengePageResponseProcessedSuccessfully'
     ]
     bad_events = [
         'InvalidLessonPageResponseFromOpenAI',
-        'InvalidPracticeChallengePageResponseFromOpenAI',
-        'InvalidFinalChallengePageResponseFromOpenAI'
     ]
     job_data = {
         'topicId': 1,

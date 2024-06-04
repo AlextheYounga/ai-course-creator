@@ -1,9 +1,9 @@
 from db.db import DB, Topic, OutlineEntity, Interactive, Prompt, Page
-from src.events.events import MultipleChoiceInteractiveBatchPromptCreated
+from src.events.events import MultipleChoiceInteractivesPromptCreated
 from src.utils.llm import *
 
 
-class CreateMultipleChoiceInteractiveBatchPromptHandler:
+class CreateMultipleChoiceInteractivesPromptHandler:
     def __init__(self, data: dict):
         self.data = data
         self.db = DB()
@@ -15,18 +15,18 @@ class CreateMultipleChoiceInteractiveBatchPromptHandler:
 
     def handle(self) -> Prompt:
         llm_params = get_llm_params(self.prompt_subject)
-        messages = self._build_multiple_choice_interactive_batch_prompt()
+        messages = self._build_multiple_choice_interactives_prompt()
         tokens = count_token_estimate(messages)
 
         prompt = self._save_prompt(messages, tokens, llm_params)
 
-        return MultipleChoiceInteractiveBatchPromptCreated({
+        return MultipleChoiceInteractivesPromptCreated({
             **self.data,
             'promptId': prompt.id,
         })
 
 
-    def _build_multiple_choice_interactive_batch_prompt(self):
+    def _build_multiple_choice_interactives_prompt(self):
         general_system_prompt = get_prompt(self.topic, 'system/general', {'topic': self.topic.name})
         interactive_shape_prompt = get_prompt(self.topic, f"system/interactives/{self.interactive_type}")
         interactive_context_prompt = self._get_interactive_context_system_prompt()

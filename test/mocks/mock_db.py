@@ -5,17 +5,15 @@ import sqlite3
 import zipfile
 
 
-DB = get_session()
-
-
 def truncate_tables():
+    db = DB()
     tables = Base.metadata.tables.keys()
 
     for table in tables:
-        DB.execute(text(f"DELETE FROM {table}"))
-        DB.commit()
+        db.execute(text(f"DELETE FROM {table}"))
+        db.commit()
 
-    DB.close()  # Was getting flush warnings
+    db.close()  # Was getting flush warnings
 
 
 def import_sql_data_from_file(db_path: str, sql_file_path: str, zipped: bool = False):

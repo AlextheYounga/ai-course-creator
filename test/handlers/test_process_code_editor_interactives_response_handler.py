@@ -2,7 +2,7 @@ from ..mocks.mock_db import *
 from sqlalchemy.sql import text
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.handlers.create_new_outline_handler import CreateNewOutlineHandler
-from src.handlers.process_code_editor_interactive_response_handler import ProcessCodeEditorInteractiveResponseHandler
+from src.handlers.process_code_editor_interactives_response_handler import ProcessCodeEditorInteractivesResponseHandler
 
 TOPIC = 'Ruby on Rails'
 OUTLINE_DATA = open('test/fixtures/master-outline.yaml').read()
@@ -41,7 +41,7 @@ def test_process_code_editor_interactive_response_handler():
 
     db = get_session()
 
-    event = ProcessCodeEditorInteractiveResponseHandler({
+    event = ProcessCodeEditorInteractivesResponseHandler({
         'topicId': 1,
         'pageId': 1,
         'outlineId': 1,
@@ -50,6 +50,9 @@ def test_process_code_editor_interactive_response_handler():
     }).handle()
 
     assert event.__class__.__name__ == 'CodeEditorInteractiveSavedFromResponse'
+
+    interactives = db.query(Interactive).count()
+    assert interactives == 2
 
     interactive = db.get(Interactive, 1)
 

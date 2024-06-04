@@ -7,6 +7,7 @@ TOPIC = 'Ruby on Rails'
 OUTLINE_DATA = open('test/fixtures/master-outline.yaml').read()
 
 
+
 def __setup_test():
     truncate_tables()
     topics_file = "configs/topics.example.yaml"
@@ -15,6 +16,7 @@ def __setup_test():
 
 
 def test_create_lesson_page_prompt_handler():
+    db = DB()
     __setup_test()
 
     CreateLessonPagePromptHandler({
@@ -24,7 +26,7 @@ def test_create_lesson_page_prompt_handler():
         'topicId': 1,
     }).handle()
 
-    prompt = DB.query(Prompt).first()
+    prompt = db.query(Prompt).first()
 
     assert prompt is not None
     assert prompt.content is not None

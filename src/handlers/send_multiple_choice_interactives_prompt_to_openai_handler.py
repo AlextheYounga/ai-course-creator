@@ -1,12 +1,12 @@
 import json
 from openai.types.completion import Completion
 from db.db import DB, Topic, Prompt, Response
-from src.events.events import CodepenInteractiveResponseReceivedFromOpenAI
+from src.events.events import MultipleChoiceInteractivesResponseReceivedFromOpenAI
 from src.utils.llm.get_llm_client import get_llm_client
 
 
 
-class SendCodepenInteractivePromptToOpenAIHandler:
+class SendMultipleChoiceInteractivesPromptToOpenAIHandler:
     def __init__(self, data: dict):
         self.data = data
         self.db = DB()
@@ -21,7 +21,7 @@ class SendCodepenInteractivePromptToOpenAIHandler:
 
         response = self._save_response_to_db(completion)
 
-        return CodepenInteractiveResponseReceivedFromOpenAI({
+        return MultipleChoiceInteractivesResponseReceivedFromOpenAI({
             **self.data,
             'promptId': self.prompt.id,
             'responseId': response.id,

@@ -1,5 +1,5 @@
 from db.db import DB, Topic, Outline, OutlineEntity, Page, Interactive
-from src.events.events import GenerateCodepenPageInteractiveProcessStarted, GenerateCodeEditorPageInteractiveProcessStarted, GenerateMultipleChoicePageInteractivesProcessStarted, PageInteractivesGenerationComplete
+from src.events.events import GenerateCodepenPageInteractivesProcessStarted, GenerateCodeEditorPageInteractivesProcessStarted, GenerateMultipleChoicePageInteractivesProcessStarted, PageInteractivesGenerationComplete
 
 
 class GetNextPageInteractivesToGenerateHandler:
@@ -48,10 +48,10 @@ class GetNextPageInteractivesToGenerateHandler:
                 return GenerateMultipleChoicePageInteractivesProcessStarted(self.data)
 
             case 'codeEditor':
-                return GenerateCodeEditorPageInteractiveProcessStarted(self.data)
+                return GenerateCodeEditorPageInteractivesProcessStarted(self.data)
 
             case 'codepen':
-                return GenerateCodepenPageInteractiveProcessStarted(self.data)
+                return GenerateCodepenPageInteractivesProcessStarted(self.data)
             case _:
                 raise Exception(f"Interactive type {interactive_type} not found")
 

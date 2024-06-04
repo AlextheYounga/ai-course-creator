@@ -2,7 +2,7 @@ from ..mocks.mock_db import *
 from sqlalchemy.sql import text
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.handlers.create_new_outline_handler import CreateNewOutlineHandler
-from src.handlers.process_multiple_choice_interactive_batch_response_handler import ProcessMultipleChoiceInteractiveBatchResponseHandler
+from src.handlers.process_multiple_choice_interactives_response_handler import ProcessMultipleChoiceInteractivesResponseHandler
 
 TOPIC = 'Ruby on Rails'
 OUTLINE_DATA = open('test/fixtures/master-outline.yaml').read()
@@ -41,7 +41,7 @@ def test_process_multiple_choice_interactive_response_handler():
 
     db = get_session()
 
-    event = ProcessMultipleChoiceInteractiveBatchResponseHandler({
+    event = ProcessMultipleChoiceInteractivesResponseHandler({
         'topicId': 1,
         'pageId': 1,
         'outlineId': 1,

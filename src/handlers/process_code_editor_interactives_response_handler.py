@@ -7,7 +7,7 @@ from src.utils.shortcode import Shortcode
 from src.events.events import CodeEditorInteractiveSavedFromResponse, CodeEditorInteractiveShortcodeParsingFailed
 
 
-class ProcessCodeEditorInteractiveResponseHandler:
+class ProcessCodeEditorInteractivesResponseHandler:
     def __init__(self, data: dict):
         self.data = data
         self.db = DB()
