@@ -19,6 +19,7 @@ class OpenAiMockClient(OpenAiClient):
         super()
         self.response = response
         self.mock = MagicMock()
+        self.db = None
 
     def chat_completion(self, prompt, params={}):
         subject = prompt.subject
@@ -110,3 +111,10 @@ class OpenAiMockClient(OpenAiClient):
                     key: value,
                 })
         return self.mock
+
+
+    def handle_prompt_delay(self):
+        pass
+
+    def handle_exponential_backoff(self, prompt):
+        pass
