@@ -6,7 +6,7 @@ db = DB()
 class PromptController:
     @staticmethod
     def get(id: int):
-        log_record = DB.query(Prompt, Response).join(
+        log_record = db.query(Prompt, Response).join(
             Prompt, Response.prompt_id == Prompt.id
         ).filter(
             Prompt.id == id
@@ -22,7 +22,7 @@ class PromptController:
 
     @staticmethod
     def get_all():
-        log_records = DB.query(Prompt, Response).join(
+        log_records = db.query(Prompt, Response).join(
             Prompt, Response.prompt_id == Prompt.id
         ).order_by(
             Response.created_at.desc()

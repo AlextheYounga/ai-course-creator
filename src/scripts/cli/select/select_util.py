@@ -6,10 +6,12 @@ from .select_topic import select_topic
 from src.scripts.run_migrations import run_db_migrations
 from src.handlers.dump_outline_content_handler import DumpOutlineContentHandler
 
+db = DB()
+
 
 def run_dump_outline_content():
     topic_name = select_topic()
-    topic = DB.query(Topic).filter_by(name=topic_name).first()
+    topic = db.query(Topic).filter_by(name=topic_name).first()
     outline = select_outline(topic)
 
     return DumpOutlineContentHandler({

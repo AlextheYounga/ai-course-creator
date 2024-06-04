@@ -3,9 +3,11 @@ import inquirer
 from db.db import DB, Topic
 from src.utils.files import read_yaml_file
 
+db = DB()
+
 
 def select_topic():
-    topic_records = DB.query(Topic.name).all()
+    topic_records = db.query(Topic.name).all()
     topic_names_from_db = [record[0] for record in topic_records]
 
     topics_file = "configs/topics.yaml"

@@ -8,6 +8,7 @@ from db.db import DB, Topic
 from src.utils.strings import slugify
 from src.utils.files import zip_folder, zip_file
 
+db = DB()
 
 OUTPUT_PATH = os.environ.get("OUTPUT_DIRECTORY") or 'out'
 DATABASE_PATH = 'db/database.db'
@@ -60,7 +61,7 @@ def clear_logs():
 
 
 def sync_topics_file(topics_file='configs/topics.yaml'):
-    topics = DB.query(Topic).all()
+    topics = db.query(Topic).all()
     topic_file_obj = {}
 
     for topic in topics:

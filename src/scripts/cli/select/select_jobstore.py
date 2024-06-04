@@ -3,9 +3,11 @@ import inquirer
 from termcolor import colored
 from db.db import DB, JobStore
 
+db = DB()
+
 
 def select_jobstore():
-    job_records = DB.query(JobStore).order_by(
+    job_records = db.query(JobStore).order_by(
         JobStore.id.desc()
     ).all()
 

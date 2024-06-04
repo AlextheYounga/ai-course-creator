@@ -3,10 +3,11 @@ from termcolor import colored
 import sys
 import inquirer
 
+db = DB()
 
 
 def select_outline(topic: Topic):
-    outline_records = DB.query(Outline)\
+    outline_records = db.query(Outline)\
         .filter(Outline.topic_id == topic.id)\
         .order_by(Outline.id.desc())\
         .all()

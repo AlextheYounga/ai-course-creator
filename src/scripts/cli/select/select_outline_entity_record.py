@@ -5,7 +5,7 @@ db = DB()
 
 
 def _get_outline_entity_from_item(outline: Outline, entity_type: str, entity_id: int):
-    return DB.query(OutlineEntity).filter(
+    return db.query(OutlineEntity).filter(
         OutlineEntity.outline_id == outline.id,
         OutlineEntity.entity_id == entity_id,
         OutlineEntity.entity_type == entity_type

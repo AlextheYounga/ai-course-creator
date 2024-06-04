@@ -11,12 +11,16 @@ from src.events.events import GenerateOutlineJobRequested, GeneratePagesFromOutl
 db = DB()
 
 
-def _dispatch(job_event):
-    queue_context = QueueContext()
+def _dispatch(job_event, job_id=None):
+    queue_context = QueueContext(monitor_progress=True)
     storage_queue = StorageQueue()
     job_queue = JobQueue(storage_queue, 'main_queue')
 
-    job = Job({'data': job_event.serialize()})
+    job_data = {'data': job_event.serialize()}
+    if job_id:
+        job_data['jobId'] = job_id
+
+    job = Job(job_data)
     job_queue.enqueue(job)
 
     worker = Worker(queue_context, storage_queue, job_queue)
@@ -48,10 +52,9 @@ def _generate_page_material(topic: Topic, has_interactives=True):
 
 def _resume_job():
     job = select_jobstore()
-    last_event = db.query(EventStore).filter_by(job_id=job.id).all().last()
+    last_event = db.query(EventStore).filter_by(job_id=job.id).order_by(EventStore.id.desc()).first()
     event = pydoc.locate(f'src.events.events.{last_event.name}')(last_event.data)
-    _dispatch(event)
-
+    _dispatch(event, job.job_id)
 
 
 def select_job():
