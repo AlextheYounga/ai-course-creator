@@ -1,6 +1,6 @@
 import collections
-from db.db import DB, OutlineEntity, Chapter, Page, EventStore
-from src.events.events import GeneratePracticeChallengePageProcessStarted, GenerateFinalSkillChallengePageProcessStarted, GenerateLessonPageProcessStarted, GenerateOutlinePagesJobFinished
+from db.db import DB, OutlineEntity, Chapter, Page, EventStore, JobStore
+from src.events.events import GenerateLessonPageProcessStarted, GenerateOutlinePagesJobFinished
 
 
 class GetNextPageToGenerateFromJobHandler:
@@ -17,7 +17,9 @@ class GetNextPageToGenerateFromJobHandler:
     def __init__(self, data: dict):
         self.data = data
         self.db = DB()
+        self.job = self.db.query(JobStore).filter(JobStore.job_id == data['jobId']).first()
         self.outline_entity = self.db.get(OutlineEntity, data['outlineEntityId']) if data.get('outlineEntityId', False) else False
+        self.generation_type = self._get_outline_generation_type()
 
 
     def handle(self):
@@ -30,12 +32,6 @@ class GetNextPageToGenerateFromJobHandler:
         if all_pages_generated:
             return GenerateOutlinePagesJobFinished(self.data)
 
-        page_trigger_events = {
-            'lesson': GenerateLessonPageProcessStarted,
-            'challenge': GeneratePracticeChallengePageProcessStarted,
-            'final-skill-challenge': GenerateFinalSkillChallengePageProcessStarted,
-        }
-
         next_page_to_generate = None
         for page in pages_to_generate:
             if page.id not in generated_page_ids:
@@ -43,25 +39,32 @@ class GetNextPageToGenerateFromJobHandler:
                 break
 
         total_pages_to_generate = len(pages_to_generate)
-        trigger_event = page_trigger_events[next_page_to_generate.type]
 
-        return trigger_event(data={
+        return GenerateLessonPageProcessStarted(data={
             **self.data,
             'pageId': next_page_to_generate.id,
-            'totalSteps': total_pages_to_generate,
+            'completedJobItems': len(generated_page_ids),
+            'totalJobItems': total_pages_to_generate,
         })
+
+
+    def _get_outline_generation_type(self):
+        if self.outline_entity:
+            return 'OUTLINE_ENTITY'
+
+        return 'FULL_OUTLINE'
 
 
     def _get_all_pages_to_generate(self):
         pages_to_generate = []
-        if self.outline_entity:
-            pages_to_generate = self._get_entity_pages()
-        else:
-            pages_to_generate = self._get_outline_pages()
 
-        lesson_pages_to_generate = [page for page in pages_to_generate if page.type == 'lesson']
+        match self.generation_type:
+            case 'FULL_OUTLINE':
+                pages_to_generate = self._get_outline_pages()
+            case 'OUTLINE_ENTITY':
+                pages_to_generate = self._get_entity_pages()
 
-        return lesson_pages_to_generate
+        return pages_to_generate
 
 
     def _get_outline_pages(self) -> list[Page]:
@@ -70,6 +73,7 @@ class GetNextPageToGenerateFromJobHandler:
         ).filter(
             OutlineEntity.outline_id == self.data['outlineId'],
             OutlineEntity.entity_type == 'Page',
+            Page.type == 'lesson',
         ).all()
 
 
@@ -82,6 +86,7 @@ class GetNextPageToGenerateFromJobHandler:
         ).filter(
             OutlineEntity.outline_id == self.data['outlineId'],
             OutlineEntity.entity_type == 'Page',
+            Page.type == 'lesson',
         )
 
         if self.outline_entity.entity_type == 'Course':
@@ -102,14 +107,9 @@ class GetNextPageToGenerateFromJobHandler:
 
     def _get_page_ids_already_generated(self):
         page_ids = []
-
         events = self.db.query(EventStore).filter(
-            EventStore.job_id == self.data['jobId'],
-            EventStore.name.in_([
-                'LessonPageProcessedAndSummarizedSuccessfully',
-                'PracticeChallengePageResponseProcessedSuccessfully',
-                'FinalChallengePageResponseProcessedSuccessfully'
-            ])
+            EventStore.job_id == self.job.id,
+            EventStore.name == 'LessonPageProcessedAndSummarizedSuccessfully'
         ).all()
 
         for event in events:

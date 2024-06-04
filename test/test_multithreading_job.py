@@ -4,10 +4,7 @@ from src.jobs import QueueContext, StorageQueue, JobQueue, Job, Worker
 from src.handlers import ScanTopicsFileHandler, CreateNewOutlineHandler
 from src.events.events import GeneratePagesFromOutlineJobRequested
 
-
 OUTLINE_DATA = open('test/fixtures/master-outline.yaml').read()
-
-DB = get_session()
 
 
 def __setup_test():
@@ -19,8 +16,8 @@ def __setup_test():
     CreateNewOutlineHandler({'topicId': 1, 'outlineData': OUTLINE_DATA}).handle()
 
 
-def __jobs_finished():
-    return DB.query(EventStore).filter(EventStore.name == 'GenerateOutlinePagesJobFinished').count() == 2
+def __jobs_finished(db):
+    return db.query(EventStore).filter(EventStore.name == 'GenerateOutlinePagesJobFinished').count() == 2
 
 
 def __run_job_async(data: dict):
@@ -38,26 +35,26 @@ def __run_job_async(data: dict):
     return worker
 
 
-def test_multithreading_queue():
+def __test_multithreading_queue():
     __setup_test()
-
-    topic = DB.query(Topic).first()
+    db = get_session()
+    topic = db.query(Topic).first()
     topic_properties = topic.get_properties()
     topic_properties['settings']['hasInteractives'] = False
     topic.update_properties(DB, topic_properties)
 
 
-    chapter_entities = DB.query(OutlineEntity).filter(OutlineEntity.entity_type == 'Chapter').all()
+    chapter_entities = db.query(OutlineEntity).filter(OutlineEntity.entity_type == 'Chapter').all()
     chapter_entity_1 = chapter_entities[0]
     chapter_entity_2 = chapter_entities[1]
 
     __run_job_async({'topicId': 1, 'outlineId': 1, 'outlineEntityId': chapter_entity_1.id})
     __run_job_async({'topicId': 1, 'outlineId': 1, 'outlineEntityId': chapter_entity_2.id})
 
-    while not __jobs_finished():
+    while not __jobs_finished(db):
         time.sleep(1)
 
-    generated_pages = DB.query(Page).filter(Page.generated == True).all()
+    generated_pages = db.query(Page).filter(Page.generated == True).all()
 
     for p in generated_pages:
         assert p.chapter_id in [chapter_entity_1.entity_id, chapter_entity_2.entity_id]

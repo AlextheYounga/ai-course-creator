@@ -19,7 +19,7 @@ class SendGenerateLessonPagePromptToOpenAIHandler:
 
         response = self._save_response_to_db(completion)
 
-        self.prompt.increment_attempts(DB)
+        self.prompt.increment_attempts(self.db)
 
         return LessonPageResponseReceivedFromOpenAI({
             **self.data,

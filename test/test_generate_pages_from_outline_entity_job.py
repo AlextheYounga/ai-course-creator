@@ -18,7 +18,7 @@ def __setup_test():
 
 
 def __run_job(data: dict):
-    queue_context = QueueContext()
+    queue_context = QueueContext(monitor_progress=True)
     storage_queue = StorageQueue()
     job_queue = JobQueue(storage_queue, 'main_queue')
 

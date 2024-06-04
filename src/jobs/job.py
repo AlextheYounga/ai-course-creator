@@ -1,5 +1,6 @@
 from cuid import cuid
 from src.events.events import *
+import sys
 
 # An individual job in the system.
 # Note that creation and execution use the same class.
@@ -30,7 +31,6 @@ class Job:
     def run(self, context):
         self.context = context
         self.status = 'in_progress'
-        self.data.update({'jobId': self.id})
         self.record = context.save_job(self)
         self.work()
 

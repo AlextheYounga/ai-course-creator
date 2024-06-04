@@ -1,70 +1,58 @@
 INSERT INTO "response" ("id", "prompt_id", "outline_id", "role", "model", "completion_tokens", "prompt_tokens", "total_tokens", "content", "payload", "properties", "created_at", "updated_at") VALUES
 ('1', '1', '1', 'assistant', 'gpt-4o-2024-05-13', '382', '1261', '1643', '[codepen]
 
-[description]This CodePen demonstrates how to create and manipulate slices in Go, including adding and removing elements.[/description]
+[description]Example of Declaring and Using Variables in JavaScript[/description]
 
 [template]
-```html
-<h1>Manipulating Slices in Go</h1>
+```javascript
+// Declare a variable called "name" and assign it the value "John"
+let name = "John";
 
-<pre id="code-output"></pre>
+// Declare a variable called "age" and assign it the value 30
+let age = 30;
+
+// Change the value of the "age" variable
+age = 31;
 ```
 [/template]
 
-[/styles]
-```css
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  padding: 20px;
-}
+[scripts]
+```javascript
+// Output the value of the "name" variable to the console
+console.log(name);
 
-h1 {
-  color: #333;
-}
-
-pre {
-  background: #fff;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
+// Output the updated value of the "age" variable to the console
+console.log(age);
 ```
-[/styles]
+[/scripts]
+[dependency]Vue[/dependency]
+[/codepen]
+
+
+[codepen]
+
+[description]Example of a Foo[/description]
+
+[template]
+```javascript
+// Declare a variable called "name" and assign it the value "John"
+let name = "John";
+
+// Declare a variable called "age" and assign it the value 30
+let age = 30;
+
+// Change the value of the "age" variable
+age = 31;
+```
+[/template]
 
 [scripts]
 ```javascript
-document.addEventListener("DOMContentLoaded", function () {
-  var output = document.getElementById("code-output");
-  var books = ["Go Programming", "Effective Go", "Go in Action"];
-  
-  // Adding books
-  books = append(books, "The Go Programming Language", "Concurrency in Go");
+// Output the value of the "name" variable to the console
+console.log(name);
 
-  // Removing a book
-  books = append(books.slice(0, 1), books.slice(2));
-
-  // Creating a backup
-  var backupBooks = new Array(books.length);
-  copy(backupBooks, books);
-
-  output.textContent = `
-Initial books: ["Go Programming", "Effective Go", "Go in Action"]
-After adding: ${JSON.stringify(books)}
-After removing second book: ${JSON.stringify(books)}
-Backup books: ${JSON.stringify(backupBooks)}
-  `;
-});
-
-function append(slice, ...elements) {
-  return slice.concat(elements);
-}
-
-function copy(dest, src) {
-  for (let i = 0; i < src.length; i++) {
-    dest[i] = src[i];
-  }
-}
+// Output the updated value of the "age" variable to the console
+console.log(age);
 ```
 [/scripts]
 [dependency]Vue[/dependency]

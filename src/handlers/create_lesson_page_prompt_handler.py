@@ -1,5 +1,5 @@
 import yaml
-from db.db import DB, Outline, OutlineEntity, Prompt, Page
+from db.db import DB, Outline, OutlineEntity, Topic, Prompt, Page
 from src.events.events import LessonPagePromptCreated
 from src.utils.llm import *
 
@@ -10,7 +10,7 @@ class CreateLessonPagePromptHandler:
         self.db = DB()
         self.outline = self.db.get(Outline, data['outlineId'])
         self.page = self.db.get(Page, data['pageId'])
-        self.topic = self.outline.topic
+        self.topic = self.db.get(Topic, self.outline.topic_id)
         self.prompt_subject = 'page-material'  # corresponds with key in configs/params.yaml
 
 

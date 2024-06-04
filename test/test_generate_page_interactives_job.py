@@ -11,22 +11,16 @@ PAGE_MATERIAL = open('test/fixtures/responses/page.md').read()
 
 def __setup_test():
     truncate_tables()
-
     db = get_session()
-
     topics_file = "configs/topics.example.yaml"
     ScanTopicsFileHandler({"topicsFile": topics_file}).handle()
     CreateNewOutlineHandler({'topicId': 1, 'outlineData': OUTLINE_DATA}).handle()
 
     page = db.get(Page, 1)
-
-    # Update page record
     content_hash = Page.hash_page(PAGE_MATERIAL)
     page.content = PAGE_MATERIAL
     page.hash = content_hash
     page.generated = True
-
-    # Save to Database
     db.commit()
 
 

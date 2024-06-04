@@ -39,8 +39,6 @@ def test_generate_outline_job():
     ]
 
     job_data = {'topicId': 1}
-
-
     __run_job(job_data)
 
     topic = db.get(Topic, 1)

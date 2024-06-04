@@ -45,7 +45,6 @@ class GetNextPageInteractivesToGenerateHandler:
 
         match interactive_type:
             case 'multipleChoice':
-                # Multiple choice interactives can be handled as a batch
                 return GenerateMultipleChoicePageInteractivesProcessStarted(self.data)
 
             case 'codeEditor':

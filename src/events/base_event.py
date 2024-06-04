@@ -1,6 +1,5 @@
 from pydoc import locate
-from termcolor import colored
-from db.db import DB, EventStore
+from db.db import DB, EventStore, JobStore
 from .event_mapping import EVENT_HANDLER_MAPPING
 
 
@@ -14,8 +13,6 @@ class BaseEvent:
 
     @classmethod
     def trigger(cls, event):
-        print(colored(event.__class__.__name__, "green"))
-
         event.handler = event.get_handler()
         event.save()  # Save event to the database
         if not event.handler: return None
@@ -54,7 +51,6 @@ class BaseEvent:
         event_name = job.data['eventName']
         event_id = job.data.get('eventId', None)
         event_data = job.data.get('eventData', {})
-        event_data.update({'jobId': job.id})
 
         # Create the event instance
         event = locate(f'src.events.events.{event_name}')(event_data, event_id)
@@ -65,10 +61,11 @@ class BaseEvent:
     def save(self):
         self.handler = self.get_handler()
         handler_name = self.handler.__class__.__name__ if self.handler else None
+        job = self.db.query(JobStore).filter(JobStore.job_id == self.data.get('jobId', None)).first()
 
         event_store = EventStore(
             name=self.__class__.__name__,
-            job_id=self.data.get('jobId', None),
+            job_id=job.id,
             handler=handler_name,
             data=self.data
         )

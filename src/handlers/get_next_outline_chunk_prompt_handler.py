@@ -36,7 +36,7 @@ class GetNextOutlineChunkPromptHandler:
         return OutlineChunkGenerationProcessStarted(data={
             **self.data,
             'promptId': next_prompt_to_send_id,
-            'totalSteps': total_prompts_to_generate,
+            'totalJobItems': total_prompts_to_generate,
         })
 
 
