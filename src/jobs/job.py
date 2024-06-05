@@ -1,6 +1,5 @@
 from cuid import cuid
 from src.events.events import *
-import sys
 
 # An individual job in the system.
 # Note that creation and execution use the same class.
@@ -15,7 +14,7 @@ import sys
 class Job:
     def __init__(self, deserialized_job={}, resumable=False):
         self.data = deserialized_job.get('data', {})
-        self.id = deserialized_job.get('id', cuid())
+        self.id = deserialized_job.get('id', False) or deserialized_job.get('jobId', cuid())  # Get 'id' or 'jobId', or make new id
         self.status = deserialized_job.get('status', 'pending')
         self.resumable = resumable  # If we have implemented a way to resume this job, set to true
         self.context = None

@@ -54,14 +54,17 @@ class Page(Base):
         print(colored(f"Writing page: {page_path}", "green"))
 
         page_content = self.get_full_content(db)
-
-        os.makedirs(os.path.dirname(page_path), exist_ok=True)
-        with open(page_path, 'w', encoding="utf-8") as f:
-            f.write(page_content)
-            f.close()
+        if page_content:
+            os.makedirs(os.path.dirname(page_path), exist_ok=True)
+            with open(page_path, 'w', encoding="utf-8") as f:
+                f.write(page_content)
+                f.close()
 
 
     def get_full_content(self, db: Session):
+        if not self.content or not self.interactive_ids:
+            return None
+
         interactives = db.query(Interactive).filter(Interactive.id.in_(self.interactive_ids)).all()
         content = [self.content]
 

@@ -3,7 +3,7 @@ import pydoc
 import redis
 from db.db import DB, Topic, EventStore
 from .select_topic import select_topic
-from .select_generate_content import select_generate_content
+from .multi_select_generate_content import multi_select_generate_content
 from .select_jobstore import select_jobstore
 from src.jobs import QueueContext, StorageQueue, JobQueue, Job, Worker
 from src.events.events import GenerateOutlineJobRequested, GeneratePagesFromOutlineJobRequested, GeneratePagesFromOutlineJobRequested
@@ -36,21 +36,25 @@ def _generate_outline(topic: Topic):
 
 def _generate_page_material(topic: Topic, has_interactives=True):
     redis.Redis().flushall()  # We should flush all here to avoid running previous jobs
-    job_data = select_generate_content(topic)
+    job_data_list = multi_select_generate_content(topic)
+    job_count = len(job_data_list)
+    print(f'Running {job_count} jobs')
 
-    job_data['hasInteractives'] = has_interactives
+    for job_data in job_data_list:
+        job_data['hasInteractives'] = has_interactives
 
-    # Generate Outline Entities (specific sections from outline)
-    if 'outlineEntityId' in job_data:
-        job_event = GeneratePagesFromOutlineJobRequested(job_data)
-        return _dispatch(job_event)
-
-    # Generate Full Outline Material
-    job_event = GeneratePagesFromOutlineJobRequested(job_data)
-    return _dispatch(job_event)
+        # Generate Outline Entities (specific sections from outline)
+        if 'outlineEntityId' in job_data:
+            job_event = GeneratePagesFromOutlineJobRequested(job_data)
+            _dispatch(job_event)
+        else:
+            # Generate Full Outline Material
+            job_event = GeneratePagesFromOutlineJobRequested(job_data)
+            _dispatch(job_event)
 
 
 def _resume_job():
+    redis.Redis().flushall()  # We should flush all here to avoid running previous jobs
     job = select_jobstore()
     last_event = db.query(EventStore).filter_by(job_id=job.id).order_by(EventStore.id.desc()).first()
     event = pydoc.locate(f'src.events.events.{last_event.name}')(last_event.data)

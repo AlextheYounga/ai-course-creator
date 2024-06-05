@@ -51,15 +51,27 @@ class CreateMultipleChoiceInteractivesPromptHandler:
 
 
     def _get_interactive_context_system_prompt(self):
-        outline_interactives = self.db.query(Interactive).join(
-            OutlineEntity, Interactive.outline_entity_id == OutlineEntity.id
+        course_pages = self.db.query(OutlineEntity, Page).join(
+            OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
             OutlineEntity.outline_id == self.data['outlineId'],
             OutlineEntity.entity_type == 'Page',
+            Page.course_id == self.page.course_id
         ).all()
 
-        interactive_questions = [i.get_data('question') for i in outline_interactives if i.get_data('question')]
-        interactive_questions_string = '\n - '.join(interactive_questions) if interactive_questions else "No questions generated yet."
+        outline_interactives = self.db.query(Interactive).join(
+            OutlineEntity, Interactive.outline_entity_id == OutlineEntity.id
+        ).filter(OutlineEntity.outline_id == self.data['outlineId']).all()
+
+        course_page_outline_entity_ids = [i[0].id for i in course_pages]
+        course_interactives = [i for i in outline_interactives if i.outline_entity_id in course_page_outline_entity_ids]
+
+        interactive_questions_string = "No questions generated yet."
+        interactive_questions = [i.get_data('question') for i in course_interactives if i.get_data('question')]
+
+        if len(interactive_questions) > 0:
+            unique_interactive_questions = list(set(interactive_questions))  # We need to save as many tokens as possible
+            interactive_questions_string = '\n - '.join(unique_interactive_questions)
 
         return get_prompt(self.topic, 'system/interactive-context', {
             'content': self.page.content,

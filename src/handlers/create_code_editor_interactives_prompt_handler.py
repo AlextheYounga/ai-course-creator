@@ -16,7 +16,7 @@ class CreateCodeEditorInteractivesPromptHandler:
         self.page = self.db.get(Page, data['pageId'])
         self.interactive_type = 'codeEditor'
         self.prompt_subject = 'code-editor'  # corresponds with key in configs/params.yaml
-        self.generate_count = '2'  # Generate maximum of 2 code editors per prompt
+        self.max_count = 2
 
 
     def handle(self) -> Prompt:
@@ -43,8 +43,11 @@ class CreateCodeEditorInteractivesPromptHandler:
             interactive_context_prompt
         ])
 
-        # We will only generate one of these per prompt for maximum quality
-        count_of_type = f"{self.generate_count} {self.interactive_type} shortcode blocks"
+        # Get count of interactives and pluralize if necessary
+        # We will inject this string into the main user prompt
+        code_editor_count = self.data['interactives'][self.interactive_type]
+        corrected_code_editor_count = min(code_editor_count, self.max_count)
+        count_of_type = f"{corrected_code_editor_count} {self.interactive_type} shortcode{'s' if corrected_code_editor_count > 1 else ''}"
         user_prompt = get_prompt(self.topic, 'user/interactives', {'count_of_type': count_of_type})
 
         # Build message payload
@@ -55,15 +58,27 @@ class CreateCodeEditorInteractivesPromptHandler:
 
 
     def _get_interactive_context_system_prompt(self):
-        outline_interactives = self.db.query(Interactive).join(
-            OutlineEntity, Interactive.outline_entity_id == OutlineEntity.id
+        course_pages = self.db.query(OutlineEntity, Page).join(
+            OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
             OutlineEntity.outline_id == self.data['outlineId'],
             OutlineEntity.entity_type == 'Page',
+            Page.course_id == self.page.course_id
         ).all()
 
-        interactive_questions = [i.get_data('question') for i in outline_interactives if i.get_data('question')]
-        interactive_questions_string = '\n - '.join(interactive_questions) if interactive_questions else "No questions generated yet."
+        outline_interactives = self.db.query(Interactive).join(
+            OutlineEntity, Interactive.outline_entity_id == OutlineEntity.id
+        ).filter(OutlineEntity.outline_id == self.data['outlineId']).all()
+
+        course_page_outline_entity_ids = [i[0].id for i in course_pages]
+        course_interactives = [i for i in outline_interactives if i.outline_entity_id in course_page_outline_entity_ids]
+
+        interactive_questions_string = "No questions generated yet."
+        interactive_questions = [i.get_data('question') for i in course_interactives if i.get_data('question')]
+
+        if len(interactive_questions) > 0:
+            unique_interactive_questions = list(set(interactive_questions))  # We need to save as many tokens as possible
+            interactive_questions_string = '\n - '.join(unique_interactive_questions)
 
         return get_prompt(self.topic, 'system/interactive-context', {
             'content': self.page.content,

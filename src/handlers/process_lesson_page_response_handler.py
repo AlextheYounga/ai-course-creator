@@ -1,5 +1,5 @@
 from termcolor import colored
-from db.db import DB, Outline, Response, Page
+from db.db import DB, Outline, OutlineEntity, Response, Page, Interactive
 from .validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
 from src.events.events import InvalidLessonPageResponseFromOpenAI, LessonPageResponseProcessedSuccessfully, GeneratePageInteractivesJobRequested
 
@@ -29,6 +29,7 @@ class ProcessLessonPageResponseHandler:
         self.next_events.append(LessonPageResponseProcessedSuccessfully(self.data))
 
         if self._topic_permits_interactives():  # true by default
+            self._delete_existing_page_interactives_for_regeneration()
             self.next_events.append(GeneratePageInteractivesJobRequested(self.data))  # Async job flow
 
         return self.next_events
@@ -61,6 +62,23 @@ class ProcessLessonPageResponseHandler:
         else:
             topic_settings = self.page.topic.get_properties('settings')
             return topic_settings.get('hasInteractives', True)
+
+
+    def _delete_existing_page_interactives_for_regeneration(self):
+        page_outline_entity = self.db.query(OutlineEntity).filter(
+            OutlineEntity.outline_id == self.data['outlineId'],
+            OutlineEntity.entity_id == self.page.id,
+            OutlineEntity.entity_type == 'Page'
+        ).first()
+
+        existing_interactives = self.db.query(Interactive).filter(
+            Interactive.outline_entity_id == page_outline_entity.id
+        ).all()
+
+        for interactive in existing_interactives:
+            self.db.delete(interactive)
+
+        self.db.commit()
 
 
     def _save_content_to_page(self, material: str):
