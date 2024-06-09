@@ -37,6 +37,10 @@ def test_create_code_editor_interactives_prompt_handler():
         'outlineId': 1,
         'pageId': 1,
         'topicId': 1,
+        'interactives': {
+            'codeEditor': 2,
+            'multipleChoice': 5,
+        }
     }).handle()
 
     prompt = db.query(Prompt).first()

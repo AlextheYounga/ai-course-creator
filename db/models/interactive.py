@@ -1,6 +1,6 @@
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, JSON, DateTime
-from sqlalchemy.orm import Session, mapped_column
+from sqlalchemy.orm import Session, mapped_column, relationship
 from sqlalchemy.orm.attributes import flag_modified
 from .base import Base
 
@@ -8,7 +8,7 @@ from .base import Base
 class Interactive(Base):
     __tablename__ = "interactive"
     id = mapped_column(Integer, primary_key=True)
-    outline_entity_id = mapped_column(Integer, nullable=False, index=True, comment="This gives us more options, the ability to map interactives to courses, chapters and pages.")
+    page_source_id = mapped_column(Integer, nullable=False, comment="This is the page that the interactive is generated from.")
     type = mapped_column(String, nullable=False)
     difficulty = mapped_column(Integer)
     data = mapped_column(JSON, comment="Contains interactive fields and content which can vary widely between types.")
@@ -16,11 +16,16 @@ class Interactive(Base):
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
+    pages = relationship(
+        "Page",
+        secondary="page_interactive",
+        back_populates="interactives",
+    )
 
     def to_dict(self):
         return {
             "id": self.id,
-            "outline_entity_id": self.outline_entity_id,
+            "page_source_id": self.page_source_id,
             "type": self.type,
             "data": self.data,
             "meta": self.meta,

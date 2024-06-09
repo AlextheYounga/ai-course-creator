@@ -1,5 +1,6 @@
+from decimal import Decimal, ROUND_HALF_UP
 from sqlalchemy.sql import func
-from sqlalchemy import ForeignKey, Integer, String, DateTime, Text, JSON
+from sqlalchemy import ForeignKey, Integer, String, DateTime, Text, JSON, DECIMAL
 from sqlalchemy.orm import Session, mapped_column, relationship
 from sqlalchemy.orm.attributes import flag_modified
 from .base import Base
@@ -16,6 +17,7 @@ class Response(Base):
     completion_tokens = mapped_column(Integer)
     prompt_tokens = mapped_column(Integer)
     total_tokens = mapped_column(Integer)
+    cost = mapped_column(DECIMAL)
     content = mapped_column(Text)
     payload = mapped_column(JSON)
     properties = mapped_column(JSON)
@@ -34,6 +36,7 @@ class Response(Base):
             "completion_tokens": self.completion_tokens,
             "prompt_tokens": self.prompt_tokens,
             "total_tokens": self.total_tokens,
+            "cost": self.cost,
             "content": self.content,
             "payload": self.payload,
             "properties": self.properties,

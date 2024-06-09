@@ -5,6 +5,7 @@ topics:
     settings:
         hasInteractives: true # true by default
         interactives: # interactive settings
+          codepen: false,
           counts: 
             lesson: 1
             challenge: 5

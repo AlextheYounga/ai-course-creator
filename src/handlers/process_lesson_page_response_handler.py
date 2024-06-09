@@ -1,5 +1,5 @@
 from termcolor import colored
-from db.db import DB, Outline, OutlineEntity, Response, Page, Interactive
+from db.db import DB, Outline, Response, Page, Interactive
 from .validate_response_from_openai_handler import ValidateResponseFromOpenAIHandler
 from src.events.events import InvalidLessonPageResponseFromOpenAI, LessonPageResponseProcessedSuccessfully, GeneratePageInteractivesJobRequested
 
@@ -10,7 +10,6 @@ class ProcessLessonPageResponseHandler:
         self.db = DB()
         self.response = self.db.get(Response, data['responseId'])
         self.page = self.db.get(Page, data['pageId'])
-        self.next_events = []
 
 
     def handle(self) -> Outline:
@@ -26,13 +25,8 @@ class ProcessLessonPageResponseHandler:
         content = self._add_header_to_page_content(content)
 
         self._save_content_to_page(content)
-        self.next_events.append(LessonPageResponseProcessedSuccessfully(self.data))
 
-        if self._topic_permits_interactives():  # true by default
-            self._delete_existing_page_interactives_for_regeneration()
-            self.next_events.append(GeneratePageInteractivesJobRequested(self.data))  # Async job flow
-
-        return self.next_events
+        return LessonPageResponseProcessedSuccessfully(self.data)
 
     def _add_header_to_page_content(self, content: str):
         # If page does not have a header, add one
@@ -56,23 +50,9 @@ class ProcessLessonPageResponseHandler:
         return content
 
 
-    def _topic_permits_interactives(self):
-        if 'hasInteractives' in self.data:
-            return self.data['hasInteractives']
-        else:
-            topic_settings = self.page.topic.get_properties('settings')
-            return topic_settings.get('hasInteractives', True)
-
-
     def _delete_existing_page_interactives_for_regeneration(self):
-        page_outline_entity = self.db.query(OutlineEntity).filter(
-            OutlineEntity.outline_id == self.data['outlineId'],
-            OutlineEntity.entity_id == self.page.id,
-            OutlineEntity.entity_type == 'Page'
-        ).first()
-
         existing_interactives = self.db.query(Interactive).filter(
-            Interactive.outline_entity_id == page_outline_entity.id
+            Interactive.page_source_id == self.page.id
         ).all()
 
         for interactive in existing_interactives:

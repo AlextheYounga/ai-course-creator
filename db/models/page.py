@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session, mapped_column, relationship
 from sqlalchemy.orm.attributes import flag_modified
 from termcolor import colored
 from src.utils.strings import slugify, string_hash
-from .interactive import Interactive
 from .base import Base
 
 
@@ -21,7 +20,6 @@ class Page(Base):
     hash = mapped_column(String, unique=True)
     type = mapped_column(String)
     content = mapped_column(Text)
-    interactive_ids = mapped_column(JSON)
     summary = mapped_column(Text)
     position = mapped_column(Integer, nullable=False)
     position_in_course = mapped_column(Integer, nullable=False)
@@ -31,6 +29,32 @@ class Page(Base):
     updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
     topic = relationship("Topic", back_populates="pages")
+    interactives = relationship(
+        "Interactive",
+        secondary="page_interactive",
+        back_populates="pages",
+    )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "topic_id": self.topic_id,
+            "course_id": self.course_id,
+            "chapter_id": self.chapter_id,
+            "name": self.name,
+            "slug": self.slug,
+            "link": self.link,
+            "hash": self.hash,
+            "type": self.type,
+            "content": self.content,
+            "summary": self.summary,
+            "position": self.position,
+            "position_in_course": self.position_in_course,
+            "generated": self.generated,
+            "properties": self.properties,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
 
 
     def get_properties(self, key=None):
@@ -49,11 +73,11 @@ class Page(Base):
         return self
 
 
-    def dump_page(self, db: Session):
+    def dump_page(self):
         page_path = f"out/{self.link.split('/page/')[1]}.md"
         print(colored(f"Writing page: {page_path}", "green"))
 
-        page_content = self.get_full_content(db)
+        page_content = self.get_full_content()
         if page_content:
             os.makedirs(os.path.dirname(page_path), exist_ok=True)
             with open(page_path, 'w', encoding="utf-8") as f:
@@ -61,11 +85,11 @@ class Page(Base):
                 f.close()
 
 
-    def get_full_content(self, db: Session):
-        if not self.content or not self.interactive_ids:
+    def get_full_content(self):
+        if not self.content:
             return None
 
-        interactives = db.query(Interactive).filter(Interactive.id.in_(self.interactive_ids)).all()
+        interactives = self.interactives
         content = [self.content]
 
         if interactives:
@@ -73,29 +97,6 @@ class Page(Base):
                 content.append(interactive.get_data('shortcode'))
 
         return "\n\n".join(content)
-
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "topic_id": self.topic_id,
-            "course_id": self.course_id,
-            "chapter_id": self.chapter_id,
-            "name": self.name,
-            "slug": self.slug,
-            "link": self.link,
-            "hash": self.hash,
-            "type": self.type,
-            "content": self.content,
-            "interactive_ids": self.interactive_ids,
-            "summary": self.summary,
-            "position": self.position,
-            "position_in_course": self.position_in_course,
-            "generated": self.generated,
-            "properties": self.properties,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at,
-        }
 
     @classmethod
     def make_slug(cls, name, course_slug, chapter_slug):

@@ -12,6 +12,12 @@ class QueueMonitor():
 
     increment_events = [
         'LessonPageProcessedAndSummarizedSuccessfully',
+        'PageInteractivesGenerationComplete'
+    ]
+
+    completion_events = [
+        'LessonPageProcessedAndSummarizedSuccessfully',
+        'PageInteractivesGenerationComplete'
     ]
 
     def read_completed_queue(self):
@@ -31,15 +37,22 @@ class QueueMonitor():
             item = json.loads(queue_item)
             event_name = item['data']['eventName']
             event_data = item['data']['eventData']
+            job_id = event_data.get('jobId', 'N/A')
 
-            self.total_items = event_data.get('totalJobItems', self.total_items)
+            if event_name in self.completion_events:
+                self.reset_monitor()
+
+            generation_ids = event_data.get('generationIds', [])
+            self.total_items = len(generation_ids)
+
             if self.increment == 0:
-                self.increment = event_data.get('completedJobItems', self.increment)
+                completed_ids = event_data.get('completedGenerationIds', [])
+                self.increment = len(completed_ids)
 
             print_color = "green" if not "Fail" in event_name else "red"
 
             if self.total_items == 0:
-                message_data = ['Calculating...', f'Event: {event_name}']
+                message_data = [f'Running job: {job_id}', f'Event: {event_name}']
                 print(colored("{: >20} {: >20}".format(*message_data), print_color))
                 continue
 
@@ -56,3 +69,8 @@ class QueueMonitor():
             ]
 
             print(colored("{: >10} {: >20} {: >20} {: >20}".format(*message_data), print_color))
+
+
+    def reset_monitor(self):
+        self.total_items = 0
+        self.increment = 0

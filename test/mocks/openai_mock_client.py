@@ -55,12 +55,22 @@ class OpenAiMockClient(OpenAiClient):
                 response = "\n\n".join(multiple_choice_interactives)
 
             case 'code-editor':
-                hash = random.getrandbits(128)
-                response = EXPECTED_CODE_EDITOR_RESPONSE.replace('[codeEditor', f'[codeEditor hash="{hash}"')
+                count = int(prompt.content.split('Prompt: please generate ')[1][0])
+                code_editor_interactives = []
+                for _ in range(count):
+                    hash = random.getrandbits(128)
+                    interactive_shortcode = EXPECTED_CODE_EDITOR_RESPONSE.replace('[codeEditor', f'[codeEditor hash="{hash}"')
+                    code_editor_interactives.append(interactive_shortcode)
+                response = "\n\n".join(code_editor_interactives)
 
             case 'codepen':
-                hash = random.getrandbits(128)
-                response = EXPECTED_CODEPEN_RESPONSE.replace('[codepen', f'[codepen hash="{hash}"')
+                count = int(prompt.content.split('Prompt: please generate ')[1][0])
+                codepen_interactives = []
+                for _ in range(count):
+                    hash = random.getrandbits(128)
+                    interactive_shortcode = EXPECTED_CODEPEN_RESPONSE.replace('[codepen', f'[codepen hash="{hash}"')
+                    codepen_interactives.append(interactive_shortcode)
+                response = "\n\n".join(codepen_interactives)
 
         response_object = self._completion_response_object(response)
         completion = self._mock_object(response_object)

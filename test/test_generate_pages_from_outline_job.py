@@ -1,7 +1,7 @@
 from .mocks.mock_db import *
 from src.jobs import QueueContext, StorageQueue, JobQueue, Job, Worker
 from src.handlers import ScanTopicsFileHandler, CreateNewOutlineHandler
-from src.events.events import GeneratePagesFromOutlineJobRequested
+from src.events.events import GeneratePagesFromOutlineJobRequested, GeneratePageInteractivesJobRequested
 
 
 TOPIC = 'Ruby on Rails'
@@ -15,14 +15,12 @@ def __setup_test():
     CreateNewOutlineHandler({'topicId': 1, 'outlineData': OUTLINE_DATA}).handle()
 
 
-def __run_job(data: dict):
+def __run_job(job_event):
     queue_context = QueueContext(monitor_progress=True)
     storage_queue = StorageQueue()
     job_queue = JobQueue(storage_queue, 'main_queue')
-    job_event = GeneratePagesFromOutlineJobRequested(data)
     job = Job({'data': job_event.serialize()})
     job_queue.enqueue(job)
-    worker = Worker(queue_context, storage_queue, job_queue)
     worker = Worker(queue_context, storage_queue, job_queue)
     worker.perform()
 
@@ -44,36 +42,30 @@ def test_generate_pages_from_outline():
         "CodepenInteractiveShortcodeParsingFailed",
     ]
 
-    job_data = {
-        'topicId': 1,
-        'outlineId': 1,
-    }
-
-    __run_job(job_data)
+    job_data = {'topicId': 1, 'outlineId': 1}
+    job_event = GeneratePagesFromOutlineJobRequested(job_data)
+    __run_job(job_event)
 
     pages = db.query(Page).all()
-    interactives = db.query(Interactive).all()
 
     assert len(pages) == 77
-    assert len(interactives) > 0
-    assert len(interactives) <= 385  # Highest possible number of interactives
 
     for page in pages:
-        assert page.topic_id == 1
-        assert page.chapter_id is not None
-        assert page.type in ['lesson', 'challenge', 'final-skill-challenge']
-        assert page.content is not None
-        assert page.content != ''
-        assert page.generated
-        assert page.hash is not None
-        assert len(page.interactive_ids) > 0
+        match page.type:
+            case 'lesson':
+                assert page.topic_id == 1
+                assert page.chapter_id is not None
+                assert page.content is not None
+                assert page.content != ''
+                assert page.generated
+                assert page.hash is not None
+            case 'challenge':
+                assert page.topic_id == 1
+                assert page.chapter_id is not None
+            case 'final-skill-challenge':
+                assert page.topic_id == 1
+                assert page.chapter_id is not None
 
-    for interactive in interactives:
-        assert interactive.outline_entity_id is not None
-        assert interactive.type in ['multipleChoice', 'codeEditor', 'codepen']
-        assert interactive.difficulty in [1, 2, 3]
-        assert interactive.data is not None
-        assert interactive.data != ''
 
     good_events = db.query(EventStore).filter(
         EventStore.name.in_(good_events),

@@ -2,8 +2,9 @@
 EVENT_HANDLER_MAPPING = {
     # Starting Events
     "GenerateOutlineJobRequested": "InstantiateOutlineHandler",
-    "GeneratePagesFromOutlineJobRequested": "GetNextPageToGenerateFromJobHandler",
-    "GeneratePageInteractivesJobRequested": "CalculateInteractiveCountsForPageHandler",
+    "GeneratePagesFromOutlineJobRequested": "CollectAllPagesToGenerateHandler",
+    "GeneratePageInteractivesJobRequested": "CollectAllPagesForInteractiveGenerationHandler",
+    "CompileInteractivesToPagesJobRequested": "CompileInteractivesToLessonPagesHandler",
 
     # Outline Event Handlers
     "NewOutlineInstantiated": "CreateGenerateSkillsPromptHandler",
@@ -17,20 +18,23 @@ EVENT_HANDLER_MAPPING = {
     "InvalidOutlineChunkResponseFromOpenAI": "SendOutlineChunkPromptToOpenAIHandler",  # retry event
     "FailedToParseYamlFromOutlineChunkResponse": "SendOutlineChunkPromptToOpenAIHandler",
     "OutlineChunkResponseReceivedFromOpenAI": "ProcessOutlineChunkResponseHandler",
-    "OutlineChunkResponseProcessedSuccessfully": "GetNextOutlineChunkPromptHandler",
+    "OutlineChunkResponseProcessedSuccessfully": "GetNextOutlineChunkPromptHandler",  # loop event
     "AllOutlineChunkResponsesProcessedSuccessfully": "CompileOutlineChunksToMasterOutlineHandler",
     "MasterOutlineCompiledFromOutlineChunks": "CreateOutlineEntitiesFromOutlineHandler",
 
     # Page Generation Event Handlers
+    "CollectedAllPagesToGenerate": "GetNextPageToGenerateHandler",
     "GenerateLessonPageProcessStarted": "CreateLessonPagePromptHandler",
     "LessonPagePromptCreated": "SendGenerateLessonPagePromptToOpenAIHandler",
     "InvalidLessonPageResponseFromOpenAI": "SendGenerateLessonPagePromptToOpenAIHandler",  # retry event
     "LessonPageResponseReceivedFromOpenAI": "ProcessLessonPageResponseHandler",
     "LessonPageResponseProcessedSuccessfully": "GenerateLessonPageSummaryHandler",
-    "LessonPageProcessedAndSummarizedSuccessfully": "GetNextPageToGenerateFromJobHandler",
+    "LessonPageProcessedAndSummarizedSuccessfully": "GetNextPageToGenerateHandler",  # loop event
 
     # Page Interactives Generation Event Handlers
-    "InteractiveCountsCalculatedForPage": "GetNextPageInteractivesToGenerateHandler",
+    "CollectedAllPagesForInteractiveGeneration": "GetNextPageForInteractivesGenerationHandler",
+    "GeneratePageInterativesProcessStarted": "CalculateInteractiveCountsForPageHandler",
+    "InteractiveCountsCalculatedForPage": "GetNextInteractivesToGenerateHandler",
     "GenerateMultipleChoicePageInteractivesProcessStarted": "CreateMultipleChoiceInteractivesPromptHandler",
     "GenerateCodeEditorPageInteractivesProcessStarted": "CreateCodeEditorInteractivesPromptHandler",
     "GenerateCodepenPageInteractivesProcessStarted": "CreateCodepenInteractivesPromptHandler",
@@ -43,11 +47,11 @@ EVENT_HANDLER_MAPPING = {
     "MultipleChoiceInteractiveShortcodeParsingFailed": "SendMultipleChoiceInteractivesPromptToOpenAIHandler",  # retry event
     "CodeEditorInteractiveShortcodeParsingFailed": "SendCodeEditorInteractivesPromptToOpenAIHandler",  # retry event
     "CodepenInteractiveShortcodeParsingFailed": "SendCodepenInteractivesPromptToOpenAIHandler",  # retry event
-    "MultipleChoiceInteractivesSavedFromResponse": "GetNextPageInteractivesToGenerateHandler",
-    "CodeEditorInteractiveSavedFromResponse": "GetNextPageInteractivesToGenerateHandler",
-    "CodepenInteractiveSavedFromResponse": "GetNextPageInteractivesToGenerateHandler",
-    "PageInteractivesGenerationComplete": "DetermineInteractiveCompilationForPagesHandler",
-    "LessonPageReadyForInteractiveCompilation": "CompileInteractivesToLessonPageHandler",
-    "ChallengePageReadyForInteractiveCompilation": "CompileInteractivesToChallengePageHandler",
-    "FinalChallengePageReadyForInteractiveCompilation": "CompileInteractivesToFinalChallengePageHandler",
+    "MultipleChoiceInteractivesSavedFromResponse": "GetNextInteractivesToGenerateHandler",  # loop event
+    "CodeEditorInteractiveSavedFromResponse": "GetNextInteractivesToGenerateHandler",  # loop event
+    "CodepenInteractiveSavedFromResponse": "GetNextInteractivesToGenerateHandler",  # loop event
+    "PageInteractivesGenerationComplete": "GetNextPageForInteractivesGenerationHandler",  # loop event
+    "AllInteractivesGeneratedFromPages": "CompileInteractivesToLessonPagesHandler",
+    "CompiledInteractivesToLessonPages": "CompileInteractivesToChallengePagesHandler",
+    "CompiledInteractivesToChallengePage": "CompileInteractivesToFinalChallengePagesHandler",
 }

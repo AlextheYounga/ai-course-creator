@@ -4,6 +4,9 @@ from src.handlers import ProcessMultipleChoiceInteractivesResponseHandler, Proce
 
 db = DB()
 
+# WARNING: This will delete all interactive records from the database
+# Interactives will be rebuilt from responses
+
 
 def reprocess_interactive_responses():
     events = db.query(EventStore).filter(

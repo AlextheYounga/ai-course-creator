@@ -58,20 +58,20 @@ class CreateCodepenInteractivesPromptHandler:
 
 
     def _get_interactive_context_system_prompt(self):
-        course_pages = self.db.query(OutlineEntity, Page).join(
+        course_pages = self.db.query(Page).join(
             OutlineEntity, OutlineEntity.entity_id == Page.id
         ).filter(
             OutlineEntity.outline_id == self.data['outlineId'],
             OutlineEntity.entity_type == 'Page',
-            Page.course_id == self.page.course_id
+            Page.course_id == self.page.course_id,
+            Page.type == "lesson"
         ).all()
 
-        outline_interactives = self.db.query(Interactive).join(
-            OutlineEntity, Interactive.outline_entity_id == OutlineEntity.id
-        ).filter(OutlineEntity.outline_id == self.data['outlineId']).all()
+        course_page_ids = [i.id for i in course_pages]
 
-        course_page_outline_entity_ids = [i[0].id for i in course_pages]
-        course_interactives = [i for i in outline_interactives if i.outline_entity_id in course_page_outline_entity_ids]
+        course_interactives = self.db.query(Interactive).filter(
+            Interactive.page_source_id.in_(course_page_ids)
+        ).all()
 
         interactive_questions_string = "No questions generated yet."
         interactive_questions = [i.get_data('question') for i in course_interactives if i.get_data('question')]

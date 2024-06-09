@@ -14,8 +14,8 @@ class CalculateInteractiveCountsForPageHandler:
 
     Then we have to determine which and how many of each interactive type to generate per page. I use a weighted random.choices() function to arrive at
     this number, which is cleaner than brute-forcing a set number of types of generate per page, because you can easily end up with a remainder 
-    of interactives that we'll have to pile up on the final skill challenge. (When I first tried forcing a type number per page, I ended up 
-    with an 80-question final skill challenge!) Using a random.choices() function allows us to distribute the interactives more evenly across pages.
+    of interactives that we'll have to pile up on the final skill challenge. (When I first tried forcing a fixed number per type, I ended up 
+    with an 80-question final skill challenge!) Using a random.choices() function allows us to distribute the interactive types more evenly across pages.
 
     The user can add preferred weights in the topic settings to the interactives to influence how often a particular type of interactive is generated. 
     """
@@ -58,7 +58,7 @@ class CalculateInteractiveCountsForPageHandler:
         for interactive_type in interactive_types:
             page_interactives_to_generate[interactive_type] = page_interactive_choices.count(interactive_type)
 
-        self._save_interactive_info_to_course({
+        self._save_interactive_info_to_course_properties({
             'totalCount': total_questions,
             'perPage': interactives_per_page,
             'totallesson_interactives': lesson_interactives,
@@ -66,6 +66,8 @@ class CalculateInteractiveCountsForPageHandler:
             'totalFinalInteractives': final_interactives,
             'weights': interactives_weights,
         })
+
+        self._save_interactives_to_page_properties(page_interactives_to_generate)
 
         return InteractiveCountsCalculatedForPage({
             **self.data,
@@ -102,15 +104,15 @@ class CalculateInteractiveCountsForPageHandler:
 
         # If topic does not allow codepen or code_editor, add their weights to multipleChoice
         if not self._topic_allows_code_editor():
-            multiple_choice_weight = round(interactives_weights['multipleChoice'] + interactives_weights['codeEditor'], 2)
-            interactives_weights['multipleChoice'] = multiple_choice_weight
             del interactives_weights['codeEditor']
+        if not self._topic_allows_codepen():
+            del interactives_weights['codepen']
 
-        # TODO: Rethink this
-        # if not self._topic_allows_codepen():
-        #     multiple_choice_weight = round(interactives_weights['multipleChoice'] + interactives_weights['codepen'], 2)
-        #     interactives_weights['multipleChoice'] = multiple_choice_weight
-        #     del interactives_weights['codepen']
+        # Account for remainders in weights
+        total_weight = sum(interactives_weights.values())
+        remainder = 1 - total_weight
+        for interactive_type in interactives_weights:
+            interactives_weights[interactive_type] += remainder / len(interactives_weights)
 
         return interactives_weights
 
@@ -144,12 +146,18 @@ class CalculateInteractiveCountsForPageHandler:
 
         return allows_codepen
 
-    def _save_interactive_info_to_course(self, info: dict):
+    def _save_interactive_info_to_course_properties(self, info: dict):
         course = self._get_page_course()
-
         course.update_properties(self.db, {
             "hasInteractives": True,
             'interactives': info,
+        })
+
+
+    def _save_interactives_to_page_properties(self, interactives):
+        interactives_count = sum(interactives.values())
+        self.page.update_properties(self.db, {
+            'interactivesCount': interactives_count,
         })
 
 

@@ -5,6 +5,7 @@ from .event_store import EventStore
 from .interactive import Interactive
 from .outline_entity import OutlineEntity
 from .outline import Outline
+from .page_interactive import PageInteractive
 from .page import Page
 from .topic import Topic
 from .job_store import JobStore

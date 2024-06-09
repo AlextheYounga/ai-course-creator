@@ -78,11 +78,10 @@ class ProcessMultipleChoiceInteractivesResponseHandler:
         })
 
         interactive = Interactive(
-            outline_entity_id=self._get_page_outline_entity_id(),
+            page_source_id=self.page.id,
             type=self.interactive_type,
             data=interactive_data,
             meta={
-                'pageId': self.page.id,
                 'responseId': self.response.id,
             },
         )
@@ -146,16 +145,6 @@ class ProcessMultipleChoiceInteractivesResponseHandler:
             choices.append(value)
 
         return list(set(choices)), answer
-
-
-    @lru_cache(maxsize=None)  # memoize
-    def _get_page_outline_entity_id(self):
-        # Get interactive relation to outline entity
-        return self.db.query(OutlineEntity.id).filter(
-            OutlineEntity.entity_id == self.page.id,
-            OutlineEntity.entity_type == 'Page',
-            OutlineEntity.outline_id == self.data['outlineId']
-        ).first()[0]  # returns as tuple
 
 
     def _remove_none_attributes(self, data):

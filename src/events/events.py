@@ -25,7 +25,15 @@ class GeneratePageInteractivesJobRequested(Event):
         self.data = data
 
 
+class CompileInteractivesToPagesJobRequested(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
 # Outlines
+
+
 class NewOutlineInstantiated(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
@@ -141,6 +149,13 @@ class OutlineEntitiesCreatedFromOutline(Event):
 
 
 # Pages
+class CollectedAllPagesToGenerate(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
 class GenerateLessonPageProcessStarted(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
@@ -198,6 +213,20 @@ class LessonPageResponseReceivedFromOpenAI(Event):
 
 
 # Interactives
+class CollectedAllPagesForInteractiveGeneration(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class GeneratePageInterativesProcessStarted(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
 class InteractiveCountsCalculatedForPage(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
@@ -310,28 +339,28 @@ class CodepenInteractiveSavedFromResponse(Event):
         self.data = data
 
 
-class LessonPageReadyForInteractiveCompilation(Event):
+class NotEnoughInteractivesForLessonPageCompilation(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class ChallengePageReadyForInteractiveCompilation(Event):
+class NotEnoughInteractivesForChallengePageCompilation(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class FinalChallengePageReadyForInteractiveCompilation(Event):
+class NotEnoughInteractivesForFinalChallengePageCompilation(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
         self.data = data
 
 
-class CompiledInteractivesToLessonPage(Event):
+class CompiledInteractivesToLessonPages(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
@@ -353,6 +382,13 @@ class CompiledInteractivesToFinalChallengePage(Event):
 
 
 class PageInteractivesGenerationComplete(Event):
+    def __init__(self, data, id=cuid()):
+        super().__init__()
+        self.id = id
+        self.data = data
+
+
+class AllInteractivesGeneratedFromPages(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id
