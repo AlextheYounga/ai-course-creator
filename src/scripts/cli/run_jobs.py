@@ -1,8 +1,8 @@
 import pydoc
 import redis
 from db.db import DB, Topic, EventStore
-from select.multi_select_generate_content import multi_select_generate_content
-from select.select_jobstore import select_jobstore
+from .select.multi_select_generate_content import multi_select_generate_content
+from .select.select_jobstore import select_jobstore
 from src.jobs import QueueContext, StorageQueue, JobQueue, Job, Worker
 from src.events.events import GenerateOutlineJobRequested, GeneratePagesFromOutlineJobRequested, GeneratePageInteractivesJobRequested
 
