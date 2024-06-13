@@ -4,7 +4,7 @@ EVENT_HANDLER_MAPPING = {
     "GenerateOutlineJobRequested": "InstantiateOutlineHandler",
     "GeneratePagesFromOutlineJobRequested": "CollectAllPagesToGenerateHandler",
     "GeneratePageInteractivesJobRequested": "CollectAllPagesForInteractiveGenerationHandler",
-    "CompileInteractivesToPagesJobRequested": "CompileInteractivesToLessonPagesHandler",
+    "CompileInteractivesToPagesJobRequested": "CollectAllPagesForInteractiveCompilationHandler",
 
     # Outline Event Handlers
     "NewOutlineInstantiated": "CreateGenerateSkillsPromptHandler",
@@ -51,7 +51,8 @@ EVENT_HANDLER_MAPPING = {
     "CodeEditorInteractiveSavedFromResponse": "GetNextInteractivesToGenerateHandler",  # loop event
     "CodepenInteractiveSavedFromResponse": "GetNextInteractivesToGenerateHandler",  # loop event
     "PageInteractivesGenerationComplete": "GetNextPageForInteractivesGenerationHandler",  # loop event
-    "AllInteractivesGeneratedFromPages": "CompileInteractivesToLessonPagesHandler",
+    "AllInteractivesGeneratedFromPages": "CollectAllPagesForInteractiveCompilationHandler",
+    "CollectedAllPagesForInteractiveCompilation": "CompileInteractivesToLessonPagesHandler",
     "CompiledInteractivesToLessonPages": "CompileInteractivesToChallengePagesHandler",
     "CompiledInteractivesToChallengePage": "CompileInteractivesToFinalChallengePagesHandler",
 }

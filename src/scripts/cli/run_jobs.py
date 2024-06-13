@@ -1,10 +1,10 @@
 import pydoc
 import redis
-from db.db import DB, Topic, EventStore
+from db.db import DB, Topic, EventStore, Outline
 from .select.multi_select_generate_content import multi_select_generate_content
 from .select.select_jobstore import select_jobstore
 from src.jobs import QueueContext, StorageQueue, JobQueue, Job, Worker
-from src.events.events import GenerateOutlineJobRequested, GeneratePagesFromOutlineJobRequested, GeneratePageInteractivesJobRequested
+from src.events.events import GenerateOutlineJobRequested, GeneratePagesFromOutlineJobRequested, GeneratePageInteractivesJobRequested, CompileInteractivesToPagesJobRequested
 
 db = DB()
 
@@ -48,6 +48,15 @@ def generate_page_material(topic: Topic, has_interactives=True):
             dispatch(job_event)
 
 
+def generate_page_interactives(topic: Topic):
+    redis.Redis().flushall()  # We should flush all here to avoid running previous jobs
+    job_data_list = multi_select_generate_content(topic)
+    job_count = len(job_data_list)
+    print(f'Running {job_count} jobs')
+
+    for job_data in job_data_list:
+        job_event = GeneratePageInteractivesJobRequested(job_data)
+        dispatch(job_event)
 
 
 def resume_job():
@@ -56,3 +65,19 @@ def resume_job():
     last_event = db.query(EventStore).filter_by(job_id=job.id).order_by(EventStore.id.desc()).first()
     event = pydoc.locate(f'src.events.events.{last_event.name}')(last_event.data)
     dispatch(event, job.job_id)
+
+
+def compile_page_interactives(topic: Topic):
+    redis.Redis().flushall()  # We should flush all here to avoid running previous jobs
+
+    pages = Outline.get_entities_by_type(db, topic.master_outline_id, 'Page')
+    page_ids = [page.id for page in pages]
+
+    job_data = {
+        'topicId': topic.id,
+        'outlineId': topic.master_outline_id,
+        'pageIds': page_ids
+    }
+
+    job_event = CompileInteractivesToPagesJobRequested(job_data)
+    dispatch(job_event)

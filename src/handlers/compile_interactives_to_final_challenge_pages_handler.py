@@ -12,15 +12,13 @@ class CompileInteractivesToFinalChallengePagesHandler:
 
     def handle(self):
         final_challenge_pages = self._get_final_challenge_pages()
-        already_associated_course_interactives = self.db.query(PageInteractive).all()
+        already_associated_interactive_ids = [i[0] for i in self.db.query(PageInteractive.interactive_id).all()]
 
         for page in final_challenge_pages:
             course_id = page.course_id
             interactives = self._get_course_interactives(course_id)
-            already_associated_course_interactive_ids = [i.interactive_id for i in already_associated_course_interactives]
-
             # Remaining interactives, (may be slightly more than specified in settings due to buffer)
-            final_challenge_interactives = [i for i in interactives if i.id not in already_associated_course_interactive_ids]
+            final_challenge_interactives = [i for i in interactives if i.id not in already_associated_interactive_ids]
 
             # Save to DB
             for interactive in final_challenge_interactives:
@@ -29,7 +27,8 @@ class CompileInteractivesToFinalChallengePagesHandler:
                     page_id=page.id
                 )
                 self.db.add(page_interactive)
-                self.db.commit()
+                already_associated_interactive_ids.append(interactive.id)
+            self.db.commit()
 
             # Save to DB
             final_challenge_content = self._build_challenge_page_content(course_id)

@@ -13,13 +13,17 @@ class CompileInteractivesToChallengePagesHandler:
     def handle(self):
         challenge_pages = self._get_challenge_pages()
         challenge_interactives_count = self._get_topic_interactive_count_settings()['challenge']
-        already_associated_chapter_interactives = self.db.query(PageInteractive).all()
+        already_associated_interactive_ids = [i[0] for i in self.db.query(PageInteractive.interactive_id).all()]
 
+        chapter_count = 0
         for page in challenge_pages:
+            chapter_count += 1
             chapter_id = page.chapter_id
             interactives = self._get_chapter_interactives(chapter_id)
-            already_associated_chapter_interactive_ids = [i.interactive_id for i in already_associated_chapter_interactives]
-            remaining_interactives = [i for i in interactives if i.id not in already_associated_chapter_interactive_ids]
+            remaining_interactives = [i for i in interactives if i.id not in already_associated_interactive_ids]
+            if len(remaining_interactives) < challenge_interactives_count:
+                print(f'Not enough interactives to associate with challenge page: {page.id}')
+                continue
 
             # Choose a random sampling from the remaining interactives to associate with the challenge page
             practice_challenge_interactives = random.sample(remaining_interactives, k=challenge_interactives_count)
@@ -31,9 +35,10 @@ class CompileInteractivesToChallengePagesHandler:
                     page_id=page.id
                 )
                 self.db.add(page_interactive)
-                self.db.commit()
+                already_associated_interactive_ids.append(interactive.id)
+            self.db.commit()
 
-            practice_challenge_content = self._build_challenge_page_content(chapter_id)
+            practice_challenge_content = self._build_challenge_page_content(chapter_count, chapter_id)
             page.content = practice_challenge_content
             page.hash = Page.hash_page(practice_challenge_content)
             page.generated = True
@@ -42,10 +47,9 @@ class CompileInteractivesToChallengePagesHandler:
         return CompiledInteractivesToChallengePage(self.data)
 
 
-
-    def _build_challenge_page_content(self, chapter_id: int):
+    def _build_challenge_page_content(self, chapter_count: int, chapter_id: int):
         chapter_record = self.db.get(Chapter, chapter_id)
-        page_title = f"# Practice Skill Challenge\n## {chapter_record.name}\n\n"
+        page_title = f"# Practice Skill Challenge {str(chapter_count)} \n## {chapter_record.name}\n\n"
 
         return page_title
 

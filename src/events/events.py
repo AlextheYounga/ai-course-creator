@@ -339,21 +339,7 @@ class CodepenInteractiveSavedFromResponse(Event):
         self.data = data
 
 
-class NotEnoughInteractivesForLessonPageCompilation(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class NotEnoughInteractivesForChallengePageCompilation(Event):
-    def __init__(self, data, id=cuid()):
-        super().__init__()
-        self.id = id
-        self.data = data
-
-
-class NotEnoughInteractivesForFinalChallengePageCompilation(Event):
+class CollectedAllPagesForInteractiveCompilation(Event):
     def __init__(self, data, id=cuid()):
         super().__init__()
         self.id = id

@@ -81,7 +81,7 @@ class CollectAllPagesForInteractiveGenerationHandler:
 
     def _prepare_existing_page_interactive_associations_for_regeneration(self, interactive_page_ids: list[int]):
         # We will just nuke the existing page_interactives and interactives
-        # We can always rebuild these from the response table
+        # We can always rebuild interactives from the response table if absolutely necessary
         page_interactives = self.db.query(PageInteractive).filter(
             PageInteractive.page_id.in_(interactive_page_ids)
         ).all()

@@ -1,7 +1,7 @@
 import inquirer
 from db.db import DB, Topic
 from .select_topic import select_topic
-from ..run_jobs import generate_outline, generate_page_material, resume_job
+from ..run_jobs import generate_outline, generate_page_material, generate_page_interactives, compile_page_interactives, resume_job
 
 
 def select_job():
@@ -14,6 +14,7 @@ def select_job():
         'Generate Page Material With Interactives',
         'Generate Page Material Only',
         'Generate Interactives',
+        'Compile Interactives',
         'Resume Job',
     ]
 
@@ -34,7 +35,8 @@ def select_job():
         case 'Generate Page Material Only':
             return generate_page_material(topic, has_interactives=False)
         case 'Generate Interactives':
-            print("Not implemented. Work in progress...")
-            return
+            return generate_page_interactives(topic)
+        case 'Compile Interactives':
+            return compile_page_interactives(topic)
         case 'Resume Job':
             return resume_job()
