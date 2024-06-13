@@ -38,7 +38,7 @@ class CompileInteractivesToChallengePagesHandler:
                 already_associated_interactive_ids.append(interactive.id)
             self.db.commit()
 
-            practice_challenge_content = self._build_challenge_page_content(chapter_count, chapter_id)
+            practice_challenge_content = self._build_challenge_page_content(chapter_count, chapter_id, practice_challenge_interactives)
             page.content = practice_challenge_content
             page.hash = Page.hash_page(practice_challenge_content)
             page.generated = True
@@ -47,11 +47,15 @@ class CompileInteractivesToChallengePagesHandler:
         return CompiledInteractivesToChallengePage(self.data)
 
 
-    def _build_challenge_page_content(self, chapter_count: int, chapter_id: int):
+    def _build_challenge_page_content(self, chapter_count: int, chapter_id: int, interactives: list[Interactive]):
         chapter_record = self.db.get(Chapter, chapter_id)
         page_title = f"# Practice Skill Challenge {str(chapter_count)} \n## {chapter_record.name}\n\n"
+        interactive_shortcodes = []
+        for interactive in interactives:
+            interactive_shortcodes.append(interactive.get_data('shortcode'))
+        page_content = '\n'.join(interactive_shortcodes)
 
-        return page_title
+        return '\n'.join([page_title, page_content])
 
 
     def _get_chapter_interactives(self, chapter_id: int) -> list[Interactive]:

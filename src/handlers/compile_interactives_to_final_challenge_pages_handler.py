@@ -31,7 +31,7 @@ class CompileInteractivesToFinalChallengePagesHandler:
             self.db.commit()
 
             # Save to DB
-            final_challenge_content = self._build_challenge_page_content(course_id)
+            final_challenge_content = self._build_challenge_page_content(course_id, final_challenge_interactives)
             page.content = final_challenge_content
             page.hash = Page.hash_page(final_challenge_content)
             page.generated = True
@@ -41,11 +41,16 @@ class CompileInteractivesToFinalChallengePagesHandler:
         return CompiledInteractivesToFinalChallengePage(self.data)
 
 
-    def _build_challenge_page_content(self, course_id: int):
+    def _build_challenge_page_content(self, course_id: int, interactives: list[Interactive]):
         course_record = self.db.get(Course, course_id)
         page_title = f"# Final Skill Challenge\n## {course_record.name}\n\n"
 
-        return page_title
+        interactive_shortcodes = []
+        for interactive in interactives:
+            interactive_shortcodes.append(interactive.get_data('shortcode'))
+        page_content = '\n'.join(interactive_shortcodes)
+
+        return '\n'.join([page_title, page_content])
 
 
     def _get_course_interactives(self, course_id: int):
