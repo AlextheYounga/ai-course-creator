@@ -51,8 +51,8 @@ class CompileInteractivesToChallengePagesHandler:
         chapter_record = self.db.get(Chapter, chapter_id)
         page_title = f"# Practice Skill Challenge {str(chapter_count)} \n## {chapter_record.name}\n\n"
         interactive_shortcodes = []
-        for interactive in interactives:
-            interactive_shortcodes.append(interactive.get_data('shortcode'))
+        for index, interactive in enumerate(interactives):
+            interactive_shortcodes.append(f"{str(index + 1)}. {interactive.get_data('shortcode')}")
         page_content = '\n'.join(interactive_shortcodes)
 
         return '\n'.join([page_title, page_content])
