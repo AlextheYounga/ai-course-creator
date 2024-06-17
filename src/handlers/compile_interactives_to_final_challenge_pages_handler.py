@@ -46,11 +46,11 @@ class CompileInteractivesToFinalChallengePagesHandler:
         page_title = f"# Final Skill Challenge\n## {course_record.name}\n\n"
 
         interactive_shortcodes = []
-        for index, interactive in enumerate(interactives):
-            interactive_shortcodes.append(f"{str(index + 1)}. {interactive.get_data('shortcode')}")
-        page_content = '\n'.join(interactive_shortcodes)
+        for interactive in interactives:
+            interactive_shortcodes.append(interactive.get_data('shortcode'))
+        page_content = '\n\n'.join(interactive_shortcodes)
 
-        return '\n'.join([page_title, page_content])
+        return '\n\n'.join([page_title, page_content])
 
 
     def _get_course_interactives(self, course_id: int):
