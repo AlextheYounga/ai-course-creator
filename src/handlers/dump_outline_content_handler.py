@@ -21,7 +21,7 @@ class DumpOutlineContentHandler:
         for page in page_entities:
             if not page.content: continue
             # Write to file
-            page.dump_page(self.db)
+            page.dump_page()
 
 
         os.makedirs(f"{output_path}/{self.outline.name}", exist_ok=True)

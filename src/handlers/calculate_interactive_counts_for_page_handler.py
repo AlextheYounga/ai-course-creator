@@ -103,9 +103,9 @@ class CalculateInteractiveCountsForPageHandler:
         interactives_weights = interactive_options.get('weights', default_page_interactives_weight)
 
         # If topic does not allow codepen or code_editor, add their weights to multipleChoice
-        if not self._topic_allows_code_editor():
+        if not self._topic_allows_code_editor() and 'codeEditor' in interactives_weights:
             del interactives_weights['codeEditor']
-        if not self._topic_allows_codepen():
+        if not self._topic_allows_codepen() and 'codepen' in interactives_weights:
             del interactives_weights['codepen']
 
         # Account for remainders in weights
