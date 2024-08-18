@@ -9,14 +9,19 @@ class OutlineEntityController:
         outline = db.get(Outline, outline_id)
         entities = Outline.get_entities(db, outline.id)
 
-        if entity_type == 'Course':
-            return entities['courses']
+        # Have to manually filter out the Final Skill Challenge
+        chapter_items = [chapter for chapter in entities['chapters'] if chapter.name != 'Final Skill Challenge']
 
-        if entity_type == 'Chapter':
-            chapter_items = [chapter for chapter in entities['chapters'] if chapter.name != 'Final Skill Challenge']
-            return chapter_items
-
-        if entity_type == 'Page':
-            return entities['pages']
-
-        return entities
+        match entity_type:
+            case 'Course':
+                return entities['courses']
+            case 'Chapter':
+                return chapter_items
+            case 'Page':
+                return entities['pages']
+            case _:
+                return {
+                    'Course': entities['courses'],
+                    'Chapter': chapter_items,
+                    'Page': entities['pages']
+                }

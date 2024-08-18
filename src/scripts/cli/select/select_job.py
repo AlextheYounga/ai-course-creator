@@ -1,7 +1,8 @@
 import inquirer
 from db.db import DB, Topic
 from .select_topic import select_topic
-from ..run_jobs import generate_outline, generate_page_material, generate_page_interactives, compile_page_interactives, resume_job
+from .select_jobstore import select_jobstore
+from app.server.controllers.job_controller import JobController
 
 
 def select_job():
@@ -29,14 +30,21 @@ def select_job():
 
     match task:
         case 'Generate Outline':
-            return generate_outline(topic)
+            params = {'topicId': topic.id, 'jobName': 'GENERATE_OUTLINE'}
+            return JobController.generate_outline(params)
         case 'Generate Page Material With Interactives':
-            return generate_page_material(topic)
+            params = {'topicId': topic.id, 'jobName': 'GENERATE_COTENT', 'contentType': 'LESSON_INTERACTIVES'}
+            return JobController.generate_page_material(params)
         case 'Generate Page Material Only':
-            return generate_page_material(topic, has_interactives=False)
+            params = {'topicId': topic.id, 'jobName': 'GENERATE_COTENT', 'contentType': 'LESSON'}
+            return JobController.generate_page_material(params)
         case 'Generate Interactives':
-            return generate_page_interactives(topic)
-        case 'Compile Interactives':
-            return compile_page_interactives(topic)
+            params = {'topicId': topic.id, 'jobName': 'GENERATE_COTENT', 'contentType': 'INTERACTIVES'}
+            return JobController.generate_page_material(params)
         case 'Resume Job':
-            return resume_job()
+            job = select_jobstore()
+            params = {'topicId': topic.id, 'jobId': job.id, 'jobName': 'RESUME_JOB'}
+            return JobController.resume_job(params)
+        case 'Compile Interactives':
+            controller = JobController()
+            return controller.compile_page_interactives(topic.id)

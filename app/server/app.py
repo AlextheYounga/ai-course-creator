@@ -58,7 +58,8 @@ def get_all_topics_materials():
 # Jobs
 @app.post('/api/jobs/generate', status_code=status.HTTP_201_CREATED)
 def request_generate(data: dict):
-    return JobController.determine_job(data)
+    JobController.run_job(data)
+    return 'Success', 201
 
 
 # Outlines
@@ -84,7 +85,7 @@ def set_master_outline(id: int):
 
 
 # Outline Entities
-@app.put('/api/outline/{id}/entities/{entity_type}', status_code=status.HTTP_201_CREATED)
+@app.get('/api/outline/{id}/entities/{entity_type}', status_code=status.HTTP_200_OK)
 def get_outline_entities(id: int, entity_type: str):
     return OutlineEntityController.get_entities(id, entity_type)
 

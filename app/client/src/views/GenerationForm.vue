@@ -3,7 +3,7 @@
 		<Breadcrumbs />
 	</div>
 
-	<div class="container mx-auto px-4 sm:px-6 max-w-2xl py-12">
+	<div class="container mx-auto px-4 sm:px-6 max-w-2xl pt-12 pb-48">
 		<form>
 			<div class="space-y-12">
 				<div class="border-b border-white/10 pb-12">
@@ -11,15 +11,15 @@
 					<p class="mt-1 text-sm leading-6 text-gray-400">This information will be displayed publicly so be careful what you share.</p>
 
 					<div class="mt-8">
-						<RadioGroup v-model="form.selectedJob">
-							<RadioGroupLabel class="text-base font-semibold leading-6 text-white">Select a Task</RadioGroupLabel>
+						<RadioGroup v-model="form.job">
+							<RadioGroupLabel class="text-base font-semibold leading-6 text-white">Select a Job</RadioGroupLabel>
 							<div class="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-4">
-								<RadioGroupOption as="template" v-for="(description, task) in tasks" :key="task" :value="task" v-slot="{ active, checked }">
+								<RadioGroupOption as="template" v-for="jobItem in jobItems" :key="jobItem.enum" :value="jobItem.enum" v-slot="{ active, checked }">
 									<div :class="[active ? 'border-indigo-600 ring-2 ring-indigo-600' : 'border-white/10', 'relative flex cursor-pointer rounded-lg border bg-white/5 p-4 shadow-sm focus:outline-none']">
 										<span class="flex flex-1">
 											<span class="flex flex-col">
-												<RadioGroupLabel as="span" class="block text-md font-semibold text-white">{{ task }}</RadioGroupLabel>
-												<RadioGroupDescription as="span" class="mt-1 flex items-center text-sm text-gray-300">{{ description }}</RadioGroupDescription>
+												<RadioGroupLabel as="span" class="block text-md font-semibold text-white">{{ jobItem.name }}</RadioGroupLabel>
+												<RadioGroupDescription as="span" class="mt-1 flex items-center text-sm text-gray-300">{{ jobItem.description }}</RadioGroupDescription>
 											</span>
 										</span>
 										<CheckCircleIcon :class="[!checked ? 'invisible' : '', 'h-5 w-5 text-indigo-600']" aria-hidden="true" />
@@ -30,7 +30,7 @@
 						</RadioGroup>
 					</div>
 
-					<div v-if="!resumeJob" class="my-6">
+					<div ref="select-topic" class="my-6">
 						<label class="block text-sm font-medium leading-6 text-gray-200">
 							<span>Topic</span>
 							<select v-model="form.topicId" class="w-full flex rounded-md bg-white/5 ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
@@ -40,7 +40,8 @@
 						</label>
 					</div>
 
-					<div v-if="generateContent">
+					<!-- Outline Entity Fields -->
+					<div ref="outline-entity-selections" class="hidden">
 						<div v-if="form.topicId" class="my-6">
 							<label class="block text-sm font-medium leading-6 text-gray-200">
 								<span>Outline *</span>
@@ -53,37 +54,46 @@
 
 						<div class="flex justify-between my-6 items-center">
 							<div class="w-1/2 mr-4">
-								<label class="text-sm font-medium leading-6 text-gray-200">
-									<span class="text-gray-200">Content Type to Generate *</span>
-									<select v-model="form.contentType" class="w-full flex rounded-md bg-white/5 ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
-										<option v-for="contentType in contentTypes" :key="contentType" :value="contentType">{{ contentType }}</option>
-									</select>
-								</label>
-							</div>
-
-							<div class="w-1/2">
 								<span class="text-gray-200">Generate From Hierarchy Level *</span>
 								<select v-model="form.entityType" class="w-full flex rounded-md bg-white/5 ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
 									<option v-for="entityType in entityTypes" :key="entityType" :value="entityType">{{ entityType }}</option>
 								</select>
 							</div>
+							<div class="w-1/2">
+								<label class="text-sm font-medium leading-6 text-gray-200">
+									<span class="text-gray-200">Content Type to Generate *</span>
+									<select v-model="form.contentType" class="w-full flex rounded-md bg-white/5 ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
+										<option v-for="contentType in contentTypes" :key="contentType.enum" :value="contentType.enum">{{ contentType.name }}</option>
+									</select>
+								</label>
+							</div>
 						</div>
 
-						<div v-if="this.entities.length">
+						<div v-if="outlineEntityList.length">
 							<div class="my-6">
 								<label class=" text-sm font-medium leading-6 text-gray-200">
 									<span class="text-gray-200">Select an Outline Item to Generate</span>
-									<select v-model="form.outlineIdEntityId" class="w-full flex rounded-md bg-white/5 ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
+									<select v-model="form.outlineEntityId" class="w-full flex rounded-md bg-white/5 ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
 										<option value="">Select an Outline Entity to Generate</option>
-										<option v-for="entity in this.entities" :key="`entity-${entity.id}`" :value="entity.id">{{ entity.name }}</option>
+										<option v-for="entity in outlineEntityList" :key="`entity-${entity.id}`" :value="entity.id">{{ entity.name }}</option>
 									</select>
 								</label>
 							</div>
 						</div>
 					</div>
 
-					<div v-if="generateOutline || generateContent">
-						<div class="flex justify-between my-6 items-center">
+					<!-- Advanced Settings Checkbox -->
+					<div class="flex w-42 items-center mt-6">
+						<div class="min-w-0 text-sm leading-6">
+							<label for="advanced-settings" class="select-none font-medium text-white">Advanced Settings</label>
+						</div>
+						<div class="ml-3 items-center">
+							<input v-model="advancedSettings" id="advanced-settings" name="advanced-settings" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+						</div>
+					</div>
+
+					<div ref="prompt-details" class="hidden">
+						<div v-if="advancedSettings" class="flex justify-between my-6 items-center">
 							<div class="w-1/3 mr-4">
 								<label class="text-sm font-medium leading-6 text-gray-200">
 									<span>Prompt Collection</span>
@@ -100,7 +110,7 @@
 						</div>
 					</div>
 
-					<div v-if="resumeJob" class="my-6">
+					<div ref="select-job" class="hidden my-6">
 						<label class="block text-sm font-medium leading-6 text-gray-200">
 							<span>Job</span>
 							<select v-model="form.jobId" class="w-full flex rounded-md bg-white/5 ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
@@ -111,76 +121,80 @@
 					</div>
 				</div>
 
-				<div v-if="generateContent" class="border-b border-white/10">
-					<h3 class="text-base font-semibold leading-7 text-white pb-4">Component Settings</h3>
-					<div class="space-y-12 pb-12">
+				<!-- Advanced Settings -->
+				<div ref="interactive-settings" class="hidden">
+					<div class="border-b border-white/10" v-if="advancedSettings && this.form.contentType != 'LESSON'">
+						<h3 class="text-base font-semibold leading-7 text-white pb-4">Component Settings</h3>
+						<div class="space-y-12 pb-12">
 
-						<fieldset>
-							<legend class="text-base font-semibold leading-6 text-gray-400">Allow Interactives</legend>
-							<div class="mt-1">
-								<div v-for="interactive in ['multipleChoice','codeEditor', 'codepen']" :key="`settings-${interactive}`" class="relative flex items-start py-1">
-									<div class="min-w-0 flex-1 text-sm leading-6">
-										<label :for="`settings-${interactive}`" class="select-none font-medium text-white">{{ interactive }}</label>
-									</div>
-									<div class="ml-3 flex h-6 items-center">
-										<input v-model="form.settings[interactive]" :id="`settings-${interactive}`" :name="`settings-${interactive}`" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+							<fieldset>
+								<legend class="text-base font-semibold leading-6 text-gray-400">Allow Interactives</legend>
+								<div class="mt-1">
+									<div v-for="interactive in ['multipleChoice', 'codeEditor', 'codepen']" :key="`settings-${interactive}`" class="relative flex items-start py-1">
+										<div class="min-w-0 flex-1 text-sm leading-6">
+											<label :for="`settings-${interactive}`" class="select-none font-medium text-white">{{ interactive }}</label>
+										</div>
+										<div class="ml-3 flex h-6 items-center">
+											<input v-model="form.settings[interactive]" :id="`settings-${interactive}`" :name="`settings-${interactive}`" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+										</div>
 									</div>
 								</div>
-							</div>
-						</fieldset>
+							</fieldset>
 
-						<fieldset>
-							<legend class="text-base font-semibold leading-6 text-gray-400">Interactives Per Page</legend>
-							<div class="mt-1">
-								<div class="relative flex items-start my-3">
-									<div class="min-w-0 flex-1 text-sm leading-6">
-										<label for="settings-counts-lesson" class="select-none font-medium text-white">Lesson</label>
+							<fieldset>
+								<legend class="text-base font-semibold leading-6 text-gray-400">Interactives Per Page</legend>
+								<div class="mt-1">
+									<div class="relative flex items-start my-3">
+										<div class="min-w-0 flex-1 text-sm leading-6">
+											<label for="settings-counts-lesson" class="select-none font-medium text-white">Lesson</label>
+										</div>
+										<div class="ml-3 flex h-6 items-center text-black">
+											<input v-model="form.settings.counts.lesson" id="settings-counts-lesson" name="settings-counts-lesson" type="number" min="1" max="30" class="text-xs rounded text-black my-2" />
+										</div>
 									</div>
-									<div class="ml-3 flex h-6 items-center text-black">
-										<input v-model="form.settings.counts.lesson" id="settings-counts-lesson" name="settings-counts-lesson" type="number" min="1" max="30" class="text-xs rounded text-black my-2" />
+
+									<div class="relative flex items-start my-3">
+										<div class="min-w-0 flex-1 text-sm leading-6">
+											<label for="settings-counts-challenge" class="select-none font-medium text-white">Practice Challenges</label>
+										</div>
+										<div class="ml-3 flex h-6 items-center text-black">
+											<input v-model="form.settings.counts.challenge" id="settings-counts-challenge" name="settings-counts-challenge" type="number" min="1" max="30" class="text-xs rounded text-black my-2" />
+										</div>
+									</div>
+
+									<div class="relative flex items-start my-3">
+										<div class="min-w-0 flex-1 text-sm leading-6">
+											<label for="settings-counts-fsc" class="select-none font-medium text-white">Final Skill Challenge</label>
+										</div>
+										<div class="ml-3 flex h-6 items-center text-black">
+											<input v-model="form.settings.counts.finalSkillChallenge" id="settings-counts-fsc" name="settings-counts-fsc" type="number" min="1" max="30" class="text-xs rounded text-black my-2" />
+										</div>
 									</div>
 								</div>
+							</fieldset>
 
-								<div class="relative flex items-start my-3">
-									<div class="min-w-0 flex-1 text-sm leading-6">
-										<label for="settings-counts-challenge" class="select-none font-medium text-white">Practice Challenges</label>
-									</div>
-									<div class="ml-3 flex h-6 items-center text-black">
-										<input v-model="form.settings.counts.challenge" id="settings-counts-challenge" name="settings-counts-challenge" type="number" min="1" max="30" class="text-xs rounded text-black my-2" />
+							<fieldset>
+								<legend class="text-base font-semibold leading-6 text-gray-400">Interactives Weights</legend>
+								<div class="mt-1">
+									<div v-for="interactive in ['multipleChoice', 'codeEditor', 'codepen']" :key="`settings-${interactive}`" class="relative flex items-start my-3">
+										<div class="min-w-0 flex-1 text-sm leading-6">
+											<label :for="`settings-weights-${interactive}`" class="select-none font-medium text-white">{{ interactive }}</label>
+										</div>
+										<div class="ml-3 flex h-6 items-center text-black">
+											<input v-model="form.settings.weights[interactive]" :id="`settings-weights-${interactive}`" :name="`settings-weights-${interactive}`" type="number" min="0.1" max="1"
+												   class="text-xs rounded text-black my-2" />
+										</div>
 									</div>
 								</div>
-
-								<div class="relative flex items-start my-3">
-									<div class="min-w-0 flex-1 text-sm leading-6">
-										<label for="settings-counts-fsc" class="select-none font-medium text-white">Final Skill Challenge</label>
-									</div>
-									<div class="ml-3 flex h-6 items-center text-black">
-										<input v-model="form.settings.counts.finalSkillChallenge" id="settings-counts-fsc" name="settings-counts-fsc" type="number" min="1" max="30" class="text-xs rounded text-black my-2" />
-									</div>
-								</div>
-							</div>
-						</fieldset>
-
-						<fieldset>
-							<legend class="text-base font-semibold leading-6 text-gray-400">Interactives Weights</legend>
-							<div class="mt-1">
-								<div v-for="interactive in ['multipleChoice','codeEditor', 'codepen']" :key="`settings-${setting}`" class="relative flex items-start my-3">
-									<div class="min-w-0 flex-1 text-sm leading-6">
-										<label :for="`settings-weights-${interactive}`" class="select-none font-medium text-white">{{ interactive }}</label>
-									</div>
-									<div class="ml-3 flex h-6 items-center text-black">
-										<input v-model="form.settings.weights[interactive]" :id="`settings-weights-${interactive}`" :name="`settings-weights-${interactive}`" type="number" min="0.1" max="1" class="text-xs rounded text-black my-2" />
-									</div>
-								</div>
-							</div>
-						</fieldset>
+							</fieldset>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="mt-12 flex items-center justify-end gap-x-6">
 				<button type="button" class="text-sm font-semibold leading-6 text-white">Cancel</button>
-				<button type="submit"
+				<button @click="submit" type="button"
 						class="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
 					Run
 				</button>
@@ -190,18 +204,17 @@
 </template>
 
 <script>
-import { ref } from 'vue'
 import { capitalize } from '@/helpers/index'
 import { RadioGroup, RadioGroupDescription, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import { CheckCircleIcon } from '@heroicons/vue/20/solid'
 import fastApi from '@/router/api'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 
-const tasks = {
-	'Generate Outline': 'Generate an outline for a new topic',
-	'Generate Content': 'Generate content for a new topic',
-	'Resume Job': 'Resume an existing job'
-}
+const jobItems = [
+	{ name: 'Generate Outline', description: 'Generate an outline for a new topic', enum: 'GENERATE_OUTLINE' },
+	{ name: 'Generate Content', description: 'Generate content for a new topic', enum: 'GENERATE_CONTENT' },
+	{ name: 'Resume Job', description: 'Resume an existing job', enum: 'RESUME_JOB' }
+]
 
 const promptCollections = [
 	'core',
@@ -218,22 +231,27 @@ const entityTypes = [
 ]
 
 const contentTypes = [
-	'Lesson Content',
-	'Lesson Content and Interactives',
-	'Interactives'
+	{ name: 'Lesson Content', enum: 'LESSON' },
+	{ name: 'Lesson Content and Interactives', enum: 'LESSON_INTERACTIVES' },
+	{ name: 'Interactives', enum: 'INTERACTIVES' },
 ]
 
+const formRefs = {
+	'GENERATE_OUTLINE': ['select-topic', 'prompt-details'],
+	'GENERATE_CONTENT': ['select-topic', 'outline-entity-selections', 'prompt-details', 'interactive-settings'],
+	'RESUME_JOB': ['select-job'],
+}
 
-const form = ref({
-	jobId: null,
+const form = {
 	topicId: null,
 	outlineId: null,
 	outlineEntityId: null,
+	jobId: null,
+	job: "GENERATE_OUTLINE",
 	promptCollection: 'default',
 	language: null,
-	selectedJob: null,
 	entityType: 'Topic',
-	contentType: null,
+	contentType: 'LESSON',
 	settings: {
 		multipleChoice: true,
 		codeEditor: true,
@@ -249,12 +267,7 @@ const form = ref({
 			codepen: 0.2
 		}
 	}
-});
-
-// console.log(form.)
-// for (const p of Object.keys(form.settings.counts)) {
-// 	console.log(form.settings.counts[p])
-// }
+};
 
 export default {
 	name: 'GenerationForm',
@@ -265,8 +278,8 @@ export default {
 	},
 	setup() {
 		return {
-			form,
-			tasks,
+			jobItems,
+			formRefs,
 			promptCollections,
 			entityTypes,
 			contentTypes,
@@ -275,9 +288,11 @@ export default {
 	},
 	data() {
 		return {
+			form,
 			topics: [],
 			jobs: [],
-			entities: []
+			entities: {},
+			advancedSettings: false,
 		}
 	},
 	methods: {
@@ -285,7 +300,7 @@ export default {
 			const res = await fastApi.get('/topics')
 			this.$data.topics = res.data
 		},
-		async getStartedJobs() {
+		async getResumableJobs() {
 			const res = await fastApi.get('/jobs')
 			const jobRecords = res.data
 			const activeJobs = jobRecords.filter(job => job.status === 'started')
@@ -293,17 +308,31 @@ export default {
 		},
 		async getOutlineEntities(entityType) {
 			const outlineId = this.form.outlineId
-			const res = await fastApi.get(`/outline/${outlineId}/entities/${entityType}`)
-			this.entities = res.data
+			const res = await fastApi.get(`/outline/${outlineId}/entities/${entityType.toLowerCase()}`)
+			this.$data.entities = Object(res.data)
 		},
 		getTopicOutlines(id) {
 			return this.topics.find(topic => topic.id === id).outlines
 		},
-		onSubmit() {
-			localStorage.setItem('generate-form', JSON.stringify(data));
+		submit() {
+			// Convert from proxy object to standard object
+			fastApi.post('/jobs/generate', this.form)
 		}
 	},
 	watch: {
+		'form.job': {
+			handler: async function () {
+				// Show the relevant form fields based on the job selected
+				const allRefs = Object.values(this.formRefs).flat()
+				allRefs.forEach(ref => this.$refs[ref].classList.add('hidden'))
+				const jobRefs = this.formRefs[this.form.job]
+				jobRefs.forEach(ref => this.$refs[ref].classList.remove('hidden'))
+
+				if (this.form.job === 'RESUME_JOB') {
+					this.getResumableJobs()
+				}
+			}
+		},
 		'form.entityType': {
 			handler: async function (entityType) {
 				if (this.form.outlineId) {
@@ -313,15 +342,9 @@ export default {
 		}
 	},
 	computed: {
-		generateOutline() {
-			return this.form.selectedJob === 'Generate Outline'
-		},
-		generateContent() {
-			return this.form.selectedJob === 'Generate Content'
-		},
-		resumeJob() {
-			return this.form.selectedJob === 'Resume Job'
-		},
+		outlineEntityList() {
+			return this.$data.entities?.[this.form.entityType] ?? []
+		}
 	},
 	beforeCreate() {
 		const data = localStorage.getItem('generate-form');
@@ -331,7 +354,6 @@ export default {
 	},
 	mounted() {
 		this.getTopics()
-		this.getStartedJobs()
 	}
 }
 
