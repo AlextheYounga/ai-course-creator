@@ -3,8 +3,9 @@ import yaml
 import re
 from bs4 import BeautifulSoup
 
+
 def parse_markdown(content: str) -> BeautifulSoup:
-    html = markdown.markdown(content)
+    html = markdown.markdown(content, extensions=['fenced_code'])
     soup = BeautifulSoup(html, 'html.parser')
 
     return soup

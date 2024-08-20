@@ -1,4 +1,3 @@
-import random
 from functools import lru_cache
 from db.db import DB, Topic, OutlineEntity, Course, Page, Interactive, PageInteractive
 from src.events.events import CompiledInteractivesToFinalChallengePage

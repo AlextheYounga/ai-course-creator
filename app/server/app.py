@@ -102,8 +102,8 @@ def get_all_logs():
 
 
 # Courses
-@app.get('/api/courses/{id}/content', status_code=status.HTTP_200_OK)
-def get_course_content(id: int):
+@app.get('/api/courses/{id}', status_code=status.HTTP_200_OK)
+def get_course(id: int):
     return CourseController.get_course_content(id)
 
 
