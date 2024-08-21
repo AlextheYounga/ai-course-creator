@@ -19,25 +19,31 @@
 				<div v-for="page of this.course.pages">
 					<div id="page-body">
 						<div v-html="page.content"></div>
-						<div v-for="interactive in pageInteractives(page)">
-							<template v-if="interactive.type == 'codepen'">
-								<Codepen :data=interactive></Codepen>
-							</template>
-							<template v-else-if="interactive.type == 'codeEditor'">
-								<CodeEditor :data=interactive></CodeEditor>
-							</template>
-							<template v-else-if="interactive.type == 'multipleChoice'">
-								<MultipleChoice :data=interactive></MultipleChoice>
-							</template>
-							<template v-else-if="interactive.type == 'fillBlank'">
-								<FillInTheBlank :data=interactive></FillInTheBlank>
-							</template>
+
+						<div v-if="pageInteractives(page)" id="interactives">
+							<div v-for="interactive in pageInteractives(page)">
+								<template v-if="interactive.type == 'codeEditor'">
+									<CodeEditor :interactive=interactive></CodeEditor>
+								</template>
+								<!-- <template v-if="interactive.type == 'codepen'">
+									<Codepen :data=interactive></Codepen>
+								</template>
+								<template v-else-if="interactive.type == 'codeEditor'">
+									<CodeEditor :interactive=interactive></CodeEditor>
+								</template>
+								<template v-else-if="interactive.type == 'multipleChoice'">
+									<MultipleChoice :data=interactive></MultipleChoice>
+								</template>
+								<template v-else-if="interactive.type == 'fillBlank'">
+									<FillInTheBlank :data=interactive></FillInTheBlank>
+								</template> -->
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div v-if="courseHtml">
-				<AnchorNavigation :key="courseHtml" :htmlContent="courseHtml" />
+				<AnchorNavigation :htmlContent="courseHtml" />
 			</div>
 		</div>
 	</div>
@@ -67,7 +73,7 @@ export default {
 	},
 	data() {
 		return {
-			challenges: ref(false),
+			challenges: ref(true),
 			course: {}
 		}
 	},
@@ -79,6 +85,7 @@ export default {
 	},
 	computed: {
 		courseHtml() {
+			if (!this.course?.pages) return ''
 			return this.course.pages.map(page => page.content).join('\n\n')
 		}
 	},

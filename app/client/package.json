@@ -15,12 +15,14 @@
     "@tailwindcss/forms": "^0.5.7",
     "@vitejs/plugin-vue-jsx": "^3.1.0",
     "@vueuse/core": "^10.9.0",
+    "ace-builds": "^1.35.5",
     "axios": "^1.6.5",
     "highlight.js": "^11.9.0",
     "pinia": "^2.1.7",
     "primevue": "^3.46.0",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5",
+    "vue3-ace-editor": "^2.2.4",
     "yaml": "^2.3.4"
   },
   "devDependencies": {
