@@ -4,7 +4,6 @@ from termcolor import colored
 from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.scripts.cli.select.select_job import select_job
 from src.scripts.cli.select.select_util import select_util
-from src.scripts.cli.select.select_script import select_script
 from src.scripts.initialize import initialize_project
 from server import run_server
 
@@ -44,8 +43,6 @@ def main():
                 return select_job()
             case 'Utilities':
                 return select_util()
-            case 'Scripts':
-                return select_script()
             case 'Run App Server':
                 return run_server()
             case _:
