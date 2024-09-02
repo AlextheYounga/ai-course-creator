@@ -14,7 +14,7 @@
 			</SwitchGroup>
 		</div>
 
-		<div class="flex">
+		<div class="flex justify-end">
 			<div class="mx-auto max-w-3xl text-base leading-7 text-gray-200">
 				<div v-for="page of this.course.pages">
 					<div id="page-body">
@@ -25,24 +25,21 @@
 								<template v-if="interactive.type == 'codeEditor'">
 									<CodeEditor :interactive=interactive></CodeEditor>
 								</template>
-								<!-- <template v-if="interactive.type == 'codepen'">
-									<Codepen :data=interactive></Codepen>
-								</template>
-								<template v-else-if="interactive.type == 'codeEditor'">
-									<CodeEditor :interactive=interactive></CodeEditor>
+								<template v-else-if="interactive.type == 'codepen'">
+									<Codepen :interactive=interactive></Codepen>
 								</template>
 								<template v-else-if="interactive.type == 'multipleChoice'">
-									<MultipleChoice :data=interactive></MultipleChoice>
+									<MultipleChoice :interactive=interactive></MultipleChoice>
 								</template>
 								<template v-else-if="interactive.type == 'fillBlank'">
-									<FillInTheBlank :data=interactive></FillInTheBlank>
-								</template> -->
+									<FillInTheBlank :interactive=interactive></FillInTheBlank>
+								</template>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div v-if="courseHtml">
+			<div class="hidden 2xl:flex w-1/4" v-if="courseHtml">
 				<AnchorNavigation :htmlContent="courseHtml" />
 			</div>
 		</div>
@@ -108,10 +105,14 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 #page-body {
 	margin: 5rem 0;
 	padding-bottom: 5rem;
 	border-bottom: 1px solid #44403c
+}
+
+pre {
+	overflow-x: scroll !important;
 }
 </style>

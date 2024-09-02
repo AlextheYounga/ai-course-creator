@@ -1,7 +1,7 @@
 <template>
     <div>
-        <p class="font-bold text-xl">Question: {{ this.data.question }}</p>
-        <input class="text-gray-700 w-full rounded-md mb-4" :value="this.data.answer"></input>
+        <p class="font-bold text-xl">Question: {{ this.interactive.data.question }}</p>
+        <input class="text-gray-700 w-full rounded-md mb-4" :value="this.interactive.data.answer"></input>
     </div>
 </template>
 
@@ -9,7 +9,7 @@
 export default {
     name: 'FillInTheBlank',
     props: {
-        data: {
+        interactive: {
             type: Object,
             required: true,
         }

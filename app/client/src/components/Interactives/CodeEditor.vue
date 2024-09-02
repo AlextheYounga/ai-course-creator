@@ -1,5 +1,8 @@
 <template>
-	<v-ace-editor v-model:value="content" :lang="language" theme="one_dark" style="height: 300px" />
+	<div class="-mb-4">
+		<p>Interactive Code Editor</p>
+		<v-ace-editor v-model:value="content" :lang="language" theme="one_dark" style="height: 300px" />
+	</div>
 </template>
 
 <script>
@@ -20,18 +23,10 @@ export default defineComponent({
 			required: false,
 		}
 	},
-	methods: {
-		getLanguage() {
-			const language = this.$props.interactive.data['language'] ?? 'txt';
-			const mode = modeList.getModeForPath(`file.${language}`).mode;
-			const aceId = mode.split('/').pop()
-			return aceId
-		}
-	},
 	data() {
 		return {
-			content: this.$props.interactive.data['content'] ?? '',
-			language: this.getLanguage()
+			content: this.$props.interactive.data.content ?? '',
+			language: this.$props.interactive.data.language ?? 'text',
 		}
 	},
 });

@@ -1,9 +1,9 @@
 <template>
     <form>
-        <p class="font-bold text-xl">Question: {{ this.data.question }}</p>
+        <p class="font-bold text-xl">Question: {{ this.interactive.data.question }}</p>
         <template v-for="choice of choices">
-            <input type="radio" :id="`choice-${uniqueId(choice)}`" name="radio">
-            <label :for="`choice-${uniqueId(choice)}`">{{ `${getLetter(choice)}.  ${choice}` }}</label>
+            <input :class="`${choice.correct}`" type="radio" :id="`choice-${choice.id}`" name="radio">
+            <label :class="`${choice.correct}`" :for="`choice-${choice.id}`">{{ `${choice.letter}.  ${choice.content}` }}</label>
         </template>
     </form>
 </template>
@@ -12,36 +12,30 @@
 export default {
     name: 'MultipleChoice',
     props: {
-        data: {
+        interactive: {
             type: Object,
             required: true,
         }
     },
-    methods: {
-        uniqueId(str) {
-            // Deterministic hash from string
-            var hash = 0, i, chr;
-            if (str.length === 0) return hash;
-            for (i = 0; i < str.length; i++) {
-                chr   = str.charCodeAt(i);
-                hash  = ((hash << 5) - hash) + chr;
-                hash |= 0; // Convert to 32bit integer
-            }
-            return hash;
-        },
-        getLetter(choice) {
-            const letters = 'abcdefghijklmnopqrstuvwxyz'
-            const choiceIndex = this.choices.indexOf(choice)
-            return letters[choiceIndex].toUpperCase()
-        }
-    },
     computed: {
         choices() {
-            if (typeof this.data.content == 'string') {
-                return this.data.content.split(',')
-            }
+			const letters = 'abcdefghijklmnopqrstuvwxyz'
+			const correctAnswer = this.interactive.data.answer
+			let choicesList = []
+            if (typeof this.interactive.data.content == 'string') {
+                choicesList = this.interactive.data.content.split(',')
+            } else {
+				choicesList = this.interactive.data.content
+			}
 
-            return this.data.content
+			return choicesList.map((choice, index) => {
+				return { 
+					id: `${this.interactive.id}-${index}`,
+					letter: letters[index].toUpperCase(),
+					correct: choice.trim() == correctAnswer ? 'correct' : 'incorrect',
+					content: choice.trim(),
+				}
+			}) 
         }
     }
 };
@@ -80,29 +74,51 @@ label:before {
 }
 
 label:after {
-    content: " ✔";
     text-align: right;
     padding-right: .5em;
+	align-content: space-evenly;
     position: absolute;
     top: 0;
     bottom: 0;
     left: -100%;
     right: 100%;
     border-radius: .2em;
-    background-color: #98ECA3;
-    color: #98ECA3;
     z-index: -1;
     transition-property: left, right, color;
     transition-duration: 300ms;
 }
 
-input:checked+label {
+/* Correct */
+label.correct:after {
+    content: " ✔";
+    background-color: #98ECA3;
+    color: #98ECA3;
+}
+
+input.correct:checked+label.correct {
     color: #48AC53
 }
 
-input:checked+label:after {
+input.correct:checked+label.correct:after {
     left: 0;
     right: 0;
     color: #48AC53;
+}
+
+/* Incorrect */
+label.incorrect:after {
+    content: " ✖️";
+    background-color: #ff5733;
+    color: #ff5733;
+}
+
+input.incorrect:checked+label.incorrect {
+    color: #ee4521
+}
+
+input.incorrect:checked+label.incorrect:after {
+    left: 0;
+    right: 0;
+    color: #ee4521;
 }
 </style>

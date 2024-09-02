@@ -1,5 +1,5 @@
 <template>
-    <p class="text-lg">{{ this.data.description }}</p>
+    <p class="text-lg">{{ this.interactive.data.description }}</p>
     <div class="codepen" data-prefill data-height="400" data-theme-id="1" data-default-tab="html,result">
         <pre :data-lang="this.template.language">{{ this.template.code }}</pre>
         <pre :data-lang="this.styles.language">{{ this.styles.code }}</pre>
@@ -18,23 +18,23 @@ const { load } = useScriptTag(
 export default {
     name: 'Codepen',
     props: {
-        data: {
+        interactive: {
             type: Object,
             required: true,
         }
     },
     data() {
         const template = {
-            language: this.data.content.template.language,
-            code: this.data.content.template?.content
+            language: this.interactive.data.content.template.language,
+            code: this.interactive.data.content.template?.content
         }
         const styles = {
-            language: this.data.content.styles.language,
-            content: this.data.content.styles.content
+            language: this.interactive.data.content.styles.language,
+            content: this.interactive.data.content.styles.content
         }
         const scripts = {
-            language: this.data.content.scripts.language,
-            content: this.data.content.scripts.content
+            language: this.interactive.data.content.scripts.language,
+            content: this.interactive.data.content.scripts.content
         }
         return {
             template: template,
