@@ -12,24 +12,18 @@ def _create_env_file():
     return False
 
 
-def _copy_params_file():
-    if not os.path.exists('configs/params.yaml'):
-        shutil.copy('configs/params.example.yaml', 'configs/params.yaml')
-        return True
-    return False
+def copy_params_file():
+    params_file = os.path.join('configs', 'params.yaml')
 
-
-def _copy_topics_file():
-    if not os.path.exists('configs/topics.yaml'):
-        shutil.copy('configs/topics.example.yaml', 'configs/topics.yaml')
+    if ((not os.path.exists(params_file))):
+        shutil.copyfile(os.path.join('configs', 'params.example.yaml'), params_file)
         return True
     return False
 
 
 def initialize_project():
     initialized = _create_env_file()
-    initialized = _copy_params_file()
-    initialized = _copy_topics_file()
+    initialized = copy_params_file()
 
     if initialized:
         print(colored("Project initialized.", "green"))

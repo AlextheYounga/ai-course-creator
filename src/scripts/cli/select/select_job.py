@@ -8,7 +8,7 @@ from app.server.controllers.job_controller import JobController
 def select_job():
     db = DB()
     topic_name = select_topic()
-    topic = Topic.first_or_create(db, name=topic_name)
+    topic = db.query(Topic).filter(Topic.name == topic_name).first()
 
     base_tasks = [
         'Generate Outline',
@@ -27,23 +27,24 @@ def select_job():
 
     choice = inquirer.prompt(tasks, raise_keyboard_interrupt=True)
     task = choice['task']
+    params = {'topicId': topic.id, "outlineId": topic.master_outline_id}
 
     match task:
         case 'Generate Outline':
-            params = {'topicId': topic.id, 'jobName': 'GENERATE_OUTLINE'}
+            params.update({'jobName': 'GENERATE_OUTLINE'})
             return JobController.generate_outline(params)
         case 'Generate Page Material With Interactives':
-            params = {'topicId': topic.id, 'jobName': 'GENERATE_COTENT', 'contentType': 'LESSON_INTERACTIVES'}
+            params.update({'jobName': 'GENERATE_CONTENT', 'contentType': 'LESSON_INTERACTIVES'})
             return JobController.generate_page_material(params)
         case 'Generate Page Material Only':
-            params = {'topicId': topic.id, 'jobName': 'GENERATE_COTENT', 'contentType': 'LESSON'}
+            params.update({'jobName': 'GENERATE_CONTENT', 'contentType': 'LESSON'})
             return JobController.generate_page_material(params)
         case 'Generate Interactives':
-            params = {'topicId': topic.id, 'jobName': 'GENERATE_COTENT', 'contentType': 'INTERACTIVES'}
+            params.update({'jobName': 'GENERATE_CONTENT', 'contentType': 'INTERACTIVES'})
             return JobController.generate_page_material(params)
         case 'Resume Job':
             job = select_jobstore()
-            params = {'topicId': topic.id, 'jobId': job.id, 'jobName': 'RESUME_JOB'}
+            params.update({'jobId': job.id, 'jobName': 'RESUME_JOB'})
             return JobController.resume_job(params)
         case 'Compile Interactives':
             controller = JobController()

@@ -1,10 +1,9 @@
 import os
 from datetime import datetime
 import inquirer
-import yaml
 from termcolor import colored
 import shutil
-from db.db import DB, Topic
+from db.db import DB
 from src.utils.strings import slugify
 from src.utils.files import zip_folder, zip_file
 
@@ -58,15 +57,3 @@ def clear_logs():
     if (os.path.exists(f"{LOGS_PATH}/app.log")):
         os.remove(f"{LOGS_PATH}/app.log")
     open(f"{LOGS_PATH}/app.log", 'w').close()
-
-
-def sync_topics_file(topics_file='configs/topics.yaml'):
-    topics = db.query(Topic).all()
-    topic_file_obj = {}
-
-    for topic in topics:
-        topic_file_obj[topic.name] = topic.properties
-
-    with open(topics_file, 'w') as topics_file:
-        topics_file.write(yaml.dump(topic_file_obj, sort_keys=False))
-        topics_file.close()

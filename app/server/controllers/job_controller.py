@@ -3,7 +3,7 @@ import redis
 from db.db import DB, Topic, EventStore, Outline, JobStore
 from src.jobs import QueueContext, StorageQueue, JobQueue, Job, Worker
 from src.events.events import GenerateOutlineJobRequested, GeneratePagesFromOutlineJobRequested, GeneratePageInteractivesJobRequested, CompileInteractivesToPagesJobRequested
-from typing import TypedDict, Union, Literal, Optional
+from typing import TypedDict, Literal, Optional
 
 db = DB()
 
@@ -44,27 +44,12 @@ class JobController:
         worker.perform()
 
 
-    def compile_page_interactives(self, topicId: int):
-        topic = db.get(Topic, topicId)
-        pages = Outline.get_entities_by_type(db, topic.master_outline_id, 'Page')
-        page_ids = [page.id for page in pages]
-
-        job_data = {
-            'topicId': topic.id,
-            'outlineId': topic.master_outline_id,
-            'pageIds': page_ids
-        }
-
-        job_event = CompileInteractivesToPagesJobRequested(job_data)
-        self.dispatch(job_event)
-
-
     def get_job_data(self, params):
         job_data = {
-            'jobId': params['jobId'],
-            'topicId': params['topicId'],
-            'outlineId': params['outlineId'],
-            'outlineEntityId': params['outlineEntityId'],
+            'jobId': params.get('jobId', None),
+            'topicId': params.get('topicId', None),
+            'outlineId': params.get('outlineId', None),
+            'outlineEntityId': params.get('outlineEntityId', None),
         }
         return {k: v for k, v in job_data.items() if v is not None}
 
@@ -110,11 +95,9 @@ class JobController:
                 controller.dispatch(job_event)
                 job_event = GeneratePageInteractivesJobRequested(job_data)
                 controller.dispatch(job_event)
-                controller.compile_page_interactives(job_data['topicId'])
             case 'INTERACTIVES':
                 job_event = GeneratePageInteractivesJobRequested(job_data)
                 controller.dispatch(job_event)
-                controller.compile_page_interactives(job_data['topicId'])
 
 
     @staticmethod
@@ -124,4 +107,20 @@ class JobController:
         job = db.get(JobStore, job_data['jobId'])
         last_event = db.query(EventStore).filter_by(job_id=job.id).order_by(EventStore.id.desc()).first()
         job_event = pydoc.locate(f'src.events.events.{last_event.name}')(last_event.data)
+        controller.dispatch(job_event)
+
+
+
+    @staticmethod
+    def compile_page_interactives(topic_id: int):
+        controller = JobController()
+        topic = db.get(Topic, topic_id)
+        pages = Outline.get_entities_by_type(db, topic.master_outline_id, 'Page')
+        page_ids = [page.id for page in pages]
+        job_data = {
+            'topicId': topic.id,
+            'outlineId': topic.master_outline_id,
+            'pageIds': page_ids
+        }
+        job_event = CompileInteractivesToPagesJobRequested(job_data)
         controller.dispatch(job_event)
