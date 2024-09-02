@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 
 def parse_markdown(content: str) -> BeautifulSoup:
-    html = markdown.markdown(content, extensions=['fenced_code'])
+    html = markdown.markdown(content, extensions=['fenced_code', 'toc'])
     soup = BeautifulSoup(html, 'html.parser')
 
     return soup

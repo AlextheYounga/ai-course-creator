@@ -7,17 +7,12 @@ db = DB()
 class PageController:
     @staticmethod
     def get_page(id: int):
-        page = db.get(Page, id)
-        return page.to_dict()
-
-    @staticmethod
-    def get_page_content(id: int):
         page_record = db.get(Page, id)
-        interactives = [i.to_dict() for i in page_record.interactives]
-        html_content = parse_markdown(page_record.content)
-        page = page_record.to_dict()
+        interactive_records = page_record.interactives
+        interactives = [i.to_dict() for i in interactive_records]
+        content = parse_markdown(page_record.content)
         return {
-            **page,
+            **page_record.to_dict(),
             'interactives': interactives,
-            'content': html_content
+            'content': str(content)
         }

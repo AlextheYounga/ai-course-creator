@@ -29,8 +29,6 @@ class Interactive(Base):
             "type": self.type,
             "data": self.data,
             "meta": self.meta,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at,
         }
 
     def get_data(self, key=None):

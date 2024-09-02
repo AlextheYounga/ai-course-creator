@@ -1,10 +1,11 @@
+import os
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, DateTime, JSON
 from sqlalchemy.orm import Session, mapped_column, relationship
 from sqlalchemy.orm.attributes import flag_modified
 from src.utils.strings import slugify
-from src.utils.files import read_yaml_file
 from .base import Base
+
 
 
 
@@ -72,43 +73,28 @@ class Topic(Base):
 
         return self
 
-
-    def get_settings(self, level: str = 'global'):
-        properties = self.get_properties()
-        settings = properties.get('settings', {})
-
-        if level in settings:
-            return settings.get(level, {})
-
-        return settings.get('global', {})
-
-
     @classmethod
     def make_slug(cls, name):
         return slugify(name)
 
 
     @classmethod
-    def get_topic_properties_from_file(cls, name: str):
-        topics_data = read_yaml_file("configs/topics.yaml")
-        topic = topics_data['topics'][name]
-        if topic: return topic
-        return {}
-
-
-    @classmethod
-    def first_or_create(cls, db: Session, name: str):
-        topic_record = db.query(cls).filter(cls.name == name).first()
-        if topic_record: return topic_record
-
-        new_topic_record = cls(
-            name=name,
-            slug=cls.make_slug(name),
-            properties=cls.get_topic_properties_from_file(name)
-        )
-
-        # Save topic to database
-        db.add(new_topic_record)
-        db.commit()
-
-        return new_topic_record
+    def default_settings(cls):
+        return {
+            "settings": {
+                "hasInteractives": True,
+                "interactives": {
+                    "codepen": False,
+                    "counts": {
+                        "lesson": 1,
+                        "challenge": 5,
+                        "final-skill-challenge": 20
+                    },
+                    "weights": {
+                        "multipleChoice": 0.6,
+                        "codeEditor": 0.2,
+                        "codepen": 0.2
+                    }
+                }
+            }
+        }
