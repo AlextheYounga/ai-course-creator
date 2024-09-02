@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "build-release": "rm -rf ./public/assets && npm run build && mv ./dist/** ./public"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.17",
