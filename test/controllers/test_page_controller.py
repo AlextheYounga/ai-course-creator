@@ -1,12 +1,10 @@
 from ..mocks.mock_db import *
 from app.server.controllers.page_controller import PageController
 
-DB_PATH = 'test/data/test.db'
-
 
 def _setup_test():
     truncate_tables()
-    import_sql_data_from_file(DB_PATH, 'test/fixtures/full-outline-interactives.sql.zip', zipped=True)
+    import_sql_from_file(DB_PATH, 'test/fixtures/full-outline-interactives.sql.zip', zipped=True)
 
 
 def test_get_full_page_html():

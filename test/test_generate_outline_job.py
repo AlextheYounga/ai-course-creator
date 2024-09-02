@@ -1,6 +1,5 @@
 from .mocks.mock_db import *
 from src.events.events import GenerateOutlineJobRequested
-from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.jobs import QueueContext, StorageQueue, JobQueue, Job, Worker
 from src.utils.files import read_yaml_file
 
@@ -10,8 +9,7 @@ OUTLINE_DATA = read_yaml_file('test/fixtures/master-outline.yaml')
 
 def __setup_test():
     truncate_tables()
-    topics_file = "configs/topics.example.yaml"
-    ScanTopicsFileHandler({"topicsFile": topics_file}).handle()
+    import_sql_from_file(DB_PATH, 'test/fixtures/sql/topic.sql')
 
 
 def __run_job(data: dict):

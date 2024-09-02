@@ -1,6 +1,5 @@
 from ..mocks.mock_db import *
 from sqlalchemy.sql import text
-from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.handlers.create_new_outline_handler import CreateNewOutlineHandler
 from src.handlers.process_multiple_choice_interactives_response_handler import ProcessMultipleChoiceInteractivesResponseHandler
 
@@ -13,11 +12,8 @@ RESPONSE_RECORD = open('test/fixtures/sql/response-multiple-choice.sql').read()
 
 def __setup_test():
     truncate_tables()
-
     db = get_session()
-
-    topics_file = "configs/topics.example.yaml"
-    ScanTopicsFileHandler({"topicsFile": topics_file}).handle()
+    import_sql_from_file(DB_PATH, 'test/fixtures/sql/topic.sql')
     CreateNewOutlineHandler({'topicId': 1, 'outlineData': OUTLINE_DATA}).handle()
 
     # Update page record

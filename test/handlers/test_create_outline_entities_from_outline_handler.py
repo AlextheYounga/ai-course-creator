@@ -1,6 +1,5 @@
 from ..mocks.mock_db import *
 from src.handlers.create_outline_entities_from_outline_handler import CreateOutlineEntitiesFromOutlineHandler
-from src.handlers.scan_topics_file_handler import ScanTopicsFileHandler
 from src.utils.files import read_yaml_file
 
 
@@ -12,8 +11,7 @@ LOG_FILE = 'test/data/test.log'
 def __setup_test():
     truncate_tables()
     db = DB()
-    topics_file = "configs/topics.example.yaml"
-    ScanTopicsFileHandler({"topicsFile": topics_file}).handle()
+    import_sql_from_file(DB_PATH, 'test/fixtures/sql/topic.sql')
 
     outline_hash = Outline.hash_outline(OUTLINE_DATA)
     outline = Outline(

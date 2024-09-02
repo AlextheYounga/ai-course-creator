@@ -1,0 +1,2 @@
+INSERT INTO "topic" ("id", "master_outline_id", "name", "slug", "properties", "created_at", "updated_at") VALUES
+('1', NULL, 'Ruby on Rails', 'ruby-on-rails', '{"prompts": "programming", "language": "ruby", "settings": {"hasInteractives": true, "interactives": {"codepen": "false,", "counts": {"lesson": 1, "challenge": 5, "final-skill-challenge": 20}, "weights": {"multipleChoice": 0.6, "codeEditor": 0.2, "codepen": 0.2}}}}', '2024-08-30 01:20:55', NULL);

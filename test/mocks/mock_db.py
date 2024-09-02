@@ -4,6 +4,8 @@ from sqlalchemy import text
 import sqlite3
 import zipfile
 
+DB_PATH = 'test/data/test.db'
+
 
 def truncate_tables():
     db = DB()
@@ -16,7 +18,7 @@ def truncate_tables():
     db.close()  # Was getting flush warnings
 
 
-def import_sql_data_from_file(db_path: str, sql_file_path: str, zipped: bool = False):
+def import_sql_from_file(db_path: str, sql_file_path: str, zipped: bool = False):
     # Step 1: Connect to the SQLite database
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
