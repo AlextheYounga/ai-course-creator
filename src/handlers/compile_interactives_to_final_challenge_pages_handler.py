@@ -42,14 +42,8 @@ class CompileInteractivesToFinalChallengePagesHandler:
 
     def _build_challenge_page_content(self, course_id: int, interactives: list[Interactive]):
         course_record = self.db.get(Course, course_id)
-        page_title = f"# Final Skill Challenge\n## {course_record.name}\n\n"
-
-        interactive_shortcodes = []
-        for interactive in interactives:
-            interactive_shortcodes.append(interactive.get_data('shortcode'))
-        page_content = '\n\n'.join(interactive_shortcodes)
-
-        return '\n\n'.join([page_title, page_content])
+        page_content = f"## Final Skill Challenge\n### {course_record.name}\n\n"
+        return page_content
 
 
     def _get_course_interactives(self, course_id: int):

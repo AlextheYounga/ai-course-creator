@@ -1,6 +1,5 @@
 from termcolor import colored
 import yaml
-import os
 from db.db import DB, Topic, Outline
 from .create_outline_entities_from_outline_handler import CreateOutlineEntitiesFromOutlineHandler
 from src.events.events import NewOutlineCreated

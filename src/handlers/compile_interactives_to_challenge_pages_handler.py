@@ -49,13 +49,8 @@ class CompileInteractivesToChallengePagesHandler:
 
     def _build_challenge_page_content(self, chapter_count: int, chapter_id: int, interactives: list[Interactive]):
         chapter_record = self.db.get(Chapter, chapter_id)
-        page_title = f"# Practice Skill Challenge {str(chapter_count)} \n## {chapter_record.name}\n\n"
-        interactive_shortcodes = []
-        for interactive in interactives:
-            interactive_shortcodes.append(interactive.get_data('shortcode'))
-        page_content = '\n\n'.join(interactive_shortcodes)
-
-        return '\n\n'.join([page_title, page_content])
+        page_content = f"## Practice Skill Challenge {str(chapter_count)} \n### {chapter_record.name}\n\n"
+        return page_content
 
 
     def _get_chapter_interactives(self, chapter_id: int) -> list[Interactive]:
@@ -82,7 +77,7 @@ class CompileInteractivesToChallengePagesHandler:
         ).all()
 
 
-    @ lru_cache(maxsize=None)  # memoize
+    @lru_cache(maxsize=None)  # memoize
     def _get_topic_interactive_count_settings(self):
         topic_settings = self.topic.get_properties('settings')
         interactive_options = topic_settings.get('interactives', {})

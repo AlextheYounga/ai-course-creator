@@ -29,7 +29,9 @@ class QueueContext:
         self.handle_monitoring(job_queue)
         return job_queue.queue.length(job_queue.pending_queue) > 0
 
-    def save_job(self, job):
-        db = DB()  # Thread local db session
+    @classmethod
+    def save_job(cls, job):
+        # Not sure why I have to call DB again. I think I lose my thread local session in the context.
+        db = DB()
         job.data['eventData']['jobId'] = job.id
         return JobStore.first_or_create(db, job)

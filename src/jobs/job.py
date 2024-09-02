@@ -1,5 +1,5 @@
 from cuid import cuid
-from src.events.events import *
+from src.events.event_registry import EventRegistry
 
 # An individual job in the system.
 # Note that creation and execution use the same class.
@@ -45,6 +45,15 @@ class Job:
         job = cls(deserialized_job)
         return job
 
+    def deserialize_job_event(self):
+        # Get event data
+        event_name = self.data['eventName']
+        event_id = self.data.get('eventId', None)
+        event_data = self.data.get('eventData', {})
+        event_cls = EventRegistry.get_event(event_name)  # Create the event instance
+        event = event_cls(event_data, event_id)
+        return event
+
     def next_jobs(self):
         return self.next[self.status]
 
@@ -52,8 +61,8 @@ class Job:
         self.next[on].append(job)
 
     def work(self):
-        job_event = Event.deserialize_from_job(self)
-        next_job_events = Event.trigger(job_event)
+        job_event = self.deserialize_job_event()
+        next_job_events = EventRegistry.trigger(job_event)
         if not next_job_events: return self.complete()
 
         for next_event in next_job_events:
