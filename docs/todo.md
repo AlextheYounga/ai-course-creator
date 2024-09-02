@@ -1,0 +1,30 @@
+Todo List
+
+- [x] Store page content in database
+- [x] Master outline file is single source of outline truth.
+- [x] Ability to regenerate pages
+- [x] Ability to generate select pages
+- [x] Outline Entity Table
+- [x] Outlines should be ~25 courses
+- [x] FSC is one page
+- [x] Re-parse FSC
+- [x] PSC and FSC have full context
+- [x] No duplicate answers
+- [x] Outline Importer
+- [x] Translator adds PSC to PSC chapter
+- [x] Setting for converting all code blocks to code editors.
+- [x] Ensure context exists for all PSC and FSC skill challenges
+- [x] Threads table
+- [x] Add Codepen component
+- [x] Ability to pause and rerun threads without regeneration
+- [x] Remove soft deletion
+- [x] Python rename process name so tmux can read it
+- [x] Add redis event listener
+- [x] Rename threads table to jobs
+- [x] Create outline from scratch on frontend
+- [ ] Create Settings table to store values under configs/
+- [ ] Rename JobStore to QueueStore
+- [ ] Make Code Editors runnable
+- [ ] Use topic settings passed from the frontend
+- [ ] View past responses for each page
+- [ ] Ability to take courses from frontend of app
