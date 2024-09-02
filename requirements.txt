@@ -20,7 +20,4 @@ uvicorn[standard]
 redis
 fakeredis
 setproctitle
-# Flask
-# Flask-Cors
-# gpt4all
-# apscheduler
+# llamanet

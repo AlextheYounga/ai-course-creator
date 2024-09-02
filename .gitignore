@@ -4,9 +4,11 @@
 __deprecated__
 notes
 node_modules
+scripts/temp
+
+# Configs
 configs/params.yaml
 configs/topics.yaml
-scripts/temp
 
 # Templates
 app/templates/partials/page-content.html

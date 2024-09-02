@@ -5,7 +5,7 @@ import threading
 
 
 def run_client():
-    subprocess.run("vite", cwd="./app/client")
+    subprocess.run("./build.sh", cwd="app/client", shell=True)
 
 
 def run_api():
@@ -14,14 +14,14 @@ def run_api():
 
 def run_server():
     # Open a browser window
-    url = 'http://localhost:5173/'
-    webbrowser.open(url)
-
     api = threading.Thread(target=run_api)
     client = threading.Thread(target=run_client)
 
     api.start()
     client.start()
+
+    url = 'http://localhost:5173/'
+    webbrowser.open(url)
 
 
 
