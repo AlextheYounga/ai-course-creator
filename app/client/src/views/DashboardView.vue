@@ -21,7 +21,7 @@
                             <!-- Sidebar component, swap this element with another sidebar if you like -->
                             <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 ring-1 ring-white/10">
                                 <div class="flex h-16 shrink-0 items-center">
-                                    <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" />
+                                    <img class="h-8 w-auto" src="/hero.jpeg" alt="Your Company" />
                                 </div>
                                 <nav class="flex flex-1 flex-col">
                                     <ul role="list" class="flex flex-1 flex-col gap-y-7">
@@ -49,7 +49,7 @@
             <!-- Sidebar component, swap this element with another sidebar if you like -->
             <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 ring-1 ring-white/5">
                 <div class="flex h-16 shrink-0 items-center">
-                    <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" />
+                    <img class="h-24 w-auto p-1" src="/hero.jpeg"alt="Your Company" />
                 </div>
                 <nav class="flex flex-1 flex-col">
                     <ul role="list" class="flex flex-1 flex-col gap-y-7">

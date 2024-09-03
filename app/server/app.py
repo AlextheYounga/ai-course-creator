@@ -113,6 +113,11 @@ def get_page(id: int):
     return PageController.get_page(id)
 
 
+@app.get('/api/pages/{id}/next', status_code=status.HTTP_200_OK)
+def get_next_page(id: int):
+    return PageController.get_next_page(id)
+
+
 # Test
 @app.get('/api/ping', status_code=status.HTTP_200_OK)
 def ping_pong():
