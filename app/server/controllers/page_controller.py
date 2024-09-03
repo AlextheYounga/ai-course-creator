@@ -9,7 +9,7 @@ class PageController:
     def get_page(id: int):
         page_record = db.get(Page, id)
         interactive_records = page_record.interactives
-        interactives = [i.to_dict() for i in interactive_records]
+        interactives = [i.apply_formats().to_dict() for i in interactive_records]
         content = parse_markdown(page_record.content)
         return {
             **page_record.to_dict(),

@@ -1,5 +1,5 @@
 <template>
-    <p class="text-lg">{{ this.interactive.data.description }}</p>
+	<div class="description text-lg" v-html="this.interactive.data.description"></div>
     <div class="codepen" data-prefill data-height="400" data-theme-id="1" data-default-tab="html,result">
         <pre :data-lang="this.template.language">{{ this.template.code }}</pre>
         <pre :data-lang="this.styles.language">{{ this.styles.code }}</pre>

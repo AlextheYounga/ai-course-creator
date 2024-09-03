@@ -1,6 +1,7 @@
 <template>
     <form>
         <p class="font-bold text-xl">Question: {{ this.interactive.data.question }}</p>
+		<div class="description" v-html="this.interactive.data.description"></div>
         <template v-for="choice of choices">
             <input :class="`${choice.correct}`" type="radio" :id="`choice-${choice.id}`" name="radio">
             <label :class="`${choice.correct}`" :for="`choice-${choice.id}`">{{ `${choice.letter}.  ${choice.content}` }}</label>
@@ -27,7 +28,6 @@ export default {
             } else {
 				choicesList = this.interactive.data.content
 			}
-
 			return choicesList.map((choice, index) => {
 				return { 
 					id: `${this.interactive.id}-${index}`,

@@ -41,10 +41,9 @@ class CourseController:
             interactive_records = page_record.interactives
             pages.append({
                 **page_record.to_dict(),
-                'interactives': [i.to_dict() for i in interactive_records],
+                'interactives': [i.apply_formats().to_dict() for i in interactive_records],
                 'content': str(parse_markdown(page_record.content))
             })
-
 
         return pages
 

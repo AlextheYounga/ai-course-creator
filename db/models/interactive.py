@@ -2,6 +2,7 @@ from sqlalchemy.sql import func
 from sqlalchemy import Integer, String, JSON, DateTime
 from sqlalchemy.orm import Session, mapped_column, relationship
 from sqlalchemy.orm.attributes import flag_modified
+from src.utils.parsing import parse_markdown
 from .base import Base
 
 
@@ -69,4 +70,12 @@ class Interactive(Base):
         flag_modified(self, 'meta')
         db.commit()
 
+        return self
+
+    def apply_formats(self):
+        match self.type:
+            case 'multipleChoice':
+                self.data['description'] = str(parse_markdown(self.data['description']))
+            case 'codepen':
+                self.data['description'] = str(parse_markdown(self.data['description']))
         return self
