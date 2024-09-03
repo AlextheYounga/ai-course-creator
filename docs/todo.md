@@ -24,6 +24,7 @@ Todo List
 - [x] Create outline from scratch on frontend
 - [ ] Create Settings table to store values under configs/
 - [ ] Rename JobStore to QueueStore
+- [ ] Ensure all interactive questions show their associated context
 - [ ] Make Code Editors runnable
 - [ ] Use topic settings passed from the frontend
 - [ ] View past responses for each page
