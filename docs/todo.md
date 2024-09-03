@@ -22,10 +22,12 @@ Todo List
 - [x] Add redis event listener
 - [x] Rename threads table to jobs
 - [x] Create outline from scratch on frontend
+- [x] Ensure all interactive questions show their associated context
+- [ ] Monitor generations in progress from frontend app
 - [ ] Create Settings table to store values under configs/
 - [ ] Rename JobStore to QueueStore
-- [ ] Ensure all interactive questions show their associated context
 - [ ] Make Code Editors runnable
+- [ ] Ability to use multiple LLMs using llamanet package
 - [ ] Use topic settings passed from the frontend
 - [ ] View past responses for each page
 - [ ] Ability to take courses from frontend of app
