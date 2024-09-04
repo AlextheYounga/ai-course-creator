@@ -155,7 +155,7 @@ Please see the `topics.example.yaml` file to see an example of the available top
 This is not ideal, and I have already built out the ability to change these settings from the `Run New Generation` page, but I have yet to hook this up throughout the app. Currently, those settings do nothing. Sorry, it's a WIP people!
 
 ## Prompts
-> Had a ton of help with the prompts from [Trey Goff](https://github.com/JohnGaltjr), who also helped discover some interesting phenomenon with ChatGPT. Thanks!
+> Had a ton of help with the prompts from [JohnGaltjr](https://github.com/JohnGaltjr), who also helped discover some interesting phenomenon with ChatGPT. Thanks!
 
 Prompts are located in the `storage/prompts` folder, and are broken up into distinct prompt "collections". You can assign a collection to each topic in the topic settings located in `topics.yaml`. If a prompt does not exist in a particular collection, the prompt from `storage/prompts/core` will be used.
 
