@@ -28,8 +28,6 @@ def select_util():
                           'Backup Database',
                           'Dump Content From Existing Outline',
                           'Run DB Migrations',
-                          'Save Chat',
-                          'Clear Logs'
                       ]),
     ]
 
@@ -43,9 +41,5 @@ def select_util():
             return run_dump_outline_content()
         case 'Run DB Migrations':
             return run_db_migrations()
-        case 'Save Chat':
-            return save_chat()
-        case 'Clear Logs':
-            return clear_logs()
         case _:
             return "You did not select a utility command. Exiting..."

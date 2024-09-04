@@ -14,28 +14,6 @@ DATABASE_PATH = 'db/database.db'
 LOGS_PATH = 'storage/logs'
 
 
-def save_chat():
-    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    filename = f"chat-{timestamp}.zip"
-    chat_name = None
-
-    try:
-        chat_name = inquirer.text(message="Enter chat name")
-    except:
-        print(f"No chat name provided. Using default {filename}")
-
-    if chat_name:
-        filename = f"chat-{slugify(chat_name)}.zip"
-
-    # Copying logs file to out folder
-    shutil.copy(f"{LOGS_PATH}/app.log", "out/app.log")
-
-    zip_folder(OUTPUT_PATH, filename)
-    os.rename(filename, f"storage/chat/{filename}")
-
-    print(colored(f"Chat saved to {filename}", "green"))
-
-
 def backup_database():
     name = inquirer.text(message="Enter backup name (a date will automatically be appended)") or "database"
 

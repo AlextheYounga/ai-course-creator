@@ -21,6 +21,8 @@
 		- [Resume Job](#resume-job)
 	- [Adding Topics](#adding-topics)
 	- [Prompts](#prompts)
+	- [Outlines](#outlines)
+	- [Utilities](#utilities)
 	- [Under the Hood](#under-the-hood)
 	- [Contributing And Bug Fixes](#contributing-and-bug-fixes)
 
@@ -102,6 +104,8 @@ You can also run new generations from the frontend, although bear in mind that t
 <img src="app/client/public/new-generation.jpg" alt="interactives" style="width: 50%; padding-bottom: 20px;"/>
 
 ## Generation Jobs
+> The jobs system was developed with tremendous help from the legend [Billy W. Conn](https://github.com/TheDauthi). I had never built a job queue from scratch, and I had trouble finding a simple Python jobs queue package. Although he didn't commit directly to this repo, he wrote most of the code in `src/jobs`, and I only adjusted the code in a few places, *(and by adjusted I mean butchered his beautiful work)*. The code in that folder generally looks better than all other code in this application, but it looked even better before I got ahold of it. The comments in those files are also his. 
+
 ### Generate Outline
 Generate an outline of courses, their chapters, and pages, given a single topic. This will create a random number of courses, but can be as high as 25 courses.
 
@@ -153,7 +157,44 @@ This is not ideal, and I have already built out the ability to change these sett
 ## Prompts
 Prompts are located in the `storage/prompts` folder, and are broken up into distinct prompt "collections". You can assign a collection to each topic in the topic settings located in `topics.yaml`. If a prompt does not exist in a particular collection, the prompt from `storage/prompts/core` will be used.
 
-If you want to change prompts, you can add a custom prompt collection by making a new folder in the `storage/prompts` folder and then assign that collection to a topic in the `configs/topics.yaml` file. Copy the specific prompt you want to edit into this folder. 
+If you want to change prompts, you can add a custom prompt collection by making a new folder in the `storage/prompts` folder and then assign that collection to a topic in the `configs/topics.yaml` file. Copy the specific prompt you want to 
+edit into this folder. 
+
+## Outlines 
+All course generations require an initial outline. The LLM will output a yaml structure of courses, with chapters and pages.
+
+Example output from the LLM that will be used to create courses, chapters, and pages. By default, you'll get an output with approximately 25 objects shaped like the following. 
+```yaml
+- courseName: "An Intriguing Course Name"
+  chapters:
+    - name: "An Interesting Chapter Name"
+      pages:
+        - "First Page of Chapter"
+        - "Second Page of Chapter"
+        - "Third Page of Chapter, and so on"
+    - name: "Another Interesting Chapter Name"
+      pages:
+        - "First Page of Chapter"
+```
+
+These outlines can also be edited from the frontend App Mode under the `Outlines` tab. You can also create a new outline from scratch. 
+
+<img src="app/client/public/outlines.jpg" alt="interactives" style="padding-bottom: 20px;"/>
+
+## Utilities
+```
+[?] Select utility command:
+ > Backup Database
+   Dump Content From Existing Outline
+   Run DB Migrations
+```
+
+- Backup Database
+  - Will create a zipped backup of your database in the storage folder. Very useful
+- Dump Content From Existing Outline
+  - Will dump all content from a particular outline in the `out/` folder in markdown format. 
+- Run DB Migrations
+  - This is used for making database changes. I had to write my own SQLite migrations system; it actually works surprisingly well. 
 
 ## Under the Hood
 The Course Creator uses an event/handler architecture, events are associated with event handlers, and all managed in Redis queues. All event handlers are processed by Redis as if they are a distinct job with no knowledge of each other. This creates a kind of "state machine" system, where every single action can be accounted for. This is a very practical system for any complex AI-based architecture, and allows for easy maintenance as well as a near-infinite number of configurations and flows. 
