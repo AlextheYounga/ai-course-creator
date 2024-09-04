@@ -23,6 +23,7 @@ Todo List
 - [x] Rename threads table to jobs
 - [x] Create outline from scratch on frontend
 - [x] Ensure all interactive questions show their associated context
+- [ ] Add a back button on pages (lol)
 - [ ] Monitor generations in progress from frontend app
 - [ ] Create Settings table to store values under configs/
 - [ ] Rename JobStore to QueueStore

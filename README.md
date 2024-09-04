@@ -248,5 +248,7 @@ EventRegistry.register(ProcessResponseFromLLM, ProcessResponseFromLLMHandler)
 <img src="app/client/public/graph.jpg" alt="interactives" style="padding-bottom: 20px;"/>
 
 ## Contributing And Bug Fixes
+I keep a running [TODO list (docs/todo.md)](https://github.com/AlextheYounga/ai-course-creator/blob/3394aa96fba3a764b10f33e84f16e7c92d5f7010/docs/todo.md) of things I'd like to do. I am also willing to add to that todo list if there's something you want to see. 
+
 I will always read pull requests. I may not always merge pull requests.
 I definitely would love some help improving this. I will attempt to improve the documentation as time goes on. 
