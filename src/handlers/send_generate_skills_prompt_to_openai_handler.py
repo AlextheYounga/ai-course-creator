@@ -1,4 +1,3 @@
-from termcolor import colored
 import json
 from openai.types.completion import Completion
 from db.db import DB, Topic, Prompt, Response

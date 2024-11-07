@@ -10,8 +10,7 @@ def _setup_test():
 def test_get_full_page_html():
     _setup_test()
 
-    page = PageController.get_page_content(1)
-    print(page)
+    page = PageController.get_page(1)
 
     assert page['id'] == 1
     assert len(page['interactives']) > 0

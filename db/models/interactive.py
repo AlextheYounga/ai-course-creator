@@ -73,9 +73,10 @@ class Interactive(Base):
         return self
 
     def apply_formats(self):
-        match self.type:
-            case 'multipleChoice':
-                self.data['description'] = str(parse_markdown(self.data['description']))
-            case 'codepen':
-                self.data['description'] = str(parse_markdown(self.data['description']))
+        if self.data.get('description', False):
+            match self.type:
+                case 'multipleChoice':
+                    self.data['description'] = str(parse_markdown(self.data.get['description']))
+                case 'codepen':
+                    self.data['description'] = str(parse_markdown(self.data['description']))
         return self
